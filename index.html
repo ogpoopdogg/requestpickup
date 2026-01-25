@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>E & C Courier Pickup</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0a3a6a">
+<link rel="icon" type="image/png" href="icon-512.png">
+
+<style>
+  :root { --primary-blue: #0a3a6a; --accent-yellow: #ffcc00; --bg: #f4f7f9; }
+  body { font-family: system-ui, sans-serif; background-color: var(--bg); margin: 0; display: flex; justify-content: center; padding: 20px; box-sizing: border-box; }
+  .container { background: white; width: 100%; max-width: 500px; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+  .header-wrap { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 25px; }
+  .header-wrap img { width: 45px; height: 45px; object-fit: contain; }
+  h1 { color: #000; margin: 0; font-size: 22px; font-weight: 800; }
+  
+  label { display: block; font-weight: 600; margin-bottom: 5px; color: #333; }
+  .required::after { content: " *"; color: red; }
+  
+  input, textarea, select { width: 100%; padding: 12px; margin-bottom: 18px; border: 1px solid #ddd; border-radius: 6px; font-size: 16px; box-sizing: border-box; }
+  
+  .dim-row { display: flex; gap: 10px; margin-bottom: 18px; }
+  .dim-field { flex: 1; }
+  .dim-field label { font-size: 12px; text-transform: uppercase; color: #666; }
+  .dim-field input { margin-bottom: 0; }
+
+  .radio-group { display: flex; gap: 15px; margin-bottom: 18px; flex-wrap: wrap; }
+  .radio-option { display: flex; align-items: center; font-weight: normal; cursor: pointer; }
+  .radio-option input { width: auto; margin-bottom: 0; margin-right: 8px; }
+
+  button[type="submit"] { 
+    width: 100%; background: var(--accent-yellow); color: #000; border: none; padding: 16px; 
+    border-radius: 8px; font-size: 18px; font-weight: 800; text-transform: uppercase; cursor: pointer; 
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header-wrap">
+    <img src="icon-512.png" alt="Logo">
+    <h1>E & C Courier Pickup</h1>
+  </div>
+
+  <form id="pickupForm">
+    <label>Name (Optional)</label>
+    <input type="text" name="name" placeholder="Contact Name">
+
+    <label class="required">Email</label>
+    <input type="email" name="email" placeholder="email@example.com" required>
+
+    <label class="required">Phone Number</label>
+    <input type="tel" name="phone" placeholder="(555) 555-5555" required>
+
+    <label class="required">Pickup Address</label>
+    <input type="text" name="address" placeholder="123 Street Name" required>
+
+    <label class="required">City</label>
+    <input type="text" name="city" placeholder="City Name" required>
+
+    <label class="required">Destination</label>
+    <textarea name="destination" rows="2" placeholder="Delivery address" required></textarea>
+
+    <label class="required">Package Type</label>
+    <div class="radio-group">
+      <label class="radio-option"><input type="radio" name="pkg_type" value="Box" checked> Box</label>
+      <label class="radio-option"><input type="radio" name="pkg_type" value="Skid"> Skid</label>
+      <label class="radio-option"><input type="radio" name="pkg_type" value="Other"> Other</label>
+    </div>
+
+    <label class="required">Dimensions (Inches)</label>
+    <div class="dim-row">
+      <div class="dim-field"><label>L</label><input type="text" name="dim_l" placeholder="L" required></div>
+      <div class="dim-field"><label>W</label><input type="text" name="dim_w" placeholder="W" required></div>
+      <div class="dim-field"><label>H</label><input type="text" name="dim_h" placeholder="H" required></div>
+    </div>
+
+    <label>PO Number (Optional)</label>
+    <input type="text" name="po_number" placeholder="Optional PO#">
+
+    <label>Other Information (Optional)</label>
+    <textarea name="other_info" rows="3" placeholder="Additional notes..."></textarea>
+
+    <button type="submit">Submit Pickup Request</button>
+  </form>
+
+  <div id="thanksMessage" style="display:none; text-align:center; padding: 20px;">
+    <p style="color:#28a745; font-weight:bold; font-size:20px;">✅ Thank you! Your request has been sent.</p>
+    <button onclick="location.reload()" style="background:#eee; border:1px solid #ccc; padding:10px; border-radius:5px; cursor:pointer;">Send Another Pickup</button>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+  firebase.initializeApp({
+    apiKey: "AIzaSyAKmgoXA4m3cRTmxJq4aUyva5SVvFbTNqg",
+    authDomain: "eandccourier-36fcc.firebaseapp.com",
+    databaseURL: "https://eandccourier-36fcc-default-rtdb.firebaseio.com",
+    projectId: "eandccourier-36fcc"
+  });
+
+  const db = firebase.database();
+  const form = document.getElementById("pickupForm");
+
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    
+    const pickupData = {
+      name: form.name.value || "Not Provided",
+      email: form.email.value,
+      phone: form.phone.value,
+      address: form.address.value,
+      city: form.city.value,
+      pickup_location: form.address.value + ", " + form.city.value,
+      destination: form.destination.value,
+      package_type: form.pkg_type.value,
+      dimensions: {
+        length: form.dim_l.value,
+        width: form.dim_w.value,
+        height: form.dim_h.value
+      },
+      po_number: form.po_number.value || "N/A",
+      other_info: form.other_info.value || "None",
+      status: "active",
+      timestamp: Date.now() // This is the magic line for Auto-Clean
+    };
+
+    db.ref("pickups").push(pickupData).then(() => {
+      form.style.display = "none";
+      document.getElementById("thanksMessage").style.display = "block";
+      window.scrollTo(0,0);
+    });
+  });
+</script>
+</body>
+</html>
