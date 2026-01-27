@@ -173,6 +173,7 @@
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
@@ -182,6 +183,10 @@
     databaseURL: "https://eandccourier-36fcc-default-rtdb.firebaseio.com",
     projectId: "eandccourier-36fcc"
   });
+
+  firebase.auth().signInAnonymously();
+  
+  // YOUR OTHER CODE (like const db...) CONTINUES HERE
 
   const db = firebase.database();
   const form = document.getElementById("pickupForm");
