@@ -14,7 +14,7 @@
     --accent-yellow: #ffcc00; 
     --bg: #0a0a0a; 
     --container-bg: rgba(18, 18, 18, 0.98); 
-    --input-bg: #ffffff;
+    --input-bg: #e0e0e0; /* Shade darker off-white */
     --text: #ffffff;
     --text-dark: #111111;
     --text-dim: #bbbbbb;
@@ -115,6 +115,7 @@
 
   input:focus, textarea:focus {
     border-color: var(--accent-yellow);
+    background-color: #ffffff; /* Brightens slightly on focus */
     box-shadow: 0 0 0 4px rgba(255, 204, 0, 0.15);
     outline: none;
   }
@@ -179,7 +180,7 @@
 
   #thanksMessage { animation: fadeInPage 0.5s ease; padding: 40px 30px; }
 
-  ::placeholder { color: #999; }
+  ::placeholder { color: #666; }
 </style>
 </head>
 <body>
@@ -192,7 +193,7 @@
 
   <form id="pickupForm">
     <label>Contact/Business Name</label>
-    <input type="text" name="name" placeholder="Who are we looking for?">
+    <input type="text" name="name" placeholder="">
 
     <label class="required">Email</label>
     <input type="email" name="email" placeholder="email@address.com" required>
@@ -230,7 +231,7 @@
     <input type="text" name="po_number" placeholder="Optional PO#">
 
     <label>Additional Notes</label>
-    <textarea name="other_info" rows="3" placeholder="Gate codes, delivery instructions, etc."></textarea>
+    <textarea name="other_info" rows="3" placeholder="Pick-up instructions, delivery instructions etc."></textarea>
 
     <button type="submit">Send Pickup Request</button>
   </form>
