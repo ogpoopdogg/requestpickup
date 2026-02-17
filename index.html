@@ -77,7 +77,7 @@
   h1 { 
     color: var(--text); 
     margin: 0; 
-    font-size: 18px; 
+    font-size: 22px; 
     font-weight: 800; 
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -96,7 +96,7 @@
   /* Section Dividers */
   .section-title {
     color: var(--accent);
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 1.5px;
@@ -118,7 +118,7 @@
   
   label {
     display: block;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 700;
     color: #888;
     margin-bottom: 5px;
@@ -129,12 +129,12 @@
 
   input, textarea, select { 
     width: 100%; 
-    padding: 12px 14px; 
+    padding: 15px 16px; 
     background: var(--input-bg); 
     border: 1px solid var(--border); 
     color: var(--text); 
     border-radius: 6px; 
-    font-size: 15px; 
+    font-size: 17px; 
     box-sizing: border-box; 
     transition: all 0.2s;
     font-family: inherit;
@@ -147,7 +147,7 @@
     background: #252525;
   }
 
-  ::placeholder { color: var(--placeholder); font-size: 14px; }
+  ::placeholder { color: var(--placeholder); font-size: 16px; }
 
   /* Layout Utilities */
   .flex-row { 
@@ -163,7 +163,7 @@
   button[type="submit"] { 
     width: 100%; 
     margin-top: 25px;
-    padding: 16px;
+    padding: 20px;
     background: #1c1c1c;
     color: var(--text);
     font-weight: 800;
@@ -172,7 +172,7 @@
     cursor: pointer;
     border-radius: 6px;
     text-transform: uppercase;
-    font-size: 15px;
+    font-size: 18px;
     letter-spacing: 1.5px;
     transition: all 0.2s ease;
   }
@@ -212,9 +212,12 @@
 <body>
 
 <div class="container">
-  <div class="header-wrap">
-    <img src="icon2.png" alt="E&C Logo" onerror="this.style.display='none'"> 
-    <h1>Request Pickup Now</h1>
+  <div class="header-wrap" style="flex-direction: column;">
+    <button id="installAppBtn" style="display:none; background:var(--accent); color:#000; border:none; padding:10px 20px; font-weight:900; border-radius:6px; margin-bottom:15px; cursor:pointer; font-size:14px; text-transform:uppercase;">Install App</button>
+    <div style="display:flex; align-items:center; gap:15px;">
+        <img src="icon2.png" alt="E&C Logo" onerror="this.style.display='none'"> 
+        <h1>Request Pickup Now</h1>
+    </div>
   </div>
 
   <form id="pickupForm">
@@ -372,6 +375,27 @@
       submitBtn.style.opacity = "1";
       submitBtn.disabled = false;
     });
+  });
+
+  // PWA Install Logic
+  let deferredPrompt;
+  const installBtn = document.getElementById('installAppBtn');
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.style.display = 'block';
+  });
+
+  installBtn.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        installBtn.style.display = 'none';
+      }
+      deferredPrompt = null;
+    }
   });
 </script>
 </body>
