@@ -414,6 +414,7 @@
           po_number: form.po_number.value.trim() || "",
           other_info: form.other_info.value.trim() ? `[Client Request]: ${form.other_info.value.trim()}` : "[Client Request]",
           status: "pending_pickup",
+          type: "pickup",
           assigned_to: assignedDriver, 
           timestamp: Date.now(),
           created_by: firebase.auth().currentUser ? firebase.auth().currentUser.email : "Web Portal",
