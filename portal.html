@@ -20,6 +20,15 @@
     --success: #00b32d;
   }
 
+  [data-theme="light"] {
+    --bg: #f0f2f5;
+    --card: #ffffff;
+    --text: #111111;
+    --input-bg: #ffffff;
+    --border: #cccccc;
+    --placeholder: #666666;
+  }
+
   @keyframes fadeInPage {
     from { opacity: 0; transform: translateY(15px); }
     to { opacity: 1; transform: translateY(0); }
@@ -68,6 +77,10 @@
     gap: 15px; 
   }
 
+  [data-theme="light"] .header-wrap {
+    background: #ffffff;
+  }
+
   .header-wrap img { 
     height: 35px; 
     width: auto; 
@@ -81,7 +94,7 @@
     font-weight: 800; 
     text-transform: uppercase;
     letter-spacing: 1px;
-    background: linear-gradient(to right, var(--accent) 0%, #fff 50%, var(--accent) 100%);
+    background: linear-gradient(to right, var(--accent) 0%, #888 50%, var(--accent) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -140,11 +153,14 @@
     font-family: inherit;
   }
 
-  input:focus, textarea:focus {
+  input:focus, textarea:focus, select:focus {
     border-color: var(--accent);
     outline: none;
     box-shadow: 0 0 8px rgba(204, 163, 0, 0.15);
-    background: #252525;
+  }
+
+  [data-theme="light"] input:focus, [data-theme="light"] textarea:focus, [data-theme="light"] select:focus {
+    background: #fffdf5;
   }
 
   ::placeholder { color: var(--placeholder); font-size: 16px; }
@@ -165,7 +181,7 @@
     margin-top: 25px;
     padding: 20px;
     background: #1c1c1c;
-    color: var(--text);
+    color: #fff;
     font-weight: 800;
     border: 1px solid var(--border);
     border-bottom: 3px solid var(--accent);
@@ -175,6 +191,12 @@
     font-size: 18px;
     letter-spacing: 1.5px;
     transition: all 0.2s ease;
+  }
+
+  [data-theme="light"] button[type="submit"] {
+    background: var(--accent);
+    color: #000;
+    border: none;
   }
 
   button[type="submit"]:hover {
@@ -207,6 +229,17 @@
     font-weight: 900 !important;
   }
 
+  /* New Feature Styles */
+  .theme-toggle { background: transparent; border: none; font-size: 22px; cursor: pointer; padding: 0 5px; color: var(--text); }
+  .gps-btn { background: var(--input-bg); border: 1px solid var(--border); border-radius: 6px; font-size: 20px; padding: 0 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+  .gps-btn:hover { border-color: var(--accent); background: #2a2a2a; }
+  [data-theme="light"] .gps-btn:hover { background: #f0f0f0; }
+  .package-options { display: flex; gap: 10px; flex-wrap: wrap; }
+  .package-icon { flex: 1; min-width: 80px; padding: 15px 5px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 6px; text-align: center; cursor: pointer; color: var(--placeholder); font-size: 12px; font-weight: bold; transition: 0.2s; user-select: none; }
+  .package-icon:hover { border-color: var(--accent); }
+  .package-icon.selected { border-color: var(--accent); color: var(--accent); background: rgba(204, 163, 0, 0.1); box-shadow: 0 0 8px rgba(204, 163, 0, 0.2); }
+  .package-emoji { font-size: 24px; margin-bottom: 5px; display: block; }
+
 </style>
 </head>
 <body>
@@ -226,7 +259,7 @@
   </div>
 
   <div class="container" style="padding: 30px; text-align: center; margin-top: 0; box-shadow: 0 10px 40px rgba(0,0,0,0.8);">
-    <h2 style="color: #fff; margin-top: 0; margin-bottom: 20px; font-weight: 800; text-transform: uppercase; font-size: 18px;">Account Login</h2>
+    <h2 style="color: var(--text); margin-top: 0; margin-bottom: 20px; font-weight: 800; text-transform: uppercase; font-size: 18px;">Account Login</h2>
     
     <div class="input-group" style="text-align: left; margin-bottom: 15px;">
       <input type="email" id="auth-email" placeholder="Email Address" required>
@@ -236,21 +269,26 @@
     </div>
     
     <button type="button" onclick="customerLogin()" style="width: 100%; padding: 16px; background: var(--accent); color: #000; font-weight: 800; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; margin-bottom: 12px; font-size: 16px;">Login</button>
-    <button type="button" onclick="customerSignUp()" style="width: 100%; padding: 16px; background: #1c1c1c; color: var(--text); font-weight: 800; border: 1px solid var(--border); border-bottom: 3px solid var(--accent); border-radius: 6px; cursor: pointer; text-transform: uppercase; margin-bottom: 20px; font-size: 16px; transition: all 0.2s;">Create Account</button>
+    <button type="button" onclick="customerSignUp()" style="width: 100%; padding: 16px; background: #1c1c1c; color: #fff; font-weight: 800; border: 1px solid var(--border); border-bottom: 3px solid var(--accent); border-radius: 6px; cursor: pointer; text-transform: uppercase; margin-bottom: 20px; font-size: 16px; transition: all 0.2s;">Create Account</button>
     
+    <a href="#" onclick="document.getElementById('auth-overlay').style.display='none'; document.getElementById('main-app-container').style.display='block'; return false;" style="display: block; color: var(--accent); margin-bottom: 15px; font-weight: bold; text-decoration: none;">Continue as Guest</a>
+
     <a href="#" onclick="forgotPassword(); return false;" style="color: var(--placeholder); font-size: 13px; text-decoration: underline;">Forgot Password?</a>
   </div>
 </div>
 
-<div class="container" id="main-app-container" style="display: none;">
+<div class="container" id="main-app-container" style="display: block;">
   <div class="header-wrap" style="flex-direction: column;">
     <button id="installAppBtn" style="display:none; background:var(--accent); color:#000; border:none; padding:10px 20px; font-weight:900; border-radius:6px; margin-bottom:15px; cursor:pointer; font-size:14px; text-transform:uppercase;">Install App</button>
     <div style="display:flex; justify-content: space-between; width: 100%; align-items: center;">
         <div style="display:flex; align-items:center; gap:15px;">
             <img src="icon2.png" alt="E&C Logo" onerror="this.style.display='none'"> 
-            <h1>Request Pickup Now</h1>
+            <h1>Request Pickup</h1>
         </div>
-        <button type="button" onclick="firebase.auth().signOut()" style="background:transparent; border:1px solid var(--border); color:var(--text); padding:6px 12px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:700;">Logout</button>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <button type="button" class="theme-toggle" onclick="toggleTheme()" id="themeBtn">🌓</button>
+            <button type="button" id="loginHeaderBtn" onclick="toggleAuth()" style="background:transparent; border:1px solid var(--border); color:var(--text); padding:6px 12px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:700;">Login</button>
+        </div>
     </div>
   </div>
 
@@ -258,6 +296,13 @@
     
     <div class="section-title">Pickup Details</div>
     
+    <div class="input-group" id="addressBookGroup" style="display:none;">
+      <label>Saved Addresses</label>
+      <select id="addressBook" onchange="fillSavedAddress(this.value)">
+        <option value="">Select a saved address...</option>
+      </select>
+    </div>
+
     <div class="input-group">
       <label>Business / Contact Name <span class="required-mark">*</span></label>
       <input type="text" name="name" placeholder="Who are we picking up from?" required autocomplete="organization">
@@ -266,7 +311,10 @@
     <div class="flex-row">
       <div class="input-group" style="flex: 2;">
         <label>Pickup Address <span class="required-mark">*</span></label>
-        <input type="text" name="pickup_location" placeholder="Street Address" required autocomplete="street-address">
+        <div style="display:flex; gap:10px;">
+          <input type="text" name="pickup_location" id="pickup_location" placeholder="Street Address" required autocomplete="street-address">
+          <button type="button" class="gps-btn" onclick="useCurrentLocation()" title="Use Current Location">📍</button>
+        </div>
       </div>
       <div class="input-group" style="flex: 1;">
         <label>City <span class="required-mark">*</span></label>
@@ -295,7 +343,7 @@
     <div class="flex-row">
       <div class="input-group" style="flex: 2;">
         <label>Delivery Address <span class="required-mark">*</span></label>
-        <input type="text" name="destination" placeholder="Street Address" required>
+        <input type="text" name="destination" id="destination" placeholder="Street Address" required>
       </div>
       <div class="input-group" style="flex: 1;">
         <label>City <span class="required-mark">*</span></label>
@@ -306,13 +354,24 @@
     <div class="section-title">Cargo & Information</div>
 
     <div class="input-group">
-      <label>Packages / Items / Dimensions <span class="required-mark">*</span></label>
-      <input type="text" name="package_details" placeholder="e.g. 2 Boxes (12x12x12), 1 Skid" required>
+      <label>Packages / Items <span class="required-mark">*</span></label>
+      <input type="hidden" name="package_details" id="package_details">
+      <div class="package-options">
+        <div class="package-icon" onclick="selectPackage('Envelope', this)"><span class="package-emoji">✉️</span>Envelope</div>
+        <div class="package-icon" onclick="selectPackage('Small Box', this)"><span class="package-emoji">📦</span>Small Box</div>
+        <div class="package-icon" onclick="selectPackage('Large Box', this)"><span class="package-emoji">🗃️</span>Large Box</div>
+        <div class="package-icon" onclick="selectPackage('Skid', this)"><span class="package-emoji">🏗️</span>Skid</div>
+      </div>
     </div>
 
     <div class="input-group">
       <label>PO Number / Reference</label>
       <input type="text" name="po_number" placeholder="Optional">
+    </div>
+
+    <div class="input-group">
+      <label>Scheduled Pickup Time (Leave blank for ASAP)</label>
+      <input type="datetime-local" name="scheduled_time">
     </div>
 
     <div class="input-group">
@@ -323,20 +382,91 @@
     <button type="submit" id="submitBtn">Submit Request</button>
   </form>
 
+  <div id="recent-orders-section" style="display:none; padding: 25px; border-top: 1px solid var(--border);">
+    <div class="section-title">Recent Orders</div>
+    <div id="recent-orders-list"></div>
+  </div>
+
   <div id="thanksMessage">
     <span class="success-icon">✓</span>
-    <h2 style="color: #fff; margin: 0 0 10px 0; text-transform: uppercase; font-size: 18px;">Request Received</h2>
-    <p style="color: #aaa; margin-bottom: 25px; font-size: 14px; line-height: 1.5;">Our dispatch team has been notified and will review your request shortly.</p>
+    <h2 style="color: var(--text); margin: 0 0 10px 0; text-transform: uppercase; font-size: 18px;">Request Received</h2>
+    <p style="color: var(--placeholder); margin-bottom: 25px; font-size: 14px; line-height: 1.5;">Our dispatch team has been notified and will review your request shortly.</p>
+    
+    <div id="guest-signup-box" style="display:none; margin-bottom: 20px; background: var(--input-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--border);">
+      <h3 style="color: var(--text); margin-top: 0; font-size: 16px;">Save your details for next time!</h3>
+      <input type="password" id="guest-password" placeholder="Create a password" style="margin-bottom: 10px;">
+      <button type="button" onclick="convertGuestToUser()" style="width: 100%; padding: 14px; background: #1c1c1c; color: #fff; border: 1px solid var(--border); border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase;">Create Account</button>
+    </div>
+
     <button onclick="location.reload()" type="button" class="success-btn" style="width: 100%; padding: 15px; border-radius: 6px; cursor: pointer; text-transform: uppercase;">Submit Another</button>
+  </div>
+  
+  <div style="text-align: center; padding: 20px; color: var(--placeholder); font-size: 12px; border-top: 1px solid var(--border); background: var(--card);">
+    Proudly local in Brandon, MB.
   </div>
 </div>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDltbEbiqlyQjyaGth0AzIkfLpOYr96YeQ&libraries=geometry,drawing"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDltbEbiqlyQjyaGth0AzIkfLpOYr96YeQ&libraries=geometry,drawing,places&callback=initAutocomplete" async defer></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
+  // Theme Toggle Logic
+  const savedTheme = localStorage.getItem('ec_portal_theme') || 'dark';
+  if(savedTheme === 'light') document.body.setAttribute('data-theme', 'light');
+
+  function toggleTheme() {
+    const isLight = document.body.getAttribute('data-theme') === 'light';
+    const newTheme = isLight ? 'dark' : 'light';
+    document.body.setAttribute('data-theme', newTheme);
+    localStorage.setItem('ec_portal_theme', newTheme);
+  }
+
+  // Google Maps Features
+  let pickupAuto, dropAuto;
+  function initAutocomplete() {
+    pickupAuto = new google.maps.places.Autocomplete(document.getElementById('pickup_location'), { componentRestrictions: { country: "ca" } });
+    pickupAuto.addListener('place_changed', () => fillCity(pickupAuto, 'city'));
+    
+    dropAuto = new google.maps.places.Autocomplete(document.getElementById('destination'), { componentRestrictions: { country: "ca" } });
+    dropAuto.addListener('place_changed', () => fillCity(dropAuto, 'drop_city'));
+  }
+
+  function fillCity(autocomplete, cityFieldName) {
+    const place = autocomplete.getPlace();
+    if (place && place.address_components) {
+      const cityObj = place.address_components.find(c => c.types.includes('locality'));
+      if (cityObj) document.querySelector(`input[name="${cityFieldName}"]`).value = cityObj.long_name;
+    }
+  }
+
+  function useCurrentLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(pos => {
+        const geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ location: { lat: pos.coords.latitude, lng: pos.coords.longitude } }, (results, status) => {
+          if (status === "OK" && results[0]) {
+            document.getElementById('pickup_location').value = results[0].formatted_address;
+            const cityObj = results[0].address_components.find(c => c.types.includes('locality'));
+            if (cityObj) document.querySelector('input[name="city"]').value = cityObj.long_name;
+          } else {
+            alert("Could not determine address from location.");
+          }
+        });
+      }, err => alert("GPS Error: " + err.message));
+    } else {
+      alert("Geolocation is not supported by this browser.");
+    }
+  }
+
+  // Package Icons
+  function selectPackage(val, el) {
+    document.getElementById('package_details').value = val;
+    document.querySelectorAll('.package-icon').forEach(i => i.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
   firebase.initializeApp({
     apiKey: "AIzaSyAKmgoXA4m3cRTmxJq4aUyva5SVvFbTNqg",
     authDomain: "eandccourier-36fcc.firebaseapp.com",
@@ -344,18 +474,57 @@
     projectId: "eandccourier-36fcc"
   });
 
+  const db = firebase.database();
+  let driverZones = {};
+  db.ref("driver_zones").on("value", s => driverZones = s.val() || {});
+
+  let userAddresses = [];
+
   firebase.auth().onAuthStateChanged((user) => {
     if (user) {
       document.getElementById('auth-overlay').style.display = 'none';
       document.getElementById('main-app-container').style.display = 'block';
+      document.getElementById('loginHeaderBtn').innerText = 'Logout';
+      document.getElementById('guest-signup-box').style.display = 'none';
+      
       if (document.querySelector('input[name="customer_email"]')) {
         document.querySelector('input[name="customer_email"]').value = user.email;
       }
+      
+      db.ref('users/' + user.uid).once('value', snap => {
+        if(snap.exists()) {
+           const d = snap.val();
+           if(d.name) document.querySelector('input[name="name"]').value = d.name;
+           if(d.phone) document.querySelector('input[name="customer_phone"]').value = d.phone;
+           if(d.addresses) {
+               userAddresses = Object.values(d.addresses);
+               const select = document.getElementById('addressBook');
+               select.innerHTML = '<option value="">Select a saved address...</option>';
+               userAddresses.forEach((addr, i) => {
+                   select.innerHTML += `<option value="${i}">${addr.name || 'Saved Address'} - ${addr.address}</option>`;
+               });
+               document.getElementById('addressBookGroup').style.display = 'block';
+           }
+        }
+      });
+      loadRecentOrders(user.email);
     } else {
-      document.getElementById('auth-overlay').style.display = 'flex';
-      document.getElementById('main-app-container').style.display = 'none';
+      document.getElementById('loginHeaderBtn').innerText = 'Login';
+      document.getElementById('addressBookGroup').style.display = 'none';
+      document.getElementById('recent-orders-section').style.display = 'none';
+      document.getElementById('guest-signup-box').style.display = 'block';
     }
   });
+
+  function toggleAuth() {
+    if(firebase.auth().currentUser) {
+        firebase.auth().signOut();
+        location.reload();
+    } else {
+        document.getElementById('auth-overlay').style.display = 'flex';
+        document.getElementById('main-app-container').style.display = 'none';
+    }
+  }
 
   function customerLogin() {
     const e = document.getElementById('auth-email').value.trim();
@@ -381,9 +550,68 @@
     }).catch(err => alert("Error: " + err.message));
   }
 
-  const db = firebase.database();
-  let driverZones = {};
-  db.ref("driver_zones").on("value", s => driverZones = s.val() || {});
+  function fillSavedAddress(index) {
+      if(index === "" || !userAddresses[index]) return;
+      document.getElementById('pickup_location').value = userAddresses[index].address;
+      document.querySelector('input[name="city"]').value = userAddresses[index].city;
+  }
+
+  function loadRecentOrders(email) {
+      db.ref('jobs').orderByChild('customer_email').equalTo(email).limitToLast(3).once('value', snap => {
+          const list = document.getElementById('recent-orders-list');
+          list.innerHTML = '';
+          if(!snap.exists()) return;
+          document.getElementById('recent-orders-section').style.display = 'block';
+          snap.forEach(child => {
+              const job = child.val();
+              const div = document.createElement('div');
+              div.style.cssText = "background: var(--input-bg); padding: 15px; margin-bottom: 10px; border-radius: 6px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;";
+              div.innerHTML = `
+                  <div>
+                      <div style="font-size: 14px; font-weight: bold; color: var(--text);">${job.delivery_name || 'Delivery'}</div>
+                      <div style="font-size: 12px; color: var(--placeholder); margin-top: 4px;">${job.destination || ''}</div>
+                  </div>
+                  <button type="button" style="background: var(--bg); border: 1px solid var(--accent); color: var(--text); padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold;" onclick='fillReorder(${JSON.stringify(job).replace(/'/g, "\\'")})'>Reorder</button>
+              `;
+              list.prepend(div);
+          });
+      });
+  }
+
+  function fillReorder(job) {
+      form.name.value = job.name || '';
+      form.pickup_location.value = job.pickup_location || '';
+      form.city.value = job.pickup_city || job.city || '';
+      form.delivery_name.value = job.delivery_name || '';
+      form.destination.value = job.destination || '';
+      form.drop_city.value = job.delivery_city || job.city || '';
+      
+      if(job.package_details) {
+          const icons = document.querySelectorAll('.package-icon');
+          icons.forEach(i => i.classList.remove('selected'));
+          let matched = false;
+          icons.forEach(i => { if(i.innerText.includes(job.package_details)) { i.classList.add('selected'); matched = true; } });
+          form.package_details.value = job.package_details;
+      }
+      
+      form.po_number.value = job.po_number || '';
+      form.other_info.value = job.other_info ? job.other_info.replace('[Client Request]: ', '') : '';
+      window.scrollTo({top: 0, behavior: 'smooth'});
+  }
+
+  let lastGuestEmail = "";
+  function convertGuestToUser() {
+      const pass = document.getElementById('guest-password').value;
+      if(!pass || !lastGuestEmail) return alert("Please enter a password.");
+      firebase.auth().createUserWithEmailAndPassword(lastGuestEmail, pass).then(cred => {
+          db.ref('users/' + cred.user.uid).set({
+              name: document.querySelector('input[name="name"]').value,
+              phone: document.querySelector('input[name="customer_phone"]').value
+          });
+          alert("Account created successfully!");
+          document.getElementById('guest-signup-box').style.display = 'none';
+      }).catch(e => alert(e.message));
+  }
 
   const form = document.getElementById("pickupForm");
   const submitBtn = document.getElementById("submitBtn");
@@ -395,11 +623,16 @@
 
   form.addEventListener("submit", e => {
     e.preventDefault();
+    if(!form.package_details.value) return alert("Please select a Package Type.");
+
     submitBtn.innerText = "Transmitting...";
     submitBtn.style.opacity = "0.7";
     submitBtn.disabled = true;
 
     const finalizeSubmission = (coords = {}, assignedDriver = 'Unassigned') => {
+        const sched = form.scheduled_time.value;
+        const infoPrefix = sched ? `[SCHEDULED: ${new Date(sched).toLocaleString()}] ` : "";
+
         const jobData = {
           name: form.name.value.trim(),
           pickup_location: form.pickup_location.value.trim(),
@@ -412,17 +645,29 @@
           delivery_city: form.drop_city.value.trim(),
           package_details: form.package_details.value.trim(),
           po_number: form.po_number.value.trim() || "",
-          other_info: form.other_info.value.trim() ? `[Client Request]: ${form.other_info.value.trim()}` : "[Client Request]",
+          other_info: form.other_info.value.trim() ? `${infoPrefix}[Client Request]: ${form.other_info.value.trim()}` : `${infoPrefix}[Client Request]`,
           status: "pending_pickup",
           type: "pickup",
           assigned_to: assignedDriver, 
           timestamp: Date.now(),
+          scheduled_time: sched ? new Date(sched).getTime() : null,
           created_by: firebase.auth().currentUser ? firebase.auth().currentUser.email : "Web Portal",
           ...coords
         };
 
+        if (firebase.auth().currentUser) {
+            const uid = firebase.auth().currentUser.uid;
+            db.ref('users/' + uid).update({ name: jobData.name, phone: jobData.customer_phone });
+            db.ref('users/' + uid + '/addresses').orderByChild('address').equalTo(jobData.pickup_location).once('value', snap => {
+                if(!snap.exists()) db.ref('users/' + uid + '/addresses').push({ name: jobData.name, address: jobData.pickup_location, city: jobData.city });
+            });
+        } else {
+            lastGuestEmail = jobData.customer_email;
+        }
+
         db.ref("jobs").push(jobData).then(() => {
           form.style.display = "none";
+          document.getElementById("recent-orders-section").style.display = "none";
           document.getElementById("thanksMessage").style.display = "block";
           window.scrollTo({top: 0, behavior: 'smooth'});
         }).catch((error) => {
@@ -435,7 +680,6 @@
     const geocoder = new google.maps.Geocoder();
     const addressStr = form.pickup_location.value.trim() + ", " + form.city.value.trim();
 
-    // The fix: Set a timeout for the Geocoder. If it takes longer than 3 seconds, submit without coords.
     let geocodeFinished = false;
     const geocodeTimeout = setTimeout(() => {
         if (!geocodeFinished) {
@@ -444,54 +688,59 @@
         }
     }, 3000);
 
-    geocoder.geocode({ 'address': addressStr }, (results, status) => {
-        if (geocodeFinished) return;
+    let placeLoc = pickupAuto ? pickupAuto.getPlace() : null;
+    if(placeLoc && placeLoc.geometry) {
         geocodeFinished = true;
         clearTimeout(geocodeTimeout);
+        processCoordinates(placeLoc.geometry.location);
+    } else {
+        geocoder.geocode({ 'address': addressStr }, (results, status) => {
+            if (geocodeFinished) return;
+            geocodeFinished = true;
+            clearTimeout(geocodeTimeout);
+            
+            if (status === 'OK' && results[0]) {
+                processCoordinates(results[0].geometry.location);
+            } else {
+                finalizeSubmission();
+            }
+        });
+    }
 
-        let coords = {};
+    function processCoordinates(loc) {
+        let coords = { lat: loc.lat(), lng: loc.lng() };
         let autoAssign = 'Unassigned';
         
-        if (status === 'OK' && results[0]) {
-            const loc = results[0].geometry.location;
-            coords = {
-                lat: loc.lat(),
-                lng: loc.lng()
-            };
+        const now = new Date();
+        const currentMins = now.getHours() * 60 + now.getMinutes();
+        const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const currentDay = dayNames[now.getDay()];
 
-            const now = new Date();
-            const currentMins = now.getHours() * 60 + now.getMinutes();
-            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            const currentDay = dayNames[now.getDay()];
-
-            for (let d in driverZones) {
-                const zones = driverZones[d];
-                for (let zId in zones) {
-                    const z = zones[zId];
-                    if (z && z.paths) {
-                         if (z.days && !z.days.includes(currentDay)) continue;
-
-                         if (z.start && z.end) {
-                             const [sh, sm] = z.start.split(':').map(Number);
-                             const [eh, em] = z.end.split(':').map(Number);
-                             const startMins = sh * 60 + sm;
-                             const endMins = eh * 60 + em;
-                             if (currentMins < startMins || currentMins > endMins) continue;
-                         }
-                         
-                         let match = false;
-                         for(let i = 0; i < z.paths.length; i++) {
-                             const poly = new google.maps.Polygon({ paths: z.paths[i] });
-                             if (google.maps.geometry.poly.containsLocation(loc, poly)) { match = true; break; }
-                         }
-                         if (match) { autoAssign = d; break; }
-                    }
+        for (let d in driverZones) {
+            const zones = driverZones[d];
+            for (let zId in zones) {
+                const z = zones[zId];
+                if (z && z.paths) {
+                     if (z.days && !z.days.includes(currentDay)) continue;
+                     if (z.start && z.end) {
+                         const [sh, sm] = z.start.split(':').map(Number);
+                         const [eh, em] = z.end.split(':').map(Number);
+                         const startMins = sh * 60 + sm;
+                         const endMins = eh * 60 + em;
+                         if (currentMins < startMins || currentMins > endMins) continue;
+                     }
+                     let match = false;
+                     for(let i = 0; i < z.paths.length; i++) {
+                         const poly = new google.maps.Polygon({ paths: z.paths[i] });
+                         if (google.maps.geometry.poly.containsLocation(loc, poly)) { match = true; break; }
+                     }
+                     if (match) { autoAssign = d; break; }
                 }
-                if (autoAssign !== 'Unassigned') break;
             }
+            if (autoAssign !== 'Unassigned') break;
         }
         finalizeSubmission(coords, autoAssign);
-    });
+    }
   });
 
   let deferredPrompt;
