@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>E & C Courier Portal</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#cca300">
+<link rel="icon" type="image/png" href="icon-512.png">
+
+<style>
+  :root { 
+    --accent: #cca300;       
+    --bg: #222222; 
+    --card: #141414; 
+    --text: #e0e0e0; 
+    --input-bg: #1e1e1e;
+    --border: #333333;
+    --placeholder: #777777;
+    --success: #00b32d;
+  }
+
+  @keyframes fadeInPage {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes glow-pulse {
+    0% { box-shadow: 0 0 2px rgba(204, 163, 0, 0.1); border-color: var(--border); }
+    50% { box-shadow: 0 0 8px rgba(204, 163, 0, 0.3); border-color: var(--accent); }
+    100% { box-shadow: 0 0 2px rgba(204, 163, 0, 0.1); border-color: var(--border); }
+  }
+
+  body { 
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+    background-color: var(--bg); 
+    color: var(--text);
+    margin: 0; 
+    display: flex; 
+    justify-content: center; 
+    align-items: flex-start;
+    padding: 20px 15px; 
+    box-sizing: border-box; 
+    min-height: 100vh;
+  }
+
+  .container { 
+    background: var(--card); 
+    width: 100%; 
+    max-width: 600px; 
+    border-radius: 8px; 
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6); 
+    border: 1px solid var(--border);
+    animation: fadeInPage 0.5s ease-out;
+    overflow: hidden;
+    position: relative;
+    margin-top: 10px;
+  }
+
+  /* Header Styling */
+  .header-wrap { 
+    background: #000000;
+    border-bottom: 2px solid var(--accent);
+    padding: 25px 20px;
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 15px; 
+  }
+
+  .header-wrap img { 
+    height: 35px; 
+    width: auto; 
+    filter: drop-shadow(0 0 2px var(--accent));
+  }
+  
+  h1 { 
+    color: var(--text); 
+    margin: 0; 
+    font-size: 22px; 
+    font-weight: 800; 
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: linear-gradient(to right, var(--accent) 0%, #fff 50%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    background-size: 200% auto;
+    animation: text-shine 4s linear infinite;
+  }
+
+  @keyframes text-shine { to { background-position: 200% center; } }
+
+  form { padding: 25px; }
+
+  /* Section Dividers */
+  .section-title {
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 20px 0 10px 0;
+    display: flex;
+    align-items: center;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    margin-left: 10px;
+  }
+  .section-title:first-of-type { margin-top: 0; }
+  
+  /* Input Styling */
+  .input-group { margin-bottom: 12px; }
+  
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: #888;
+    margin-bottom: 5px;
+    margin-left: 2px;
+  }
+  
+  .required-mark { color: var(--accent); margin-left: 2px; }
+
+  input, textarea, select { 
+    width: 100%; 
+    padding: 15px 16px; 
+    background: var(--input-bg); 
+    border: 1px solid var(--border); 
+    color: var(--text); 
+    border-radius: 6px; 
+    font-size: 17px; 
+    box-sizing: border-box; 
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+
+  input:focus, textarea:focus {
+    border-color: var(--accent);
+    outline: none;
+    box-shadow: 0 0 8px rgba(204, 163, 0, 0.15);
+    background: #252525;
+  }
+
+  ::placeholder { color: var(--placeholder); font-size: 16px; }
+
+  /* Layout Utilities */
+  .flex-row { 
+    display: flex; 
+    gap: 12px; 
+  }
+  
+  @media (max-width: 500px) {
+    .flex-row { flex-direction: column; gap: 12px; }
+  }
+
+  /* Button Styling */
+  button[type="submit"] { 
+    width: 100%; 
+    margin-top: 25px;
+    padding: 20px;
+    background: #1c1c1c;
+    color: var(--text);
+    font-weight: 800;
+    border: 1px solid var(--border);
+    border-bottom: 3px solid var(--accent);
+    cursor: pointer;
+    border-radius: 6px;
+    text-transform: uppercase;
+    font-size: 18px;
+    letter-spacing: 1.5px;
+    transition: all 0.2s ease;
+  }
+
+  button[type="submit"]:hover {
+    background: #252525;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  
+  button[type="submit"]:active { transform: translateY(1px); }
+
+  /* Success Message */
+  #thanksMessage { 
+    display: none;
+    padding: 40px 30px; 
+    text-align: center;
+    animation: fadeInPage 0.4s ease;
+  }
+  
+  .success-icon {
+    font-size: 40px;
+    color: var(--success);
+    margin-bottom: 15px;
+    display: block;
+  }
+  
+  .success-btn {
+    background: var(--accent) !important;
+    color: #000 !important;
+    border: none !important;
+    font-weight: 900 !important;
+  }
+
+</style>
+</head>
+<body>
+
+<div id="auth-overlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; min-height: 100vh; overflow-y: auto; background: var(--bg); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; box-sizing: border-box;">
+  
+  <div style="max-width: 600px; width: 100%; text-align: center; margin-bottom: 30px;">
+    <img src="icon2.png" alt="E&C Logo" style="height: 60px; margin-bottom: 15px; filter: drop-shadow(0 0 5px var(--accent));" onerror="this.style.display='none'">
+    <h1 style="color: var(--accent); font-size: 26px; margin: 0 0 10px 0; text-transform: uppercase;">E&C Courier</h1>
+    <p style="color: #e0e0e0; font-size: 15px; margin-bottom: 15px; line-height: 1.5;">
+      Request and track local courier pickups and deliveries quickly and securely.
+    </p>
+    <p style="color: #aaa; font-size: 13px; margin-bottom: 20px; line-height: 1.5;">
+      <strong>Data Usage:</strong> We collect your email, phone, and address strictly to process dispatches and notify you about your requests.
+    </p>
+    <a href="https://app.eandccourier.ca/privacy" target="_blank" style="background: var(--accent); color: #000; padding: 10px 20px; border-radius: 5px; font-weight: bold; text-decoration: none; display: inline-block; font-size: 14px;">Privacy Policy & Terms</a>
+  </div>
+
+  <div class="container" style="padding: 30px; text-align: center; margin-top: 0; box-shadow: 0 10px 40px rgba(0,0,0,0.8);">
+    <h2 style="color: #fff; margin-top: 0; margin-bottom: 20px; font-weight: 800; text-transform: uppercase; font-size: 18px;">Account Login</h2>
+    
+    <div class="input-group" style="text-align: left; margin-bottom: 15px;">
+      <input type="email" id="auth-email" placeholder="Email Address" required>
+    </div>
+    <div class="input-group" style="text-align: left; margin-bottom: 25px;">
+      <input type="password" id="auth-password" placeholder="Password" required>
+    </div>
+    
+    <button type="button" onclick="customerLogin()" style="width: 100%; padding: 16px; background: var(--accent); color: #000; font-weight: 800; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; margin-bottom: 12px; font-size: 16px;">Login</button>
+    <button type="button" onclick="customerSignUp()" style="width: 100%; padding: 16px; background: #1c1c1c; color: var(--text); font-weight: 800; border: 1px solid var(--border); border-bottom: 3px solid var(--accent); border-radius: 6px; cursor: pointer; text-transform: uppercase; margin-bottom: 20px; font-size: 16px; transition: all 0.2s;">Create Account</button>
+    
+    <a href="#" onclick="forgotPassword(); return false;" style="color: var(--placeholder); font-size: 13px; text-decoration: underline;">Forgot Password?</a>
+  </div>
+</div>
+
+<div class="container" id="main-app-container" style="display: none;">
+  <div class="header-wrap" style="flex-direction: column;">
+    <button id="installAppBtn" style="display:none; background:var(--accent); color:#000; border:none; padding:10px 20px; font-weight:900; border-radius:6px; margin-bottom:15px; cursor:pointer; font-size:14px; text-transform:uppercase;">Install App</button>
+    <div style="display:flex; justify-content: space-between; width: 100%; align-items: center;">
+        <div style="display:flex; align-items:center; gap:15px;">
+            <img src="icon2.png" alt="E&C Logo" onerror="this.style.display='none'"> 
+            <h1>Request Pickup Now</h1>
+        </div>
+        <button type="button" onclick="firebase.auth().signOut()" style="background:transparent; border:1px solid var(--border); color:var(--text); padding:6px 12px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:700;">Logout</button>
+    </div>
+  </div>
+
+  <form id="pickupForm">
+    
+    <div class="section-title">Pickup Details</div>
+    
+    <div class="input-group">
+      <label>Business / Contact Name <span class="required-mark">*</span></label>
+      <input type="text" name="name" placeholder="Who are we picking up from?" required autocomplete="organization">
+    </div>
+
+    <div class="flex-row">
+      <div class="input-group" style="flex: 2;">
+        <label>Pickup Address <span class="required-mark">*</span></label>
+        <input type="text" name="pickup_location" placeholder="Street Address" required autocomplete="street-address">
+      </div>
+      <div class="input-group" style="flex: 1;">
+        <label>City <span class="required-mark">*</span></label>
+        <input type="text" name="city" placeholder="City" required autocomplete="address-level2">
+      </div>
+    </div>
+
+    <div class="flex-row">
+      <div class="input-group" style="flex: 1;">
+        <label>Email <span class="required-mark">*</span></label>
+        <input type="email" name="customer_email" placeholder="notifications@example.com" required autocomplete="email">
+      </div>
+      <div class="input-group" style="flex: 1;">
+        <label>Phone Number <span class="required-mark">*</span></label>
+        <input type="tel" name="customer_phone" placeholder="(204) 555-0123" required autocomplete="tel" oninput="formatPhone(this)">
+      </div>
+    </div>
+
+    <div class="section-title">Delivery Details</div>
+
+    <div class="input-group">
+      <label>Delivery Name <span class="required-mark">*</span></label>
+      <input type="text" name="delivery_name" placeholder="Business or Contact Name" required>
+    </div>
+
+    <div class="flex-row">
+      <div class="input-group" style="flex: 2;">
+        <label>Delivery Address <span class="required-mark">*</span></label>
+        <input type="text" name="destination" placeholder="Street Address" required>
+      </div>
+      <div class="input-group" style="flex: 1;">
+        <label>City <span class="required-mark">*</span></label>
+        <input type="text" name="drop_city" placeholder="City" required>
+      </div>
+    </div>
+
+    <div class="section-title">Cargo & Information</div>
+
+    <div class="input-group">
+      <label>Packages / Items / Dimensions <span class="required-mark">*</span></label>
+      <input type="text" name="package_details" placeholder="e.g. 2 Boxes (12x12x12), 1 Skid" required>
+    </div>
+
+    <div class="input-group">
+      <label>PO Number / Reference</label>
+      <input type="text" name="po_number" placeholder="Optional">
+    </div>
+
+    <div class="input-group">
+      <label>Driver Notes / Instructions</label>
+      <textarea name="other_info" rows="3" placeholder="Gate codes, specific door numbers, hours, etc."></textarea>
+    </div>
+
+    <button type="submit" id="submitBtn">Submit Request</button>
+  </form>
+
+  <div id="thanksMessage">
+    <span class="success-icon">✓</span>
+    <h2 style="color: #fff; margin: 0 0 10px 0; text-transform: uppercase; font-size: 18px;">Request Received</h2>
+    <p style="color: #aaa; margin-bottom: 25px; font-size: 14px; line-height: 1.5;">Our dispatch team has been notified and will review your request shortly.</p>
+    <button onclick="location.reload()" type="button" class="success-btn" style="width: 100%; padding: 15px; border-radius: 6px; cursor: pointer; text-transform: uppercase;">Submit Another</button>
+  </div>
+</div>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDltbEbiqlyQjyaGth0AzIkfLpOYr96YeQ&libraries=geometry,drawing"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+  firebase.initializeApp({
+    apiKey: "AIzaSyAKmgoXA4m3cRTmxJq4aUyva5SVvFbTNqg",
+    authDomain: "eandccourier-36fcc.firebaseapp.com",
+    databaseURL: "https://eandccourier-36fcc-default-rtdb.firebaseio.com",
+    projectId: "eandccourier-36fcc"
+  });
+
+  firebase.auth().onAuthStateChanged((user) => {
+    if (user) {
+      document.getElementById('auth-overlay').style.display = 'none';
+      document.getElementById('main-app-container').style.display = 'block';
+      if (document.querySelector('input[name="customer_email"]')) {
+        document.querySelector('input[name="customer_email"]').value = user.email;
+      }
+    } else {
+      document.getElementById('auth-overlay').style.display = 'flex';
+      document.getElementById('main-app-container').style.display = 'none';
+    }
+  });
+
+  function customerLogin() {
+    const e = document.getElementById('auth-email').value.trim();
+    const p = document.getElementById('auth-password').value.trim();
+    if(!e || !p) return alert("Please enter email and password.");
+    firebase.auth().signInWithEmailAndPassword(e, p).catch(err => alert("Login Error: " + err.message));
+  }
+
+  function customerSignUp() {
+    const e = document.getElementById('auth-email').value.trim();
+    const p = document.getElementById('auth-password').value.trim();
+    if(!e || !p) return alert("Please enter email and password to sign up.");
+    firebase.auth().createUserWithEmailAndPassword(e, p).then(() => {
+      alert("Account created successfully!");
+    }).catch(err => alert("Sign Up Error: " + err.message));
+  }
+
+  function forgotPassword() {
+    const e = document.getElementById('auth-email').value.trim();
+    if(!e) return alert("Please enter your email address first, then click Forgot Password.");
+    firebase.auth().sendPasswordResetEmail(e).then(() => {
+      alert("Password reset email sent. Please check your inbox.");
+    }).catch(err => alert("Error: " + err.message));
+  }
+
+  const db = firebase.database();
+  let driverZones = {};
+  db.ref("driver_zones").on("value", s => driverZones = s.val() || {});
+
+  const form = document.getElementById("pickupForm");
+  const submitBtn = document.getElementById("submitBtn");
+
+  function formatPhone(input) {
+    let x = input.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+    input.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+  }
+
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    submitBtn.innerText = "Transmitting...";
+    submitBtn.style.opacity = "0.7";
+    submitBtn.disabled = true;
+
+    const finalizeSubmission = (coords = {}, assignedDriver = 'Unassigned') => {
+        const jobData = {
+          name: form.name.value.trim(),
+          pickup_location: form.pickup_location.value.trim(),
+          pickup_city: form.city.value.trim(),
+          city: form.city.value.trim(),
+          customer_email: form.customer_email.value.trim(),
+          customer_phone: form.customer_phone.value.trim(),
+          delivery_name: form.delivery_name.value.trim(),
+          destination: form.destination.value.trim(),
+          delivery_city: form.drop_city.value.trim(),
+          package_details: form.package_details.value.trim(),
+          po_number: form.po_number.value.trim() || "",
+          other_info: form.other_info.value.trim() ? `[Client Request]: ${form.other_info.value.trim()}` : "[Client Request]",
+          status: "pending_pickup",
+          type: "pickup",
+          assigned_to: assignedDriver, 
+          timestamp: Date.now(),
+          created_by: firebase.auth().currentUser ? firebase.auth().currentUser.email : "Web Portal",
+          ...coords
+        };
+
+        db.ref("jobs").push(jobData).then(() => {
+          form.style.display = "none";
+          document.getElementById("thanksMessage").style.display = "block";
+          window.scrollTo({top: 0, behavior: 'smooth'});
+        }).catch((error) => {
+          submitBtn.innerText = "Submit Request";
+          submitBtn.disabled = false;
+          submitBtn.style.opacity = "1";
+        });
+    };
+
+    const geocoder = new google.maps.Geocoder();
+    const addressStr = form.pickup_location.value.trim() + ", " + form.city.value.trim();
+
+    // The fix: Set a timeout for the Geocoder. If it takes longer than 3 seconds, submit without coords.
+    let geocodeFinished = false;
+    const geocodeTimeout = setTimeout(() => {
+        if (!geocodeFinished) {
+            geocodeFinished = true;
+            finalizeSubmission();
+        }
+    }, 3000);
+
+    geocoder.geocode({ 'address': addressStr }, (results, status) => {
+        if (geocodeFinished) return;
+        geocodeFinished = true;
+        clearTimeout(geocodeTimeout);
+
+        let coords = {};
+        let autoAssign = 'Unassigned';
+        
+        if (status === 'OK' && results[0]) {
+            const loc = results[0].geometry.location;
+            coords = {
+                lat: loc.lat(),
+                lng: loc.lng()
+            };
+
+            const now = new Date();
+            const currentMins = now.getHours() * 60 + now.getMinutes();
+            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const currentDay = dayNames[now.getDay()];
+
+            for (let d in driverZones) {
+                const zones = driverZones[d];
+                for (let zId in zones) {
+                    const z = zones[zId];
+                    if (z && z.paths) {
+                         if (z.days && !z.days.includes(currentDay)) continue;
+
+                         if (z.start && z.end) {
+                             const [sh, sm] = z.start.split(':').map(Number);
+                             const [eh, em] = z.end.split(':').map(Number);
+                             const startMins = sh * 60 + sm;
+                             const endMins = eh * 60 + em;
+                             if (currentMins < startMins || currentMins > endMins) continue;
+                         }
+                         
+                         let match = false;
+                         for(let i = 0; i < z.paths.length; i++) {
+                             const poly = new google.maps.Polygon({ paths: z.paths[i] });
+                             if (google.maps.geometry.poly.containsLocation(loc, poly)) { match = true; break; }
+                         }
+                         if (match) { autoAssign = d; break; }
+                    }
+                }
+                if (autoAssign !== 'Unassigned') break;
+            }
+        }
+        finalizeSubmission(coords, autoAssign);
+    });
+  });
+
+  let deferredPrompt;
+  const installBtn = document.getElementById('installAppBtn');
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.style.display = 'block';
+  });
+  installBtn.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') installBtn.style.display = 'none';
+      deferredPrompt = null;
+    }
+  });
+</script>
+</body>
+</html>
