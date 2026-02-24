@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>E & C Courier Portal</title>
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#cca300">
+<meta name="theme-color" content="#ffd700">
 <link rel="icon" type="image/png" href="icon-512.png">
 
 <style>
   :root { 
-    --accent: #cca300;       
+    --accent: #ffd700;       
     --bg: #222222; 
     --card: #141414; 
     --text: #e0e0e0; 
@@ -20,15 +20,51 @@
     --success: #00b32d;
   }
 
+  body.light-mode {
+    --bg: #f0f2f5; 
+    --card: #ffffff;
+    --text: #000000;
+    --input-bg: #ffffff;
+    --border: #cccccc;
+    --placeholder: #555555;
+  }
+
+  body.light-mode h1 {
+    background: none;
+    color: #000000;
+    -webkit-text-fill-color: #000000;
+  }
+
+  body.light-mode .section-title {
+    color: #b39700; /* Darker yellow so it can be seen clearly on white */
+  }
+
+  body.light-mode button[type="submit"] {
+    background: #ffffff;
+    color: #000000;
+    border-color: #00b32d;
+  }
+
+  body.light-mode .header-wrap {
+    background: #ffffff;
+  }
+
+  body.light-mode #auth-overlay p, body.light-mode #auth-overlay h2 {
+    color: #000000 !important;
+  }
+
+  body.light-mode .modal-content { background: #ffffff; color: #000000; }
+  body.light-mode .btn-cancel { background: #eee; color: #333; border-color: #ccc; }
+
   @keyframes fadeInPage {
     from { opacity: 0; transform: translateY(15px); }
     to { opacity: 1; transform: translateY(0); }
   }
 
   @keyframes glow-pulse {
-    0% { box-shadow: 0 0 2px rgba(204, 163, 0, 0.1); border-color: var(--border); }
-    50% { box-shadow: 0 0 8px rgba(204, 163, 0, 0.3); border-color: var(--accent); }
-    100% { box-shadow: 0 0 2px rgba(204, 163, 0, 0.1); border-color: var(--border); }
+    0% { box-shadow: 0 0 2px rgba(255, 215, 0, 0.1); border-color: var(--border); }
+    50% { box-shadow: 0 0 8px rgba(255, 215, 0, 0.3); border-color: var(--accent); }
+    100% { box-shadow: 0 0 2px rgba(255, 215, 0, 0.1); border-color: var(--border); }
   }
 
   body { 
@@ -143,7 +179,7 @@
   input:focus, textarea:focus {
     border-color: var(--accent);
     outline: none;
-    box-shadow: 0 0 8px rgba(204, 163, 0, 0.15);
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.15);
     background: #252525;
   }
 
@@ -207,6 +243,12 @@
     font-weight: 900 !important;
   }
 
+  /* Modal Styling for Map Picker */
+  .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(2px); }
+  .modal-content { background: var(--card); margin: 5% auto; padding: 30px; width: 90%; max-width: 550px; border: 1px solid var(--accent); color: var(--text); border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); box-sizing: border-box; }
+  .btn-cancel { background:#222; color:#ccc; border:1px solid #333; padding:12px; font-weight:700; cursor:pointer; font-size:13px; border-radius:4px; }
+  .btn-save { background:var(--success); color:#000; border:none; padding:12px; font-weight:700; text-transform:uppercase; cursor:pointer; font-size:13px; border-radius:4px; }
+
 </style>
 </head>
 <body>
@@ -214,7 +256,7 @@
 <div id="auth-overlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; min-height: 100vh; overflow-y: auto; background: var(--bg); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; box-sizing: border-box;">
   
   <div style="max-width: 600px; width: 100%; text-align: center; margin-bottom: 30px;">
-    <img src="icon2.png" alt="E&C Logo" style="height: 60px; margin-bottom: 15px; filter: drop-shadow(0 0 5px var(--accent));" onerror="this.style.display='none'">
+    <img src="icon2.png" alt="E&C Logo" style="height: 60px; margin-bottom: 15px; filter: drop-shadow(0 0 5px var(--accent)); cursor: pointer;" onclick="toggleTheme()" onerror="this.style.display='none'">
     <h1 style="color: var(--accent); font-size: 26px; margin: 0 0 10px 0; text-transform: uppercase;">E&C Courier</h1>
     <p style="color: #e0e0e0; font-size: 15px; margin-bottom: 15px; line-height: 1.5;">
       Request and track local courier pickups and deliveries quickly and securely.
@@ -248,7 +290,7 @@
     <button id="installAppBtn" style="display:none; background:var(--accent); color:#000; border:none; padding:10px 20px; font-weight:900; border-radius:6px; margin-bottom:15px; cursor:pointer; font-size:14px; text-transform:uppercase;">Install App</button>
     <div style="display:flex; justify-content: space-between; width: 100%; align-items: center;">
         <div style="display:flex; align-items:center; gap:15px;">
-            <img src="icon2.png" alt="E&C Logo" onerror="this.style.display='none'"> 
+            <img src="icon2.png" alt="E&C Logo" style="cursor: pointer;" onclick="toggleTheme()" onerror="this.style.display='none'"> 
             <h1>Request Pickup Now</h1>
         </div>
     </div>
@@ -264,9 +306,10 @@
     </div>
 
     <div class="flex-row">
-      <div class="input-group" style="flex: 2;">
+      <div class="input-group" style="flex: 2; position: relative;">
         <label>Pickup Address <span class="required-mark">*</span></label>
-        <input type="text" name="pickup_location" placeholder="Street Address" required autocomplete="street-address">
+        <input type="text" id="f-pickup" name="pickup_location" placeholder="Street Address" required autocomplete="street-address" style="padding-right: 40px;">
+        <button style="position: absolute; right: 10px; bottom: 15px; background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="openLocationPicker('pickup')" type="button">📍</button>
       </div>
       <div class="input-group" style="flex: 1;">
         <label>City <span class="required-mark">*</span></label>
@@ -293,9 +336,10 @@
     </div>
 
     <div class="flex-row">
-      <div class="input-group" style="flex: 2;">
+      <div class="input-group" style="flex: 2; position: relative;">
         <label>Delivery Address <span class="required-mark">*</span></label>
-        <input type="text" name="destination" placeholder="Street Address" required>
+        <input type="text" id="f-drop-address" name="destination" placeholder="Street Address" required style="padding-right: 40px;">
+        <button style="position: absolute; right: 10px; bottom: 15px; background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="openLocationPicker('drop')" type="button">📍</button>
       </div>
       <div class="input-group" style="flex: 1;">
         <label>City <span class="required-mark">*</span></label>
@@ -332,12 +376,35 @@
   </div>
 </div>
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDltbEbiqlyQjyaGth0AzIkfLpOYr96YeQ&libraries=geometry,drawing"></script>
+<div id="location-picker-modal" class="modal" onclick="if(event.target===this) { this.style.display='none'; document.body.style.overflow=''; }">
+<div class="modal-content" style="padding: 0; max-width: 600px; height: 80vh; display: flex; flex-direction: column; overflow: hidden; position: relative;">
+<div style="padding: 15px; background: var(--card); border-bottom: 1px solid var(--accent); display: flex; justify-content: space-between; align-items: center;">
+<h2 style="color:var(--accent); margin:0; font-size:16px; font-weight:700; text-transform:uppercase;">Pick Location</h2>
+<button class="btn-cancel" style="padding: 8px 12px; font-size: 12px; margin:0;" onclick="document.getElementById('location-picker-modal').style.display='none'; document.body.style.overflow='';">CLOSE</button>
+</div>
+<div style="padding: 10px; background: var(--card); border-bottom: 1px solid var(--border);">
+<input type="text" id="loc-search-bar" placeholder="Search address or paste GPS (e.g. 49.852, -99.951)" style="margin:0; width:100%; padding: 10px;">
+</div>
+<div style="flex: 1; position: relative;">
+<div id="picker-map" style="width:100%; height:100%;"></div>
+<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%); pointer-events: none; font-size: 32px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); z-index: 10;">📍</div>
+</div>
+<button class="btn-save" style="width: 100%; border-radius: 0; padding: 16px; font-size: 16px; position: sticky; bottom: 0; z-index: 11;" onclick="setPickerLocation()">SET LOCATION</button>
+</div>
+</div>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDltbEbiqlyQjyaGth0AzIkfLpOYr96YeQ&libraries=geometry,drawing,places"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
+  if (localStorage.getItem('ec_theme') === 'light') document.body.classList.add('light-mode');
+  function toggleTheme() { 
+    document.body.classList.toggle('light-mode'); 
+    localStorage.setItem('ec_theme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); 
+  }
+
   firebase.initializeApp({
     apiKey: "AIzaSyAKmgoXA4m3cRTmxJq4aUyva5SVvFbTNqg",
     authDomain: "eandccourier-36fcc.firebaseapp.com",
@@ -517,6 +584,73 @@
       deferredPrompt = null;
     }
   });
+
+  let currentLocationTarget = null;
+  let pickerMap = null;
+  let pickerAutocomplete = null;
+
+  function openLocationPicker(target) {
+      currentLocationTarget = target;
+      document.getElementById('location-picker-modal').style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+
+      if (!pickerMap) {
+          pickerMap = new google.maps.Map(document.getElementById("picker-map"), {
+              center: { lat: 49.8425, lng: -99.9497 },
+              zoom: 14,
+              gestureHandling: "greedy",
+              disableDefaultUI: true,
+              zoomControl: true
+          });
+
+          const input = document.getElementById('loc-search-bar');
+          pickerAutocomplete = new google.maps.places.Autocomplete(input);
+          pickerAutocomplete.bindTo('bounds', pickerMap);
+
+          pickerAutocomplete.addListener('place_changed', () => {
+              const place = pickerAutocomplete.getPlace();
+              if (!place.geometry || !place.geometry.location) return;
+              pickerMap.setCenter(place.geometry.location);
+              pickerMap.setZoom(17);
+          });
+
+          input.addEventListener('input', function() {
+              const val = this.value.trim();
+              const gpsRegex = /^(-?\d+(\.\d+)?)[,\s]+(-?\d+(\.\d+)?)$/;
+              const match = val.match(gpsRegex);
+              if (match) {
+                  const lat = parseFloat(match[1]);
+                  const lng = parseFloat(match[3]);
+                  if (!isNaN(lat) && !isNaN(lng)) {
+                      pickerMap.setCenter({ lat: lat, lng: lng });
+                      pickerMap.setZoom(17);
+                  }
+              }
+          });
+      }
+      setTimeout(() => {
+          google.maps.event.trigger(pickerMap, 'resize');
+          pickerMap.setCenter({ lat: 49.8425, lng: -99.9497 });
+          document.getElementById('loc-search-bar').value = '';
+      }, 100);
+  }
+
+  function setPickerLocation() {
+      if (!pickerMap) return;
+      const center = pickerMap.getCenter();
+      const lat = center.lat().toFixed(5);
+      const lng = center.lng().toFixed(5);
+      const str = `${lat}, ${lng}`;
+
+      if (currentLocationTarget === 'pickup') {
+          document.getElementById('f-pickup').value = str;
+      } else if (currentLocationTarget === 'drop') {
+          document.getElementById('f-drop-address').value = str;
+      }
+
+      document.getElementById('location-picker-modal').style.display = 'none';
+      document.body.style.overflow = '';
+  }
 </script>
 </body>
 </html>
