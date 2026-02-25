@@ -56,6 +56,7 @@
   body.light-mode .modal-content { background: #ffffff; color: #000000; }
   body.light-mode .btn-cancel { background: #eee; color: #333; border-color: #ccc; }
   body.light-mode button[onclick="customerSignUp()"] { background: var(--accent) !important; color: #000 !important; border: none !important; }
+  body.light-mode input:focus, body.light-mode textarea:focus, body.light-mode select:focus { background: #ffffff !important; }
 
   @keyframes fadeInPage {
     from { opacity: 0; transform: translateY(15px); }
@@ -294,6 +295,7 @@
             <img src="icon2.png" alt="E&C Logo" style="cursor: pointer;" onclick="toggleTheme()" onerror="this.style.display='none'"> 
             <h1>Request Pickup Now</h1>
         </div>
+        <button id="devBtn" style="display:none; background:transparent; border:1px solid var(--accent); color:var(--accent); padding:5px 10px; font-size:10px; cursor:pointer; border-radius:4px; font-weight:bold;" onclick="const p=document.getElementById('dev-portal'); p.style.display=(p.style.display==='none'?'flex':'none');">DEV NOTES</button>
     </div>
   </div>
 
@@ -706,7 +708,7 @@
   // Show dev portal only for special emails (Optional security)
   firebase.auth().onAuthStateChanged(user => {
     if (user && (user.email === 'emmanuel@eandccourier.ca' || user.email === 'developer@eandccourier.ca')) {
-      document.getElementById('dev-portal').style.display = 'flex';
+      document.getElementById('devBtn').style.display = 'block';
     }
   });
 </script>
