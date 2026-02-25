@@ -55,6 +55,7 @@
 
   body.light-mode .modal-content { background: #ffffff; color: #000000; }
   body.light-mode .btn-cancel { background: #eee; color: #333; border-color: #ccc; }
+  body.light-mode button[onclick="customerSignUp()"] { background: var(--accent) !important; color: #000 !important; border: none !important; }
 
   @keyframes fadeInPage {
     from { opacity: 0; transform: translateY(15px); }
@@ -251,7 +252,7 @@
 
 </style>
 </head>
-<body>
+<body class="light-mode">
 
 <div id="auth-overlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; min-height: 100vh; overflow-y: auto; background: var(--bg); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; box-sizing: border-box;">
   
@@ -399,7 +400,8 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-  if (localStorage.getItem('ec_theme') === 'light') document.body.classList.add('light-mode');
+  if (localStorage.getItem('ec_theme') === 'dark') document.body.classList.remove('light-mode');
+  else document.body.classList.add('light-mode');
   function toggleTheme() { 
     document.body.classList.toggle('light-mode'); 
     localStorage.setItem('ec_theme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); 
@@ -528,172 +530,138 @@
         }
     }, 3000);
 
-    geocoder.geocode({ 'address': addressStr }, (results, status) => {
-        if (geocodeFinished) return;
-        geocodeFinished = true;
-        clearTimeout(geocodeTimeout);
+    geocoder.geocode({ address: addressStr }, (results, status) => {
+      if (geocodeFinished) return;
+      geocodeFinished = true;
+      clearTimeout(geocodeTimeout);
 
-        let coords = {};
-        let autoAssign = 'Unassigned';
+      if (status === "OK" && results[0]) {
+        const loc = results[0].geometry.location;
+        const coords = { lat: loc.lat(), lng: loc.lng() };
         
-        if (status === 'OK' && results[0]) {
-            const loc = results[0].geometry.location;
-            coords = {
-                lat: loc.lat(),
-                lng: loc.lng()
-            };
-
-            const now = new Date();
-            const currentMins = now.getHours() * 60 + now.getMinutes();
-            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            const currentDay = dayNames[now.getDay()];
-
-            for (let d in driverZones) {
-                const zones = driverZones[d];
-                for (let zId in zones) {
-                    const z = zones[zId];
-                    if (z && z.paths) {
-                         if (z.days && !z.days.includes(currentDay)) continue;
-
-                         if (z.start && z.end) {
-                             const [sh, sm] = z.start.split(':').map(Number);
-                             const [eh, em] = z.end.split(':').map(Number);
-                             const startMins = sh * 60 + sm;
-                             const endMins = eh * 60 + em;
-                             if (currentMins < startMins || currentMins > endMins) continue;
-                         }
-                         
-                         let match = false;
-                         for(let i = 0; i < z.paths.length; i++) {
-                             const poly = new google.maps.Polygon({ paths: z.paths[i] });
-                             if (google.maps.geometry.poly.containsLocation(loc, poly)) { match = true; break; }
-                         }
-                         if (match) { autoAssign = d; break; }
-                    }
-                }
-                if (autoAssign !== 'Unassigned') break;
+        let foundDriver = 'Unassigned';
+        for (const [dEmail, zone] of Object.entries(driverZones)) {
+          if (zone.polygon) {
+            const poly = new google.maps.Polygon({ paths: zone.polygon });
+            if (google.maps.geometry.poly.containsLocation(loc, poly)) {
+              foundDriver = dEmail;
+              break;
             }
+          }
         }
-        finalizeSubmission(coords, autoAssign);
+        finalizeSubmission(coords, foundDriver);
+      } else {
+        finalizeSubmission();
+      }
     });
   });
 
+  // PWAs & Install logic
   let deferredPrompt;
-  const installBtn = document.getElementById('installAppBtn');
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    installBtn.style.display = 'block';
+    document.getElementById('installAppBtn').style.display = 'block';
   });
-  installBtn.addEventListener('click', async () => {
+
+  document.getElementById('installAppBtn').addEventListener('click', async () => {
     if (deferredPrompt) {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') installBtn.style.display = 'none';
+      if (outcome === 'accepted') document.getElementById('installAppBtn').style.display = 'none';
       deferredPrompt = null;
     }
   });
 
-  let currentLocationTarget = null;
-  let pickerMap = null;
-  let pickerAutocomplete = null;
-
+  // Location Picker logic
+  let pickerMap, pickerMarker, currentPickerTarget = '';
   function openLocationPicker(target) {
-      currentLocationTarget = target;
-      document.getElementById('location-picker-modal').style.display = 'flex';
-      document.body.style.overflow = 'hidden';
+    currentPickerTarget = target;
+    const modal = document.getElementById('location-picker-modal');
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
 
-      if (!pickerMap) {
-          pickerMap = new google.maps.Map(document.getElementById("picker-map"), {
-              center: { lat: 49.8425, lng: -99.9497 },
-              zoom: 14,
-              gestureHandling: "greedy",
-              disableDefaultUI: true,
-              zoomControl: true
-          });
+    if (!pickerMap) {
+      pickerMap = new google.maps.Map(document.getElementById('picker-map'), {
+        center: { lat: 49.8951, lng: -97.1384 },
+        zoom: 12,
+        disableDefaultUI: true,
+        zoomControl: true,
+        styles: [
+          { "featureType": "all", "elementType": "labels.text.fill", "stylers": [{"color": "#ffffff"}] },
+          { "featureType": "all", "elementType": "labels.text.stroke", "stylers": [{"color": "#000000"}, {"lightness": 13}] },
+          { "featureType": "administrative", "elementType": "geometry.fill", "stylers": [{"color": "#000000"}, {"lightness": 20}] },
+          { "featureType": "landscape", "elementType": "geometry", "stylers": [{"color": "#000000"}, {"lightness": 20}] },
+          { "featureType": "poi", "elementType": "geometry", "stylers": [{"color": "#000000"}, {"lightness": 21}] },
+          { "featureType": "road.highway", "elementType": "geometry.fill", "stylers": [{"color": "#000000"}, {"lightness": 17}] },
+          { "featureType": "road.highway", "elementType": "geometry.stroke", "stylers": [{"color": "#000000"}, {"lightness": 29}, {"weight": 0.2}] },
+          { "featureType": "road.arterial", "elementType": "geometry", "stylers": [{"color": "#000000"}, {"lightness": 18}] },
+          { "featureType": "road.local", "elementType": "geometry", "stylers": [{"color": "#000000"}, {"lightness": 16}] },
+          { "featureType": "transit", "elementType": "geometry", "stylers": [{"color": "#000000"}, {"lightness": 19}] },
+          { "featureType": "water", "elementType": "geometry", "stylers": [{"color": "#000000"}, {"lightness": 17}] }
+        ]
+      });
 
-          const input = document.getElementById('loc-search-bar');
-          pickerAutocomplete = new google.maps.places.Autocomplete(input);
-          pickerAutocomplete.bindTo('bounds', pickerMap);
-
-          pickerAutocomplete.addListener('place_changed', () => {
-              const place = pickerAutocomplete.getPlace();
-              if (!place.geometry || !place.geometry.location) return;
-              pickerMap.setCenter(place.geometry.location);
-              pickerMap.setZoom(17);
-          });
-
-          input.addEventListener('input', function() {
-              const val = this.value.trim();
-              const gpsRegex = /^(-?\d+(\.\d+)?)[,\s]+(-?\d+(\.\d+)?)$/;
-              const match = val.match(gpsRegex);
-              if (match) {
-                  const lat = parseFloat(match[1]);
-                  const lng = parseFloat(match[3]);
-                  if (!isNaN(lat) && !isNaN(lng)) {
-                      pickerMap.setCenter({ lat: lat, lng: lng });
-                      pickerMap.setZoom(17);
-                  }
+      const searchInput = document.getElementById('loc-search-bar');
+      const autocomplete = new google.maps.places.Autocomplete(searchInput);
+      autocomplete.bindTo('bounds', pickerMap);
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        if (place.geometry) {
+          pickerMap.setCenter(place.geometry.location);
+          pickerMap.setZoom(17);
+        }
+      });
+      
+      searchInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+              const val = searchInput.value;
+              const gps = val.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);
+              if (gps) {
+                  const latLng = { lat: parseFloat(gps[1]), lng: parseFloat(gps[2]) };
+                  pickerMap.setCenter(latLng);
+                  pickerMap.setZoom(17);
               }
-          });
-      }
-      setTimeout(() => {
-          google.maps.event.trigger(pickerMap, 'resize');
-          pickerMap.setCenter({ lat: 49.8425, lng: -99.9497 });
-          document.getElementById('loc-search-bar').value = '';
-      }, 100);
+          }
+      });
+    }
   }
 
   function setPickerLocation() {
-      if (!pickerMap) return;
-      const center = pickerMap.getCenter();
-      const lat = center.lat().toFixed(5);
-      const lng = center.lng().toFixed(5);
-      const str = `${lat}, ${lng}`;
-
-      if (currentLocationTarget === 'pickup') {
-          document.getElementById('f-pickup').value = str;
-      } else if (currentLocationTarget === 'drop') {
-          document.getElementById('f-drop-address').value = str;
+    const center = pickerMap.getCenter();
+    const geocoder = new google.maps.Geocoder();
+    geocoder.geocode({ location: center }, (results, status) => {
+      if (status === 'OK' && results[0]) {
+        const addr = results[0].formatted_address;
+        if (currentPickerTarget === 'pickup') {
+          document.getElementById('f-pickup').value = addr;
+        } else {
+          document.getElementById('f-drop-address').value = addr;
+        }
       }
-
       document.getElementById('location-picker-modal').style.display = 'none';
       document.body.style.overflow = '';
+    });
   }
 </script>
-  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
-<style>
-  #dev-btn { position: fixed; bottom: 20px; left: 20px; z-index: 9999; background: #ffd700; color: #000; border: none; padding: 12px 18px; border-radius: 6px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); font-size: 12px; text-transform: uppercase; }
-  #dev-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 10000; align-items: center; justify-content: center; }
-  #dev-box { background: #1a1a1a; width: 95%; max-width: 600px; height: 80vh; border-radius: 8px; border: 1px solid #ffd700; display: flex; flex-direction: column; padding: 15px; box-sizing: border-box; font-family: sans-serif; }
-  #dev-list { flex: 1; overflow-y: auto; background: #111; padding: 15px; margin-bottom: 10px; border-radius: 4px; border: 1px solid #333; color: #fff; font-size: 14px; }
-  .dev-item { border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 10px; }
-  .dev-hdr { font-size: 11px; color: #ffd700; margin-bottom: 5px; font-weight: bold; text-transform: uppercase; }
-  #dev-editor { background: #fff; color: #000; height: 120px; }
-  .dev-row { display: flex; gap: 10px; margin-top: 10px; }
-  .dev-action { flex: 1; padding: 12px; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; text-transform: uppercase; font-size: 12px; }
-  .ql-toolbar { background: #eee; }
-</style>
 
-<button id="dev-btn" onclick="document.getElementById('dev-modal').style.display='flex'">Dev Notes</button>
-
-<div id="dev-modal">
-  <div id="dev-box">
-    <h3 style="margin:0 0 10px 0; color:#ffd700; text-transform:uppercase;">Developer Notes</h3>
-    <div id="dev-list"></div>
-    <div id="dev-editor"></div>
-    <div class="dev-row">
-      <button class="dev-action" style="background:#333; color:#fff;" onclick="document.getElementById('dev-modal').style.display='none'">Close</button>
-      <button class="dev-action" style="background:#00b32d; color:#000;" onclick="saveDevNote()">Save Note</button>
-    </div>
-  </div>
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<div id="dev-portal" style="background:#111; color:#fff; padding:20px; border-top:5px solid var(--accent); display:none; flex-direction:column; gap:15px;">
+  <h3 style="margin:0; text-transform:uppercase; font-size:14px; letter-spacing:1px; color:var(--accent);">Developer Command Center</h3>
+  <div id="dev-list" style="max-height: 200px; overflow-y: auto; background:#000; padding:10px; border:1px solid #333; font-size:12px; font-family:monospace;"></div>
+  <div id="dev-editor" style="height: 100px; background:#fff; color:#000;"></div>
+  <button onclick="saveDevNote()" style="padding:10px; background:var(--accent); color:#000; border:none; font-weight:800; cursor:pointer;">POST UPDATE</button>
 </div>
+
+<style>
+  .dev-item { border-bottom:1px solid #222; padding:8px 0; }
+  .dev-hdr { color:var(--accent); font-weight:800; margin-bottom:4px; font-size:10px; }
+</style>
 
 <script>
   let devQuill;
-  
-  // Wait for the app's main Firebase script to load first
+  // Wait a bit for the app's main Firebase script to load first
   setTimeout(() => {
     devQuill = new Quill('#dev-editor', {
       theme: 'snow',
@@ -729,12 +697,19 @@
     firebase.database().ref('developer').push({
       text: devQuill.root.innerHTML,
       user: user,
-      date: dateStr,
-      timestamp: firebase.database.ServerValue.TIMESTAMP
+      date: dateStr
     });
-
-    devQuill.setText(''); // Clear typing area
+    
+    devQuill.setText(''); // Clear editor
   }
+
+  // Show dev portal only for special emails (Optional security)
+  firebase.auth().onAuthStateChanged(user => {
+    if (user && (user.email === 'emmanuel@eandccourier.ca' || user.email === 'developer@eandccourier.ca')) {
+      document.getElementById('dev-portal').style.display = 'flex';
+    }
+  });
 </script>
+
 </body>
 </html>
