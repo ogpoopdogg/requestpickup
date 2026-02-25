@@ -647,71 +647,97 @@
   }
 </script>
 
-<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+
 <div id="dev-portal" style="background:#111; color:#fff; padding:20px; border-top:5px solid var(--accent); display:none; flex-direction:column; gap:15px;">
   <h3 style="margin:0; text-transform:uppercase; font-size:14px; letter-spacing:1px; color:var(--accent);">Developer Command Center</h3>
-  <div id="dev-list" style="max-height: 200px; overflow-y: auto; background:#000; padding:10px; border:1px solid #333; font-size:12px; font-family:monospace;"></div>
+  <div id="dev-list" style="max-height: 200px; overflow-y: auto; background:#000; padding:10px; border:1px solid #333; font-size:12px; font-family:monospace;">
+    <p style="color:#666;">Authenticating...</p>
+  </div>
   <div id="dev-editor" style="height: 100px; background:#fff; color:#000;"></div>
   <button onclick="saveDevNote()" style="padding:10px; background:var(--accent); color:#000; border:none; font-weight:800; cursor:pointer;">POST UPDATE</button>
 </div>
 
 <style>
+  /* Use a fallback if --accent variable isn't defined in your main CSS */
+  :root { --accent: #ffd700; } 
   .dev-item { border-bottom:1px solid #222; padding:8px 0; }
   .dev-hdr { color:var(--accent); font-weight:800; margin-bottom:4px; font-size:10px; }
+  .ql-toolbar { background: #eee; border: none !important; }
+  .ql-container { border: none !important; }
 </style>
 
 <script>
   let devQuill;
-  // Wait a bit for the app's main Firebase script to load first
-  setTimeout(() => {
-    devQuill = new Quill('#dev-editor', {
-      theme: 'snow',
-      modules: { toolbar: [ ['bold', 'italic', 'underline'], [{ 'list': 'ordered'}, { 'list': 'bullet' }], [{ 'align': [] }] ] }
-    });
 
-    // Load notes from Firebase
-    firebase.database().ref('developer').on('value', snap => {
-      const list = document.getElementById('dev-list');
-      list.innerHTML = '';
-      const notes = snap.val() || {};
-      Object.values(notes).forEach(note => {
-        list.innerHTML += `<div class="dev-item"><div class="dev-hdr">${note.user} • ${note.date}</div><div>${note.text}</div></div>`;
-      });
-      list.scrollTop = list.scrollHeight; // Auto-scroll to bottom
-    });
-  }, 1000); 
-
-  function saveDevNote() {
-    if (devQuill.getText().trim() === "") return;
-    
-    // Get user or fallback to Unknown
-    let user = "Unknown User";
-    if (firebase.auth().currentUser) {
-      user = firebase.auth().currentUser.email.split('@')[0];
+  // 1. Initialize Quill immediately so it's ready when the portal opens
+  devQuill = new Quill('#dev-editor', {
+    theme: 'snow',
+    modules: { 
+      toolbar: [ 
+        ['bold', 'italic', 'underline'], 
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }], 
+        [{ 'align': [] }] 
+      ] 
     }
+  });
+
+  // 2. Reactive Auth & Data Listener
+  firebase.auth().onAuthStateChanged(user => {
+    const portal = document.getElementById('dev-portal');
+    const list = document.getElementById('dev-list');
+
+    // Define authorized emails
+    const admins = ['emmanuel@eandccourier.ca', 'developer@eandccourier.ca'];
+
+    if (user && admins.includes(user.email)) {
+      // Reveal the portal for admins
+      portal.style.display = 'flex';
+
+      // Start real-time database listener
+      firebase.database().ref('developer').on('value', snap => {
+        list.innerHTML = '';
+        const notes = snap.val() || {};
+        
+        Object.values(notes).forEach(note => {
+          list.innerHTML += `
+            <div class="dev-item">
+              <div class="dev-hdr">${note.user} • ${note.date}</div>
+              <div style="color:#eee;">${note.text}</div>
+            </div>`;
+        });
+        list.scrollTop = list.scrollHeight; 
+      });
+
+    } else {
+      // Hide portal if not authorized or logged out
+      portal.style.display = 'none';
+      list.innerHTML = '';
+    }
+  });
+
+  // 3. Save Function
+  function saveDevNote() {
+    const currentUser = firebase.auth().currentUser;
+    if (devQuill.getText().trim() === "" || !currentUser) return;
     
-    // Get formatted date and time
+    const user = currentUser.email.split('@')[0];
     const now = new Date();
     const dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
-    // Save to database
     firebase.database().ref('developer').push({
       text: devQuill.root.innerHTML,
       user: user,
-      date: dateStr
+      date: dateStr,
+      timestamp: firebase.database.ServerValue.TIMESTAMP
+    }).then(() => {
+      devQuill.setText(''); // Reset editor
+    }).catch(err => {
+      console.error("Command Center Error:", err);
+      alert("Post failed. Check database permissions.");
     });
-    
-    devQuill.setText(''); // Clear editor
   }
-
-  // Show dev portal only for special emails (Optional security)
-  firebase.auth().onAuthStateChanged(user => {
-    if (user && (user.email === 'emmanuel@eandccourier.ca' || user.email === 'developer@eandccourier.ca')) {
-      document.getElementById('devBtn').style.display = 'block';
-    }
-  });
 </script>
-
 </body>
 </html>
