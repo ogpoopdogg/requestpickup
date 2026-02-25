@@ -295,7 +295,7 @@
             <img src="icon2.png" alt="E&C Logo" style="cursor: pointer;" onclick="toggleTheme()" onerror="this.style.display='none'"> 
             <h1>Request Pickup Now</h1>
         </div>
-        <button id="devBtn" style="display:none; background:transparent; border:1px solid var(--accent); color:var(--accent); padding:5px 10px; font-size:10px; cursor:pointer; border-radius:4px; font-weight:bold;" onclick="const p=document.getElementById('dev-portal'); p.style.display=(p.style.display==='none'?'flex':'none'); if(p.style.display==='flex' && !devQuill) { devQuill = new Quill('#dev-editor', { theme: 'snow', modules: { toolbar: [ ['bold', 'italic', 'underline'], [{ 'list': 'ordered'}, { 'list': 'bullet' }], [{ 'align': [] }] ] } }); }">DEV NOTES</button>
+        
     </div>
   </div>
 
@@ -435,30 +435,24 @@
       if (document.querySelector('input[name="customer_email"]')) {
         document.querySelector('input[name="customer_email"]').value = user.email;
       }
-
-      const admins = ['emmanuel@eandccourier.ca', 'developer@eandccourier.ca'];
-      if (admins.includes(user.email)) {
-        document.getElementById('devBtn').style.display = 'block';
-        firebase.database().ref('developer').on('value', snap => {
-          list.innerHTML = '';
-          const notes = snap.val() || {};
-          
-          Object.values(notes).forEach(note => {
-            list.innerHTML += `
-              <div class="dev-item">
-                <div class="dev-hdr">${note.user} • ${note.date}</div>
-                <div style="color:#eee;">${note.text}</div>
-              </div>`;
-          });
-          list.scrollTop = list.scrollHeight; 
-        });
-      }
     } else {
       document.getElementById('auth-overlay').style.display = 'flex';
       document.getElementById('main-app-container').style.display = 'none';
-      portal.style.display = 'none';
-      list.innerHTML = '';
     }
+
+    firebase.database().ref('developer').on('value', snap => {
+      list.innerHTML = '';
+      const notes = snap.val() || {};
+      
+      Object.values(notes).forEach(note => {
+        list.innerHTML += `
+          <div class="dev-item">
+            <div class="dev-hdr">${note.user} • ${note.date}</div>
+            <div style="color:#eee;">${note.text}</div>
+          </div>`;
+      });
+      list.scrollTop = list.scrollHeight; 
+    });
   });
 
   function customerLogin() {
@@ -673,7 +667,9 @@
 <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
 
-<div id="dev-portal" style="background:#111; color:#fff; padding:20px; border-top:5px solid var(--accent); display:none; flex-direction:column; gap:15px;">
+<button id="devBtn" style="display:block; position:fixed; bottom:20px; right:20px; z-index:10001; background:#111; border:1px solid var(--accent); color:var(--accent); padding:10px 15px; font-size:12px; cursor:pointer; border-radius:4px; font-weight:bold; box-shadow: 0 4px 10px rgba(0,0,0,0.5);" onclick="const p=document.getElementById('dev-portal'); p.style.display=(p.style.display==='none'?'flex':'none'); if(p.style.display==='flex' && !devQuill) { devQuill = new Quill('#dev-editor', { theme: 'snow', modules: { toolbar: [ ['bold', 'italic', 'underline'], [{ 'list': 'ordered'}, { 'list': 'bullet' }], [{ 'align': [] }] ] } }); }">DEV NOTES</button>
+
+<div id="dev-portal" style="background:#111; color:#fff; padding:20px; border-top:5px solid var(--accent); display:none; flex-direction:column; gap:15px; position:fixed; bottom:0; left:0; width:100%; box-sizing:border-box; z-index:10000; max-height:80vh; overflow-y:auto;">
   <h3 style="margin:0; text-transform:uppercase; font-size:14px; letter-spacing:1px; color:var(--accent);">Developer Command Center</h3>
   <div id="dev-list" style="max-height: 200px; overflow-y: auto; background:#000; padding:10px; border:1px solid #333; font-size:12px; font-family:monospace;">
     <p style="color:#666;">Authenticating...</p>
@@ -697,9 +693,9 @@
   // 3. Save Function
   function saveDevNote() {
     const currentUser = firebase.auth().currentUser;
-    if (devQuill.getText().trim() === "" || !currentUser) return;
+    if (devQuill.getText().trim() === "") return;
     
-    const user = currentUser.email.split('@')[0];
+    const user = currentUser ? currentUser.email.split('@')[0] : "Anonymous";
     const now = new Date();
     const dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
