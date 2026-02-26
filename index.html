@@ -610,10 +610,10 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
             const s = job.status || 'pending_pickup';
             
             let s1='', s2='', s3='', s4='';
-            if(s === 'pending_pickup') s1 = 'active';
-            else if(s === 'assigned') { s1 = 'completed'; s2 = 'active'; }
-            else if(s === 'picked_up' || s === 'en_route') { s1 = 'completed'; s2 = 'completed'; s3 = 'active'; }
-            else if(s === 'completed' || s === 'delivered') { s1 = 'completed'; s2 = 'completed'; s3 = 'completed'; s4 = 'completed'; }
+            if(s === 'completed') { s1 = 'completed'; s2 = 'completed'; s3 = 'completed'; s4 = 'completed'; }
+            else if(s === 'in_transit' || s === 'pending_delivery' || s === 'at_depot') { s1 = 'completed'; s2 = 'completed'; s3 = 'active'; }
+            else if(s === 'pending_pickup' && job.assigned_to && job.assigned_to !== 'Unassigned') { s1 = 'completed'; s2 = 'active'; }
+            else { s1 = 'active'; }
             
             list.innerHTML += `
                 <div class="order-card">
