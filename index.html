@@ -477,9 +477,10 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
         document.querySelector('input[name="customer_email"]').value = user.email;
       }
       
-      firebase.database().ref("user_orders/" + user.uid).once('value', snap => {
+      firebase.database().ref("jobs").orderByChild("created_by").equalTo(user.email).limitToLast(1).on('value', snap => {
         if (snap.exists()) {
-            lastKnownOrder = snap.val();
+            const data = snap.val();
+            lastKnownOrder = Object.values(data)[0];
             document.getElementById('autofillBtn').style.display = 'block';
         }
       });
@@ -674,10 +675,6 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
         };
 
         db.ref("jobs").push(jobData).then(() => {
-          if (firebase.auth().currentUser) {
-              const uid = firebase.auth().currentUser.uid;
-              db.ref("user_orders/" + uid).set(jobData);
-          }
           localStorage.setItem('lastOrderTime', Date.now());
           
           form.style.display = "none";
