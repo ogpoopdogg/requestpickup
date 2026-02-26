@@ -409,16 +409,34 @@
     localStorage.setItem('ec_theme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); 
   }
 
-  firebase.initializeApp({
-    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL),
+  // 1. Initialize Firebase first
+firebase.initializeApp({
   apiKey: "AIzaSyAKmgoXA4m3cRTmxJq4aUyva5SVvFbTNqg",
-    authDomain: "eandccourier-36fcc.firebaseapp.com",
-    databaseURL: "https://eandccourier-36fcc-default-rtdb.firebaseio.com",
-    projectId: "eandccourier-36fcc",
-    messagingSenderId: "1067680083511", 
-    appId: "1:1067680083511:android:22d1eb3757302492bd19b2" 
-  });
+  authDomain: "eandccourier-36fcc.firebaseapp.com",
+  databaseURL: "https://eandccourier-36fcc-default-rtdb.firebaseio.com",
+  projectId: "eandccourier-36fcc",
+  messagingSenderId: "1067680083511",
+  appId: "1:1067680083511:android:22d1eb3757302492bd19b2"
+});
 
+// 2. Set persistence and handle the login state
+firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+  .then(() => {
+    return firebase.auth().onAuthStateChanged((user) => {
+      const loginOverlay = document.getElementById('login-overlay');
+      if (user) {
+        // Hide login if user is found
+        if (loginOverlay) loginOverlay.style.display = 'none';
+        console.log("Logged in as:", user.email);
+      } else {
+        // Show login if no user is found
+        if (loginOverlay) loginOverlay.style.display = 'flex';
+      }
+    });
+  })
+  .catch((error) => {
+    console.error("Auth Error:", error);
+  });
   firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
 
   firebase.auth().onAuthStateChanged((user) => {
