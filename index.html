@@ -907,7 +907,7 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
     firebase.database().ref('developer').push({
       text: devQuill.root.innerHTML,
       user: user,
-      app: "[APP NAME]",
+      app: "Customer Portal",
       date: dateStr,
       timestamp: firebase.database.ServerValue.TIMESTAMP
     }).then(() => {
