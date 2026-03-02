@@ -257,11 +257,11 @@
   .dashboard-section { margin-bottom: 10px; font-size: 13px; color: var(--text); }
   .dashboard-section strong { color: #888; text-transform: uppercase; font-size: 11px; display: block; margin-bottom: 3px; }
   .loc-flex { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; }
-  .dashboard-meta { display: flex; flex-wrap: wrap; gap: 15px; background: #111; padding: 10px; border-radius: 4px; margin-top: 10px; border: 1px solid #222; }
+  .dashboard-meta { display: flex; flex-wrap: wrap; gap: 10px; background: #111; padding: 5px 10px; border-radius: 4px; margin-top: 5px; border: 1px solid #222; }
   .meta-item { flex: 1; min-width: 100px; }
   
   /* Ocean Blue Timeline */
-  .ocean-timeline { display: flex; position: relative; margin-top: 35px; align-items: center; justify-content: space-between; padding: 0 10px; }
+  .ocean-timeline { display: flex; position: relative; margin-top: 35px; align-items: center; justify-content: space-between; padding: 0 10px; margin-bottom: 20px; }
   .ocean-track { position: absolute; top: 50%; left: 10px; right: 10px; height: 6px; background: linear-gradient(to bottom, #444, #222); z-index: 0; transform: translateY(-50%); border-radius: 3px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.8); }
   .ocean-fill { position: absolute; top: 0; left: 0; height: 100%; background: linear-gradient(to bottom, #00d2ff, #0077b6); border-radius: 3px; transition: width 0.6s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 0 8px rgba(0, 119, 182, 0.6); }
   .ocean-node { position: relative; z-index: 1; width: 20px; height: 20px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #888, #444); border: 2px solid #222; box-shadow: 0 2px 4px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; transition: all 0.4s ease; }
@@ -340,7 +340,7 @@
       <div class="input-group" style="flex: 2; position: relative;">
         <label>Pickup Address <span class="required-mark">*</span></label>
         <input type="text" id="f-pickup" name="pickup_location" placeholder="Street Address" required autocomplete="street-address" style="padding-right: 40px;">
-        <button style="position: absolute; right: 10px; bottom: 15px; background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="openLocationPicker('pickup')" type="button">📍</button>
+        <button style="position: absolute; right: 10px; bottom: 15px; background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="openLocationPicker('pickup')" type="button">桃</button>
       </div>
       <div class="input-group" style="display: none;">
         <input type="hidden" name="city" required>
@@ -369,7 +369,7 @@
       <div class="input-group" style="flex: 2; position: relative;">
         <label>Delivery Address <span class="required-mark">*</span></label>
         <input type="text" id="f-drop-address" name="destination" placeholder="Street Address" required style="padding-right: 40px;">
-        <button style="position: absolute; right: 10px; bottom: 15px; background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="openLocationPicker('drop')" type="button">📍</button>
+        <button style="position: absolute; right: 10px; bottom: 15px; background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="openLocationPicker('drop')" type="button">桃</button>
       </div>
       <div class="input-group" style="display: none;">
         <input type="hidden" name="drop_city" required>
@@ -409,7 +409,7 @@
   </form>
 
   <div id="thanksMessage">
-    <span class="success-icon">✓</span>
+    <span class="success-icon">笨/span>
     <h2 style="color: #fff; margin: 0 0 10px 0; text-transform: uppercase; font-size: 18px;">Request Received</h2>
     <p style="color: #aaa; margin-bottom: 25px; font-size: 14px; line-height: 1.5;">Our dispatch team has been notified and will review your request shortly.</p>
     <button onclick="location.reload()" type="button" class="success-btn" style="width: 100%; padding: 15px; border-radius: 6px; cursor: pointer; text-transform: uppercase;">Submit Another</button>
@@ -436,7 +436,7 @@
 </div>
 <div style="flex: 1; position: relative;">
 <div id="picker-map" style="width:100%; height:100%;"></div>
-<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%); pointer-events: none; font-size: 32px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); z-index: 10;">📍</div>
+<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%); pointer-events: none; font-size: 32px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); z-index: 10;">桃</div>
 </div>
 <button class="btn-save" style="width: 100%; border-radius: 0; padding: 16px; font-size: 16px; position: sticky; bottom: 0; z-index: 11;" onclick="setPickerLocation()">SET LOCATION</button>
 </div>
@@ -687,7 +687,7 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
         if (document.getElementById('orders-history-container').style.display !== 'block') return;
         
         const now = new Date();
-        header.innerText = "Status Live as of " + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+        header.innerText = "Status Live as of " + now.toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit', second:'2-digit', hour12: true });
         
         list.innerHTML = '';
         if (!snap.exists()) {
@@ -731,7 +731,6 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
                     
                     <div class="dashboard-section">
                         <div class="loc-flex">
-                            <span style="font-size:16px;">📍</span>
                             <div>
                                 <strong>Pickup</strong>
                                 ${job.name}<br>
@@ -742,7 +741,6 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
                     
                     <div class="dashboard-section" style="margin-top: 15px;">
                         <div class="loc-flex">
-                            <span style="font-size:16px;">🏁</span>
                             <div>
                                 <strong>Delivery</strong>
                                 ${job.delivery_name}<br>
@@ -754,7 +752,7 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
                     <div class="dashboard-meta">
                         <div class="meta-item"><strong>Package</strong>${job.package_details}</div>
                         <div class="meta-item"><strong>PO / Ref</strong>${poDisplay}</div>
-                        <div class="meta-item"><strong>Driver</strong><span style="color:var(--accent);">${driverNameDisplay}</span></div>
+                        <div class="meta-item" style="flex: 0 1 auto; background: #ffffff; border: 1px solid #000000; color: #222222; padding: 4px 8px; border-radius: 4px; font-size: 11px;"><strong>Driver</strong><span style="color:#000000; font-weight:bold;">${driverNameDisplay}</span></div>
                     </div>
 
                     <div class="ocean-timeline">
