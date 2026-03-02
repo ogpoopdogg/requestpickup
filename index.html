@@ -251,19 +251,30 @@
   .btn-cancel { background:#222; color:#ccc; border:1px solid #333; padding:12px; font-weight:700; cursor:pointer; font-size:13px; border-radius:4px; }
   .btn-save { background:var(--success); color:#000; border:none; padding:12px; font-weight:700; text-transform:uppercase; cursor:pointer; font-size:13px; border-radius:4px; }
 
-  /* Order History Styling */
-  .timeline { display: flex; justify-content: space-between; margin-top: 10px; font-size: 11px; font-weight: bold; color: #666; text-transform: uppercase; }
-  .timeline .step { position: relative; text-align: center; flex: 1; }
-  @keyframes active-status-pulse {
-    0% { color: var(--accent); text-shadow: 0 0 5px rgba(255, 215, 0, 0.3); transform: scale(1); }
-    50% { color: #ffffff; text-shadow: 0 0 15px rgba(255, 215, 0, 0.9), 0 0 20px rgba(255, 215, 0, 0.6); transform: scale(1.05); }
-    100% { color: var(--accent); text-shadow: 0 0 5px rgba(255, 215, 0, 0.3); transform: scale(1); }
+  /* Order History Dashboard Styling */
+  .order-card { background: var(--input-bg); border: 1px solid var(--border); padding: 15px; border-radius: 6px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+  .order-date { font-size: 12px; color: var(--placeholder); margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+  .dashboard-section { margin-bottom: 10px; font-size: 13px; color: var(--text); }
+  .dashboard-section strong { color: #888; text-transform: uppercase; font-size: 11px; display: block; margin-bottom: 3px; }
+  .loc-flex { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; }
+  .dashboard-meta { display: flex; flex-wrap: wrap; gap: 15px; background: #111; padding: 10px; border-radius: 4px; margin-top: 10px; border: 1px solid #222; }
+  .meta-item { flex: 1; min-width: 100px; }
+  
+  /* Ocean Blue Timeline */
+  .ocean-timeline { display: flex; position: relative; margin-top: 35px; align-items: center; justify-content: space-between; padding: 0 10px; }
+  .ocean-track { position: absolute; top: 50%; left: 10px; right: 10px; height: 6px; background: linear-gradient(to bottom, #444, #222); z-index: 0; transform: translateY(-50%); border-radius: 3px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.8); }
+  .ocean-fill { position: absolute; top: 0; left: 0; height: 100%; background: linear-gradient(to bottom, #00d2ff, #0077b6); border-radius: 3px; transition: width 0.6s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 0 8px rgba(0, 119, 182, 0.6); }
+  .ocean-node { position: relative; z-index: 1; width: 20px; height: 20px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #888, #444); border: 2px solid #222; box-shadow: 0 2px 4px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; transition: all 0.4s ease; }
+  .ocean-node.completed { background: radial-gradient(circle at 30% 30%, #2ecc71, #1e8449); border-color: #145a32; }
+  .ocean-node.active { background: radial-gradient(circle at 30% 30%, #00d2ff, #0077b6); border-color: #004d7a; box-shadow: 0 0 12px #00a8ff, 0 0 20px #0077b6; animation: ocean-pulse 2s infinite ease-in-out; }
+  @keyframes ocean-pulse {
+    0% { box-shadow: 0 0 8px #00a8ff; transform: scale(1); }
+    50% { box-shadow: 0 0 16px #00a8ff, 0 0 24px #00d2ff; transform: scale(1.1); }
+    100% { box-shadow: 0 0 8px #00a8ff; transform: scale(1); }
   }
-  .timeline .step.active { animation: active-status-pulse 2s infinite ease-in-out; display: inline-block; }
-  .timeline .step.completed { color: var(--success); }
-  .order-card { background: var(--input-bg); border: 1px solid var(--border); padding: 15px; border-radius: 6px; margin-bottom: 15px; }
-  .order-date { font-size: 12px; color: var(--placeholder); margin-bottom: 5px; }
-  .order-title { font-size: 14px; font-weight: bold; color: var(--text); margin-bottom: 10px; }
+  .ocean-label { position: absolute; top: 28px; font-size: 10px; text-transform: uppercase; font-weight: bold; color: #666; text-align: center; width: 70px; left: 50%; transform: translateX(-50%); letter-spacing: 0.5px; }
+  .ocean-node.active .ocean-label { color: #00a8ff; text-shadow: 0 0 4px rgba(0, 168, 255, 0.3); }
+  .ocean-node.completed .ocean-label { color: #2ecc71; }
 
 </style>
 </head>
@@ -406,10 +417,11 @@
 </div>
 
 <div class="container" id="orders-history-container" style="display: none; padding: 20px;">
-  <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-    <h2 style="color: var(--text); margin: 0; font-size: 18px; text-transform: uppercase;">Order History</h2>
+  <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+    <h2 style="color: var(--text); margin: 0; font-size: 18px; text-transform: uppercase;">Order Dashboard</h2>
     <button onclick="hideOrdersHistory()" style="background:#222; color:#ccc; border:1px solid #333; padding:8px 12px; font-weight:700; cursor:pointer; font-size:12px; border-radius:4px;">BACK TO FORM</button>
   </div>
+  <div id="live-status-header" style="font-size: 11px; color: #00a8ff; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;"></div>
   <div id="orders-list"></div>
 </div>
 
@@ -588,8 +600,26 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
     if(window.google && google.maps && google.maps.places) {
         const pInput = document.getElementById('f-pickup');
         const dInput = document.getElementById('f-drop-address');
-        const pAuto = new google.maps.places.Autocomplete(pInput);
-        const dAuto = new google.maps.places.Autocomplete(dInput);
+        const opts = { componentRestrictions: { country: 'ca' } };
+        const pAuto = new google.maps.places.Autocomplete(pInput, opts);
+        const dAuto = new google.maps.places.Autocomplete(dInput, opts);
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const circle = new google.maps.Circle({
+                        center: { lat: position.coords.latitude, lng: position.coords.longitude },
+                        radius: 100000
+                    });
+                    pAuto.setBounds(circle.getBounds());
+                    dAuto.setBounds(circle.getBounds());
+                },
+                (err) => {
+                    console.warn("Geolocation warning/error, falling back to general CA scope:", err.message);
+                }
+            );
+        }
+
         pAuto.addListener('place_changed', () => { 
             pickupVerified = true; 
             const place = pAuto.getPlace();
@@ -645,11 +675,20 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
   }
 
   function loadOrdersHistory() {
+    if (document.getElementById('orders-history-container').style.display !== 'block') return;
     const user = firebase.auth().currentUser;
     if (!user) return;
     const list = document.getElementById('orders-list');
-    list.innerHTML = '<p style="color:#aaa;">Loading orders...</p>';
+    const header = document.getElementById('live-status-header');
+    
+    if (list.innerHTML === '') list.innerHTML = '<p style="color:#aaa;">Loading dashboard...</p>';
+    
     db.ref('jobs').orderByChild('created_by').equalTo(user.email).on('value', snap => {
+        if (document.getElementById('orders-history-container').style.display !== 'block') return;
+        
+        const now = new Date();
+        header.innerText = "Status Live as of " + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+        
         list.innerHTML = '';
         if (!snap.exists()) {
             list.innerHTML = '<p style="color:#aaa;">No past orders found.</p>';
@@ -662,33 +701,68 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
         jobs.forEach(job => {
             const dateStr = new Date(job.timestamp).toLocaleString();
             const s = job.status || 'pending_pickup';
+            const assigned = (job.assigned_to && job.assigned_to !== 'Unassigned') ? job.assigned_to : null;
+            const driverData = assigned ? (driverLocations[assigned] || {}) : {};
             
-            let s1='', s2='', s3='', s4='';
-            if(s === 'completed') { s1 = 'completed'; s2 = 'completed'; s3 = 'completed'; s4 = 'completed'; }
-            else if(s === 'pending_delivery') { 
-                s1 = 'completed'; 
-                const driverData = driverLocations[job.assigned_to];
-                if (driverData && driverData.shift_active) {
-                    s2 = 'completed';
-                    s3 = 'active';
+            let s1='', s2='', s3='', s4='', fillWidth='0%';
+            
+            if (s === 'completed') { 
+                s1 = 'completed'; s2 = 'completed'; s3 = 'completed'; s4 = 'completed'; 
+                fillWidth = '100%';
+            } else if (s === 'pending_delivery') { 
+                s1 = 'completed'; s2 = 'completed';
+                if (driverData.shift_active) {
+                    s3 = 'active'; fillWidth = '66%';
                 } else {
-                    s2 = 'active';
-                    s3 = '';
+                    s2 = 'active'; fillWidth = '33%';
                 }
+            } else if (s === 'in_transit' || s === 'at_depot' || (s === 'pending_pickup' && assigned)) { 
+                s1 = 'completed'; s2 = 'active'; fillWidth = '33%';
+            } else { 
+                s1 = 'active'; fillWidth = '0%';
             }
-            else if(s === 'in_transit' || s === 'at_depot' || (s === 'pending_pickup' && job.assigned_to && job.assigned_to !== 'Unassigned')) { s1 = 'completed'; s2 = 'active'; }
-            else { s1 = 'active'; }
+            
+            const driverNameDisplay = assigned ? assigned.split('@')[0] : 'Pending Assignment';
+            const poDisplay = job.po_number ? job.po_number : 'N/A';
             
             list.innerHTML += `
                 <div class="order-card">
-                    <div class="order-date">${dateStr}</div>
-                    <div class="order-title">${job.name} &rarr; ${job.delivery_name}</div>
-                    <div style="font-size:12px; color:var(--text); margin-bottom:15px;">Pkg: ${job.package_details}</div>
-                    <div class="timeline">
-                        <span class="step ${s1}">Ordered</span> ➔
-                        <span class="step ${s2}">Assigned</span> ➔
-                        <span class="step ${s3}">On the Way</span> ➔
-                        <span class="step ${s4}">Delivered</span>
+                    <div class="order-date">Request ID: ${job.id.substring(1, 8).toUpperCase()} &bull; ${dateStr}</div>
+                    
+                    <div class="dashboard-section">
+                        <div class="loc-flex">
+                            <span style="font-size:16px;">📍</span>
+                            <div>
+                                <strong>Pickup</strong>
+                                ${job.name}<br>
+                                <span style="color:#aaa; font-size:12px;">${job.pickup_location}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-section" style="margin-top: 15px;">
+                        <div class="loc-flex">
+                            <span style="font-size:16px;">🏁</span>
+                            <div>
+                                <strong>Delivery</strong>
+                                ${job.delivery_name}<br>
+                                <span style="color:#aaa; font-size:12px;">${job.destination}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-meta">
+                        <div class="meta-item"><strong>Package</strong>${job.package_details}</div>
+                        <div class="meta-item"><strong>PO / Ref</strong>${poDisplay}</div>
+                        <div class="meta-item"><strong>Driver</strong><span style="color:var(--accent);">${driverNameDisplay}</span></div>
+                    </div>
+
+                    <div class="ocean-timeline">
+                        <div class="ocean-track"><div class="ocean-fill" style="width: ${fillWidth};"></div></div>
+                        <div class="ocean-node ${s1}"><div class="ocean-label">Ordered</div></div>
+                        <div class="ocean-node ${s2}"><div class="ocean-label">Assigned</div></div>
+                        <div class="ocean-node ${s3}"><div class="ocean-label">On Way</div></div>
+                        <div class="ocean-node ${s4}"><div class="ocean-label">Delivered</div></div>
                     </div>
                 </div>
             `;
