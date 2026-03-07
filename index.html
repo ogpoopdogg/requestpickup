@@ -723,79 +723,71 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
       const status = job.status || 'pending_pickup';
       const assigned = (job.assigned_to && job.assigned_to !== 'Unassigned') ? job.assigned_to : null;
 
-      // Stage 1: Ordered – always completed
-      let s1 = 'completed';
-      let s2 = '', s3 = '', s4 = '', s5 = '';
-      let fillWidth = '0%';
+      // Stage completion flags
+      let s1 = true; // Ordered always completed
+      let s2 = assigned !== null; // Assigned if driver assigned
+      let s3 = !!(job.picked_up_by) || status === 'in_transit'; // Picked-Up
+      let s4 = false; // Out for Delivery
+      let s5 = (status === 'completed'); // Delivered
 
-      // Stage 2: Assigned – completed if a driver is assigned
-      if (assigned) s2 = 'completed';
-
-      // Stage 3: Picked‑Up – completed if job was picked up (in_transit or has picked_up_by)
-      if (job.picked_up_by || status === 'in_transit') {
-        s3 = 'completed';
-      }
-
-      // Stage 4: Out for Delivery – completed if:
-      //   - status is 'pending_delivery' AND assigned driver has shift_active = true
-      //   - OR status is 'completed' (implies it was out for delivery earlier)
+      // s4 completed only if (completed) OR (pending_delivery + driver on shift)
       if (status === 'completed') {
-        s4 = 'completed';
-      } else if (status === 'pending_delivery' && assigned && driverLocations[assigned]?.shift_active === true) {
-        s4 = 'completed';
+        s4 = true;
+      } else if (status === 'pending_delivery' && assigned && driverLocations[assigned] && driverLocations[assigned].shift_active === true) {
+        s4 = true;
       }
 
-      // Stage 5: Delivered – completed if status is 'completed'
-      if (status === 'completed') {
-        s5 = 'completed';
-      }
-
-      // Determine which stage is currently active (first incomplete stage)
-      if (!s2) {
-        // active stage is Assigned
-        s2 = 'active';
-        fillWidth = '25%';
-      } else if (!s3) {
-        s3 = 'active';
-        fillWidth = '50%';
-      } else if (!s4) {
-        s4 = 'active';
-        fillWidth = '75%';
-      } else if (!s5) {
-        s5 = 'active';
-        fillWidth = '100%';
+      // Determine active stage (which node should pulse)
+      let activeStage = null;
+      if (status === 'pending_pickup' && assigned) {
+        activeStage = 2; // Assigned
+      } else if (status === 'in_transit') {
+        activeStage = 3; // Picked-Up
+      } else if (status === 'pending_delivery' && assigned && driverLocations[assigned] && driverLocations[assigned].shift_active === true) {
+        activeStage = 4; // Out for Delivery
+      } else if (status === 'completed') {
+        activeStage = null; // No active stage for completed jobs
       } else {
-        // all completed
-        fillWidth = '100%';
+        activeStage = null; // e.g., unassigned, waiting at depot, etc.
       }
 
-      // If none of the above matched (should not happen, but guard)
-      if (!s2 && !s3 && !s4 && !s5) {
-        s1 = 'active';
-        fillWidth = '0%';
+      // Build node classes
+      const nodeClasses = [
+        s1 ? 'completed' : '',
+        s2 ? 'completed' : '',
+        s3 ? 'completed' : '',
+        s4 ? 'completed' : '',
+        s5 ? 'completed' : ''
+      ];
+      if (activeStage) {
+        nodeClasses[activeStage - 1] += ' active';
       }
 
-      const driverNameDisplay = assigned ? assigned.split('@')[0] : 'Pending Assignment';
+      // Fill width: (completed stages - 1) * 25% (Ordered is base)
+      const completedCount = (s1?1:0) + (s2?1:0) + (s3?1:0) + (s4?1:0) + (s5?1:0);
+      let fillWidth = '0%';
+      if (completedCount > 1) {
+        fillWidth = ((completedCount - 1) * 25) + '%';
+      }
+
       const packageDetailsDisplay = job.package_details || 'N/A';
       const poDisplay = job.po_number ? job.po_number : 'N/A';
       const isCompleted = (status === 'completed');
       const cardId = 'order-card-' + job.id;
 
-      // ----- Inner HTML for the timeline (shared by both completed and active orders) -----
       const timelineHtml = `
         <div class="ocean-timeline">
           <div class="ocean-track"><div class="ocean-fill" style="width: ${fillWidth};"></div></div>
-          <div class="ocean-node ${s1}"><div class="ocean-label">Ordered</div></div>
-          <div class="ocean-node ${s2}"><div class="ocean-label">Assigned</div></div>
-          <div class="ocean-node ${s3}"><div class="ocean-label">Picked‑Up</div></div>
-          <div class="ocean-node ${s4}"><div class="ocean-label">Out for Delivery</div></div>
-          <div class="ocean-node ${s5}"><div class="ocean-label">Delivered</div></div>
+          <div class="ocean-node ${nodeClasses[0]}"><div class="ocean-label">Ordered</div></div>
+          <div class="ocean-node ${nodeClasses[1]}"><div class="ocean-label">Assigned</div></div>
+          <div class="ocean-node ${nodeClasses[2]}"><div class="ocean-label">Picked‑Up</div></div>
+          <div class="ocean-node ${nodeClasses[3]}"><div class="ocean-label">Out for Delivery</div></div>
+          <div class="ocean-node ${nodeClasses[4]}"><div class="ocean-label">Delivered</div></div>
         </div>
       `;
 
       const cardInnerHtml = `
         <div class="order-date">${dateStr}</div>
-
         <div class="dashboard-section">
           <div class="loc-flex">
             <div>
@@ -805,7 +797,6 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
             </div>
           </div>
         </div>
-
         <div class="dashboard-section" style="margin-top: 15px;">
           <div class="loc-flex">
             <div>
@@ -815,7 +806,6 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
             </div>
           </div>
         </div>
-
         <div class="dashboard-section" style="margin-top: 15px;">
           <div class="loc-flex">
             <div>
@@ -824,7 +814,6 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
             </div>
           </div>
         </div>
-
         <div class="dashboard-section" style="margin-top: 15px;">
           <div class="loc-flex">
             <div>
@@ -833,12 +822,10 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
             </div>
           </div>
         </div>
-
         ${timelineHtml}
       `;
 
       if (isCompleted) {
-        // Collapsible view for completed orders
         list.innerHTML += `
           <div style="margin-bottom: 25px;">
             <button onclick="const el = document.getElementById('${cardId}'); el.style.display = el.style.display === 'none' ? 'block' : 'none';" style="width: 100%; padding: 15px; background: var(--input-bg); border: 1px solid var(--success); border-radius: 6px; color: var(--text); text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
@@ -851,7 +838,6 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
           </div>
         `;
       } else {
-        // Active orders shown expanded
         list.innerHTML += `
           <div class="order-card">
             ${cardInnerHtml}
@@ -861,7 +847,6 @@ firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
     });
   });
 }
-
   form.addEventListener("submit", e => {
     e.preventDefault();
     if (document.getElementById('website_url_hp').value) return; 
