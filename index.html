@@ -671,6 +671,17 @@ function showOrdersHistory() {
   document.getElementById('orders-history-container').style.display = 'block';
   renderOrdersHistory();
 
+  // Force a fresh fetch of jobs to ensure current order appears
+  const user = firebase.auth().currentUser;
+  if (user) {
+    db.ref("jobs").orderByChild("created_by").equalTo(user.email).once('value').then(snap => {
+      currentUserJobs = snap.val() || {};
+      if (document.getElementById('orders-history-container').style.display === 'block') {
+        renderOrdersHistory();
+      }
+    });
+  }
+
   // Clear any existing interval
   if (window.ordersRefreshInterval) clearInterval(window.ordersRefreshInterval);
   // Set new interval to re-render every 2 seconds while dashboard is open
