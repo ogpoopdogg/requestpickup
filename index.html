@@ -477,12 +477,14 @@
   db.ref("driver_zones").on("value", s => driverZones = s.val() || {});
 
   // Listen for driver locations (including shift_active)
-  db.ref("driver_locations").on("value", s => {
-    driverLocations = s.val() || {};
-    if (document.getElementById('orders-history-container').style.display === 'block') {
-      renderOrdersHistory();
-    }
-  });
+db.ref("driver_locations").on("value", s => {
+  driverLocations = s.val() || {};
+  console.log("driverLocations keys:", Object.keys(driverLocations));
+  console.log("Full driverLocations:", driverLocations); // careful, might be large
+  if (document.getElementById('orders-history-container').style.display === 'block') {
+    renderOrdersHistory();
+  }
+});
 
   // Single auth state listener (correct one)
   firebase.auth().onAuthStateChanged((user) => {
