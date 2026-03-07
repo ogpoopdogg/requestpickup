@@ -595,14 +595,14 @@ let jobsListener = null;             // reference to the Firebase listener
   const db = firebase.database();
   let driverZones = {};
   db.ref("driver_zones").on("value", s => driverZones = s.val() || {});
-  let driverLocations = {};
-  db.ref("driver_locations").on("value", s => {
-    driverLocations = s.val() || {};
-    if (document.getElementById('orders-history-container').style.display === 'block') {
-      loadOrdersHistory();
-    }
-  });
-
+ let driverLocations = {};
+db.ref("driver_locations").on("value", s => {
+  driverLocations = s.val() || {};
+  // If orders history is open, re-render using the stored jobs
+  if (document.getElementById('orders-history-container').style.display === 'block') {
+    renderOrdersHistory();
+  }
+});
   const form = document.getElementById("pickupForm");
   const submitBtn = document.getElementById("submitBtn");
 
