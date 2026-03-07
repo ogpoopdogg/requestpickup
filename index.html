@@ -702,7 +702,6 @@ db.ref("driver_locations").on("value", s => {
     submitBtn.innerText = "Submit Request";
     submitBtn.disabled = false;
     submitBtn.style.opacity = "1";
-    db.ref('jobs').off();
   }
 
   /*
