@@ -729,7 +729,10 @@
       const c2 = assigned !== null; // Assigned completed if a driver is assigned
       const c3 = !!(job.picked_up_by) || status === 'in_transit'; // Picked‑Up completed if pickup happened
       const c4 = (status === 'completed') || (status === 'pending_delivery' && assigned && driverLocations[assigned] && driverLocations[assigned].shift_active === true); // Out for Delivery completed if delivered OR (pending_delivery + driver on shift)
-      const c5 = (status === 'completed'); // Delivered completed if job is completed
+      // Add this inside renderOrdersHistory, after const c4 = ...
+if (status === 'pending_delivery' && assigned) {
+  console.log(`Job ${job.id}: assigned_to = ${assigned}, shift_active =`, driverLocations[assigned] ? driverLocations[assigned].shift_active : 'NO RECORD');
+}      const c5 = (status === 'completed'); // Delivered completed if job is completed
 
       // Determine active stage (the one that should pulse)
       let activeStage = null;
