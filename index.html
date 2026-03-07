@@ -21,12 +21,12 @@
   }
 
   body.light-mode {
-    --bg: #f0f2f5; 
-    --card: #ffffff;
+    --bg: #f8f8f8;
+    --card: #f2f2f2;
     --text: #000000;
-    --input-bg: #ffffff;
-    --border: #cccccc;
-    --placeholder: #d3d3d3;
+    --input-bg: #f9f9f9;
+    --border: #dddddd;
+    --placeholder: #888888;
   }
 
   body.light-mode h1 {
@@ -71,6 +71,9 @@
   }
   body.light-mode .modal-content ::placeholder {
       color: #555555;
+  }
+  body.light-mode .settings-section h3 {
+      color: #000000;
   }
 
   @keyframes fadeInPage {
@@ -454,8 +457,9 @@
 <h2 style="color:var(--accent); margin:0; font-size:16px; font-weight:700; text-transform:uppercase;">Pick Location</h2>
 <button class="btn-cancel" style="padding: 8px 12px; font-size: 12px; margin:0;" onclick="document.getElementById('location-picker-modal').style.display='none'; document.body.style.overflow='';">CLOSE</button>
 </div>
-<div style="padding: 10px; background: var(--card); border-bottom: 1px solid var(--border);">
-<input type="text" id="loc-search-bar" placeholder="Search address or paste GPS (e.g. 49.852, -99.951)" style="margin:0; width:100%; padding: 10px;">
+<div style="padding: 10px; background: var(--card); border-bottom: 1px solid var(--border); display: flex; gap: 5px;">
+  <input type="text" id="loc-search-bar" placeholder="Search address or paste GPS (e.g. 49.852, -99.951)" style="margin:0; flex:1; padding: 10px;">
+  <button onclick="searchLocation()" style="padding: 10px; background: var(--accent); color: #000; border: none; border-radius: 4px; cursor: pointer;">Go</button>
 </div>
 <div style="flex: 1; position: relative;">
 <div id="picker-map" style="width:100%; height:100%;"></div>
@@ -497,7 +501,6 @@
     <textarea id="default-other_info" placeholder="Driver Notes" rows="2" style="margin-bottom:8px;"></textarea>
     <button id="save-defaults-btn" class="btn-save" onclick="saveDefaults()">Save Defaults</button>
   </div>
-  <button class="btn-cancel" onclick="document.getElementById('settings-modal').style.display='none'; document.body.style.overflow='';">CLOSE</button>
 </div>
 </div>
 
@@ -992,11 +995,14 @@
 
       if (isCompleted) {
         const isExpanded = expandedCompletedCards.has(job.id);
+        const d = new Date(job.timestamp);
+        const shortDate = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).replace(/,/g, '');
         list.innerHTML += `
           <div style="margin-bottom: 25px;">
             <button onclick="toggleCompletedCard('${job.id}')" style="width: 100%; padding: 15px; background: var(--input-bg); border: 1px solid var(--success); border-radius: 6px; color: var(--text); text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-              <span style="font-weight: bold; font-size: 13px; color: orange;">✅ ${dateStr}</span>
-              <span style="font-size: 12px; color: var(--placeholder); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 50%;">
+              <span style="font-weight: bold; font-size: 13px; color: orange;">✅ ${shortDate}</span>
+              <span style="font-size: 12px; color: var(--placeholder); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 30%;">${job.package_details || 'N/A'}</span>
+              <span style="font-size: 12px; color: var(--placeholder); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 30%;">
                 <span style="color: #ffd700;">${job.name || '?'}</span> → <span style="color: #90ee90;">${job.delivery_name || '?'}</span>
               </span>
             </button>
@@ -1165,6 +1171,7 @@
         zoom: 12,
         disableDefaultUI: true,
         zoomControl: true,
+        scrollwheel: true,
         styles: [
           { "featureType": "all", "elementType": "labels.text.fill", "stylers": [{"color": "#ffffff"}] },
           { "featureType": "all", "elementType": "labels.text.stroke", "stylers": [{"color": "#000000"}, {"lightness": 13}] },
@@ -1199,8 +1206,39 @@
                   const latLng = { lat: parseFloat(gps[1]), lng: parseFloat(gps[2]) };
                   pickerMap.setCenter(latLng);
                   pickerMap.setZoom(17);
+              } else {
+                  // Use geocoder as fallback
+                  const geocoder = new google.maps.Geocoder();
+                  geocoder.geocode({ address: val }, (results, status) => {
+                    if (status === 'OK' && results[0]) {
+                      pickerMap.setCenter(results[0].geometry.location);
+                      pickerMap.setZoom(17);
+                    }
+                  });
               }
           }
+      });
+    }
+  }
+
+  function searchLocation() {
+    const searchInput = document.getElementById('loc-search-bar');
+    const val = searchInput.value;
+    if (!val) return;
+    const gps = val.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);
+    if (gps) {
+      const latLng = { lat: parseFloat(gps[1]), lng: parseFloat(gps[2]) };
+      pickerMap.setCenter(latLng);
+      pickerMap.setZoom(17);
+    } else {
+      const geocoder = new google.maps.Geocoder();
+      geocoder.geocode({ address: val }, (results, status) => {
+        if (status === 'OK' && results[0]) {
+          pickerMap.setCenter(results[0].geometry.location);
+          pickerMap.setZoom(17);
+        } else {
+          alert('Location not found');
+        }
       });
     }
   }
@@ -1234,7 +1272,10 @@
 <button id="devBtn" style="display:block; position:fixed; bottom:20px; right:20px; z-index:10001; background:#111; border:1px solid var(--accent); color:var(--accent); padding:10px 15px; font-size:12px; cursor:pointer; border-radius:4px; font-weight:bold; box-shadow: 0 4px 10px rgba(0,0,0,0.5);" onclick="const p=document.getElementById('dev-portal'); p.style.display=(p.style.display==='none'?'flex':'none'); if(p.style.display==='flex' && !devQuill) { devQuill = new Quill('#dev-editor', { theme: 'snow', modules: { toolbar: [ ['bold', 'italic', 'underline'], [{ 'list': 'ordered'}, { 'list': 'bullet' }], [{ 'align': [] }] ] } }); }">DEV NOTES</button>
 
 <div id="dev-portal" style="background:#111; color:#fff; padding:20px; border-top:5px solid var(--accent); display:none; flex-direction:column; gap:15px; position:fixed; bottom:0; left:0; width:100%; box-sizing:border-box; z-index:10000; max-height:80vh; overflow-y:auto;">
-  <h3 style="margin:0; text-transform:uppercase; font-size:14px; letter-spacing:1px; color:var(--accent);">Developer Command Center</h3>
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <h3 style="margin:0; text-transform:uppercase; font-size:14px; letter-spacing:1px; color:var(--accent);">Developer Command Center</h3>
+    <button style="background:transparent; border:1px solid var(--accent); color:var(--accent); padding:2px 8px; cursor:pointer; font-size:14px;" onclick="document.getElementById('dev-portal').style.display='none';">✖</button>
+  </div>
   <div id="dev-list" style="max-height: 200px; overflow-y: auto; background:#000; padding:10px; border:1px solid #333; font-size:12px; font-family:monospace;">
     <p style="color:#666;">Authenticating...</p>
   </div>
