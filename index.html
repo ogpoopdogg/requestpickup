@@ -257,21 +257,31 @@
   
   .btn-back-form { background:#222; color:#ccc; border:1px solid #333; padding:8px 12px; font-weight:700; cursor:pointer; font-size:12px; border-radius:4px; }
 
+  /* Professional Timeline */
   .ocean-timeline { display: flex; position: relative; margin-top: 35px; align-items: center; justify-content: space-between; padding: 0 10px; margin-bottom: 20px; }
-  .ocean-track { position: absolute; top: 50%; left: 10px; right: 10px; height: 6px; background: linear-gradient(to bottom, #444, #222); z-index: 0; transform: translateY(-50%); border-radius: 3px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.8); }
-  .ocean-fill { position: absolute; top: 0; left: 0; height: 100%; background: #2ecc71; border-radius: 3px; transition: width 0.6s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: 0 0 8px rgba(0, 119, 182, 0.6); }
-  .ocean-node { position: relative; z-index: 1; width: 20px; height: 20px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #888, #444); border: 2px solid #222; box-shadow: 0 2px 4px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; transition: all 0.4s ease; }
-  .ocean-node.completed { background: radial-gradient(circle at 30% 30%, #2ecc71, #1e8449); border-color: #145a32; }
-  .ocean-node.active { background: #f39c12; border-color: #f39c12; box-shadow: 0 0 12px #f39c12, 0 0 20px #f39c12; animation: ocean-pulse 2s infinite ease-in-out; }
-  @keyframes ocean-pulse {
-    0% { box-shadow: 0 0 8px #f39c12; transform: scale(1); }
-    50% { box-shadow: 0 0 16px #f39c12, 0 0 24px #f39c12; transform: scale(1.1); }
-    100% { box-shadow: 0 0 8px #f39c12; transform: scale(1); }
+  .ocean-track { position: absolute; top: 50%; left: 10px; right: 10px; height: 4px; background: #e0e0e0; z-index: 0; transform: translateY(-50%); border-radius: 2px; }
+  .ocean-fill { position: absolute; top: 0; left: 0; height: 100%; background: #007bff; border-radius: 2px; transition: width 0.6s cubic-bezier(0.25, 0.8, 0.25, 1); }
+  .ocean-node { position: relative; z-index: 1; width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 2px solid #aaa; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; transition: all 0.4s ease; }
+  .ocean-node.completed { background: #007bff; border-color: #0056b3; }
+  .ocean-node.active { background: #ffc107; border-color: #e0a800; box-shadow: 0 0 8px #ffc107; animation: pulse 1.5s infinite; }
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
   }
   
-  .ocean-label { position: absolute; top: 28px; font-size: 10px; text-transform: uppercase; font-weight: bold; color: #ffffff; text-align: center; width: 70px; left: 50%; transform: translateX(-50%); letter-spacing: 0.5px; }
-  .ocean-node.active .ocean-label { color: #ffffff; text-shadow: 0 0 4px rgba(243, 156, 18, 0.3); }
+  .ocean-label { position: absolute; top: 24px; font-size: 10px; text-transform: uppercase; font-weight: bold; color: #ffffff; text-align: center; width: 70px; left: 50%; transform: translateX(-50%); letter-spacing: 0.5px; }
+  .ocean-node.active .ocean-label { color: #ffffff; }
   .ocean-node.completed .ocean-label { color: #ffffff; }
+
+  /* Settings modal */
+  #settings-modal .modal-content { max-width: 500px; }
+  .settings-section { margin-bottom: 20px; }
+  .settings-section h3 { color: var(--accent); margin-top: 0; }
+  .theme-toggle { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .theme-toggle button { flex: 1; padding: 10px; background: var(--input-bg); border: 1px solid var(--border); color: var(--text); cursor: pointer; border-radius: 4px; }
+  .theme-toggle button.active { background: var(--accent); color: #000; border-color: var(--accent); }
+  #save-defaults-btn { margin-top: 10px; }
 
 </style>
 </head>
@@ -317,13 +327,17 @@
             <img src="icon2.png" alt="E&C Logo" style="cursor: pointer;" onclick="toggleTheme()" onerror="this.style.display='none'"> 
             <h1>Request Pickup Now</h1>
         </div>
-        <button id="viewOrdersBtn" style="background:var(--accent); color:#000; border:none; padding:8px 12px; font-weight:700; border-radius:4px; cursor:pointer; font-size:12px; text-transform:uppercase;" onclick="showOrdersHistory()" type="button">View Orders</button>
+        <div style="display:flex; gap:5px;">
+            <button id="settingsBtn" style="background:transparent; border:1px solid var(--accent); color:var(--accent); padding:8px 12px; border-radius:4px; cursor:pointer; font-size:16px; line-height:1;" onclick="openSettings()">⚙️</button>
+            <button id="viewOrdersBtn" style="background:var(--accent); color:#000; border:none; padding:8px 12px; font-weight:700; border-radius:4px; cursor:pointer; font-size:12px; text-transform:uppercase;" onclick="showOrdersHistory()" type="button">View Orders</button>
+        </div>
     </div>
   </div>
 
   <form id="pickupForm">
     <input type="text" name="website_url_hp" id="website_url_hp" style="display:none;" tabindex="-1" autocomplete="off">
     
+    <button type="button" id="autofillDetailsBtn" style="width:100%; padding:10px; background:#333; color:#fff; border:1px solid var(--accent); border-radius:4px; margin-bottom:15px; cursor:pointer; text-transform:uppercase; font-size:12px; font-weight:bold;" onclick="autofillDetails()">Autofill Details</button>
     <button type="button" id="autofillBtn" style="display:none; width:100%; padding:10px; background:#333; color:#fff; border:1px solid var(--accent); border-radius:4px; margin-bottom:15px; cursor:pointer; text-transform:uppercase; font-size:12px; font-weight:bold;" onclick="autofillLastOrder()">Autofill from Last Order</button>
 
     <div class="section-title">Pickup Details</div>
@@ -346,12 +360,12 @@
 
     <div class="flex-row">
       <div class="input-group" style="flex: 1;">
-        <label>Pickup Email <span class="required-mark">*</span></label>
-        <input type="email" name="p_email" placeholder="notifications@example.com" required autocomplete="email">
+        <label>Pickup Email</label>
+        <input type="email" name="p_email" placeholder="notifications@example.com" autocomplete="email">
       </div>
       <div class="input-group" style="flex: 1;">
-        <label>Pickup Phone <span class="required-mark">*</span></label>
-        <input type="tel" name="p_phone" placeholder="(204) 555-0123" required autocomplete="tel" oninput="formatPhone(this)">
+        <label>Pickup Phone</label>
+        <input type="tel" name="p_phone" placeholder="(204) 555-0123" autocomplete="tel" oninput="formatPhone(this)">
       </div>
     </div>
 
@@ -375,12 +389,12 @@
 
     <div class="flex-row">
       <div class="input-group" style="flex: 1;">
-        <label>Delivery Email <span class="required-mark">*</span></label>
-        <input type="email" name="d_email" placeholder="notifications@example.com" required autocomplete="email">
+        <label>Delivery Email</label>
+        <input type="email" name="d_email" placeholder="notifications@example.com" autocomplete="email">
       </div>
       <div class="input-group" style="flex: 1;">
-        <label>Delivery Phone <span class="required-mark">*</span></label>
-        <input type="tel" name="d_phone" placeholder="(204) 555-0123" required autocomplete="tel" oninput="formatPhone(this)">
+        <label>Delivery Phone</label>
+        <input type="tel" name="d_phone" placeholder="(204) 555-0123" autocomplete="tel" oninput="formatPhone(this)">
       </div>
     </div>
 
@@ -439,6 +453,39 @@
 </div>
 </div>
 
+<!-- Settings Modal -->
+<div id="settings-modal" class="modal" onclick="if(event.target===this) { this.style.display='none'; document.body.style.overflow=''; }">
+<div class="modal-content">
+  <h2 style="color:var(--accent); margin-top:0;">Settings</h2>
+  <div class="settings-section">
+    <h3>Theme</h3>
+    <div class="theme-toggle">
+      <button id="theme-light" onclick="setTheme('light')" class="active">Light</button>
+      <button id="theme-dark" onclick="setTheme('dark')">Dark</button>
+    </div>
+  </div>
+  <div class="settings-section">
+    <h3>Autofill Defaults</h3>
+    <p>Fill in the fields you want to auto-populate when using "Autofill Details".</p>
+    <input type="text" id="default-name" placeholder="Pickup Contact Name" style="margin-bottom:8px;">
+    <input type="text" id="default-pickup" placeholder="Pickup Address" style="margin-bottom:8px;">
+    <input type="text" id="default-city" placeholder="Pickup City" style="margin-bottom:8px;">
+    <input type="email" id="default-p_email" placeholder="Pickup Email" style="margin-bottom:8px;">
+    <input type="tel" id="default-p_phone" placeholder="Pickup Phone" style="margin-bottom:8px;">
+    <input type="text" id="default-delivery_name" placeholder="Delivery Contact Name" style="margin-bottom:8px;">
+    <input type="text" id="default-destination" placeholder="Delivery Address" style="margin-bottom:8px;">
+    <input type="text" id="default-drop_city" placeholder="Delivery City" style="margin-bottom:8px;">
+    <input type="email" id="default-d_email" placeholder="Delivery Email" style="margin-bottom:8px;">
+    <input type="tel" id="default-d_phone" placeholder="Delivery Phone" style="margin-bottom:8px;">
+    <input type="text" id="default-package_details" placeholder="Packages/Items/Dimensions" style="margin-bottom:8px;">
+    <input type="text" id="default-po_number" placeholder="PO Number" style="margin-bottom:8px;">
+    <textarea id="default-other_info" placeholder="Driver Notes" rows="2" style="margin-bottom:8px;"></textarea>
+    <button id="save-defaults-btn" class="btn-save" onclick="saveDefaults()">Save Defaults</button>
+  </div>
+  <button class="btn-cancel" onclick="document.getElementById('settings-modal').style.display='none'; document.body.style.overflow='';">CLOSE</button>
+</div>
+</div>
+
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA6umETP8wBUEV41ugAtiNiChUeLmmwmZI&libraries=geometry,drawing,places"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -450,6 +497,22 @@
   function toggleTheme() { 
     document.body.classList.toggle('light-mode'); 
     localStorage.setItem('ec_theme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); 
+    updateThemeButtons();
+  }
+  function setTheme(mode) {
+    if (mode === 'light') {
+      document.body.classList.add('light-mode');
+      localStorage.setItem('ec_theme', 'light');
+    } else {
+      document.body.classList.remove('light-mode');
+      localStorage.setItem('ec_theme', 'dark');
+    }
+    updateThemeButtons();
+  }
+  function updateThemeButtons() {
+    const isLight = document.body.classList.contains('light-mode');
+    document.getElementById('theme-light').classList.toggle('active', isLight);
+    document.getElementById('theme-dark').classList.toggle('active', !isLight);
   }
 
   // Initialize Firebase
@@ -661,8 +724,76 @@
     form.drop_city.value = lastKnownOrder.delivery_city || '';
     form.d_email.value = lastKnownOrder.d_email || '';
     form.d_phone.value = lastKnownOrder.d_phone || '';
+    form.package_details.value = lastKnownOrder.package_details || '';
+    form.po_number.value = lastKnownOrder.po_number || '';
+    form.other_info.value = lastKnownOrder.other_info || '';
     pickupVerified = true;
     dropVerified = true;
+  }
+
+  function autofillDetails() {
+    // Load defaults from localStorage
+    const defaults = JSON.parse(localStorage.getItem('autofillDefaults') || '{}');
+    if (defaults.name) form.name.value = defaults.name;
+    if (defaults.pickup_location) form.pickup_location.value = defaults.pickup_location;
+    if (defaults.city) form.city.value = defaults.city;
+    if (defaults.p_email) form.p_email.value = defaults.p_email;
+    if (defaults.p_phone) form.p_phone.value = defaults.p_phone;
+    if (defaults.delivery_name) form.delivery_name.value = defaults.delivery_name;
+    if (defaults.destination) form.destination.value = defaults.destination;
+    if (defaults.drop_city) form.drop_city.value = defaults.drop_city;
+    if (defaults.d_email) form.d_email.value = defaults.d_email;
+    if (defaults.d_phone) form.d_phone.value = defaults.d_phone;
+    if (defaults.package_details) form.package_details.value = defaults.package_details;
+    if (defaults.po_number) form.po_number.value = defaults.po_number;
+    if (defaults.other_info) form.other_info.value = defaults.other_info;
+    // Optionally set verified flags based on presence of address/city
+    if (defaults.pickup_location && defaults.city) pickupVerified = true;
+    if (defaults.destination && defaults.drop_city) dropVerified = true;
+  }
+
+  function saveDefaults() {
+    const defaults = {
+      name: document.getElementById('default-name').value,
+      pickup_location: document.getElementById('default-pickup').value,
+      city: document.getElementById('default-city').value,
+      p_email: document.getElementById('default-p_email').value,
+      p_phone: document.getElementById('default-p_phone').value,
+      delivery_name: document.getElementById('default-delivery_name').value,
+      destination: document.getElementById('default-destination').value,
+      drop_city: document.getElementById('default-drop_city').value,
+      d_email: document.getElementById('default-d_email').value,
+      d_phone: document.getElementById('default-d_phone').value,
+      package_details: document.getElementById('default-package_details').value,
+      po_number: document.getElementById('default-po_number').value,
+      other_info: document.getElementById('default-other_info').value
+    };
+    localStorage.setItem('autofillDefaults', JSON.stringify(defaults));
+    alert('Defaults saved!');
+  }
+
+  function loadDefaultsIntoModal() {
+    const defaults = JSON.parse(localStorage.getItem('autofillDefaults') || '{}');
+    document.getElementById('default-name').value = defaults.name || '';
+    document.getElementById('default-pickup').value = defaults.pickup_location || '';
+    document.getElementById('default-city').value = defaults.city || '';
+    document.getElementById('default-p_email').value = defaults.p_email || '';
+    document.getElementById('default-p_phone').value = defaults.p_phone || '';
+    document.getElementById('default-delivery_name').value = defaults.delivery_name || '';
+    document.getElementById('default-destination').value = defaults.destination || '';
+    document.getElementById('default-drop_city').value = defaults.drop_city || '';
+    document.getElementById('default-d_email').value = defaults.d_email || '';
+    document.getElementById('default-d_phone').value = defaults.d_phone || '';
+    document.getElementById('default-package_details').value = defaults.package_details || '';
+    document.getElementById('default-po_number').value = defaults.po_number || '';
+    document.getElementById('default-other_info').value = defaults.other_info || '';
+  }
+
+  function openSettings() {
+    loadDefaultsIntoModal();
+    updateThemeButtons();
+    document.getElementById('settings-modal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
   }
 
   let ordersRefreshInterval = null;
@@ -727,7 +858,7 @@
     }
 
     const now = new Date();
-    header.innerText = "Status Live as of " + now.toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit', second:'2-digit', hour12: true });
+    header.innerText = "Status Live as of " + now.toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit', hour12: true });
 
     list.innerHTML = '';
 
@@ -851,8 +982,10 @@
         list.innerHTML += `
           <div style="margin-bottom: 25px;">
             <button onclick="toggleCompletedCard('${job.id}')" style="width: 100%; padding: 15px; background: var(--input-bg); border: 1px solid var(--success); border-radius: 6px; color: var(--text); text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-              <span style="font-weight: bold; font-size: 13px;">✅ ${dateStr}</span>
-              <span style="font-size: 12px; color: var(--placeholder); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 50%;">📦 ${packageDetailsDisplay}</span>
+              <span style="font-weight: bold; font-size: 13px; color: orange;">✅ ${dateStr}</span>
+              <span style="font-size: 12px; color: var(--placeholder); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 50%;">
+                <span style="color: #ffd700;">${job.name || '?'}</span> → <span style="color: #90ee90;">${job.delivery_name || '?'}</span>
+              </span>
             </button>
             <div id="${cardId}" class="order-card" style="display: ${isExpanded ? 'block' : 'none'}; margin-bottom: 0; border-top: none; border-top-left-radius: 0; border-top-right-radius: 0;">
               ${cardInnerHtml}
