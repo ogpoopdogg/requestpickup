@@ -906,18 +906,27 @@ if (status === 'pending_delivery' && assigned) {
           ...coords
         };
 
-        db.ref("jobs").push(jobData).then(() => {
-          localStorage.setItem('lastOrderTime', Date.now());
-          
-          form.style.display = "none";
-          document.getElementById("thanksMessage").style.display = "block";
-          window.scrollTo({top: 0, behavior: 'smooth'});
-        }).catch((error) => {
-          submitBtn.innerText = "Submit Request";
-          submitBtn.disabled = false;
-          submitBtn.style.opacity = "1";
-        });
-    };
+      db.ref("jobs").push(jobData).then((newRef) => {
+  localStorage.setItem('lastOrderTime', Date.now());
+  
+  // Optimistically add the new job to currentUserJobs
+  const newJobId = newRef.key;
+  if (!currentUserJobs) currentUserJobs = {};
+  currentUserJobs[newJobId] = { ...jobData, id: newJobId };
+  
+  // If orders dashboard is open, re-render immediately
+  if (document.getElementById('orders-history-container').style.display === 'block') {
+    renderOrdersHistory();
+  }
+  
+  form.style.display = "none";
+  document.getElementById("thanksMessage").style.display = "block";
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}).catch((error) => {
+  submitBtn.innerText = "Submit Request";
+  submitBtn.disabled = false;
+  submitBtn.style.opacity = "1";
+});
 
     const geocoder = new google.maps.Geocoder();
     const addressStr = form.pickup_location.value.trim() + ", " + form.city.value.trim();
