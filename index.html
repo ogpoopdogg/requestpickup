@@ -849,8 +849,19 @@ if (status === 'pending_delivery' && assigned) {
 }
     });
   }
-
-  form.addEventListener("submit", e => {
+  
+  function toggleCompletedCard(jobId) {
+    const cardDiv = document.getElementById('order-card-' + jobId);
+    if (cardDiv) {
+      if (cardDiv.style.display === 'none') {
+        cardDiv.style.display = 'block';
+        expandedCompletedCards.add(jobId);
+      } else {
+        cardDiv.style.display = 'none';
+        expandedCompletedCards.delete(jobId);
+      }
+    }
+  }  form.addEventListener("submit", e => {
     e.preventDefault();
     if (document.getElementById('website_url_hp').value) return; 
 
