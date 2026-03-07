@@ -716,160 +716,152 @@ db.ref("driver_locations").on("value", s => {
     This is a common optimization for list rendering in modern web dev—keep active items visible and archive older items behind an interaction.
     Additionally, we safely fallback missing data using short-circuit evaluation (`job.package_details || 'N/A'`) and incorporate the new requested fields seamlessly.
   */
-  function loadOrdersHistory() {
+  function renderOrdersHistory() {
   if (document.getElementById('orders-history-container').style.display !== 'block') return;
-  const user = firebase.auth().currentUser;
-  if (!user) return;
   const list = document.getElementById('orders-list');
   const header = document.getElementById('live-status-header');
 
-  if (list.innerHTML === '') list.innerHTML = '<p style="color:#aaa;">Loading dashboard...</p>';
+  if (!currentUserJobs || Object.keys(currentUserJobs).length === 0) {
+    list.innerHTML = '<p style="color:#aaa;">No past orders found.</p>';
+    return;
+  }
 
-  db.ref('jobs').orderByChild('created_by').equalTo(user.email).on('value', snap => {
-    if (document.getElementById('orders-history-container').style.display !== 'block') return;
+  const now = new Date();
+  header.innerText = "Status Live as of " + now.toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit', second:'2-digit', hour12: true });
 
-    const now = new Date();
-    header.innerText = "Status Live as of " + now.toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit', second:'2-digit', hour12: true });
+  list.innerHTML = '';
 
-    list.innerHTML = '';
-    if (!snap.exists()) {
-      list.innerHTML = '<p style="color:#aaa;">No past orders found.</p>';
-      return;
+  const jobs = [];
+  Object.entries(currentUserJobs).forEach(([key, val]) => {
+    jobs.push({...val, id: key});
+  });
+  jobs.sort((a,b) => b.timestamp - a.timestamp);
+
+  jobs.forEach(job => {
+    const dateStr = new Date(job.timestamp).toLocaleString();
+    const status = job.status || 'pending_pickup';
+    const assigned = (job.assigned_to && job.assigned_to !== 'Unassigned') ? job.assigned_to : null;
+
+    // Completion flags for each stage
+    const c1 = true; // Ordered always completed
+    const c2 = assigned !== null; // Assigned completed if a driver is assigned
+    const c3 = !!(job.picked_up_by) || status === 'in_transit'; // Picked‑Up completed if pickup happened
+    const c4 = (status === 'completed') || (status === 'pending_delivery' && assigned && driverLocations[assigned] && driverLocations[assigned].shift_active === true); // Out for Delivery completed if delivered OR (pending_delivery + driver on shift)
+    const c5 = (status === 'completed'); // Delivered completed if job is completed
+
+    // Determine active stage (the one that should pulse)
+    let activeStage = null;
+    if (status === 'pending_pickup' && assigned) {
+      activeStage = 2; // Assigned
+    } else if (status === 'in_transit') {
+      activeStage = 3; // Picked‑Up
+    } else if (status === 'pending_delivery' && assigned && driverLocations[assigned] && driverLocations[assigned].shift_active === true) {
+      activeStage = 4; // Out for Delivery
+    } else if (status === 'completed') {
+      activeStage = null; // no active stage for completed jobs
     }
-    const jobs = [];
-    snap.forEach(child => { jobs.push({...child.val(), id: child.key}); });
-    jobs.sort((a,b) => b.timestamp - a.timestamp);
 
-    jobs.forEach(job => {
-      const dateStr = new Date(job.timestamp).toLocaleString();
-      const status = job.status || 'pending_pickup';
-      const assigned = (job.assigned_to && job.assigned_to !== 'Unassigned') ? job.assigned_to : null;
+    // Build node classes array
+    const nodeClasses = [
+      c1 ? 'completed' : '',
+      c2 ? 'completed' : '',
+      c3 ? 'completed' : '',
+      c4 ? 'completed' : '',
+      c5 ? 'completed' : ''
+    ];
+    if (activeStage) {
+      nodeClasses[activeStage - 1] += ' active';
+    }
 
-      // Completion flags for each stage
-      const c1 = true; // Ordered always completed
-      const c2 = assigned !== null; // Assigned completed if a driver is assigned
-      const c3 = !!(job.picked_up_by) || status === 'in_transit'; // Picked‑Up completed if pickup happened
-      const c4 = (status === 'completed') || (status === 'pending_delivery' && assigned && driverLocations[assigned] && driverLocations[assigned].shift_active === true); // Out for Delivery completed if delivered OR (pending_delivery + driver on shift)
-      const c5 = (status === 'completed'); // Delivered completed if job is completed
-
-      // Determine active stage (the one that should pulse)
-      let activeStage = null;
-      if (status === 'pending_pickup' && assigned) {
-        activeStage = 2; // Assigned
-      } else if (status === 'in_transit') {
-        activeStage = 3; // Picked‑Up
-      } else if (status === 'pending_delivery' && assigned && driverLocations[assigned] && driverLocations[assigned].shift_active === true) {
-        activeStage = 4; // Out for Delivery
-      } else if (status === 'completed') {
-        activeStage = null; // no active stage for completed jobs
+    // Fill width: number of completed nodes before the active node (if any) * 25%
+    let fillWidth = '0%';
+    if (activeStage) {
+      let completedBefore = 0;
+      for (let i = 0; i < activeStage - 1; i++) {
+        if (nodeClasses[i].includes('completed')) completedBefore++;
       }
-
-      // Build node classes array
-      const nodeClasses = [
-        c1 ? 'completed' : '',
-        c2 ? 'completed' : '',
-        c3 ? 'completed' : '',
-        c4 ? 'completed' : '',
-        c5 ? 'completed' : ''
-      ];
-      if (activeStage) {
-        nodeClasses[activeStage - 1] += ' active';
+      fillWidth = (completedBefore * 25) + '%';
+    } else {
+      const completedCount = [c1,c2,c3,c4,c5].filter(Boolean).length;
+      if (completedCount > 1) {
+        fillWidth = ((completedCount - 1) * 25) + '%';
       }
+    }
 
-      // Fill width: number of completed nodes before the active node (if any) * 25%
-      // Count completed nodes that are strictly before the active stage,
-      // or all completed if no active stage.
-      let fillWidth = '0%';
-      if (activeStage) {
-        // count completed nodes before activeStage
-        let completedBefore = 0;
-        for (let i = 0; i < activeStage - 1; i++) {
-          if (nodeClasses[i].includes('completed')) completedBefore++;
-        }
-        fillWidth = (completedBefore * 25) + '%';
-      } else {
-        // no active stage -> all completed nodes count (except ordered is base)
-        const completedCount = [c1,c2,c3,c4,c5].filter(Boolean).length;
-        if (completedCount > 1) {
-          fillWidth = ((completedCount - 1) * 25) + '%';
-        }
-      }
+    const packageDetailsDisplay = job.package_details || 'N/A';
+    const poDisplay = job.po_number ? job.po_number : 'N/A';
+    const isCompleted = (status === 'completed');
+    const cardId = 'order-card-' + job.id;
 
-      const packageDetailsDisplay = job.package_details || 'N/A';
-      const poDisplay = job.po_number ? job.po_number : 'N/A';
-      const isCompleted = (status === 'completed');
-      const cardId = 'order-card-' + job.id;
+    const timelineHtml = `
+      <div class="ocean-timeline">
+        <div class="ocean-track"><div class="ocean-fill" style="width: ${fillWidth};"></div></div>
+        <div class="ocean-node ${nodeClasses[0]}"><div class="ocean-label">Ordered</div></div>
+        <div class="ocean-node ${nodeClasses[1]}"><div class="ocean-label">Assigned</div></div>
+        <div class="ocean-node ${nodeClasses[2]}"><div class="ocean-label">Picked‑Up</div></div>
+        <div class="ocean-node ${nodeClasses[3]}"><div class="ocean-label">Out for Delivery</div></div>
+        <div class="ocean-node ${nodeClasses[4]}"><div class="ocean-label">Delivered</div></div>
+      </div>
+    `;
 
-      const timelineHtml = `
-        <div class="ocean-timeline">
-          <div class="ocean-track"><div class="ocean-fill" style="width: ${fillWidth};"></div></div>
-          <div class="ocean-node ${nodeClasses[0]}"><div class="ocean-label">Ordered</div></div>
-          <div class="ocean-node ${nodeClasses[1]}"><div class="ocean-label">Assigned</div></div>
-          <div class="ocean-node ${nodeClasses[2]}"><div class="ocean-label">Picked‑Up</div></div>
-          <div class="ocean-node ${nodeClasses[3]}"><div class="ocean-label">Out for Delivery</div></div>
-          <div class="ocean-node ${nodeClasses[4]}"><div class="ocean-label">Delivered</div></div>
-        </div>
-      `;
-
-      const cardInnerHtml = `
-        <div class="order-date">${dateStr}</div>
-        <div class="dashboard-section">
-          <div class="loc-flex">
-            <div>
-              <strong>Pickup</strong>
-              ${job.name}<br>
-              <span style="color:#aaa; font-size:12px;">${job.pickup_location}</span>
-            </div>
+    const cardInnerHtml = `
+      <div class="order-date">${dateStr}</div>
+      <div class="dashboard-section">
+        <div class="loc-flex">
+          <div>
+            <strong>Pickup</strong>
+            ${job.name}<br>
+            <span style="color:#aaa; font-size:12px;">${job.pickup_location}</span>
           </div>
         </div>
-        <div class="dashboard-section" style="margin-top: 15px;">
-          <div class="loc-flex">
-            <div>
-              <strong>Delivery</strong>
-              ${job.delivery_name}<br>
-              <span style="color:#aaa; font-size:12px;">${job.destination}</span>
-            </div>
+      </div>
+      <div class="dashboard-section" style="margin-top: 15px;">
+        <div class="loc-flex">
+          <div>
+            <strong>Delivery</strong>
+            ${job.delivery_name}<br>
+            <span style="color:#aaa; font-size:12px;">${job.destination}</span>
           </div>
         </div>
-        <div class="dashboard-section" style="margin-top: 15px;">
-          <div class="loc-flex">
-            <div>
-              <strong>Packages/Items/Dimensions</strong>
-              <span style="color:#aaa; font-size:12px;">${packageDetailsDisplay}</span>
-            </div>
+      </div>
+      <div class="dashboard-section" style="margin-top: 15px;">
+        <div class="loc-flex">
+          <div>
+            <strong>Packages/Items/Dimensions</strong>
+            <span style="color:#aaa; font-size:12px;">${packageDetailsDisplay}</span>
           </div>
         </div>
-        <div class="dashboard-section" style="margin-top: 15px;">
-          <div class="loc-flex">
-            <div>
-              <strong>PO / Ref</strong>
-              <span style="color:#aaa; font-size:12px;">${poDisplay}</span>
-            </div>
+      </div>
+      <div class="dashboard-section" style="margin-top: 15px;">
+        <div class="loc-flex">
+          <div>
+            <strong>PO / Ref</strong>
+            <span style="color:#aaa; font-size:12px;">${poDisplay}</span>
           </div>
         </div>
-        ${timelineHtml}
-      `;
+      </div>
+      ${timelineHtml}
+    `;
 
-      if (isCompleted) {
-        list.innerHTML += `
-          <div style="margin-bottom: 25px;">
-            <button onclick="const el = document.getElementById('${cardId}'); el.style.display = el.style.display === 'none' ? 'block' : 'none';" style="width: 100%; padding: 15px; background: var(--input-bg); border: 1px solid var(--success); border-radius: 6px; color: var(--text); text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-              <span style="font-weight: bold; font-size: 13px;">✅ ${dateStr}</span>
-              <span style="font-size: 12px; color: var(--placeholder); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 50%;">📦 ${packageDetailsDisplay}</span>
-            </button>
-            <div id="${cardId}" class="order-card" style="display: none; margin-bottom: 0; border-top: none; border-top-left-radius: 0; border-top-right-radius: 0;">
-              ${cardInnerHtml}
-            </div>
-          </div>
-        `;
-      } else {
-        list.innerHTML += `
-          <div class="order-card">
+    if (isCompleted) {
+      list.innerHTML += `
+        <div style="margin-bottom: 25px;">
+          <button onclick="const el = document.getElementById('${cardId}'); el.style.display = el.style.display === 'none' ? 'block' : 'none';" style="width: 100%; padding: 15px; background: var(--input-bg); border: 1px solid var(--success); border-radius: 6px; color: var(--text); text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+            <span style="font-weight: bold; font-size: 13px;">✅ ${dateStr}</span>
+            <span style="font-size: 12px; color: var(--placeholder); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 50%;">📦 ${packageDetailsDisplay}</span>
+          </button>
+          <div id="${cardId}" class="order-card" style="display: none; margin-bottom: 0; border-top: none; border-top-left-radius: 0; border-top-right-radius: 0;">
             ${cardInnerHtml}
           </div>
-        `;
-      }
-    });
+        </div>
+      `;
+    } else {
+      list.innerHTML += `
+        <div class="order-card">
+          ${cardInnerHtml}
+        </div>
+      `;
+    }
   });
 }
   form.addEventListener("submit", e => {
