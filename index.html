@@ -666,22 +666,23 @@ db.ref("driver_locations").on("value", s => {
 
   let ordersRefreshInterval = null;
 
-  function showOrdersHistory() {
-    document.getElementById('main-app-container').style.display = 'none';
-    document.getElementById('orders-history-container').style.display = 'block';
-    renderOrdersHistory();
+ function showOrdersHistory() {
+  document.getElementById('main-app-container').style.display = 'none';
+  document.getElementById('orders-history-container').style.display = 'block';
+  renderOrdersHistory();
 
-    // Force re-render every 2 seconds while dashboard is open (for debugging – can be removed later)
-    if (ordersRefreshInterval) clearInterval(ordersRefreshInterval);
-    ordersRefreshInterval = setInterval(() => {
-      if (document.getElementById('orders-history-container').style.display === 'block') {
-        renderOrdersHistory();
-      } else {
-        clearInterval(ordersRefreshInterval);
-        ordersRefreshInterval = null;
-      }
-    }, 2000);
-  }
+  // Clear any existing interval
+  if (window.ordersRefreshInterval) clearInterval(window.ordersRefreshInterval);
+  // Set new interval to re-render every 2 seconds while dashboard is open
+  window.ordersRefreshInterval = setInterval(() => {
+    if (document.getElementById('orders-history-container').style.display === 'block') {
+      renderOrdersHistory();
+    } else {
+      clearInterval(window.ordersRefreshInterval);
+      window.ordersRefreshInterval = null;
+    }
+  }, 2000);
+}
 
   function hideOrdersHistory() {
     if (ordersRefreshInterval) {
