@@ -684,22 +684,24 @@ db.ref("driver_locations").on("value", s => {
   }, 2000);
 }
 
-  function hideOrdersHistory() {
-    if (ordersRefreshInterval) {
-      clearInterval(ordersRefreshInterval);
-      ordersRefreshInterval = null;
-    }
-    document.getElementById('orders-history-container').style.display = 'none';
-    document.getElementById('main-app-container').style.display = 'block';
-    document.getElementById('pickupForm').style.display = 'block';
-    document.getElementById('thanksMessage').style.display = 'none';
-    document.getElementById('pickupForm').reset();
-    pickupVerified = false;
-    dropVerified = false;
-    submitBtn.innerText = "Submit Request";
-    submitBtn.disabled = false;
-    submitBtn.style.opacity = "1";
+ function hideOrdersHistory() {
+  // Clear the refresh interval
+  if (window.ordersRefreshInterval) {
+    clearInterval(window.ordersRefreshInterval);
+    window.ordersRefreshInterval = null;
   }
+
+  document.getElementById('orders-history-container').style.display = 'none';
+  document.getElementById('main-app-container').style.display = 'block';
+  document.getElementById('pickupForm').style.display = 'block';
+  document.getElementById('thanksMessage').style.display = 'none';
+  document.getElementById('pickupForm').reset();
+  pickupVerified = false;
+  dropVerified = false;
+  submitBtn.innerText = "Submit Request";
+  submitBtn.disabled = false;
+  submitBtn.style.opacity = "1";
+}
 
   function renderOrdersHistory() {
     if (document.getElementById('orders-history-container').style.display !== 'block') return;
