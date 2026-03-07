@@ -689,7 +689,7 @@ db.ref("driver_locations").on("value", s => {
   if (window.ordersRefreshInterval) {
     clearInterval(window.ordersRefreshInterval);
     window.ordersRefreshInterval = null;
-  }
+    expandedCompletedCards.clear();  }
 
   document.getElementById('orders-history-container').style.display = 'none';
   document.getElementById('main-app-container').style.display = 'block';
