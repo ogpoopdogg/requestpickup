@@ -723,6 +723,12 @@ function clearContactForm() {
   document.getElementById('new-contact-email').value = '';
   document.getElementById('new-contact-phone').value = '';
 }
+// Fallback to show auth overlay if neither container is visible after 2 seconds
+setTimeout(function() {
+  if (document.getElementById('auth-overlay').style.display === 'none' && document.getElementById('main-app-container').style.display === 'none') {
+    document.getElementById('auth-overlay').style.display = 'flex';
+  }
+}, 2000);
 </script>
 
 <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
