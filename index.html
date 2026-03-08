@@ -432,7 +432,7 @@
 
     <div class="input-group">
       <label>Packages / Items / Dimensions <span class="required-mark">*</span></label>
-      <input type="text" name="package_details" placeholder="e.g. 2 Boxes (12x12x12), 1 Skid" required>
+      <textarea name="package_details" rows="3" placeholder="e.g. 2 Boxes (12x12x12), 1 Skid" required></textarea>
     </div>
 
     <div class="input-group">
@@ -453,7 +453,7 @@
     </div>
 
     <button type="submit" id="submitBtn">Submit Request</button>
-    <button type="button" onclick="firebase.auth().signOut()" style="background:transparent; border:1px solid var(--border); color:var(--text); padding:6px 12px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:700; width:100%; margin-top:15px;">Logout</button>
+    <button type="button" onclick="confirmLogout()" style="background:transparent; border:1px solid var(--border); color:var(--text); padding:6px 12px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:700; width:100%; margin-top:15px;">Logout</button>
   </form>
 
   <div id="thanksMessage">
@@ -510,13 +510,6 @@
     <button class="btn-cancel" style="padding:5px 10px; font-size:14px;" onclick="document.getElementById('settings-modal').style.display='none'; document.body.style.overflow='';">✖</button>
   </div>
   <div class="settings-section">
-    <h3>Theme</h3>
-    <div class="theme-toggle">
-      <button id="theme-light" onclick="setTheme('light')">Light</button>
-      <button id="theme-dark" onclick="setTheme('dark')" class="active">Dark</button>
-    </div>
-  </div>
-  <div class="settings-section">
     <h3>Autofill Defaults</h3>
     <p>Fill in fields to auto-populate when using Autofill.</p>
     <input type="text" id="default-name" placeholder="Pickup Contact Name" style="margin-bottom:8px;">
@@ -532,12 +525,12 @@
     <input type="text" id="default-package_details" placeholder="Packages/Items/Dimensions" style="margin-bottom:8px;">
     <input type="text" id="default-po_number" placeholder="PO Number" style="margin-bottom:8px;">
     <textarea id="default-other_info" placeholder="Driver Notes" rows="2" style="margin-bottom:8px;"></textarea>
-    <button id="save-defaults-btn" class="btn-save" onclick="saveDefaults()">Save Defaults</button>
+    <button id="save-defaults-btn" class="btn-save" onclick="saveDefaults()">Save Autofill Details</button>
   </div>
   <div class="settings-section">
     <h3>Address Book</h3>
+    <button class="btn-save" onclick="addCurrentAddressToBook()">Save to Address Book</button>
     <div id="savedAddressesList"></div>
-    <button class="btn-save" onclick="addCurrentAddressToBook()">Save Current Address</button>
   </div>
 </div>
 </div>
@@ -746,6 +739,16 @@
         const pAuto = new google.maps.places.Autocomplete(pInput, opts);
         const dAuto = new google.maps.places.Autocomplete(dInput, opts);
 
+        // Also initialize for settings modal fields
+        const defaultPickup = document.getElementById('default-pickup');
+        const defaultDest = document.getElementById('default-destination');
+        if (defaultPickup) {
+          new google.maps.places.Autocomplete(defaultPickup, opts);
+        }
+        if (defaultDest) {
+          new google.maps.places.Autocomplete(defaultDest, opts);
+        }
+
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (position) => {
@@ -755,6 +758,12 @@
                     });
                     pAuto.setBounds(circle.getBounds());
                     dAuto.setBounds(circle.getBounds());
+                    if (defaultPickup) {
+                      new google.maps.places.Autocomplete(defaultPickup, opts).setBounds(circle.getBounds());
+                    }
+                    if (defaultDest) {
+                      new google.maps.places.Autocomplete(defaultDest, opts).setBounds(circle.getBounds());
+                    }
                 },
                 (err) => {
                     console.warn("Geolocation warning/error, falling back to general CA scope:", err.message);
@@ -1398,6 +1407,14 @@
     currentAddressTarget = target;
     renderSavedAddressesList();
     document.getElementById('settings-modal').style.display = 'block';
+    // Scroll to address book section
+    setTimeout(() => {
+      const modalContent = document.querySelector('#settings-modal .modal-content');
+      const addrBookSection = document.getElementById('savedAddressesList');
+      if (modalContent && addrBookSection) {
+        modalContent.scrollTop = addrBookSection.offsetTop - 20;
+      }
+    }, 100);
   }
 
   function renderSavedAddressesList() {
@@ -1426,10 +1443,7 @@
     if (!nickname) return;
     const address = document.getElementById(currentAddressTarget === 'pickup' ? 'f-pickup' : 'f-drop-address').value;
     const city = document.getElementsByName(currentAddressTarget === 'pickup' ? 'city' : 'drop_city')[0].value;
-    if (!address || !city) {
-      alert('Please enter a valid address first.');
-      return;
-    }
+    if (!address || !city) return; // silently fail if empty
     savedAddresses.push({ nickname, address, city, target: currentAddressTarget });
     localStorage.setItem('ec_addresses', JSON.stringify(savedAddresses));
     renderSavedAddressesList();
@@ -1457,6 +1471,13 @@
 
   function loadSelectedAddress() {
     // This is for the dropdown (optional)
+  }
+
+  // Confirm logout
+  function confirmLogout() {
+    if (confirm("Are you sure you want to logout?")) {
+      firebase.auth().signOut();
+    }
   }
 
 </script>
