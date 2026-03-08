@@ -612,6 +612,7 @@ var firebaseConfig = {
   appId: "YOUR_APP_ID"
 };
 firebase.initializeApp(firebaseConfig);
+var db = firebase.database();
 var M=null,N=null,O=null,P=new Set(),Q={},R={},S=null,T='',U='all',V=(()=>{var _a=localStorage.getItem('ec_addresses');if(!_a)return[];try{var _b=JSON.parse(_a);return _b.map(_c=>{if(_c.nickname&&!_c.name){return{name:_c.nickname,address:_c.address,city:_c.city,email:_c.email||'',phone:_c.phone||'',target:_c.target}}return _c})}catch(_d){return[]}})(),W='pickup',X=null,Y,Z,aa,ab='',ac,ad=!1,ae=!1,af=document.getElementById("pickupForm"),ag=document.getElementById("submitBtn"),ah=firebase.database();
 
 firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
