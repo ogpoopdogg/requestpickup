@@ -567,9 +567,29 @@
       <h2 style="color:var(--accent); margin:0;">Address Book</h2>
       <button class="btn-cancel" style="padding:5px 10px; font-size:14px;" onclick="showSettingsMain()">← Back</button>
     </div>
-    <div class="settings-section">
-      <button class="btn-save" onclick="addCurrentAddressToBook()">Save to Address Book</button>
+    
+    <!-- Address Book List View -->
+    <div id="addressbook-list-view">
+      <button class="btn-save" style="width:100%; margin-bottom:15px;" onclick="showCreateAddressForm()">Create New Contact</button>
       <div id="savedAddressesList"></div>
+    </div>
+
+    <!-- Address Book Create Form View -->
+    <div id="addressbook-create-view" style="display: none;">
+      <h3 style="color:var(--accent); margin-top:0;">Create Contact</h3>
+      <div class="settings-section">
+        <input type="text" id="new-contact-name" placeholder="Contact / Business Name" style="margin-bottom:8px;">
+        <div style="position: relative; margin-bottom:8px;">
+          <input type="text" id="new-contact-address" placeholder="Street Address" style="padding-right: 40px;">
+          <button style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="openLocationPicker('new-contact')" type="button">📍</button>
+        </div>
+        <input type="email" id="new-contact-email" placeholder="Email" style="margin-bottom:8px;">
+        <input type="tel" id="new-contact-phone" placeholder="Phone" style="margin-bottom:8px;" oninput="formatPhone(this)">
+        <div style="display:flex; gap:10px;">
+          <button class="btn-save" style="flex:1;" onclick="saveNewContact()">Save to Address Book</button>
+          <button class="btn-cancel" style="flex:1;" onclick="hideCreateAddressForm()">Cancel</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -638,7 +658,30 @@
   let orderStatusFilter = 'all';
 
   // For address book
-  let savedAddresses = JSON.parse(localStorage.getItem('ec_addresses') || '[]');
+  // Migrate old address format if needed
+  let savedAddresses = (() => {
+    const raw = localStorage.getItem('ec_addresses');
+    if (!raw) return [];
+    try {
+      const parsed = JSON.parse(raw);
+      // If old format (has nickname but no name), convert
+      return parsed.map(addr => {
+        if (addr.nickname && !addr.name) {
+          return {
+            name: addr.nickname,
+            address: addr.address,
+            city: addr.city,
+            email: addr.email || '',
+            phone: addr.phone || '',
+            target: addr.target
+          };
+        }
+        return addr;
+      });
+    } catch (e) {
+      return [];
+    }
+  })();
   let currentAddressTarget = 'pickup'; // which field we are saving for
 
   // Listen for driver zones
@@ -785,6 +828,7 @@
         // Also initialize for settings modal fields
         const defaultPickup = document.getElementById('default-pickup');
         const defaultDest = document.getElementById('default-destination');
+        const newContactAddress = document.getElementById('new-contact-address');
         if (defaultPickup) {
           const autoPickup = new google.maps.places.Autocomplete(defaultPickup, opts);
           autoPickup.addListener('place_changed', () => {
@@ -803,6 +847,14 @@
             }
           });
         }
+        if (newContactAddress) {
+          const autoNew = new google.maps.places.Autocomplete(newContactAddress, opts);
+          autoNew.addListener('place_changed', () => {
+            const place = autoNew.getPlace();
+            // We don't have a city field for new contact, but we can store city later if needed
+            // For now, just let it populate the address field.
+          });
+        }
 
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -818,6 +870,9 @@
                     }
                     if (defaultDest) {
                       new google.maps.places.Autocomplete(defaultDest, opts).setBounds(circle.getBounds());
+                    }
+                    if (newContactAddress) {
+                      new google.maps.places.Autocomplete(newContactAddress, opts).setBounds(circle.getBounds());
                     }
                 },
                 (err) => {
@@ -948,7 +1003,53 @@
     document.getElementById('settings-main').style.display = 'none';
     document.getElementById('settings-autofill').style.display = 'none';
     document.getElementById('settings-addressbook').style.display = 'block';
+    // Show list view, hide create form
+    document.getElementById('addressbook-list-view').style.display = 'block';
+    document.getElementById('addressbook-create-view').style.display = 'none';
     renderSavedAddressesList(); // refresh list
+  }
+
+  function showCreateAddressForm() {
+    document.getElementById('addressbook-list-view').style.display = 'none';
+    document.getElementById('addressbook-create-view').style.display = 'block';
+    // Clear form fields
+    document.getElementById('new-contact-name').value = '';
+    document.getElementById('new-contact-address').value = '';
+    document.getElementById('new-contact-email').value = '';
+    document.getElementById('new-contact-phone').value = '';
+  }
+
+  function hideCreateAddressForm() {
+    document.getElementById('addressbook-list-view').style.display = 'block';
+    document.getElementById('addressbook-create-view').style.display = 'none';
+  }
+
+  function saveNewContact() {
+    const name = document.getElementById('new-contact-name').value.trim();
+    const address = document.getElementById('new-contact-address').value.trim();
+    const email = document.getElementById('new-contact-email').value.trim();
+    const phone = document.getElementById('new-contact-phone').value.trim();
+
+    if (!name || !address) {
+      alert('Please enter at least a name and address.');
+      return;
+    }
+
+    // We need to extract city from address? For simplicity, we'll store empty city.
+    // In a real app, we might geocode to get city, but for now, let's set city to empty.
+    const city = ''; // could be extracted from places if needed
+
+    savedAddresses.push({
+      name: name,
+      address: address,
+      city: city,
+      email: email,
+      phone: phone,
+      target: currentAddressTarget
+    });
+    localStorage.setItem('ec_addresses', JSON.stringify(savedAddresses));
+    renderSavedAddressesList();
+    hideCreateAddressForm();
   }
 
   let ordersRefreshInterval = null;
@@ -1478,6 +1579,9 @@
         } else if (currentPickerTarget === 'settings-drop') {
           document.getElementById('default-destination').value = addr;
           document.getElementById('default-drop_city').value = city;
+        } else if (currentPickerTarget === 'new-contact') {
+          document.getElementById('new-contact-address').value = addr;
+          // For new contact, we don't have a separate city field, so we ignore city
         }
       }
       document.getElementById('location-picker-modal').style.display = 'none';
@@ -1501,8 +1605,9 @@
       listDiv.innerHTML += `
         <div style="border:1px solid var(--border); padding:8px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center;">
           <div>
-            <strong>${addr.nickname}</strong><br>
-            <span style="font-size:12px;">${addr.address} (${addr.city})</span>
+            <strong>${addr.name}</strong><br>
+            <span style="font-size:12px;">${addr.address} ${addr.city ? '(' + addr.city + ')' : ''}</span><br>
+            <span style="font-size:11px; color:#aaa;">${addr.email} ${addr.phone ? '• ' + addr.phone : ''}</span>
           </div>
           <div>
             <button onclick="useAddress(${index})" style="background:var(--accent); color:#000; border:none; padding:4px 8px; margin-right:4px;">Use</button>
@@ -1514,29 +1619,21 @@
     if (savedAddresses.length === 0) listDiv.innerHTML = '<p>No saved addresses.</p>';
   }
 
-  function addCurrentAddressToBook() {
-    const nickname = prompt('Enter a nickname for this address (e.g., Office, Warehouse):');
-    if (!nickname) return;
-    const address = document.getElementById(currentAddressTarget === 'pickup' ? 'f-pickup' : 'f-drop-address').value;
-    const city = document.getElementsByName(currentAddressTarget === 'pickup' ? 'city' : 'drop_city')[0].value;
-    if (!address || !city) {
-      alert('Please enter an address and city first.');
-      return;
-    }
-    savedAddresses.push({ nickname, address, city, target: currentAddressTarget });
-    localStorage.setItem('ec_addresses', JSON.stringify(savedAddresses));
-    renderSavedAddressesList();
-  }
-
   function useAddress(index) {
     const addr = savedAddresses[index];
     if (addr.target === 'pickup') {
       document.getElementById('f-pickup').value = addr.address;
-      document.getElementsByName('city')[0].value = addr.city;
+      document.getElementsByName('city')[0].value = addr.city || '';
+      document.getElementsByName('name')[0].value = addr.name || '';
+      document.getElementsByName('p_email')[0].value = addr.email || '';
+      document.getElementsByName('p_phone')[0].value = addr.phone || '';
       pickupVerified = true;
     } else {
       document.getElementById('f-drop-address').value = addr.address;
-      document.getElementsByName('drop_city')[0].value = addr.city;
+      document.getElementsByName('drop_city')[0].value = addr.city || '';
+      document.getElementsByName('delivery_name')[0].value = addr.name || '';
+      document.getElementsByName('d_email')[0].value = addr.email || '';
+      document.getElementsByName('d_phone')[0].value = addr.phone || '';
       dropVerified = true;
     }
     document.getElementById('settings-modal').style.display = 'none';
