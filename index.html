@@ -55,7 +55,7 @@
 
   body.light-mode .modal-content { background: #ffffff; color: #000000; }
   body.light-mode .btn-cancel { background: #eee; color: #333; border-color: #ccc; }
-  body.light-mode button[onclick="customerSignUp()"] { background: var(--accent) !important; color: #000 !important; border: none !important; }
+  body.light-mode button[onclick="e()"] { background: var(--accent) !important; color: #000 !important; border: none !important; }
   body.light-mode input:focus, body.light-mode textarea:focus, body.light-mode select:focus { background: #ffffff !important; }
 
   body.light-mode .btn-back-form { background: transparent; border: 1px solid #000000; color: #000000; }
@@ -312,12 +312,12 @@
   #location-picker-modal { z-index: 2001; }
 </style>
 </head>
-<body> <!-- removed light-mode class for dark default -->
+<body>
 
 <div id="auth-overlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; min-height: 100vh; overflow-y: auto; background: var(--bg); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; box-sizing: border-box;">
   
   <div style="max-width: 600px; width: 100%; text-align: center; margin-bottom: 30px;">
-    <img src="icon2.png" alt="E&C Logo" style="height: 60px; margin-bottom: 15px; filter: drop-shadow(0 0 5px var(--accent)); cursor: pointer;" onclick="toggleTheme()" onerror="this.style.display='none'">
+    <img src="icon2.png" alt="E&C Logo" style="height: 60px; margin-bottom: 15px; filter: drop-shadow(0 0 5px var(--accent)); cursor: pointer;" onclick="a()" onerror="this.style.display='none'">
     <h1 style="color: var(--accent); font-size: 26px; margin: 0 0 10px 0; text-transform: uppercase;">E&C Courier</h1>
     <p style="color: #e0e0e0; font-size: 15px; margin-bottom: 15px; line-height: 1.5;">
       Request local courier pickups and deliveries quickly and securely.
@@ -338,11 +338,11 @@
       <input type="password" id="auth-password" placeholder="Password" required>
     </div>
     
-    <button type="button" onclick="customerLogin()" style="width: 100%; padding: 16px; background: var(--accent); color: #000; font-weight: 800; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; margin-bottom: 12px; font-size: 16px;">Login</button>
-    <button type="button" onclick="customerSignUp()" style="width: 100%; padding: 16px; background: #1c1c1c; color: var(--text); font-weight: 800; border: 1px solid var(--border); border-bottom: 3px solid var(--accent); border-radius: 6px; cursor: pointer; text-transform: uppercase; margin-bottom: 20px; font-size: 16px; transition: all 0.2s;">Create Account</button>
-    <button type="button" onclick="googleSignIn()" style="width: 100%; padding: 12px; background: #ffffff; border: 1px solid #dadce0; border-radius: 4px; cursor: pointer; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3); transition: background-color 0.2s;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20px" height="20px"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.519-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg><span style="font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: 500; color: #3c4043;">Sign in with Google</span></button>
+    <button type="button" onclick="d()" style="width: 100%; padding: 16px; background: var(--accent); color: #000; font-weight: 800; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; margin-bottom: 12px; font-size: 16px;">Login</button>
+    <button type="button" onclick="e()" style="width: 100%; padding: 16px; background: #1c1c1c; color: var(--text); font-weight: 800; border: 1px solid var(--border); border-bottom: 3px solid var(--accent); border-radius: 6px; cursor: pointer; text-transform: uppercase; margin-bottom: 20px; font-size: 16px; transition: all 0.2s;">Create Account</button>
+    <button type="button" onclick="f()" style="width: 100%; padding: 12px; background: #ffffff; border: 1px solid #dadce0; border-radius: 4px; cursor: pointer; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3); transition: background-color 0.2s;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20px" height="20px"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.519-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg><span style="font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: 500; color: #3c4043;">Sign in with Google</span></button>
     
-    <a href="#" onclick="forgotPassword(); return false;" style="color: var(--placeholder); font-size: 13px; text-decoration: underline;">Forgot Password?</a>
+    <a href="#" onclick="g(); return false;" style="color: var(--placeholder); font-size: 13px; text-decoration: underline;">Forgot Password?</a>
   </div>
 </div>
 
@@ -351,12 +351,12 @@
     <button id="installAppBtn" style="display:none; background:var(--accent); color:#000; border:none; padding:10px 20px; font-weight:900; border-radius:6px; margin-bottom:15px; cursor:pointer; font-size:14px; text-transform:uppercase;">Install App</button>
     <div style="display:flex; justify-content: space-between; width: 100%; align-items: center;">
         <div style="display:flex; align-items:center; gap:15px;">
-            <img src="icon2.png" alt="E&C Logo" style="cursor: pointer;" onclick="toggleTheme()" onerror="this.style.display='none'"> 
+            <img src="icon2.png" alt="E&C Logo" style="cursor: pointer;" onclick="a()" onerror="this.style.display='none'"> 
             <h1>Request Pickup Now</h1>
         </div>
         <div style="display:flex; gap:5px;">
-            <button id="settingsBtn" style="background:transparent; border:none; color:var(--accent); padding:8px 12px; border-radius:4px; cursor:pointer; font-size:16px; line-height:1;" onclick="openSettings()">⚙️</button>
-            <button id="viewOrdersBtn" style="background:var(--accent); color:#000; border:none; padding:8px 12px; font-weight:700; border-radius:4px; cursor:pointer; font-size:12px; text-transform:uppercase;" onclick="showOrdersHistory()" type="button">View Orders</button>
+            <button id="settingsBtn" style="background:transparent; border:none; color:var(--accent); padding:8px 12px; border-radius:4px; cursor:pointer; font-size:16px; line-height:1;" onclick="o()">⚙️</button>
+            <button id="viewOrdersBtn" style="background:var(--accent); color:#000; border:none; padding:8px 12px; font-weight:700; border-radius:4px; cursor:pointer; font-size:12px; text-transform:uppercase;" onclick="w()" type="button">View Orders</button>
         </div>
     </div>
   </div>
@@ -364,8 +364,8 @@
   <form id="pickupForm">
     <input type="text" name="website_url_hp" id="website_url_hp" style="display:none;" tabindex="-1" autocomplete="off">
     
-    <button type="button" id="autofillDetailsBtn" style="width:100%; padding:10px; background:#333; color:#fff; border:1px solid var(--accent); border-radius:4px; margin-bottom:15px; cursor:pointer; text-transform:uppercase; font-size:12px; font-weight:bold;" onclick="autofillDetails()">Autofill</button>
-    <button type="button" id="autofillBtn" style="display:none; width:100%; padding:10px; background:#333; color:#fff; border:1px solid var(--accent); border-radius:4px; margin-bottom:15px; cursor:pointer; text-transform:uppercase; font-size:12px; font-weight:bold;" onclick="autofillLastOrder()">Autofill from Last Order</button>
+    <button type="button" id="autofillDetailsBtn" style="width:100%; padding:10px; background:#333; color:#fff; border:1px solid var(--accent); border-radius:4px; margin-bottom:15px; cursor:pointer; text-transform:uppercase; font-size:12px; font-weight:bold;" onclick="l()">Autofill</button>
+    <button type="button" id="autofillBtn" style="display:none; width:100%; padding:10px; background:#333; color:#fff; border:1px solid var(--accent); border-radius:4px; margin-bottom:15px; cursor:pointer; text-transform:uppercase; font-size:12px; font-weight:bold;" onclick="k()">Autofill from Last Order</button>
 
     <div class="section-title">Pickup Details</div>
     
@@ -378,10 +378,10 @@
       <div class="input-group" style="flex: 2; position: relative;">
         <label>Pickup Address <span class="required-mark">*</span></label>
         <input type="text" id="f-pickup" name="pickup_location" placeholder="Street Address" required autocomplete="street-address" style="padding-right: 40px;">
-        <button style="position: absolute; right: 10px; bottom: 15px; background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="openLocationPicker('pickup')" type="button">📍</button>
+        <button style="position: absolute; right: 10px; bottom: 15px; background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="E('pickup')" type="button">📍</button>
       </div>
       <div class="input-group" style="flex: 0 0 auto;">
-        <button type="button" class="address-book-btn" onclick="openAddressBook('pickup')">📖</button>
+        <button type="button" class="address-book-btn" onclick="F('pickup')">📖</button>
       </div>
       <div class="input-group" style="display: none;">
         <input type="hidden" name="city" required>
@@ -395,7 +395,7 @@
       </div>
       <div class="input-group" style="flex: 1;">
         <label>Pickup Phone</label>
-        <input type="tel" name="p_phone" placeholder="(204) 555-0123" autocomplete="tel" oninput="formatPhone(this)">
+        <input type="tel" name="p_phone" placeholder="(204) 555-0123" autocomplete="tel" oninput="h(this)">
       </div>
     </div>
 
@@ -410,10 +410,10 @@
       <div class="input-group" style="flex: 2; position: relative;">
         <label>Delivery Address <span class="required-mark">*</span></label>
         <input type="text" id="f-drop-address" name="destination" placeholder="Street Address" required style="padding-right: 40px;">
-        <button style="position: absolute; right: 10px; bottom: 15px; background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="openLocationPicker('drop')" type="button">📍</button>
+        <button style="position: absolute; right: 10px; bottom: 15px; background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="E('drop')" type="button">📍</button>
       </div>
       <div class="input-group" style="flex: 0 0 auto;">
-        <button type="button" class="address-book-btn" onclick="openAddressBook('drop')">📖</button>
+        <button type="button" class="address-book-btn" onclick="F('drop')">📖</button>
       </div>
       <div class="input-group" style="display: none;">
         <input type="hidden" name="drop_city" required>
@@ -427,7 +427,7 @@
       </div>
       <div class="input-group" style="flex: 1;">
         <label>Delivery Phone</label>
-        <input type="tel" name="d_phone" placeholder="(204) 555-0123" autocomplete="tel" oninput="formatPhone(this)">
+        <input type="tel" name="d_phone" placeholder="(204) 555-0123" autocomplete="tel" oninput="h(this)">
       </div>
     </div>
 
@@ -450,13 +450,13 @@
 
     <!-- Address book dropdown (hidden by default) -->
     <div id="addressBookDropdown" style="display: none; margin-bottom: 15px;">
-      <select id="savedAddressesSelect" onchange="loadSelectedAddress()">
+      <select id="savedAddressesSelect" onchange="J()">
         <option value="">-- Select a saved address --</option>
       </select>
     </div>
 
     <button type="submit" id="submitBtn">Submit Request</button>
-    <button type="button" onclick="confirmLogout()" style="background:transparent; border:1px solid var(--border); color:var(--text); padding:6px 12px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:700; width:100%; margin-top:15px;">Logout</button>
+    <button type="button" onclick="K()" style="background:transparent; border:1px solid var(--border); color:var(--text); padding:6px 12px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:700; width:100%; margin-top:15px;">Logout</button>
   </form>
 
   <div id="thanksMessage">
@@ -470,12 +470,12 @@
 <div class="container" id="orders-history-container" style="display: none; padding: 20px;">
   <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
     <h2 style="color: var(--text); margin: 0; font-size: 18px; text-transform: uppercase;">Order Dashboard</h2>
-    <button onclick="hideOrdersHistory()" class="btn-back-form">BACK TO FORM</button>
+    <button onclick="x()" class="btn-back-form">BACK TO FORM</button>
   </div>
   <!-- Search and filter bar -->
   <div class="order-search-bar">
-    <input type="text" id="orderSearchInput" placeholder="Search by package, PO, names, address..." oninput="orderSearchText=this.value; renderOrdersHistory();">
-    <select id="orderStatusFilter" onchange="orderStatusFilter=this.value; renderOrdersHistory();">
+    <input type="text" id="orderSearchInput" placeholder="Search by package, PO, names, address..." oninput="T=this.value; A();">
+    <select id="orderStatusFilter" onchange="U=this.value; A();">
       <option value="all">All status</option>
       <option value="pending">Pending</option>
       <option value="in_progress">In progress</option>
@@ -495,13 +495,13 @@
 </div>
 <div style="padding: 10px; background: var(--card); border-bottom: 1px solid var(--border); display: flex; gap: 5px;">
   <input type="text" id="loc-search-bar" placeholder="Search address or paste GPS (e.g. 49.852, -99.951)" style="margin:0; flex:1; padding: 10px;">
-  <button onclick="searchLocation()" style="padding: 10px; background: var(--accent); color: #000; border: none; border-radius: 4px; cursor: pointer;">Go</button>
+  <button onclick="C()" style="padding: 10px; background: var(--accent); color: #000; border: none; border-radius: 4px; cursor: pointer;">Go</button>
 </div>
 <div style="flex: 1; position: relative;">
 <div id="picker-map" style="width:100%; height:100%;"></div>
 <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%); pointer-events: none; font-size: 32px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); z-index: 10;">📍</div>
 </div>
-<button class="btn-save" style="width: 100%; border-radius: 0; padding: 16px; font-size: 16px; position: sticky; bottom: 0; z-index: 11;" onclick="setPickerLocation()">SET LOCATION</button>
+<button class="btn-save" style="width: 100%; border-radius: 0; padding: 16px; font-size: 16px; position: sticky; bottom: 0; z-index: 11;" onclick="D()">SET LOCATION</button>
 </div>
 </div>
 
@@ -518,15 +518,15 @@
     <div class="settings-section">
       <h3>Theme</h3>
       <div class="theme-toggle">
-        <button id="theme-light" onclick="setTheme('light')">Light</button>
-        <button id="theme-dark" onclick="setTheme('dark')" class="active">Dark</button>
+        <button id="theme-light" onclick="b('light')">Light</button>
+        <button id="theme-dark" onclick="b('dark')" class="active">Dark</button>
       </div>
     </div>
     <div class="settings-section">
-      <button class="btn-save" style="width:100%;" onclick="showAutofillSettings()">Autofill Details</button>
+      <button class="btn-save" style="width:100%;" onclick="q()">Autofill Details</button>
     </div>
     <div class="settings-section">
-      <button class="btn-save" style="width:100%;" onclick="showAddressBookSettings()">Address Book</button>
+      <button class="btn-save" style="width:100%;" onclick="r()">Address Book</button>
     </div>
   </div>
 
@@ -534,14 +534,14 @@
   <div id="settings-autofill" style="display: none;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
       <h2 style="color:var(--accent); margin:0;">Autofill Details</h2>
-      <button class="btn-cancel" style="padding:5px 10px; font-size:14px;" onclick="showSettingsMain()">← Back</button>
+      <button class="btn-cancel" style="padding:5px 10px; font-size:14px;" onclick="p()">← Back</button>
     </div>
     <div class="settings-section">
       <p>Fill in fields to auto-populate when using Autofill.</p>
       <input type="text" id="default-name" placeholder="Pickup Contact Name" style="margin-bottom:8px;">
       <div style="position: relative; margin-bottom:8px;">
         <input type="text" id="default-pickup" placeholder="Pickup Address" style="padding-right: 40px;">
-        <button style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="openLocationPicker('settings-pickup')" type="button">📍</button>
+        <button style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="E('settings-pickup')" type="button">📍</button>
       </div>
       <input type="text" id="default-city" placeholder="Pickup City" style="margin-bottom:8px;">
       <input type="email" id="default-p_email" placeholder="Pickup Email" style="margin-bottom:8px;">
@@ -549,7 +549,7 @@
       <input type="text" id="default-delivery_name" placeholder="Delivery Contact Name" style="margin-bottom:8px;">
       <div style="position: relative; margin-bottom:8px;">
         <input type="text" id="default-destination" placeholder="Delivery Address" style="padding-right: 40px;">
-        <button style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="openLocationPicker('settings-drop')" type="button">📍</button>
+        <button style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="E('settings-drop')" type="button">📍</button>
       </div>
       <input type="text" id="default-drop_city" placeholder="Delivery City" style="margin-bottom:8px;">
       <input type="email" id="default-d_email" placeholder="Delivery Email" style="margin-bottom:8px;">
@@ -557,7 +557,7 @@
       <input type="text" id="default-package_details" placeholder="Packages/Items/Dimensions" style="margin-bottom:8px;">
       <input type="text" id="default-po_number" placeholder="PO Number" style="margin-bottom:8px;">
       <textarea id="default-other_info" placeholder="Driver Notes" rows="2" style="margin-bottom:8px;"></textarea>
-      <button id="save-defaults-btn" class="btn-save" onclick="saveDefaults()">Save Autofill Details</button>
+      <button id="save-defaults-btn" class="btn-save" onclick="m()">Save Autofill Details</button>
     </div>
   </div>
 
@@ -565,12 +565,12 @@
   <div id="settings-addressbook" style="display: none;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
       <h2 style="color:var(--accent); margin:0;">Address Book</h2>
-      <button class="btn-cancel" style="padding:5px 10px; font-size:14px;" onclick="showSettingsMain()">← Back</button>
+      <button class="btn-cancel" style="padding:5px 10px; font-size:14px;" onclick="p()">← Back</button>
     </div>
     
     <!-- Address Book List View -->
     <div id="addressbook-list-view">
-      <button class="btn-save" style="width:100%; margin-bottom:15px;" onclick="showCreateAddressForm()">Create New Contact</button>
+      <button class="btn-save" style="width:100%; margin-bottom:15px;" onclick="s()">Create New Contact</button>
       <div id="savedAddressesList"></div>
     </div>
 
@@ -581,13 +581,13 @@
         <input type="text" id="new-contact-name" placeholder="Contact / Business Name" style="margin-bottom:8px;">
         <div style="position: relative; margin-bottom:8px;">
           <input type="text" id="new-contact-address" placeholder="Street Address" style="padding-right: 40px;">
-          <button style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="openLocationPicker('new-contact')" type="button">📍</button>
+          <button style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="E('new-contact')" type="button">📍</button>
         </div>
         <input type="email" id="new-contact-email" placeholder="Email" style="margin-bottom:8px;">
-        <input type="tel" id="new-contact-phone" placeholder="Phone" style="margin-bottom:8px;" oninput="formatPhone(this)">
+        <input type="tel" id="new-contact-phone" placeholder="Phone" style="margin-bottom:8px;" oninput="h(this)">
         <div style="display:flex; gap:10px;">
-          <button class="btn-save" style="flex:1;" onclick="saveNewContact()">Save to Address Book</button>
-          <button class="btn-cancel" style="flex:1;" onclick="hideCreateAddressForm()">Cancel</button>
+          <button class="btn-save" style="flex:1;" onclick="u()">Save to Address Book</button>
+          <button class="btn-cancel" style="flex:1;" onclick="t()">Cancel</button>
         </div>
       </div>
     </div>
@@ -602,1066 +602,74 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-  // Dark mode default: if stored theme is 'light' then add class, else keep dark
-  if (localStorage.getItem('ec_theme') === 'light') document.body.classList.add('light-mode');
-  else document.body.classList.remove('light-mode');
-  function toggleTheme() { 
-    document.body.classList.toggle('light-mode'); 
-    localStorage.setItem('ec_theme', document.body.classList.contains('light-mode') ? 'light' : 'dark'); 
-    updateThemeButtons();
-  }
-  function setTheme(mode) {
-    if (mode === 'light') {
-      document.body.classList.add('light-mode');
-      localStorage.setItem('ec_theme', 'light');
-    } else {
-      document.body.classList.remove('light-mode');
-      localStorage.setItem('ec_theme', 'dark');
-    }
-    updateThemeButtons();
-  }
-  function updateThemeButtons() {
-    const isLight = document.body.classList.contains('light-mode');
-    const lightBtn = document.getElementById('theme-light');
-    const darkBtn = document.getElementById('theme-dark');
-    if (lightBtn) lightBtn.classList.toggle('active', isLight);
-    if (darkBtn) darkBtn.classList.toggle('active', !isLight);
-  }
-
-  // Initialize Firebase
-  firebase.initializeApp({
-    apiKey: "AIzaSyAKmgoXA4m3cRTmxJq4aUyva5SVvFbTNqg",
-    authDomain: "eandccourier-36fcc.firebaseapp.com",
-    databaseURL: "https://eandccourier-36fcc-default-rtdb.firebaseio.com",
-    projectId: "eandccourier-36fcc",
-    messagingSenderId: "1067680083511",
-    appId: "1:1067680083511:android:22d1eb3757302492bd19b2"
-  });
-
-  // Set persistence once
-  firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
-
-  const db = firebase.database();
-
-  let lastKnownOrder = null;
-  let currentUserJobs = null;
-  let jobsListener = null; // this will hold the detach function
-  let expandedCompletedCards = new Set();
-  let driverZones = {};
-  let driverLocations = {};
-
-  // For editing
-  let editingJobId = null;
-
-  // For search/filter
-  let orderSearchText = '';
-  let orderStatusFilter = 'all';
-
-  // For address book
-  // Migrate old address format if needed
-  let savedAddresses = (() => {
-    const raw = localStorage.getItem('ec_addresses');
-    if (!raw) return [];
-    try {
-      const parsed = JSON.parse(raw);
-      // If old format (has nickname but no name), convert
-      return parsed.map(addr => {
-        if (addr.nickname && !addr.name) {
-          return {
-            name: addr.nickname,
-            address: addr.address,
-            city: addr.city,
-            email: addr.email || '',
-            phone: addr.phone || '',
-            target: addr.target
-          };
-        }
-        return addr;
-      });
-    } catch (e) {
-      return [];
-    }
-  })();
-  let currentAddressTarget = 'pickup'; // which field we are saving for
-
-  // Listen for driver zones
-  db.ref("driver_zones").on("value", s => driverZones = s.val() || {});
-
-  // Listen for driver locations (including shift_active)
-  db.ref("driver_locations").on("value", s => {
-    driverLocations = s.val() || {};
-    console.log("driverLocations keys:", Object.keys(driverLocations));
-    // If orders history is open, re-render using the stored jobs
-    if (document.getElementById('orders-history-container').style.display === 'block') {
-      renderOrdersHistory();
-    }
-  });
-
-  // Single auth state listener (correct one)
-  firebase.auth().onAuthStateChanged((user) => {
-    const list = document.getElementById('dev-list');
-
-    if (user) {
-      if (!user.emailVerified && user.providerData.some(p => p.providerId === 'password')) {
-        alert("Please check your email and verify your account before logging in.");
-        firebase.auth().signOut();
-        return;
-      }
-      document.getElementById('auth-overlay').style.display = 'none';
-      document.getElementById('main-app-container').style.display = 'block';
-      if (document.querySelector('input[name="p_email"]')) {
-        document.querySelector('input[name="p_email"]').value = user.email;
-      }
-
-      // Remove any previous jobs listener by calling the stored detach function
-      if (jobsListener) {
-        jobsListener(); // detach previous listener
-        jobsListener = null;
-      }
-      // Listen for the user's jobs once and store the detach function in jobsListener
-      jobsListener = db.ref("jobs").orderByChild("created_by").equalTo(user.email).on('value', snap => {
-        currentUserJobs = snap.val() || {};
-        // Update lastKnownOrder for autofill
-        if (snap.exists()) {
-          const data = snap.val();
-          lastKnownOrder = Object.values(data)[0];
-          document.getElementById('autofillBtn').style.display = 'block';
-        } else {
-          lastKnownOrder = null;
-          document.getElementById('autofillBtn').style.display = 'none';
-        }
-        // If orders history is open, re-render
-        if (document.getElementById('orders-history-container').style.display === 'block') {
-          renderOrdersHistory();
-        }
-      });
-
-    } else {
-      document.getElementById('auth-overlay').style.display = 'flex';
-      document.getElementById('main-app-container').style.display = 'none';
-      if (jobsListener) {
-        jobsListener();
-        jobsListener = null;
-      }
-      currentUserJobs = null;
-    }
-
-    // Developer notes listener (unchanged)
-    firebase.database().ref('developer').on('value', snap => {
-      list.innerHTML = '';
-      const notes = snap.val() || {};
-      Object.values(notes).forEach(note => {
-        list.innerHTML += `
-          <div class="dev-item">
-            <div class="dev-hdr">${note.user} - <span style="color: orange;">${note.app || 'Database'}</span> - ${note.date}</div>
-            <div style="color:#eee;">${note.text}</div>
-          </div>`;
-      });
-      list.scrollTop = list.scrollHeight; 
-    });
-  });
-
-  // Login functions
-  function customerLogin() {
-    const e = document.getElementById('auth-email').value.trim();
-    const p = document.getElementById('auth-password').value.trim();
-    if(!e || !p) return alert("Please enter email and password.");
-    firebase.auth().signInWithEmailAndPassword(e, p).catch(err => alert("Login Error: " + err.message));
-  }
-
-  function customerSignUp() {
-    const e = document.getElementById('auth-email').value.trim();
-    const p = document.getElementById('auth-password').value.trim();
-    if(!e || !p) return alert("Please enter email and password to sign up.");
-    firebase.auth().createUserWithEmailAndPassword(e, p).then((cred) => {
-      cred.user.sendEmailVerification();
-      alert("Account created! We sent a verification link to your email. Please verify before logging in.");
-      firebase.auth().signOut();
-    }).catch(err => alert("Sign Up Error: " + err.message));
-  }
-
-  function googleSignIn() {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithPopup(provider).catch(err => alert("Google Login Error: " + err.message));
-  }
-
-  function forgotPassword() {
-    const e = document.getElementById('auth-email').value.trim();
-    if(!e) return alert("Please enter your email address first, then click Forgot Password.");
-    firebase.auth().sendPasswordResetEmail(e).then(() => {
-      alert("Password reset email sent. Please check your inbox.");
-    }).catch(err => alert("Error: " + err.message));
-  }
-
-  const form = document.getElementById("pickupForm");
-  const submitBtn = document.getElementById("submitBtn");
-
-  function formatPhone(input) {
-    let x = input.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
-    input.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
-  }
-
-  let pickupVerified = false, dropVerified = false;
-
-  function extractCity(components) {
-    if (!components) return '';
-    for (let comp of components) {
-        if (comp.types.includes("locality")) return comp.long_name;
-    }
-    for (let comp of components) {
-        if (comp.types.includes("sublocality_level_1")) return comp.long_name;
-    }
-    for (let comp of components) {
-        if (comp.types.includes("administrative_area_level_2")) return comp.long_name;
-    }
-    return '';
-  }
-
-  function initPlaces() {
-    if(window.google && google.maps && google.maps.places) {
-        const pInput = document.getElementById('f-pickup');
-        const dInput = document.getElementById('f-drop-address');
-        const opts = { componentRestrictions: { country: 'ca' } };
-        const pAuto = new google.maps.places.Autocomplete(pInput, opts);
-        const dAuto = new google.maps.places.Autocomplete(dInput, opts);
-
-        // Also initialize for settings modal fields
-        const defaultPickup = document.getElementById('default-pickup');
-        const defaultDest = document.getElementById('default-destination');
-        const newContactAddress = document.getElementById('new-contact-address');
-        if (defaultPickup) {
-          const autoPickup = new google.maps.places.Autocomplete(defaultPickup, opts);
-          autoPickup.addListener('place_changed', () => {
-            const place = autoPickup.getPlace();
-            if (place && place.address_components) {
-              document.getElementById('default-city').value = extractCity(place.address_components);
-            }
-          });
-        }
-        if (defaultDest) {
-          const autoDest = new google.maps.places.Autocomplete(defaultDest, opts);
-          autoDest.addListener('place_changed', () => {
-            const place = autoDest.getPlace();
-            if (place && place.address_components) {
-              document.getElementById('default-drop_city').value = extractCity(place.address_components);
-            }
-          });
-        }
-        if (newContactAddress) {
-          const autoNew = new google.maps.places.Autocomplete(newContactAddress, opts);
-          autoNew.addListener('place_changed', () => {
-            const place = autoNew.getPlace();
-            // We don't have a city field for new contact, but we can store city later if needed
-            // For now, just let it populate the address field.
-          });
-        }
-
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const circle = new google.maps.Circle({
-                        center: { lat: position.coords.latitude, lng: position.coords.longitude },
-                        radius: 100000
-                    });
-                    pAuto.setBounds(circle.getBounds());
-                    dAuto.setBounds(circle.getBounds());
-                    if (defaultPickup) {
-                      new google.maps.places.Autocomplete(defaultPickup, opts).setBounds(circle.getBounds());
-                    }
-                    if (defaultDest) {
-                      new google.maps.places.Autocomplete(defaultDest, opts).setBounds(circle.getBounds());
-                    }
-                    if (newContactAddress) {
-                      new google.maps.places.Autocomplete(newContactAddress, opts).setBounds(circle.getBounds());
-                    }
-                },
-                (err) => {
-                    console.warn("Geolocation warning/error, falling back to general CA scope:", err.message);
-                }
-            );
-        }
-
-        pAuto.addListener('place_changed', () => { 
-            pickupVerified = true; 
-            const place = pAuto.getPlace();
-            document.getElementsByName('city')[0].value = extractCity(place.address_components);
-        });
-        dAuto.addListener('place_changed', () => { 
-            dropVerified = true; 
-            const place = dAuto.getPlace();
-            document.getElementsByName('drop_city')[0].value = extractCity(place.address_components);
-        });
-        pInput.addEventListener('input', () => { pickupVerified = false; });
-        dInput.addEventListener('input', () => { dropVerified = false; });
-    } else {
-        setTimeout(initPlaces, 500);
-    }
-  }
-  initPlaces();
-
-  function autofillLastOrder() {
-    if (!lastKnownOrder) return;
-    form.name.value = lastKnownOrder.name || '';
-    form.pickup_location.value = lastKnownOrder.pickup_location || '';
-    form.city.value = lastKnownOrder.pickup_city || '';
-    form.p_email.value = lastKnownOrder.p_email || '';
-    form.p_phone.value = lastKnownOrder.p_phone || '';
-    form.delivery_name.value = lastKnownOrder.delivery_name || '';
-    form.destination.value = lastKnownOrder.destination || '';
-    form.drop_city.value = lastKnownOrder.delivery_city || '';
-    form.d_email.value = lastKnownOrder.d_email || '';
-    form.d_phone.value = lastKnownOrder.d_phone || '';
-    form.package_details.value = lastKnownOrder.package_details || '';
-    form.po_number.value = lastKnownOrder.po_number || '';
-    form.other_info.value = lastKnownOrder.other_info || '';
-    pickupVerified = true;
-    dropVerified = true;
-  }
-
-  function autofillDetails() {
-    // Load defaults from localStorage
-    const defaults = JSON.parse(localStorage.getItem('autofillDefaults') || '{}');
-    if (defaults.name) form.name.value = defaults.name;
-    if (defaults.pickup_location) form.pickup_location.value = defaults.pickup_location;
-    if (defaults.city) form.city.value = defaults.city;
-    if (defaults.p_email) form.p_email.value = defaults.p_email;
-    if (defaults.p_phone) form.p_phone.value = defaults.p_phone;
-    if (defaults.delivery_name) form.delivery_name.value = defaults.delivery_name;
-    if (defaults.destination) form.destination.value = defaults.destination;
-    if (defaults.drop_city) form.drop_city.value = defaults.drop_city;
-    if (defaults.d_email) form.d_email.value = defaults.d_email;
-    if (defaults.d_phone) form.d_phone.value = defaults.d_phone;
-    if (defaults.package_details) form.package_details.value = defaults.package_details;
-    if (defaults.po_number) form.po_number.value = defaults.po_number;
-    if (defaults.other_info) form.other_info.value = defaults.other_info;
-    // Optionally set verified flags based on presence of address/city
-    if (defaults.pickup_location && defaults.city) pickupVerified = true;
-    if (defaults.destination && defaults.drop_city) dropVerified = true;
-  }
-
-  function saveDefaults() {
-    const defaults = {
-      name: document.getElementById('default-name').value,
-      pickup_location: document.getElementById('default-pickup').value,
-      city: document.getElementById('default-city').value,
-      p_email: document.getElementById('default-p_email').value,
-      p_phone: document.getElementById('default-p_phone').value,
-      delivery_name: document.getElementById('default-delivery_name').value,
-      destination: document.getElementById('default-destination').value,
-      drop_city: document.getElementById('default-drop_city').value,
-      d_email: document.getElementById('default-d_email').value,
-      d_phone: document.getElementById('default-d_phone').value,
-      package_details: document.getElementById('default-package_details').value,
-      po_number: document.getElementById('default-po_number').value,
-      other_info: document.getElementById('default-other_info').value
-    };
-    localStorage.setItem('autofillDefaults', JSON.stringify(defaults));
-    alert('Defaults saved!');
-  }
-
-  function loadDefaultsIntoModal() {
-    const defaults = JSON.parse(localStorage.getItem('autofillDefaults') || '{}');
-    document.getElementById('default-name').value = defaults.name || '';
-    document.getElementById('default-pickup').value = defaults.pickup_location || '';
-    document.getElementById('default-city').value = defaults.city || '';
-    document.getElementById('default-p_email').value = defaults.p_email || '';
-    document.getElementById('default-p_phone').value = defaults.p_phone || '';
-    document.getElementById('default-delivery_name').value = defaults.delivery_name || '';
-    document.getElementById('default-destination').value = defaults.destination || '';
-    document.getElementById('default-drop_city').value = defaults.drop_city || '';
-    document.getElementById('default-d_email').value = defaults.d_email || '';
-    document.getElementById('default-d_phone').value = defaults.d_phone || '';
-    document.getElementById('default-package_details').value = defaults.package_details || '';
-    document.getElementById('default-po_number').value = defaults.po_number || '';
-    document.getElementById('default-other_info').value = defaults.other_info || '';
-  }
-
-  function openSettings() {
-    loadDefaultsIntoModal();
-    updateThemeButtons();
-    renderSavedAddressesList();
-    // Show main menu, hide sub-views
-    document.getElementById('settings-main').style.display = 'block';
-    document.getElementById('settings-autofill').style.display = 'none';
-    document.getElementById('settings-addressbook').style.display = 'none';
-    document.getElementById('settings-modal').style.display = 'block';
-  }
-
-  function showSettingsMain() {
-    document.getElementById('settings-main').style.display = 'block';
-    document.getElementById('settings-autofill').style.display = 'none';
-    document.getElementById('settings-addressbook').style.display = 'none';
-  }
-
-  function showAutofillSettings() {
-    document.getElementById('settings-main').style.display = 'none';
-    document.getElementById('settings-autofill').style.display = 'block';
-    document.getElementById('settings-addressbook').style.display = 'none';
-  }
-
-  function showAddressBookSettings() {
-    document.getElementById('settings-main').style.display = 'none';
-    document.getElementById('settings-autofill').style.display = 'none';
-    document.getElementById('settings-addressbook').style.display = 'block';
-    // Show list view, hide create form
-    document.getElementById('addressbook-list-view').style.display = 'block';
-    document.getElementById('addressbook-create-view').style.display = 'none';
-    renderSavedAddressesList(); // refresh list
-  }
-
-  function showCreateAddressForm() {
-    document.getElementById('addressbook-list-view').style.display = 'none';
-    document.getElementById('addressbook-create-view').style.display = 'block';
-    // Clear form fields
-    document.getElementById('new-contact-name').value = '';
-    document.getElementById('new-contact-address').value = '';
-    document.getElementById('new-contact-email').value = '';
-    document.getElementById('new-contact-phone').value = '';
-  }
-
-  function hideCreateAddressForm() {
-    document.getElementById('addressbook-list-view').style.display = 'block';
-    document.getElementById('addressbook-create-view').style.display = 'none';
-  }
-
-  function saveNewContact() {
-    const name = document.getElementById('new-contact-name').value.trim();
-    const address = document.getElementById('new-contact-address').value.trim();
-    const email = document.getElementById('new-contact-email').value.trim();
-    const phone = document.getElementById('new-contact-phone').value.trim();
-
-    if (!name || !address) {
-      alert('Please enter at least a name and address.');
-      return;
-    }
-
-    // We need to extract city from address? For simplicity, we'll store empty city.
-    // In a real app, we might geocode to get city, but for now, let's set city to empty.
-    const city = ''; // could be extracted from places if needed
-
-    savedAddresses.push({
-      name: name,
-      address: address,
-      city: city,
-      email: email,
-      phone: phone,
-      target: currentAddressTarget
-    });
-    localStorage.setItem('ec_addresses', JSON.stringify(savedAddresses));
-    renderSavedAddressesList();
-    hideCreateAddressForm();
-  }
-
-  let ordersRefreshInterval = null;
-
-  function fetchAndRenderOrders() {
-    const user = firebase.auth().currentUser;
-    if (!user) return;
-    db.ref("jobs").orderByChild("created_by").equalTo(user.email).once('value').then(snap => {
-      currentUserJobs = snap.val() || {};
-      if (document.getElementById('orders-history-container').style.display === 'block') {
-        renderOrdersHistory();
-      }
-    });
-  }
-
-  function showOrdersHistory() {
-    document.getElementById('main-app-container').style.display = 'none';
-    document.getElementById('orders-history-container').style.display = 'block';
-    fetchAndRenderOrders();
-
-    // Clear any existing interval
-    if (window.ordersRefreshInterval) clearInterval(window.ordersRefreshInterval);
-    // Set new interval to re-render every 2 seconds while dashboard is open
-    window.ordersRefreshInterval = setInterval(() => {
-      if (document.getElementById('orders-history-container').style.display === 'block') {
-        renderOrdersHistory();
-      } else {
-        clearInterval(window.ordersRefreshInterval);
-        window.ordersRefreshInterval = null;
-      }
-    }, 2000);
-  }
-
-  function hideOrdersHistory() {
-    // Clear the refresh interval
-    if (window.ordersRefreshInterval) {
-      clearInterval(window.ordersRefreshInterval);
-      window.ordersRefreshInterval = null;
-    }
-    expandedCompletedCards.clear();
-
-    document.getElementById('orders-history-container').style.display = 'none';
-    document.getElementById('main-app-container').style.display = 'block';
-    document.getElementById('pickupForm').style.display = 'block';
-    document.getElementById('thanksMessage').style.display = 'none';
-    document.getElementById('pickupForm').reset();
-    pickupVerified = false;
-    dropVerified = false;
-    submitBtn.innerText = "Submit Request";
-    submitBtn.disabled = false;
-    submitBtn.style.opacity = "1";
-    editingJobId = null; // reset editing mode
-  }
-
-  // Cancel order function
-  function cancelOrder(jobId) {
-    if (!confirm('Are you sure you want to cancel this pending order?')) return;
-    db.ref('jobs/' + jobId).update({ status: 'cancelled' }).catch(err => alert('Error: ' + err.message));
-  }
-
-  // Edit order function
-  function editOrder(jobId) {
-    const job = currentUserJobs[jobId];
-    if (!job) return;
-    editingJobId = jobId;
-    // Populate form
-    form.name.value = job.name || '';
-    form.pickup_location.value = job.pickup_location || '';
-    form.city.value = job.pickup_city || '';
-    form.p_email.value = job.p_email || '';
-    form.p_phone.value = job.p_phone || '';
-    form.delivery_name.value = job.delivery_name || '';
-    form.destination.value = job.destination || '';
-    form.drop_city.value = job.delivery_city || '';
-    form.d_email.value = job.d_email || '';
-    form.d_phone.value = job.d_phone || '';
-    form.package_details.value = job.package_details || '';
-    form.po_number.value = job.po_number || '';
-    form.other_info.value = job.other_info || '';
-    pickupVerified = true; // assume addresses are valid (they came from a previous submission)
-    dropVerified = true;
-    submitBtn.innerText = "Update Request";
-    // Switch back to main form view
-    hideOrdersHistory(); // this will show main container and reset some flags but we need to keep editingJobId
-    // Re-show main container and hide orders
-    document.getElementById('main-app-container').style.display = 'block';
-    document.getElementById('orders-history-container').style.display = 'none';
-  }
-
-  function renderOrdersHistory() {
-    if (document.getElementById('orders-history-container').style.display !== 'block') return;
-    const list = document.getElementById('orders-list');
-    const header = document.getElementById('live-status-header');
-
-    if (!currentUserJobs || Object.keys(currentUserJobs).length === 0) {
-      list.innerHTML = '<p style="color:#aaa;">No past orders found.</p>';
-      return;
-    }
-
-    const now = new Date();
-    header.innerText = "Status Live as of " + now.toLocaleString([], { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit', hour12: true });
-
-    list.innerHTML = '';
-
-    const jobs = [];
-    Object.entries(currentUserJobs).forEach(([key, val]) => {
-      jobs.push({...val, id: key});
-    });
-    jobs.sort((a,b) => b.timestamp - a.timestamp);
-
-    // Filter based on search and status
-    const filteredJobs = jobs.filter(job => {
-      // status filter
-      if (orderStatusFilter !== 'all') {
-        if (orderStatusFilter === 'pending' && job.status !== 'pending_pickup') return false;
-        if (orderStatusFilter === 'in_progress' && !['pending_pickup','in_transit','pending_delivery'].includes(job.status)) return false;
-        if (orderStatusFilter === 'completed' && job.status !== 'completed') return false;
-        if (orderStatusFilter === 'cancelled' && job.status !== 'cancelled') return false;
-      }
-      // text search
-      if (orderSearchText.trim() !== '') {
-        const term = orderSearchText.toLowerCase();
-        const haystack = (job.package_details + ' ' + job.po_number + ' ' + job.name + ' ' + job.delivery_name + ' ' + job.pickup_location + ' ' + job.destination).toLowerCase();
-        if (!haystack.includes(term)) return false;
-      }
-      return true;
-    });
-
-    filteredJobs.forEach(job => {
-      const dateStr = new Date(job.timestamp).toLocaleString();
-      const status = job.status || 'pending_pickup';
-      const assigned = (job.assigned_to && job.assigned_to !== 'Unassigned') ? job.assigned_to : null;
-
-      // Completion flags for each stage
-      const c1 = true; // Ordered always completed
-      const c2 = (assigned !== null) || !!(job.picked_up_by) || (status === 'in_transit') || (status === 'pending_delivery') || (status === 'completed');
-      const c3 = !!(job.picked_up_by) || status === 'in_transit';
-      const c4 = (status === 'completed') || (status === 'pending_delivery' && assigned && driverLocations[assigned] && driverLocations[assigned].shift_active === true);
-      const c5 = (status === 'completed');
-
-      let activeStage = null;
-      if (status === 'pending_pickup' && assigned) {
-        activeStage = 2;
-      } else if (status === 'in_transit') {
-        activeStage = 3;
-      } else if (status === 'pending_delivery' && assigned && driverLocations[assigned] && driverLocations[assigned].shift_active === true) {
-        activeStage = 4;
-      } else if (status === 'completed') {
-        activeStage = null;
-      }
-
-      const nodeClasses = [
-        c1 ? 'completed' : '',
-        c2 ? 'completed' : '',
-        c3 ? 'completed' : '',
-        c4 ? 'completed' : '',
-        c5 ? 'completed' : ''
-      ];
-      if (activeStage) {
-        nodeClasses[activeStage - 1] += ' active';
-      }
-
-      let fillWidth = '0%';
-      if (activeStage) {
-        let completedBefore = 0;
-        for (let i = 0; i < activeStage - 1; i++) {
-          if (nodeClasses[i].includes('completed')) completedBefore++;
-        }
-        fillWidth = (completedBefore * 25) + '%';
-      } else {
-        const completedCount = [c1,c2,c3,c4,c5].filter(Boolean).length;
-        if (completedCount > 1) {
-          fillWidth = ((completedCount - 1) * 25) + '%';
-        }
-      }
-
-      const packageDetailsDisplay = job.package_details || 'N/A';
-      const poDisplay = job.po_number ? job.po_number : 'N/A';
-      const isCompleted = (status === 'completed');
-      const cardId = 'order-card-' + job.id;
-
-      const timelineHtml = `
-        <div class="ocean-timeline">
-          <div class="ocean-track"><div class="ocean-fill" style="width: ${fillWidth};"></div></div>
-          <div class="ocean-node ${nodeClasses[0]}"><div class="ocean-label">Ordered</div></div>
-          <div class="ocean-node ${nodeClasses[1]}"><div class="ocean-label">Assigned</div></div>
-          <div class="ocean-node ${nodeClasses[2]}"><div class="ocean-label">Picked‑Up</div></div>
-          <div class="ocean-node ${nodeClasses[3]}"><div class="ocean-label">Out for Delivery</div></div>
-          <div class="ocean-node ${nodeClasses[4]}"><div class="ocean-label">Delivered</div></div>
-        </div>
-      `;
-
-      const cardInnerHtml = `
-        <div class="order-date">${dateStr}</div>
-        <div class="dashboard-section">
-          <div class="loc-flex">
-            <div>
-              <strong>Pickup</strong>
-              ${job.name}<br>
-              <span style="color:#aaa; font-size:12px;">${job.pickup_location}</span>
-            </div>
-          </div>
-        </div>
-        <div class="dashboard-section" style="margin-top: 15px;">
-          <div class="loc-flex">
-            <div>
-              <strong>Delivery</strong>
-              ${job.delivery_name}<br>
-              <span style="color:#aaa; font-size:12px;">${job.destination}</span>
-            </div>
-          </div>
-        </div>
-        <div class="dashboard-section" style="margin-top: 15px;">
-          <div class="loc-flex">
-            <div>
-              <strong>Packages/Items/Dimensions</strong>
-              <span style="color:#aaa; font-size:12px;">${packageDetailsDisplay}</span>
-            </div>
-          </div>
-        </div>
-        <div class="dashboard-section" style="margin-top: 15px;">
-          <div class="loc-flex">
-            <div>
-              <strong>PO / Ref</strong>
-              <span style="color:#aaa; font-size:12px;">${poDisplay}</span>
-            </div>
-          </div>
-        </div>
-        ${timelineHtml}
-      `;
-
-      if (isCompleted) {
-        const isExpanded = expandedCompletedCards.has(job.id);
-        const d = new Date(job.timestamp);
-        const shortDate = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).replace(/,/g, '');
-        list.innerHTML += `
-          <div style="margin-bottom: 25px;">
-            <button onclick="toggleCompletedCard('${job.id}')" style="width: 100%; padding: 15px; background: var(--input-bg); border: 1px solid var(--success); border-radius: 6px; color: var(--text); text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-              <span style="font-weight: bold; font-size: 13px; color: orange;">✅ ${shortDate}</span>
-              <span style="font-size: 12px; color: var(--placeholder); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 30%;">${job.package_details || 'N/A'}</span>
-              <span style="font-size: 12px; color: var(--placeholder); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 30%;">
-                <span style="color: #ffd700;">${job.name || '?'}</span> → <span style="color: #90ee90;">${job.delivery_name || '?'}</span>
-              </span>
-            </button>
-            <div id="${cardId}" class="order-card" style="display: ${isExpanded ? 'block' : 'none'}; margin-bottom: 0; border-top: none; border-top-left-radius: 0; border-top-right-radius: 0;">
-              ${cardInnerHtml}
-            </div>
-          </div>
-        `;
-      } else {
-        // For non-completed, add cancel and edit buttons if pending
-        let actionButtons = '';
-        if (status === 'pending_pickup') {
-          actionButtons = `
-            <div class="order-actions">
-              <button class="cancel-btn" onclick="cancelOrder('${job.id}')">Cancel</button>
-              <button class="edit-btn" onclick="editOrder('${job.id}')">Edit</button>
-            </div>
-          `;
-        }
-        list.innerHTML += `
-          <div class="order-card">
-            ${cardInnerHtml}
-            ${actionButtons}
-          </div>
-        `;
-      }
-    });
-  }
-  
-  function toggleCompletedCard(jobId) {
-    const cardDiv = document.getElementById('order-card-' + jobId);
-    if (cardDiv) {
-      if (cardDiv.style.display === 'none') {
-        cardDiv.style.display = 'block';
-        expandedCompletedCards.add(jobId);
-      } else {
-        cardDiv.style.display = 'none';
-        expandedCompletedCards.delete(jobId);
-      }
-    }
-  }
-
-  form.addEventListener("submit", e => {
-    e.preventDefault();
-    if (document.getElementById('website_url_hp').value) return; 
-
-    const lastOrderTime = localStorage.getItem('lastOrderTime');
-    const nowTime = Date.now();
-    if (lastOrderTime && nowTime - lastOrderTime < 30000 && !editingJobId) {
-        alert("Please wait a moment before submitting another request.");
-        return;
-    }
-
-    if (!pickupVerified || !dropVerified) {
-        alert("Please select a verified address from the Google Maps suggestions or the map picker to prevent invalid locations.");
-        return;
-    }
-
-    submitBtn.innerText = editingJobId ? "Updating..." : "Transmitting...";
-    submitBtn.style.opacity = "0.7";
-    submitBtn.disabled = true;
-
-    const finalizeSubmission = (coords = {}, assignedDriver = 'Unassigned') => {
-        const jobData = {
-          name: form.name.value.trim(),
-          pickup_location: form.pickup_location.value.trim(),
-          pickup_city: form.city.value.trim(),
-          city: form.city.value.trim(),
-          p_email: form.p_email.value.trim(),
-          p_phone: form.p_phone.value.trim(),
-          delivery_name: form.delivery_name.value.trim(),
-          destination: form.destination.value.trim(),
-          delivery_city: form.drop_city.value.trim(),
-          d_email: form.d_email.value.trim(),
-          d_phone: form.d_phone.value.trim(),
-          package_details: form.package_details.value.trim(),
-          po_number: form.po_number.value.trim() || "",
-          other_info: form.other_info.value.trim(),
-          job_history: "[Client Request]",
-          status: "pending_pickup",
-          type: "pickup",
-          assigned_to: assignedDriver, 
-          timestamp: editingJobId ? currentUserJobs[editingJobId]?.timestamp || Date.now() : Date.now(),
-          created_by: firebase.auth().currentUser ? firebase.auth().currentUser.email : "Web Portal",
-          ...coords
-        };
-
-        if (editingJobId) {
-          // Update existing job
-          db.ref("jobs/" + editingJobId).update(jobData).then(() => {
-            localStorage.setItem('lastOrderTime', Date.now());
-            editingJobId = null;
-            form.style.display = "none";
-            document.getElementById("thanksMessage").style.display = "block";
-            window.scrollTo({top: 0, behavior: 'smooth'});
-          }).catch((error) => {
-            submitBtn.innerText = "Update Request";
-            submitBtn.disabled = false;
-            submitBtn.style.opacity = "1";
-          });
-        } else {
-          // Push new job
-          db.ref("jobs").push(jobData).then((newRef) => {
-            localStorage.setItem('lastOrderTime', Date.now());
-            
-            // Optimistically add the new job to currentUserJobs
-            const newJobId = newRef.key;
-            if (!currentUserJobs) currentUserJobs = {};
-            currentUserJobs[newJobId] = { ...jobData, id: newJobId };
-            
-            // If orders dashboard is open, re-render immediately
-            if (document.getElementById('orders-history-container').style.display === 'block') {
-              renderOrdersHistory();
-            }
-            
-            form.style.display = "none";
-            document.getElementById("thanksMessage").style.display = "block";
-            window.scrollTo({top: 0, behavior: 'smooth'});
-          }).catch((error) => {
-            submitBtn.innerText = "Submit Request";
-            submitBtn.disabled = false;
-            submitBtn.style.opacity = "1";
-          });
-        }
-    };
-
-    // Geocoding logic (now outside finalizeSubmission)
-    const geocoder = new google.maps.Geocoder();
-    const addressStr = form.pickup_location.value.trim() + ", " + form.city.value.trim();
-
-    let geocodeFinished = false;
-    const geocodeTimeout = setTimeout(() => {
-        if (!geocodeFinished) {
-            geocodeFinished = true;
-            finalizeSubmission();
-        }
-    }, 3000);
-
-    geocoder.geocode({ address: addressStr }, (results, status) => {
-      if (geocodeFinished) return;
-      geocodeFinished = true;
-      clearTimeout(geocodeTimeout);
-
-      if (status === "OK" && results[0]) {
-        const loc = results[0].geometry.location;
-        const coords = { lat: loc.lat(), lng: loc.lng() };
-        
-        let foundDriver = 'Unassigned';
-        for (const [dEmail, zone] of Object.entries(driverZones)) {
-          if (zone.polygon) {
-            const poly = new google.maps.Polygon({ paths: zone.polygon });
-            if (google.maps.geometry.poly.containsLocation(loc, poly)) {
-              foundDriver = dEmail;
-              break;
-            }
-          }
-        }
-        finalizeSubmission(coords, foundDriver);
-      } else {
-        finalizeSubmission();
-      }
-    });
-  });
-
-  // PWAs & Install logic
-  let deferredPrompt;
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    document.getElementById('installAppBtn').style.display = 'block';
-  });
-
-  document.getElementById('installAppBtn').addEventListener('click', async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') document.getElementById('installAppBtn').style.display = 'none';
-      deferredPrompt = null;
-    }
-  });
-
-  // Location Picker logic
-  let pickerMap, pickerMarker, currentPickerTarget = '';
-  function openLocationPicker(target) {
-    currentPickerTarget = target;
-    const modal = document.getElementById('location-picker-modal');
-    modal.style.display = 'block';
-    document.body.style.overflow = 'hidden';
-
-    if (!pickerMap) {
-      pickerMap = new google.maps.Map(document.getElementById('picker-map'), {
-        center: { lat: 49.8951, lng: -97.1384 },
-        zoom: 12,
-        disableDefaultUI: true,
-        zoomControl: true,
-        scrollwheel: true,
-        styles: [
-          { "featureType": "all", "elementType": "labels.text.fill", "stylers": [{"color": "#ffffff"}] },
-          { "featureType": "all", "elementType": "labels.text.stroke", "stylers": [{"color": "#000000"}, {"lightness": 13}] },
-          { "featureType": "administrative", "elementType": "geometry.fill", "stylers": [{"color": "#000000"}, {"lightness": 20}] },
-          { "featureType": "landscape", "elementType": "geometry", "stylers": [{"color": "#000000"}, {"lightness": 20}] },
-          { "featureType": "poi", "elementType": "geometry", "stylers": [{"color": "#000000"}, {"lightness": 21}] },
-          { "featureType": "road.highway", "elementType": "geometry.fill", "stylers": [{"color": "#000000"}, {"lightness": 17}] },
-          { "featureType": "road.highway", "elementType": "geometry.stroke", "stylers": [{"color": "#000000"}, {"lightness": 29}, {"weight": 0.2}] },
-          { "featureType": "road.arterial", "elementType": "geometry", "stylers": [{"color": "#000000"}, {"lightness": 18}] },
-          { "featureType": "road.local", "elementType": "geometry", "stylers": [{"color": "#000000"}, {"lightness": 16}] },
-          { "featureType": "transit", "elementType": "geometry", "stylers": [{"color": "#000000"}, {"lightness": 19}] },
-          { "featureType": "water", "elementType": "geometry", "stylers": [{"color": "#000000"}, {"lightness": 17}] }
-        ]
-      });
-
-      const searchInput = document.getElementById('loc-search-bar');
-      const autocomplete = new google.maps.places.Autocomplete(searchInput);
-      autocomplete.bindTo('bounds', pickerMap);
-      autocomplete.addListener('place_changed', () => {
-        const place = autocomplete.getPlace();
-        if (place.geometry) {
-          pickerMap.setCenter(place.geometry.location);
-          pickerMap.setZoom(17);
-        }
-      });
-      
-      searchInput.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') {
-              const val = searchInput.value;
-              const gps = val.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);
-              if (gps) {
-                  const latLng = { lat: parseFloat(gps[1]), lng: parseFloat(gps[2]) };
-                  pickerMap.setCenter(latLng);
-                  pickerMap.setZoom(17);
-              } else {
-                  // Use geocoder as fallback
-                  const geocoder = new google.maps.Geocoder();
-                  geocoder.geocode({ address: val }, (results, status) => {
-                    if (status === 'OK' && results[0]) {
-                      pickerMap.setCenter(results[0].geometry.location);
-                      pickerMap.setZoom(17);
-                    }
-                  });
-              }
-          }
-      });
-    }
-  }
-
-  function searchLocation() {
-    const searchInput = document.getElementById('loc-search-bar');
-    const val = searchInput.value;
-    if (!val) return;
-    const gps = val.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);
-    if (gps) {
-      const latLng = { lat: parseFloat(gps[1]), lng: parseFloat(gps[2]) };
-      pickerMap.setCenter(latLng);
-      pickerMap.setZoom(17);
-    } else {
-      const geocoder = new google.maps.Geocoder();
-      geocoder.geocode({ address: val }, (results, status) => {
-        if (status === 'OK' && results[0]) {
-          pickerMap.setCenter(results[0].geometry.location);
-          pickerMap.setZoom(17);
-        } else {
-          alert('Location not found');
-        }
-      });
-    }
-  }
-
-  function setPickerLocation() {
-    const center = pickerMap.getCenter();
-    const geocoder = new google.maps.Geocoder();
-    geocoder.geocode({ location: center }, (results, status) => {
-      if (status === 'OK' && results[0]) {
-        const addr = results[0].formatted_address;
-        const city = extractCity(results[0].address_components);
-        if (currentPickerTarget === 'pickup') {
-          document.getElementById('f-pickup').value = addr;
-          document.getElementsByName('city')[0].value = city;
-          pickupVerified = true;
-        } else if (currentPickerTarget === 'drop') {
-          document.getElementById('f-drop-address').value = addr;
-          document.getElementsByName('drop_city')[0].value = city;
-          dropVerified = true;
-        } else if (currentPickerTarget === 'settings-pickup') {
-          document.getElementById('default-pickup').value = addr;
-          document.getElementById('default-city').value = city;
-        } else if (currentPickerTarget === 'settings-drop') {
-          document.getElementById('default-destination').value = addr;
-          document.getElementById('default-drop_city').value = city;
-        } else if (currentPickerTarget === 'new-contact') {
-          document.getElementById('new-contact-address').value = addr;
-          // For new contact, we don't have a separate city field, so we ignore city
-        }
-      }
-      document.getElementById('location-picker-modal').style.display = 'none';
-      document.body.style.overflow = '';
-    });
-  }
-
-  // Address book functions
-  function openAddressBook(target) {
-    currentAddressTarget = target;
-    renderSavedAddressesList();
-    document.getElementById('settings-modal').style.display = 'block';
-    showAddressBookSettings(); // go directly to address book sub-view
-  }
-
-  function renderSavedAddressesList() {
-    const listDiv = document.getElementById('savedAddressesList');
-    if (!listDiv) return;
-    listDiv.innerHTML = '';
-    savedAddresses.forEach((addr, index) => {
-      listDiv.innerHTML += `
-        <div style="border:1px solid var(--border); padding:8px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <strong>${addr.name}</strong><br>
-            <span style="font-size:12px;">${addr.address} ${addr.city ? '(' + addr.city + ')' : ''}</span><br>
-            <span style="font-size:11px; color:#aaa;">${addr.email} ${addr.phone ? '• ' + addr.phone : ''}</span>
-          </div>
-          <div>
-            <button onclick="useAddress(${index})" style="background:var(--accent); color:#000; border:none; padding:4px 8px; margin-right:4px;">Use</button>
-            <button onclick="deleteAddress(${index})" style="background:#b3002d; color:#fff; border:none; padding:4px 8px;">Del</button>
-          </div>
-        </div>
-      `;
-    });
-    if (savedAddresses.length === 0) listDiv.innerHTML = '<p>No saved addresses.</p>';
-  }
-
-  function useAddress(index) {
-    const addr = savedAddresses[index];
-    if (addr.target === 'pickup') {
-      document.getElementById('f-pickup').value = addr.address;
-      document.getElementsByName('city')[0].value = addr.city || '';
-      document.getElementsByName('name')[0].value = addr.name || '';
-      document.getElementsByName('p_email')[0].value = addr.email || '';
-      document.getElementsByName('p_phone')[0].value = addr.phone || '';
-      pickupVerified = true;
-    } else {
-      document.getElementById('f-drop-address').value = addr.address;
-      document.getElementsByName('drop_city')[0].value = addr.city || '';
-      document.getElementsByName('delivery_name')[0].value = addr.name || '';
-      document.getElementsByName('d_email')[0].value = addr.email || '';
-      document.getElementsByName('d_phone')[0].value = addr.phone || '';
-      dropVerified = true;
-    }
-    document.getElementById('settings-modal').style.display = 'none';
-  }
-
-  function deleteAddress(index) {
-    savedAddresses.splice(index, 1);
-    localStorage.setItem('ec_addresses', JSON.stringify(savedAddresses));
-    renderSavedAddressesList();
-  }
-
-  function loadSelectedAddress() {
-    // This is for the dropdown (optional)
-  }
-
-  // Confirm logout
-  function confirmLogout() {
-    if (confirm("Are you sure you want to logout?")) {
-      firebase.auth().signOut();
-    }
-  }
-
+var M=null,N=null,O=null,P=new Set(),Q={},R={},S=null,T='',U='all',V=(()=>{var _a=localStorage.getItem('ec_addresses');if(!_a)return[];try{var _b=JSON.parse(_a);return _b.map(_c=>{if(_c.nickname&&!_c.name){return{name:_c.nickname,address:_c.address,city:_c.city,email:_c.email||'',phone:_c.phone||'',target:_c.target}}return _c})}catch(_d){return[]}})(),W='pickup',X=null,Y,Z,aa,ab='',ac,ad=!1,ae=!1,af=document.getElementById("pickupForm"),ag=document.getElementById("submitBtn"),ah=firebase.database();
+
+firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
+db.ref("driver_zones").on("value",_e=>Q=_e.val()||{});
+db.ref("driver_locations").on("value",_f=>{R=_f.val()||{};console.log("driverLocations keys:",Object.keys(R));if(document.getElementById('orders-history-container').style.display==='block')A()});
+
+firebase.auth().onAuthStateChanged(_g=>{var _h=document.getElementById('dev-list');if(_g){if(!_g.emailVerified&&_g.providerData.some(_i=>_i.providerId==='password')){alert("Please check your email and verify your account before logging in.");firebase.auth().signOut();return}
+document.getElementById('auth-overlay').style.display='none';document.getElementById('main-app-container').style.display='block';if(document.querySelector('input[name="p_email"]'))document.querySelector('input[name="p_email"]').value=_g.email;if(O){O();O=null}
+O=db.ref("jobs").orderByChild("created_by").equalTo(_g.email).on('value',_j=>{N=_j.val()||{};if(_j.exists()){var _k=_j.val();M=Object.values(_k)[0];document.getElementById('autofillBtn').style.display='block'}else{M=null;document.getElementById('autofillBtn').style.display='none'}
+if(document.getElementById('orders-history-container').style.display==='block')A()})}else{document.getElementById('auth-overlay').style.display='flex';document.getElementById('main-app-container').style.display='none';if(O){O();O=null}N=null}
+firebase.database().ref('developer').on('value',_l=>{_h.innerHTML='';var _m=_l.val()||{};Object.values(_m).forEach(_n=>{_h.innerHTML+=`<div class="dev-item"><div class="dev-hdr">${_n.user} - <span style="color: orange;">${_n.app||'Database'}</span> - ${_n.date}</div><div style="color:#eee;">${_n.text}</div></div>`});_h.scrollTop=_h.scrollHeight})});
+
+function a(){document.body.classList.toggle('light-mode');localStorage.setItem('ec_theme',document.body.classList.contains('light-mode')?'light':'dark');c()}
+function b(_o){_o==='light'?document.body.classList.add('light-mode'):document.body.classList.remove('light-mode');localStorage.setItem('ec_theme',_o);c()}
+function c(){var _p=document.body.classList.contains('light-mode'),_q=document.getElementById('theme-light'),_r=document.getElementById('theme-dark');if(_q)_q.classList.toggle('active',_p);if(_r)_r.classList.toggle('active',!_p)}
+function d(){var _s=document.getElementById('auth-email').value.trim(),_t=document.getElementById('auth-password').value.trim();if(!_s||!_t)return alert("Please enter email and password.");firebase.auth().signInWithEmailAndPassword(_s,_t).catch(_u=>alert("Login Error: "+_u.message))}
+function e(){var _v=document.getElementById('auth-email').value.trim(),_w=document.getElementById('auth-password').value.trim();if(!_v||!_w)return alert("Please enter email and password to sign up.");firebase.auth().createUserWithEmailAndPassword(_v,_w).then(_x=>{_x.user.sendEmailVerification();alert("Account created! We sent a verification link to your email. Please verify before logging in.");firebase.auth().signOut()}).catch(_y=>alert("Sign Up Error: "+_y.message))}
+function f(){var _z=new firebase.auth.GoogleAuthProvider();firebase.auth().signInWithPopup(_z).catch(_A=>alert("Google Login Error: "+_A.message))}
+function g(){var _B=document.getElementById('auth-email').value.trim();if(!_B)return alert("Please enter your email address first, then click Forgot Password.");firebase.auth().sendPasswordResetEmail(_B).then(()=>alert("Password reset email sent. Please check your inbox.")).catch(_C=>alert("Error: "+_C.message))}
+function h(_D){var _E=_D.value.replace(/\D/g,'').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);_D.value=!_E[2]?_E[1]:'('+_E[1]+') '+_E[2]+(_E[3]?'-'+_E[3]:'')}
+function i(_F){if(!_F)return'';for(var _G of _F){if(_G.types.includes("locality"))return _G.long_name}for(var _G of _F){if(_G.types.includes("sublocality_level_1"))return _G.long_name}for(var _G of _F){if(_G.types.includes("administrative_area_level_2"))return _G.long_name}return''}
+function j(){if(window.google?.maps?.places){var _H=document.getElementById('f-pickup'),_I=document.getElementById('f-drop-address'),_J={componentRestrictions:{country:'ca'}},_K=new google.maps.places.Autocomplete(_H,_J),_L=new google.maps.places.Autocomplete(_I,_J),_M=document.getElementById('default-pickup'),_N=document.getElementById('default-destination'),_O=document.getElementById('new-contact-address');if(_M){var _P=new google.maps.places.Autocomplete(_M,_J);_P.addListener('place_changed',()=>{var _Q=_P.getPlace();if(_Q?.address_components)document.getElementById('default-city').value=i(_Q.address_components)})}
+if(_N){var _R=new google.maps.places.Autocomplete(_N,_J);_R.addListener('place_changed',()=>{var _S=_R.getPlace();if(_S?.address_components)document.getElementById('default-drop_city').value=i(_S.address_components)})}
+if(_O){var _T=new google.maps.places.Autocomplete(_O,_J);_T.addListener('place_changed',()=>{})}
+if(navigator.geolocation){navigator.geolocation.getCurrentPosition(_U=>{var _V=new google.maps.Circle({center:{lat:_U.coords.latitude,lng:_U.coords.longitude},radius:1e5});_K.setBounds(_V.getBounds());_L.setBounds(_V.getBounds());if(_M)new google.maps.places.Autocomplete(_M,_J).setBounds(_V.getBounds());if(_N)new google.maps.places.Autocomplete(_N,_J).setBounds(_V.getBounds());if(_O)new google.maps.places.Autocomplete(_O,_J).setBounds(_V.getBounds())},_W=>console.warn("Geolocation warning/error, falling back to general CA scope:",_W.message))}
+_K.addListener('place_changed',()=>{ad=!0;var _X=_K.getPlace();document.getElementsByName('city')[0].value=i(_X.address_components)});_L.addListener('place_changed',()=>{ae=!0;var _Y=_L.getPlace();document.getElementsByName('drop_city')[0].value=i(_Y.address_components)});_H.addEventListener('input',()=>{ad=!1});_I.addEventListener('input',()=>{ae=!1})}else setTimeout(j,500)}
+j();
+function k(){if(!M)return;af.name.value=M.name||'';af.pickup_location.value=M.pickup_location||'';af.city.value=M.pickup_city||'';af.p_email.value=M.p_email||'';af.p_phone.value=M.p_phone||'';af.delivery_name.value=M.delivery_name||'';af.destination.value=M.destination||'';af.drop_city.value=M.delivery_city||'';af.d_email.value=M.d_email||'';af.d_phone.value=M.d_phone||'';af.package_details.value=M.package_details||'';af.po_number.value=M.po_number||'';af.other_info.value=M.other_info||'';ad=!0;ae=!0}
+function l(){var _Z=JSON.parse(localStorage.getItem('autofillDefaults')||'{}');if(_Z.name)af.name.value=_Z.name;if(_Z.pickup_location)af.pickup_location.value=_Z.pickup_location;if(_Z.city)af.city.value=_Z.city;if(_Z.p_email)af.p_email.value=_Z.p_email;if(_Z.p_phone)af.p_phone.value=_Z.p_phone;if(_Z.delivery_name)af.delivery_name.value=_Z.delivery_name;if(_Z.destination)af.destination.value=_Z.destination;if(_Z.drop_city)af.drop_city.value=_Z.drop_city;if(_Z.d_email)af.d_email.value=_Z.d_email;if(_Z.d_phone)af.d_phone.value=_Z.d_phone;if(_Z.package_details)af.package_details.value=_Z.package_details;if(_Z.po_number)af.po_number.value=_Z.po_number;if(_Z.other_info)af.other_info.value=_Z.other_info;if(_Z.pickup_location&&_Z.city)ad=!0;if(_Z.destination&&_Z.drop_city)ae=!0}
+function m(){var _$={name:document.getElementById('default-name').value,pickup_location:document.getElementById('default-pickup').value,city:document.getElementById('default-city').value,p_email:document.getElementById('default-p_email').value,p_phone:document.getElementById('default-p_phone').value,delivery_name:document.getElementById('default-delivery_name').value,destination:document.getElementById('default-destination').value,drop_city:document.getElementById('default-drop_city').value,d_email:document.getElementById('default-d_email').value,d_phone:document.getElementById('default-d_phone').value,package_details:document.getElementById('default-package_details').value,po_number:document.getElementById('default-po_number').value,other_info:document.getElementById('default-other_info').value};localStorage.setItem('autofillDefaults',JSON.stringify(_$));alert('Defaults saved!')}
+function n(){var _aa=JSON.parse(localStorage.getItem('autofillDefaults')||'{}');document.getElementById('default-name').value=_aa.name||'';document.getElementById('default-pickup').value=_aa.pickup_location||'';document.getElementById('default-city').value=_aa.city||'';document.getElementById('default-p_email').value=_aa.p_email||'';document.getElementById('default-p_phone').value=_aa.p_phone||'';document.getElementById('default-delivery_name').value=_aa.delivery_name||'';document.getElementById('default-destination').value=_aa.destination||'';document.getElementById('default-drop_city').value=_aa.drop_city||'';document.getElementById('default-d_email').value=_aa.d_email||'';document.getElementById('default-d_phone').value=_aa.d_phone||'';document.getElementById('default-package_details').value=_aa.package_details||'';document.getElementById('default-po_number').value=_aa.po_number||'';document.getElementById('default-other_info').value=_aa.other_info||''}
+function o(){n();c();G();document.getElementById('settings-main').style.display='block';document.getElementById('settings-autofill').style.display='none';document.getElementById('settings-addressbook').style.display='none';document.getElementById('settings-modal').style.display='block'}
+function p(){document.getElementById('settings-main').style.display='block';document.getElementById('settings-autofill').style.display='none';document.getElementById('settings-addressbook').style.display='none'}
+function q(){document.getElementById('settings-main').style.display='none';document.getElementById('settings-autofill').style.display='block';document.getElementById('settings-addressbook').style.display='none'}
+function r(){document.getElementById('settings-main').style.display='none';document.getElementById('settings-autofill').style.display='none';document.getElementById('settings-addressbook').style.display='block';document.getElementById('addressbook-list-view').style.display='block';document.getElementById('addressbook-create-view').style.display='none';G()}
+function s(){document.getElementById('addressbook-list-view').style.display='none';document.getElementById('addressbook-create-view').style.display='block';document.getElementById('new-contact-name').value='';document.getElementById('new-contact-address').value='';document.getElementById('new-contact-email').value='';document.getElementById('new-contact-phone').value=''}
+function t(){document.getElementById('addressbook-list-view').style.display='block';document.getElementById('addressbook-create-view').style.display='none'}
+function u(){var _ab=document.getElementById('new-contact-name').value.trim(),_ac=document.getElementById('new-contact-address').value.trim(),_ad=document.getElementById('new-contact-email').value.trim(),_ae=document.getElementById('new-contact-phone').value.trim();if(!_ab||!_ac){alert('Please enter at least a name and address.');return}
+var _af='';V.push({name:_ab,address:_ac,city:_af,email:_ad,phone:_ae,target:W});localStorage.setItem('ec_addresses',JSON.stringify(V));G();t()}
+function v(){var _ag=firebase.auth().currentUser;if(!_ag)return;db.ref("jobs").orderByChild("created_by").equalTo(_ag.email).once('value').then(_ah=>{N=_ah.val()||{};if(document.getElementById('orders-history-container').style.display==='block')A()})}
+function w(){document.getElementById('main-app-container').style.display='none';document.getElementById('orders-history-container').style.display='block';v();if(window.X)clearInterval(window.X);window.X=setInterval(()=>{if(document.getElementById('orders-history-container').style.display==='block')A();else{clearInterval(window.X);window.X=null}},2000)}
+function x(){if(window.X){clearInterval(window.X);window.X=null}P.clear();document.getElementById('orders-history-container').style.display='none';document.getElementById('main-app-container').style.display='block';document.getElementById('pickupForm').style.display='block';document.getElementById('thanksMessage').style.display='none';document.getElementById('pickupForm').reset();ad=!1;ae=!1;ag.innerText="Submit Request";ag.disabled=!1;ag.style.opacity="1";S=null}
+function y(_ai){if(!confirm('Are you sure you want to cancel this pending order?'))return;db.ref('jobs/'+_ai).update({status:'cancelled'}).catch(_aj=>alert('Error: '+_aj.message))}
+function z(_ak){var _al=N[_ak];if(!_al)return;S=_ak;af.name.value=_al.name||'';af.pickup_location.value=_al.pickup_location||'';af.city.value=_al.pickup_city||'';af.p_email.value=_al.p_email||'';af.p_phone.value=_al.p_phone||'';af.delivery_name.value=_al.delivery_name||'';af.destination.value=_al.destination||'';af.drop_city.value=_al.delivery_city||'';af.d_email.value=_al.d_email||'';af.d_phone.value=_al.d_phone||'';af.package_details.value=_al.package_details||'';af.po_number.value=_al.po_number||'';af.other_info.value=_al.other_info||'';ad=!0;ae=!0;ag.innerText="Update Request";x();document.getElementById('main-app-container').style.display='block';document.getElementById('orders-history-container').style.display='none'}
+function A(){if(document.getElementById('orders-history-container').style.display!=='block')return;var _am=document.getElementById('orders-list'),_an=document.getElementById('live-status-header');if(!N||Object.keys(N).length===0){_am.innerHTML='<p style="color:#aaa;">No past orders found.</p>';return}
+var _ao=new Date();_an.innerText="Status Live as of "+_ao.toLocaleString([],{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:!0});_am.innerHTML='';var _ap=[];Object.entries(N).forEach(([_aq,_ar])=>{_ap.push({..._ar,id:_aq})});_ap.sort((_as,_at)=>_at.timestamp-_as.timestamp);var _au=_ap.filter(_av=>{if(U!=='all'){if(U==='pending'&&_av.status!=='pending_pickup')return!1;if(U==='in_progress'&&!['pending_pickup','in_transit','pending_delivery'].includes(_av.status))return!1;if(U==='completed'&&_av.status!=='completed')return!1;if(U==='cancelled'&&_av.status!=='cancelled')return!1}
+if(T.trim()!==''){var _aw=T.toLowerCase(),_ax=(_av.package_details+' '+_av.po_number+' '+_av.name+' '+_av.delivery_name+' '+_av.pickup_location+' '+_av.destination).toLowerCase();if(!_ax.includes(_aw))return!1}return!0});_au.forEach(_ay=>{var _az=new Date(_ay.timestamp).toLocaleString(),_aA=_ay.status||'pending_pickup',_aB=(_ay.assigned_to&&_ay.assigned_to!=='Unassigned')?_ay.assigned_to:null,_aC=!0,_aD=(_aB!==null)||!!_ay.picked_up_by||(_aA==='in_transit')||(_aA==='pending_delivery')||(_aA==='completed'),_aE=!!_ay.picked_up_by||_aA==='in_transit',_aF=(_aA==='completed')||(_aA==='pending_delivery'&&_aB&&R[_aB]?.shift_active===!0),_aG=(_aA==='completed'),_aH=null;if(_aA==='pending_pickup'&&_aB)_aH=2;else if(_aA==='in_transit')_aH=3;else if(_aA==='pending_delivery'&&_aB&&R[_aB]?.shift_active===!0)_aH=4;else if(_aA==='completed')_aH=null;var _aI=[_aC?'completed':'',_aD?'completed':'',_aE?'completed':'',_aF?'completed':'',_aG?'completed':''];if(_aH)_aI[_aH-1]+=' active';var _aJ='0%';if(_aH){var _aK=0;for(var _aL=0;_aL<_aH-1;_aL++)if(_aI[_aL].includes('completed'))_aK++;_aJ=(_aK*25)+'%'}else{var _aM=[_aC,_aD,_aE,_aF,_aG].filter(Boolean).length;if(_aM>1)_aJ=((_aM-1)*25)+'%'}
+var _aN=_ay.package_details||'N/A',_aO=_ay.po_number?_ay.po_number:'N/A',_aP=(_aA==='completed'),_aQ='order-card-'+_ay.id,_aR=`<div class="ocean-timeline"><div class="ocean-track"><div class="ocean-fill" style="width: ${_aJ};"></div></div><div class="ocean-node ${_aI[0]}"><div class="ocean-label">Ordered</div></div><div class="ocean-node ${_aI[1]}"><div class="ocean-label">Assigned</div></div><div class="ocean-node ${_aI[2]}"><div class="ocean-label">Picked‑Up</div></div><div class="ocean-node ${_aI[3]}"><div class="ocean-label">Out for Delivery</div></div><div class="ocean-node ${_aI[4]}"><div class="ocean-label">Delivered</div></div></div>`, _aS=`<div class="order-date">${_az}</div><div class="dashboard-section"><div class="loc-flex"><div><strong>Pickup</strong>${_ay.name}<br><span style="color:#aaa; font-size:12px;">${_ay.pickup_location}</span></div></div></div><div class="dashboard-section" style="margin-top: 15px;"><div class="loc-flex"><div><strong>Delivery</strong>${_ay.delivery_name}<br><span style="color:#aaa; font-size:12px;">${_ay.destination}</span></div></div></div><div class="dashboard-section" style="margin-top: 15px;"><div class="loc-flex"><div><strong>Packages/Items/Dimensions</strong><span style="color:#aaa; font-size:12px;">${_aN}</span></div></div></div><div class="dashboard-section" style="margin-top: 15px;"><div class="loc-flex"><div><strong>PO / Ref</strong><span style="color:#aaa; font-size:12px;">${_aO}</span></div></div></div>${_aR}`;if(_aP){var _aT=P.has(_ay.id),_aU=new Date(_ay.timestamp),_aV=_aU.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}).replace(/,/g,'');_am.innerHTML+=`<div style="margin-bottom: 25px;"><button onclick="B('${_ay.id}')" style="width: 100%; padding: 15px; background: var(--input-bg); border: 1px solid var(--success); border-radius: 6px; color: var(--text); text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"><span style="font-weight: bold; font-size: 13px; color: orange;">✅ ${_aV}</span><span style="font-size: 12px; color: var(--placeholder); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 30%;">${_ay.package_details||'N/A'}</span><span style="font-size: 12px; color: var(--placeholder); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; max-width: 30%;"><span style="color: #ffd700;">${_ay.name||'?'}</span> → <span style="color: #90ee90;">${_ay.delivery_name||'?'}</span></span></button><div id="${_aQ}" class="order-card" style="display: ${_aT?'block':'none'}; margin-bottom: 0; border-top: none; border-top-left-radius: 0; border-top-right-radius: 0;">${_aS}</div></div>`}else{var _aW='';if(_aA==='pending_pickup')_aW=`<div class="order-actions"><button class="cancel-btn" onclick="y('${_ay.id}')">Cancel</button><button class="edit-btn" onclick="z('${_ay.id}')">Edit</button></div>`;_am.innerHTML+=`<div class="order-card">${_aS}${_aW}</div>`}})}
+function B(_aX){var _aY=document.getElementById('order-card-'+_aX);if(_aY){if(_aY.style.display==='none'){_aY.style.display='block';P.add(_aX)}else{_aY.style.display='none';P.delete(_aX)}}}
+af.addEventListener("submit",_aZ=>{_aZ.preventDefault();if(document.getElementById('website_url_hp').value)return;var _ba=localStorage.getItem('lastOrderTime'),_bb=Date.now();if(_ba&&_bb-_ba<30000&&!S){alert("Please wait a moment before submitting another request.");return}
+if(!ad||!ae){alert("Please select a verified address from the Google Maps suggestions or the map picker to prevent invalid locations.");return}
+ag.innerText=S?"Updating...":"Transmitting...";ag.style.opacity="0.7";ag.disabled=!0;var _bc=(_bd={},_be='Unassigned')=>{var _bf={name:af.name.value.trim(),pickup_location:af.pickup_location.value.trim(),pickup_city:af.city.value.trim(),city:af.city.value.trim(),p_email:af.p_email.value.trim(),p_phone:af.p_phone.value.trim(),delivery_name:af.delivery_name.value.trim(),destination:af.destination.value.trim(),delivery_city:af.drop_city.value.trim(),d_email:af.d_email.value.trim(),d_phone:af.d_phone.value.trim(),package_details:af.package_details.value.trim(),po_number:af.po_number.value.trim()||"",other_info:af.other_info.value.trim(),job_history:"[Client Request]",status:"pending_pickup",type:"pickup",assigned_to:_be,timestamp:S?N[S]?.timestamp||Date.now():Date.now(),created_by:firebase.auth().currentUser?firebase.auth().currentUser.email:"Web Portal",..._bd};if(S){db.ref("jobs/"+S).update(_bf).then(()=>{localStorage.setItem('lastOrderTime',Date.now());S=null;af.style.display="none";document.getElementById("thanksMessage").style.display="block";window.scrollTo({top:0,behavior:'smooth'})}).catch(_bg=>{ag.innerText="Update Request";ag.disabled=!1;ag.style.opacity="1"})}else{db.ref("jobs").push(_bf).then(_bh=>{localStorage.setItem('lastOrderTime',Date.now());var _bi=_bh.key;if(!N)N={};N[_bi]={..._bf,id:_bi};if(document.getElementById('orders-history-container').style.display==='block')A();af.style.display="none";document.getElementById("thanksMessage").style.display="block";window.scrollTo({top:0,behavior:'smooth'})}).catch(_bj=>{ag.innerText="Submit Request";ag.disabled=!1;ag.style.opacity="1"})}};var _bk=new google.maps.Geocoder(),_bl=af.pickup_location.value.trim()+", "+af.city.value.trim(),_bm=!1,_bn=setTimeout(()=>{if(!_bm){_bm=!0;_bc()}},3000);_bk.geocode({address:_bl},(_bo,_bp)=>{if(_bm)return;_bm=!0;clearTimeout(_bn);if(_bp==="OK"&&_bo[0]){var _bq=_bo[0].geometry.location,_br={lat:_bq.lat(),lng:_bq.lng()},_bs='Unassigned';for(var _bt in Q){var _bu=Q[_bt];if(_bu.polygon){var _bv=new google.maps.Polygon({paths:_bu.polygon});if(google.maps.geometry.poly.containsLocation(_bq,_bv)){_bs=_bt;break}}}_bc(_br,_bs)}else _bc()})});
+var Y;window.addEventListener('beforeinstallprompt',_bw=>{_bw.preventDefault();Y=_bw;document.getElementById('installAppBtn').style.display='block'});document.getElementById('installAppBtn').addEventListener('click',async()=>{if(Y){Y.prompt();var _bx=await Y.userChoice;if(_bx.outcome==='accepted')document.getElementById('installAppBtn').style.display='none';Y=null}});
+var Z,aa,ab='';function E(_by){ab=_by;var _bz=document.getElementById('location-picker-modal');_bz.style.display='block';document.body.style.overflow='hidden';if(!Z){Z=new google.maps.Map(document.getElementById('picker-map'),{center:{lat:49.8951,lng:-97.1384},zoom:12,disableDefaultUI:!0,zoomControl:!0,scrollwheel:!0,styles:[{"featureType":"all","elementType":"labels.text.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"all","elementType":"labels.text.stroke","stylers":[{"color":"#000000"},{"lightness":13}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":21}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":17}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":29},{"weight":0.2}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":18}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":16}]},{"featureType":"transit","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":19}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":17}]}]});var _bA=document.getElementById('loc-search-bar'),_bB=new google.maps.places.Autocomplete(_bA);_bB.bindTo('bounds',Z);_bB.addListener('place_changed',()=>{var _bC=_bB.getPlace();if(_bC.geometry){Z.setCenter(_bC.geometry.location);Z.setZoom(17)}});_bA.addEventListener('keydown',_bD=>{if(_bD.key==='Enter'){var _bE=_bA.value,_bF=_bE.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);if(_bF){var _bG={lat:+_bF[1],lng:+_bF[2]};Z.setCenter(_bG);Z.setZoom(17)}else{var _bH=new google.maps.Geocoder();_bH.geocode({address:_bE},(_bI,_bJ)=>{if(_bJ==='OK'&&_bI[0]){Z.setCenter(_bI[0].geometry.location);Z.setZoom(17)}})}}})}}
+function C(){var _bK=document.getElementById('loc-search-bar'),_bL=_bK.value;if(!_bL)return;var _bM=_bL.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);if(_bM){var _bN={lat:+_bM[1],lng:+_bM[2]};Z.setCenter(_bN);Z.setZoom(17)}else{var _bO=new google.maps.Geocoder();_bO.geocode({address:_bL},(_bP,_bQ)=>{if(_bQ==='OK'&&_bP[0]){Z.setCenter(_bP[0].geometry.location);Z.setZoom(17)}else alert('Location not found')})}}
+function D(){var _bR=Z.getCenter(),_bS=new google.maps.Geocoder();_bS.geocode({location:_bR},(_bT,_bU)=>{if(_bU==='OK'&&_bT[0]){var _bV=_bT[0].formatted_address,_bW=i(_bT[0].address_components);if(ab==='pickup'){document.getElementById('f-pickup').value=_bV;document.getElementsByName('city')[0].value=_bW;ad=!0}else if(ab==='drop'){document.getElementById('f-drop-address').value=_bV;document.getElementsByName('drop_city')[0].value=_bW;ae=!0}else if(ab==='settings-pickup'){document.getElementById('default-pickup').value=_bV;document.getElementById('default-city').value=_bW}else if(ab==='settings-drop'){document.getElementById('default-destination').value=_bV;document.getElementById('default-drop_city').value=_bW}else if(ab==='new-contact'){document.getElementById('new-contact-address').value=_bV}}document.getElementById('location-picker-modal').style.display='none';document.body.style.overflow=''})}
+function F(_bX){W=_bX;G();document.getElementById('settings-modal').style.display='block';r()}
+function G(){var _bY=document.getElementById('savedAddressesList');if(!_bY)return;_bY.innerHTML='';V.forEach((_bZ,_ca)=>{_bY.innerHTML+=`<div style="border:1px solid var(--border); padding:8px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center;"><div><strong>${_bZ.name}</strong><br><span style="font-size:12px;">${_bZ.address} ${_bZ.city?'('+_bZ.city+')':''}</span><br><span style="font-size:11px; color:#aaa;">${_bZ.email} ${_bZ.phone?'• '+_bZ.phone:''}</span></div><div><button onclick="H(${_ca})" style="background:var(--accent); color:#000; border:none; padding:4px 8px; margin-right:4px;">Use</button><button onclick="I(${_ca})" style="background:#b3002d; color:#fff; border:none; padding:4px 8px;">Del</button></div></div>`});if(V.length===0)_bY.innerHTML='<p>No saved addresses.</p>'}
+function H(_cb){var _cc=V[_cb];if(_cc.target==='pickup'){document.getElementById('f-pickup').value=_cc.address;document.getElementsByName('city')[0].value=_cc.city||'';document.getElementsByName('name')[0].value=_cc.name||'';document.getElementsByName('p_email')[0].value=_cc.email||'';document.getElementsByName('p_phone')[0].value=_cc.phone||'';ad=!0}else{document.getElementById('f-drop-address').value=_cc.address;document.getElementsByName('drop_city')[0].value=_cc.city||'';document.getElementsByName('delivery_name')[0].value=_cc.name||'';document.getElementsByName('d_email')[0].value=_cc.email||'';document.getElementsByName('d_phone')[0].value=_cc.phone||'';ae=!0}document.getElementById('settings-modal').style.display='none'}
+function I(_cd){V.splice(_cd,1);localStorage.setItem('ec_addresses',JSON.stringify(V));G()}
+function J(){}
+function K(){if(confirm("Are you sure you want to logout?"))firebase.auth().signOut()}
 </script>
 
 <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
 <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
 
-<button id="devBtn" style="display:block; position:fixed; bottom:20px; right:20px; z-index:10001; background:#111; border:1px solid var(--accent); color:var(--accent); padding:10px 15px; font-size:12px; cursor:pointer; border-radius:4px; font-weight:bold; box-shadow: 0 4px 10px rgba(0,0,0,0.5);" onclick="const p=document.getElementById('dev-portal'); p.style.display=(p.style.display==='none'?'flex':'none'); if(p.style.display==='flex' && !devQuill) { devQuill = new Quill('#dev-editor', { theme: 'snow', modules: { toolbar: [ ['bold', 'italic', 'underline'], [{ 'list': 'ordered'}, { 'list': 'bullet' }], [{ 'align': [] }] ] } }); }">DEV NOTES</button>
+<button id="devBtn" style="display:block; position:fixed; bottom:20px; right:20px; z-index:10001; background:#111; border:1px solid var(--accent); color:var(--accent); padding:10px 15px; font-size:12px; cursor:pointer; border-radius:4px; font-weight:bold; box-shadow: 0 4px 10px rgba(0,0,0,0.5);" onclick="const p=document.getElementById('dev-portal'); p.style.display=(p.style.display==='none'?'flex':'none'); if(p.style.display==='flex' && !ac) { ac = new Quill('#dev-editor', { theme: 'snow', modules: { toolbar: [ ['bold', 'italic', 'underline'], [{ 'list': 'ordered'}, { 'list': 'bullet' }], [{ 'align': [] }] ] } }); }">DEV NOTES</button>
 
 <div id="dev-portal" style="background:#111; color:#fff; padding:20px; border-top:5px solid var(--accent); display:none; flex-direction:column; gap:15px; position:fixed; bottom:0; left:0; width:100%; box-sizing:border-box; z-index:10000; max-height:80vh; overflow-y:auto;">
   <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -1672,7 +680,7 @@
     <p style="color:#666;">Authenticating...</p>
   </div>
   <div id="dev-editor" style="min-height: 150px; background:#fff; color:#000;"></div>
-  <button onclick="saveDevNote()" style="padding:10px; background:var(--accent); color:#000; border:none; font-weight:800; cursor:pointer;">POST UPDATE</button>
+  <button onclick="L()" style="padding:10px; background:var(--accent); color:#000; border:none; font-weight:800; cursor:pointer;">POST UPDATE</button>
 </div>
 
 <style>
@@ -1684,29 +692,8 @@
 </style>
 
 <script>
-  let devQuill;
-
-  function saveDevNote() {
-    const currentUser = firebase.auth().currentUser;
-    if (devQuill.getText().trim() === "") return;
-    
-    const user = currentUser ? currentUser.email.split('@')[0] : "Anonymous";
-    const now = new Date();
-    const dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-
-    firebase.database().ref('developer').push({
-      text: devQuill.root.innerHTML,
-      user: user,
-      app: "Customer Portal",
-      date: dateStr,
-      timestamp: firebase.database.ServerValue.TIMESTAMP
-    }).then(() => {
-      devQuill.setText('');
-    }).catch(err => {
-      console.error("Command Center Error:", err);
-      alert("Post failed. Check database permissions.");
-    });
-  }
+var ac;
+function L(){var _ce=firebase.auth().currentUser;if(ac.getText().trim()==="")return;var _cf=_ce?_ce.email.split('@')[0]:"Anonymous",_cg=new Date(),_ch=_cg.toLocaleDateString()+' '+_cg.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});firebase.database().ref('developer').push({text:ac.root.innerHTML,user:_cf,app:"Customer Portal",date:_ch,timestamp:firebase.database.ServerValue.TIMESTAMP}).then(()=>{ac.setText('')}).catch(_ci=>{console.error("Command Center Error:",_ci);alert("Post failed. Check database permissions.")})}
 </script>
 </body>
 </html>
