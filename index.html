@@ -651,6 +651,11 @@ var M=null,N=null,O=null,P=new Set(),Q={},R={},S=null,T='',U='all',V=[],W='picku
 var editingContactIndex = null; // for address book edit
 
 firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
+firebase.auth().getRedirectResult().then(function(result) {
+  // result can be ignored as onAuthStateChanged will handle
+}).catch(function(error) {
+  alert("Google Sign-In Error: " + error.message);
+});
 db.ref("driver_zones").on("value",_e=>Q=_e.val()||{});
 db.ref("driver_locations").on("value",_f=>{R=_f.val()||{};console.log("driverLocations keys:",Object.keys(R));if(document.getElementById('orders-history-container').style.display==='block')A()});
 
@@ -672,7 +677,7 @@ function b(_o){_o==='light'?document.body.classList.add('light-mode'):document.b
 function c(){var _p=document.body.classList.contains('light-mode'),_q=document.getElementById('theme-light'),_r=document.getElementById('theme-dark');if(_q)_q.classList.toggle('active',_p);if(_r)_r.classList.toggle('active',!_p)}
 function d(){var _s=document.getElementById('auth-email').value.trim(),_t=document.getElementById('auth-password').value.trim();if(!_s||!_t)return alert("Please enter email and password.");firebase.auth().signInWithEmailAndPassword(_s,_t).catch(_u=>alert("Login Error: "+_u.message))}
 function e(){var _v=document.getElementById('auth-email').value.trim(),_w=document.getElementById('auth-password').value.trim();if(!_v||!_w)return alert("Please enter email and password to sign up.");firebase.auth().createUserWithEmailAndPassword(_v,_w).then(_x=>{_x.user.sendEmailVerification();alert("Account created! We sent a verification link to your email. Please verify before logging in.");firebase.auth().signOut()}).catch(_y=>alert("Sign Up Error: "+_y.message))}
-function f(){var _z=new firebase.auth.GoogleAuthProvider();firebase.auth().signInWithPopup(_z).catch(_A=>alert("Google Login Error: "+_A.message))}
+function f(){var _z=new firebase.auth.GoogleAuthProvider();firebase.auth().signInWithRedirect(_z);}
 function g(){var _B=document.getElementById('auth-email').value.trim();if(!_B)return alert("Please enter your email address first, then click Forgot Password.");firebase.auth().sendPasswordResetEmail(_B).then(()=>alert("Password reset email sent. Please check your inbox.")).catch(_C=>alert("Error: "+_C.message))}
 function h(_D){var _E=_D.value.replace(/\D/g,'').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);_D.value=!_E[2]?_E[1]:'('+_E[1]+') '+_E[2]+(_E[3]?'-'+_E[3]:'')}
 function i(_F){if(!_F)return'';for(var _G of _F){if(_G.types.includes("locality"))return _G.long_name}for(var _G of _F){if(_G.types.includes("sublocality_level_1"))return _G.long_name}for(var _G of _F){if(_G.types.includes("administrative_area_level_2"))return _G.long_name}return''}
