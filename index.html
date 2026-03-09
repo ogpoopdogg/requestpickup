@@ -753,7 +753,38 @@ function v(){var _ag=firebase.auth().currentUser;if(!_ag)return;db.ref("jobs").o
 function w(){document.getElementById('main-app-container').style.display='none';document.getElementById('orders-history-container').style.display='block';v();if(window.X)clearInterval(window.X);window.X=setInterval(()=>{if(document.getElementById('orders-history-container').style.display==='block')A();else{clearInterval(window.X);window.X=null}},2000)}
 function x(){if(window.X){clearInterval(window.X);window.X=null}P.clear();document.getElementById('orders-history-container').style.display='none';document.getElementById('main-app-container').style.display='block';document.getElementById('pickupForm').style.display='block';document.getElementById('thanksMessage').style.display='none';document.getElementById('pickupForm').reset();ad=!1;ae=!1;ag.innerText="Submit Request";ag.disabled=!1;ag.style.opacity="1";S=null}
 function y(_ai){if(!confirm('Are you sure you want to cancel this pending order?'))return;db.ref('jobs/'+_ai).update({status:'cancelled'}).catch(_aj=>alert('Error: '+_aj.message))}
-function z(_ak){var _al=N[_ak];if(!_al)return;S=_ak;af.name.value=_al.name||'';af.pickup_location.value=_al.pickup_location||'';af.city.value=_al.pickup_city||'';af.p_email.value=_al.p_email||'';af.p_phone.value=_al.p_phone||'';af.delivery_name.value=_al.delivery_name||'';af.destination.value=_al.destination||'';af.drop_city.value=_al.delivery_city||'';af.d_email.value=_al.d_email||'';af.d_phone.value=_al.d_phone||'';af.package_details.value=_al.package_details||'';af.po_number.value=_al.po_number||'';af.other_info.value=_al.other_info||'';ad=!0;ae=!0;ag.innerText="Update Request";x();document.getElementById('main-app-container').style.display='block';document.getElementById('orders-history-container').style.display='none'}
+function z(_ak){
+    if(!confirm("Are you sure you want to edit this order?")) return;
+    var _al = N[_ak];
+    if(!_al) return;
+    S = _ak;
+    af.name.value = _al.name || '';
+    af.pickup_location.value = _al.pickup_location || '';
+    af.city.value = _al.pickup_city || '';
+    af.p_email.value = _al.p_email || '';
+    af.p_phone.value = _al.p_phone || '';
+    af.delivery_name.value = _al.delivery_name || '';
+    af.destination.value = _al.destination || '';
+    af.drop_city.value = _al.delivery_city || '';
+    af.d_email.value = _al.d_email || '';
+    af.d_phone.value = _al.d_phone || '';
+    af.package_details.value = _al.package_details || '';
+    af.po_number.value = _al.po_number || '';
+    af.other_info.value = _al.other_info || '';
+    ad = true;
+    ae = true;
+    ag.innerText = "Update Request";
+    // Clear any live update interval
+    if(window.X) { clearInterval(window.X); window.X = null; }
+    // Hide orders, show main container without resetting form
+    document.getElementById('orders-history-container').style.display = 'none';
+    document.getElementById('main-app-container').style.display = 'block';
+    document.getElementById('pickupForm').style.display = 'block';
+    document.getElementById('thanksMessage').style.display = 'none';
+    // Ensure button is enabled (just in case)
+    ag.disabled = false;
+    ag.style.opacity = "1";
+}
 function A(){if(document.getElementById('orders-history-container').style.display!=='block')return;var _am=document.getElementById('orders-list'),_an=document.getElementById('live-status-header');if(!N||Object.keys(N).length===0){_am.innerHTML='<p style="color:#aaa;">No past orders found.</p>';return}
 var _ao=new Date();_an.innerText="Status Live as of "+_ao.toLocaleString([],{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:!0});_am.innerHTML='';var _ap=[];Object.entries(N).forEach(([_aq,_ar])=>{_ap.push({..._ar,id:_aq})});_ap.sort((_as,_at)=>_at.timestamp-_as.timestamp);var _au=_ap.filter(_av=>{if(U!=='all'){if(U==='pending'&&_av.status!=='pending_pickup')return!1;if(U==='in_progress'&&!['pending_pickup','in_transit','pending_delivery'].includes(_av.status))return!1;if(U==='completed'&&_av.status!=='completed')return!1;if(U==='cancelled'&&_av.status!=='cancelled')return!1}
 if(T.trim()!==''){var _aw=T.toLowerCase(),_ax=(_av.package_details+' '+_av.po_number+' '+_av.name+' '+_av.delivery_name+' '+_av.pickup_location+' '+_av.destination).toLowerCase();if(!_ax.includes(_aw))return!1}return!0});_au.forEach(_ay=>{var _az=new Date(_ay.timestamp).toLocaleString(),_aA=_ay.status||'pending_pickup',_aB=(_ay.assigned_to&&_ay.assigned_to!=='Unassigned')?_ay.assigned_to:null,_aC=!0,_aD=(_aB!==null)||!!_ay.picked_up_by||(_aA==='in_transit')||(_aA==='pending_delivery')||(_aA==='completed'),_aE=!!_ay.picked_up_by||_aA==='in_transit',_aF=(_aA==='completed')||(_aA==='pending_delivery'&&_aB&&R[_aB]?.shift_active===!0),_aG=(_aA==='completed'),_aH=null;if(_aA==='pending_pickup'&&_aB)_aH=2;else if(_aA==='in_transit')_aH=3;else if(_aA==='pending_delivery'&&_aB&&R[_aB]?.shift_active===!0)_aH=4;else if(_aA==='completed')_aH=null;var _aI=[_aC?'completed':'',_aD?'completed':'',_aE?'completed':'',_aF?'completed':'',_aG?'completed':''];if(_aH)_aI[_aH-1]+=' active';var _aJ='0%';if(_aH){var _aK=0;for(var _aL=0;_aL<_aH-1;_aL++)if(_aI[_aL].includes('completed'))_aK++;_aJ=(_aK*25)+'%'}else{var _aM=[_aC,_aD,_aE,_aF,_aG].filter(Boolean).length;if(_aM>1)_aJ=((_aM-1)*25)+'%'}
