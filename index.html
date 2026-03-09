@@ -648,7 +648,7 @@ db.ref("driver_locations").on("value",_f=>{R=_f.val()||{};console.log("driverLoc
 
 firebase.auth().onAuthStateChanged(_g=>{var _h=document.getElementById('dev-list');if(_g){if(!_g.emailVerified&&_g.providerData.some(_i=>_i.providerId==='password')){alert("Please check your email and verify your account before logging in.");firebase.auth().signOut();return}
 document.getElementById('auth-overlay').style.display='none';document.getElementById('main-app-container').style.display='block';if(document.querySelector('input[name="p_email"]'))document.querySelector('input[name="p_email"]').value=_g.email;if(O){O();O=null}
-O=db.ref("jobs").orderByChild("created_by").equalTo(_g.email).on('value',_j=>{N=_j.val()||{};if(_j.exists()){var _k=_j.val();M=Object.values(_k)[0];document.getElementById('autofillBtn').style.display='block'}else{M=null;document.getElementById('autofillBtn').style.display='none'}
+O=db.ref("jobs").orderByChild("created_by").equalTo(_g.email).on('value',_j=>{if(!_j) return; N=_j.val()||{};if(_j.exists()){var _k=_j.val();M=Object.values(_k)[0];document.getElementById('autofillBtn').style.display='block'}else{M=null;document.getElementById('autofillBtn').style.display='none'}
 if(document.getElementById('orders-history-container').style.display==='block')A()});
 // Load address book from Firebase
 firebase.database().ref('users/'+_g.uid+'/addressBook').once('value', snap => {
@@ -657,7 +657,7 @@ firebase.database().ref('users/'+_g.uid+'/addressBook').once('value', snap => {
   G();
 });
 }else{document.getElementById('auth-overlay').style.display='flex';document.getElementById('main-app-container').style.display='none';if(O){O();O=null}N=null; V = [];}
-firebase.database().ref('developer').on('value',_l=>{_h.innerHTML='';var _m=_l.val()||{};Object.values(_m).forEach(_n=>{_h.innerHTML+=`<div class="dev-item"><div class="dev-hdr">${_n.user} - <span style="color: orange;">${_n.app||'Database'}</span> - ${_n.date}</div><div style="color:#eee;">${_n.text}</div></div>`});_h.scrollTop=_h.scrollHeight})});
+firebase.database().ref('developer').on('value',_l=>{if(!_l) return; _h.innerHTML='';var _m=_l.val()||{};Object.values(_m).forEach(_n=>{_h.innerHTML+=`<div class="dev-item"><div class="dev-hdr">${_n.user} - <span style="color: orange;">${_n.app||'Database'}</span> - ${_n.date}</div><div style="color:#eee;">${_n.text}</div></div>`});_h.scrollTop=_h.scrollHeight})});
 
 function a(){document.body.classList.toggle('light-mode');localStorage.setItem('ec_theme',document.body.classList.contains('light-mode')?'light':'dark');c()}
 function b(_o){_o==='light'?document.body.classList.add('light-mode'):document.body.classList.remove('light-mode');localStorage.setItem('ec_theme',_o);c()}
