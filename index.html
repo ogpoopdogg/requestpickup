@@ -1,1140 +1,288 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang=en>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta charset=UTF-8>
+<meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>E & C Courier Portal</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#ffd700">
-<link rel="icon" type="image/png" href="icon-512.png">
-
+<link rel=manifest href=manifest.json>
+<meta name=theme-color content=#ffd700>
+<link rel=icon type=image/png href=icon-512.png>
 <style>
-  :root { 
-    --accent: #ffd700;       
-    --bg: #222222; 
-    --card: #141414; 
-    --text: #e0e0e0; 
-    --input-bg: #1e1e1e;
-    --border: #333333;
-    --placeholder: #777777;
-    --success: #00b32d;
-  }
-
-  body.light-mode {
-    --bg: #f8f8f8;
-    --card: #f2f2f2;
-    --text: #000000;
-    --input-bg: #f9f9f9;
-    --border: #dddddd;
-    --placeholder: #888888;
-  }
-
-  body.light-mode h1 {
-    background: none;
-    color: #000000;
-    -webkit-text-fill-color: #000000;
-  }
-
-  body.light-mode .section-title {
-    color: #b39700;
-  }
-
-  body.light-mode button[type="submit"] {
-    background: #ffffff;
-    color: #000000;
-    border-color: #00b32d;
-  }
-
-  body.light-mode .header-wrap {
-    background: #ffffff;
-  }
-
-  body.light-mode #auth-overlay p, body.light-mode #auth-overlay h2 {
-    color: #000000 !important;
-  }
-
-  body.light-mode .modal-content { background: #ffffff; color: #000000; }
-  body.light-mode .btn-cancel { background: #eee; color: #333; border-color: #ccc; }
-  body.light-mode button[onclick="e()"] { background: var(--accent) !important; color: #000 !important; border: none !important; }
-  body.light-mode input:focus, body.light-mode textarea:focus, body.light-mode select:focus { background: #ffffff !important; }
-
-  body.light-mode .btn-back-form { background: transparent; border: 1px solid #000000; color: #000000; }
-  body.light-mode .ocean-label { color: #000000 !important; }
-
-  /* Light mode styles for settings modal */
-  body.light-mode .modal-content input,
-  body.light-mode .modal-content textarea,
-  body.light-mode .modal-content select {
-      color: #000000;
-      border-color: #000000;
-      background: #ffffff;
-  }
-  body.light-mode .modal-content ::placeholder {
-      color: #555555;
-  }
-  body.light-mode .settings-section h3 {
-      color: #000000;
-  }
-
-  /* Package details color */
-  .package-details {
-    color: #ff8c00; /* orange */
-    font-weight: bold;
-  }
-  body.light-mode .package-details {
-    color: #000000;
-  }
-
-  /* Settings gear icon in light mode */
-  body.light-mode #settingsBtn {
-    color: #000 !important;
-  }
-
-  /* Order actions margin */
-  .order-actions {
-    margin-top: 8px;
-  }
-
-  @keyframes fadeInPage {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes glow-pulse {
-    0% { box-shadow: 0 0 2px rgba(255, 215, 0, 0.1); border-color: var(--border); }
-    50% { box-shadow: 0 0 8px rgba(255, 215, 0, 0.3); border-color: var(--accent); }
-    100% { box-shadow: 0 0 2px rgba(255, 215, 0, 0.1); border-color: var(--border); }
-  }
-
-  body { 
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
-    background-color: var(--bg); 
-    color: var(--text);
-    margin: 0; 
-    display: flex; 
-    justify-content: center; 
-    align-items: flex-start;
-    padding: 20px 15px; 
-    box-sizing: border-box; 
-    min-height: 100vh;
-  }
-
-  .container { 
-    background: var(--card); 
-    width: 100%; 
-    max-width: 600px; 
-    border-radius: 8px; 
-    box-shadow: 0 10px 40px rgba(0,0,0,0.6); 
-    border: 1px solid var(--border);
-    animation: fadeInPage 0.5s ease-out;
-    overflow: hidden;
-    position: relative;
-    margin-top: 10px;
-  }
-
-  .header-wrap { 
-    background: #000000;
-    border-bottom: 2px solid var(--accent);
-    padding: 25px 20px;
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    gap: 15px; 
-  }
-
-  .header-wrap img { 
-    height: 35px; 
-    width: auto; 
-    filter: drop-shadow(0 0 2px var(--accent));
-  }
-  
-  h1 { 
-    color: var(--text); 
-    margin: 0; 
-    font-size: 22px; 
-    font-weight: 800; 
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    background: linear-gradient(to right, var(--accent) 0%, #fff 50%, var(--accent) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    background-size: 200% auto;
-    animation: text-shine 4s linear infinite;
-  }
-
-  @keyframes text-shine { to { background-position: 200% center; } }
-
-  form { padding: 25px; }
-
-  .section-title {
-    color: var(--accent);
-    font-size: 13px;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin: 20px 0 10px 0;
-    display: flex;
-    align-items: center;
-  }
-  .section-title::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-    margin-left: 10px;
-  }
-  .section-title:first-of-type { margin-top: 0; }
-  
-  .input-group { margin-bottom: 12px; }
-  
-  label {
-    display: block;
-    font-size: 13px;
-    font-weight: 700;
-    color: #888;
-    margin-bottom: 5px;
-    margin-left: 2px;
-  }
-  
-  .required-mark { color: var(--accent); margin-left: 2px; }
-
-  input, textarea, select { 
-    width: 100%; 
-    padding: 15px 16px; 
-    background: var(--input-bg); 
-    border: 1px solid var(--border); 
-    color: var(--text); 
-    border-radius: 6px; 
-    font-size: 17px; 
-    box-sizing: border-box; 
-    transition: all 0.2s;
-    font-family: inherit;
-  }
-
-  input:focus, textarea:focus {
-    border-color: var(--accent);
-    outline: none;
-    box-shadow: 0 0 8px rgba(255, 215, 0, 0.15);
-    background: #252525;
-  }
-
-  ::placeholder { color: var(--placeholder); font-size: 16px; }
-
-  .flex-row { 
-    display: flex; 
-    gap: 12px; 
-  }
-  
-  @media (max-width: 500px) {
-    .flex-row { flex-direction: column; gap: 12px; }
-  }
-
-  button[type="submit"] { 
-    width: 100%; 
-    margin-top: 25px;
-    padding: 20px;
-    background: #1c1c1c;
-    color: var(--text);
-    font-weight: 800;
-    border: 1px solid var(--border);
-    border-bottom: 3px solid var(--accent);
-    cursor: pointer;
-    border-radius: 6px;
-    text-transform: uppercase;
-    font-size: 18px;
-    letter-spacing: 1.5px;
-    transition: all 0.2s ease;
-  }
-
-  button[type="submit"]:hover {
-    background: #252525;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  }
-  
-  button[type="submit"]:active { transform: translateY(1px); }
-
-  #thanksMessage { 
-    display: none;
-    padding: 40px 30px; 
-    text-align: center;
-    animation: fadeInPage 0.4s ease;
-  }
-  
-  .success-icon {
-    font-size: 40px;
-    color: var(--success);
-    margin-bottom: 15px;
-    display: block;
-  }
-  
-  .success-btn {
-    background: var(--accent) !important;
-    color: #000 !important;
-    border: none !important;
-    font-weight: 900 !important;
-  }
-
-  .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(2px); }
-  .modal-content { background: var(--card); margin: 5% auto; padding: 30px; width: 90%; max-width: 550px; border: 1px solid var(--accent); color: var(--text); border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); box-sizing: border-box; }
-  .btn-cancel { background:#222; color:#ccc; border:1px solid #333; padding:12px; font-weight:700; cursor:pointer; font-size:13px; border-radius:4px; }
-  .btn-save { background:var(--success); color:#000; border:none; padding:12px; font-weight:700; text-transform:uppercase; cursor:pointer; font-size:13px; border-radius:4px; }
-
-  .order-card { background: var(--input-bg); border: 1px solid var(--border); padding: 15px; border-radius: 6px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-  .order-date { font-size: 12px; color: var(--placeholder); margin-bottom: 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
-  .dashboard-section { margin-bottom: 10px; font-size: 13px; color: var(--text); }
-  .dashboard-section strong { color: #888; text-transform: uppercase; font-size: 11px; display: block; margin-bottom: 3px; }
-  .loc-flex { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; }
-  .dashboard-meta { display: flex; flex-wrap: wrap; gap: 10px; background: #111; padding: 5px 10px; border-radius: 4px; margin-top: 5px; border: 1px solid #222; }
-  .meta-item { flex: 1; min-width: 100px; }
-  
-  .btn-back-form { background:#222; color:#ccc; border:1px solid #333; padding:8px 12px; font-weight:700; cursor:pointer; font-size:12px; border-radius:4px; }
-
-  /* Professional Timeline */
-  .ocean-timeline { display: flex; position: relative; margin-top: 35px; align-items: center; justify-content: space-between; padding: 0 10px; margin-bottom: 20px; }
-  .ocean-track { position: absolute; top: 50%; left: 10px; right: 10px; height: 4px; background: #e0e0e0; z-index: 0; transform: translateY(-50%); border-radius: 2px; }
-  .ocean-fill { position: absolute; top: 0; left: 0; height: 100%; background: #007bff; border-radius: 2px; transition: width 0.6s cubic-bezier(0.25, 0.8, 0.25, 1); }
-  .ocean-node { position: relative; z-index: 1; width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 2px solid #aaa; box-shadow: 0 2px 4px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; transition: all 0.4s ease; }
-  .ocean-node.completed { background: #007bff; border-color: #0056b3; }
-  .ocean-node.active { background: #ffc107; border-color: #e0a800; box-shadow: 0 0 8px #ffc107; animation: pulse 1.5s infinite; }
-  @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.2); }
-    100% { transform: scale(1); }
-  }
-  
-  .ocean-label { position: absolute; top: 24px; font-size: 10px; text-transform: uppercase; font-weight: bold; color: #ffffff; text-align: center; width: 70px; left: 50%; transform: translateX(-50%); letter-spacing: 0.5px; }
-  .ocean-node.active .ocean-label { color: #ffffff; }
-  .ocean-node.completed .ocean-label { color: #ffffff; }
-
-  /* Settings modal */
-  #settings-modal .modal-content { max-width: 500px; }
-  .settings-section { margin-bottom: 20px; }
-  .settings-section h3 { color: var(--accent); margin-top: 0; }
-  .theme-toggle { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
-  .theme-toggle button { flex: 1; padding: 10px; background: var(--input-bg); border: 1px solid var(--border); color: var(--text); cursor: pointer; border-radius: 4px; }
-  .theme-toggle button.active { background: var(--accent); color: #000; border-color: var(--accent); }
-  #save-defaults-btn { margin-top: 10px; }
-
-  /* new styles for search/filter */
-  .order-search-bar { display: flex; gap: 8px; margin: 15px 0 20px; flex-wrap: wrap; }
-  .order-search-bar input { flex: 2; min-width: 200px; padding: 12px; }
-  .order-search-bar select { flex: 1; min-width: 120px; padding: 12px; }
-  .order-actions { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
-  .cancel-btn { background: #b3002d; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
-  .edit-btn { background: var(--accent); color: #000; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
-  .address-book-btn { background: #333; color: var(--text); border: 1px solid var(--accent); padding: 8px; border-radius: 4px; cursor: pointer; font-size: 12px; }
-  .saved-address-dropdown { margin-bottom: 10px; }
-
-  /* Ensure location picker is on top of settings */
-  #location-picker-modal { z-index: 2001; }
-  
-  /* Light mode settings titles */
-  body.light-mode #settings-modal .modal-content h2 {
-    color: #000000;
-  }
-  body.light-mode .settings-section h3 {
-    color: #000000;
-  }
-
-  /* ========== ENHANCED VISUAL DESIGN (ADDED) ========== */
-  :root {
-    --space-xs: 4px;
-    --space-sm: 8px;
-    --space-md: 16px;
-    --space-lg: 24px;
-    --space-xl: 32px;
-    --radius-sm: 4px;
-    --radius-md: 6px;
-    --radius-lg: 8px;
-    --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
-    --shadow-md: 0 4px 8px rgba(0,0,0,0.2);
-    --shadow-lg: 0 8px 16px rgba(0,0,0,0.3);
-    --transition: all 0.2s ease;
-  }
-
-  /* Base button styles */
-  .btn {
-    display: inline-block;
-    padding: var(--space-sm) var(--space-md);
-    border-radius: var(--radius-md);
-    font-weight: 600;
-    text-align: center;
-    transition: var(--transition);
-    cursor: pointer;
-    border: 1px solid transparent;
-    line-height: 1.2;
-  }
-  .btn-primary {
-    background: #1c1c1c;
-    color: var(--text);
-    border-bottom: 3px solid var(--accent);
-    text-transform: uppercase;
-    font-weight: 800;
-  }
-  .btn-primary:hover {
-    background: #252525;
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-  }
-  .btn-secondary {
-    background: #222;
-    color: #ccc;
-    border: 1px solid #333;
-  }
-  .btn-secondary:hover {
-    background: #2a2a2a;
-    color: #fff;
-    border-color: var(--accent);
-  }
-  .btn-danger {
-    background: #b3002d;
-    color: white;
-    border: none;
-  }
-  .btn-danger:hover {
-    background: #990026;
-    box-shadow: var(--shadow-sm);
-  }
-  .btn-accent {
-    background: var(--accent);
-    color: #000;
-    border: none;
-    font-weight: 700;
-  }
-  .btn-accent:hover {
-    background: #e6c200;
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-sm);
-  }
-  .btn-icon {
-    background: transparent;
-    border: none;
-    padding: var(--space-xs);
-    font-size: 1.2em;
-    cursor: pointer;
-    border-radius: 50%;
-    transition: var(--transition);
-    line-height: 1;
-  }
-  .btn-icon:hover {
-    background: rgba(255,215,0,0.1);
-  }
-
-  /* Form enhancements */
-  .input-group {
-    margin-bottom: var(--space-md);
-  }
-  input, textarea, select {
-    border-radius: var(--radius-md);
-    transition: var(--transition);
-  }
-  input:focus, textarea:focus, select:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(255,215,0,0.2);
-  }
-
-  /* Card enhancements */
-  .order-card {
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-    transition: var(--transition);
-  }
-  .order-card:hover {
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
-  }
-
-  /* Modal improvements */
-  .modal-content {
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
-  }
-
-  /* Timeline label readability in light mode */
-  body.light-mode .ocean-label {
-    color: #000;
-  }
-
-  /* Responsive fine-tuning */
-  @media (max-width: 600px) {
-    .container {
-      margin-top: 0;
-      border-radius: 0;
-    }
-    .header-wrap {
-      padding: 15px;
-    }
-    form {
-      padding: 15px;
-    }
-  }
-
-  /* Consistent spacing for buttons in order actions */
-  .order-actions .btn {
-    padding: var(--space-xs) var(--space-sm);
-    font-size: 12px;
-  }
+:root{--accent:#ffd700;--bg:#222;--card:#141414;--text:#e0e0e0;--input-bg:#1e1e1e;--border:#333;--placeholder:#777;--success:#00b32d}
+body.light-mode{--bg:#f8f8f8;--card:#f2f2f2;--text:#000;--input-bg:#f9f9f9;--border:#ddd;--placeholder:#888}
+body.light-mode h1{background:0 0;color:#000;-webkit-text-fill-color:#000}
+body.light-mode .section-title{color:#b39700}
+body.light-mode button[type=submit]{background:#fff;color:#000;border-color:#00b32d}
+body.light-mode .header-wrap{background:#fff}
+body.light-mode #auth-overlay p,body.light-mode #auth-overlay h2{color:#000!important}
+body.light-mode .modal-content{background:#fff;color:#000}
+body.light-mode .btn-cancel{background:#eee;color:#333;border-color:#ccc}
+body.light-mode button[onclick=e]{background:var(--accent)!important;color:#000!important;border:0!important}
+body.light-mode input:focus,body.light-mode textarea:focus,body.light-mode select:focus{background:#fff!important}
+body.light-mode .btn-back-form{background:0 0;border:1px solid #000;color:#000}
+body.light-mode .ocean-label{color:#000!important}
+body.light-mode .modal-content input,body.light-mode .modal-content textarea,body.light-mode .modal-content select{color:#000;border-color:#000;background:#fff}
+body.light-mode .modal-content ::placeholder{color:#555}
+body.light-mode .settings-section h3{color:#000}
+.package-details{color:#ff8c00;font-weight:700}
+body.light-mode .package-details{color:#000}
+body.light-mode #settingsBtn{color:#000!important}
+.order-actions{margin-top:8px}
+@keyframes fadeInPage{0%{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+@keyframes glow-pulse{0%{box-shadow:0 0 2px rgba(255,215,0,.1);border-color:var(--border)}50%{box-shadow:0 0 8px rgba(255,215,0,.3);border-color:var(--accent)}to{box-shadow:0 0 2px rgba(255,215,0,.1);border-color:var(--border)}}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background-color:var(--bg);color:var(--text);margin:0;display:flex;justify-content:center;align-items:flex-start;padding:20px 15px;box-sizing:border-box;min-height:100vh}
+.container{background:var(--card);width:100%;max-width:600px;border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,.6);border:1px solid var(--border);animation:fadeInPage .5s ease-out;overflow:hidden;position:relative;margin-top:10px}
+.header-wrap{background:#000;border-bottom:2px solid var(--accent);padding:25px 20px;display:flex;align-items:center;justify-content:center;gap:15px}
+.header-wrap img{height:35px;width:auto;filter:drop-shadow(0 0 2px var(--accent))}
+h1{color:var(--text);margin:0;font-size:22px;font-weight:800;text-transform:uppercase;letter-spacing:1px;background:linear-gradient(90deg,var(--accent) 0,#fff 50%,var(--accent) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;background-size:200% auto;animation:text-shine 4s linear infinite}
+@keyframes text-shine{to{background-position:200% center}}
+form{padding:25px}
+.section-title{color:var(--accent);font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;margin:20px 0 10px;display:flex;align-items:center}
+.section-title:after{content:'';flex:1;height:1px;background:var(--border);margin-left:10px}
+.section-title:first-of-type{margin-top:0}
+.input-group{margin-bottom:12px}
+label{display:block;font-size:13px;font-weight:700;color:#888;margin-bottom:5px;margin-left:2px}
+.required-mark{color:var(--accent);margin-left:2px}
+input,textarea,select{width:100%;padding:15px 16px;background:var(--input-bg);border:1px solid var(--border);color:var(--text);border-radius:6px;font-size:17px;box-sizing:border-box;transition:all .2s;font-family:inherit}
+input:focus,textarea:focus{border-color:var(--accent);outline:0;box-shadow:0 0 8px rgba(255,215,0,.15);background:#252525}
+::placeholder{color:var(--placeholder);font-size:16px}
+.flex-row{display:flex;gap:12px}
+@media (max-width:500px){.flex-row{flex-direction:column;gap:12px}}
+button[type=submit]{width:100%;margin-top:25px;padding:20px;background:#1c1c1c;color:var(--text);font-weight:800;border:1px solid var(--border);border-bottom:3px solid var(--accent);cursor:pointer;border-radius:6px;text-transform:uppercase;font-size:18px;letter-spacing:1.5px;transition:all .2s}
+button[type=submit]:hover{background:#252525;transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.3)}
+button[type=submit]:active{transform:translateY(1px)}
+#thanksMessage{display:none;padding:40px 30px;text-align:center;animation:fadeInPage .4s}
+.success-icon{font-size:40px;color:var(--success);margin-bottom:15px;display:block}
+.success-btn{background:var(--accent)!important;color:#000!important;border:0!important;font-weight:900!important}
+.modal{display:none;position:fixed;z-index:2000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.85);backdrop-filter:blur(2px)}
+.modal-content{background:var(--card);margin:5% auto;padding:30px;width:90%;max-width:550px;border:1px solid var(--accent);color:var(--text);border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.5);box-sizing:border-box}
+.btn-cancel{background:#222;color:#ccc;border:1px solid #333;padding:12px;font-weight:700;cursor:pointer;font-size:13px;border-radius:4px}
+.btn-save{background:var(--success);color:#000;border:0;padding:12px;font-weight:700;text-transform:uppercase;cursor:pointer;font-size:13px;border-radius:4px}
+.order-card{background:var(--input-bg);border:1px solid var(--border);padding:15px;border-radius:6px;margin-bottom:25px;box-shadow:0 4px 15px rgba(0,0,0,.3)}
+.order-date{font-size:12px;color:var(--placeholder);margin-bottom:10px;border-bottom:1px solid var(--border);padding-bottom:5px}
+.dashboard-section{margin-bottom:10px;font-size:13px;color:var(--text)}
+.dashboard-section strong{color:#888;text-transform:uppercase;font-size:11px;display:block;margin-bottom:3px}
+.loc-flex{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px}
+.dashboard-meta{display:flex;flex-wrap:wrap;gap:10px;background:#111;padding:5px 10px;border-radius:4px;margin-top:5px;border:1px solid #222}
+.meta-item{flex:1;min-width:100px}
+.btn-back-form{background:#222;color:#ccc;border:1px solid #333;padding:8px 12px;font-weight:700;cursor:pointer;font-size:12px;border-radius:4px}
+.ocean-timeline{display:flex;position:relative;margin-top:35px;align-items:center;justify-content:space-between;padding:0 10px;margin-bottom:20px}
+.ocean-track{position:absolute;top:50%;left:10px;right:10px;height:4px;background:#e0e0e0;z-index:0;transform:translateY(-50%);border-radius:2px}
+.ocean-fill{position:absolute;top:0;left:0;height:100%;background:#007bff;border-radius:2px;transition:width .6s cubic-bezier(.25,.8,.25,1)}
+.ocean-node{position:relative;z-index:1;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid #aaa;box-shadow:0 2px 4px rgba(0,0,0,.1);display:flex;align-items:center;justify-content:center;transition:all .4s}
+.ocean-node.completed{background:#007bff;border-color:#0056b3}
+.ocean-node.active{background:#ffc107;border-color:#e0a800;box-shadow:0 0 8px #ffc107;animation:pulse 1.5s infinite}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.2)}to{transform:scale(1)}}
+.ocean-label{position:absolute;top:24px;font-size:10px;text-transform:uppercase;font-weight:700;color:#fff;text-align:center;width:70px;left:50%;transform:translateX(-50%);letter-spacing:.5px}
+.ocean-node.active .ocean-label{color:#fff}
+.ocean-node.completed .ocean-label{color:#fff}
+#settings-modal .modal-content{max-width:500px}
+.settings-section{margin-bottom:20px}
+.settings-section h3{color:var(--accent);margin-top:0}
+.theme-toggle{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.theme-toggle button{flex:1;padding:10px;background:var(--input-bg);border:1px solid var(--border);color:var(--text);cursor:pointer;border-radius:4px}
+.theme-toggle button.active{background:var(--accent);color:#000;border-color:var(--accent)}
+#save-defaults-btn{margin-top:10px}
+.order-search-bar{display:flex;gap:8px;margin:15px 0 20px;flex-wrap:wrap}
+.order-search-bar input{flex:2;min-width:200px;padding:12px}
+.order-search-bar select{flex:1;min-width:120px;padding:12px}
+.order-actions{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+.cancel-btn{background:#b3002d;color:#fff;border:0;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:700}
+.edit-btn{background:var(--accent);color:#000;border:0;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:700}
+.address-book-btn{background:#333;color:var(--text);border:1px solid var(--accent);padding:8px;border-radius:4px;cursor:pointer;font-size:12px}
+.saved-address-dropdown{margin-bottom:10px}
+#location-picker-modal{z-index:2001}
+body.light-mode #settings-modal .modal-content h2{color:#000}
+body.light-mode .settings-section h3{color:#000}
+:root{--space-xs:4px;--space-sm:8px;--space-md:16px;--space-lg:24px;--space-xl:32px;--radius-sm:4px;--radius-md:6px;--radius-lg:8px;--shadow-sm:0 2px 4px rgba(0,0,0,.1);--shadow-md:0 4px 8px rgba(0,0,0,.2);--shadow-lg:0 8px 16px rgba(0,0,0,.3);--transition:all .2s}
+.btn{display:inline-block;padding:var(--space-sm) var(--space-md);border-radius:var(--radius-md);font-weight:600;text-align:center;transition:var(--transition);cursor:pointer;border:1px solid transparent;line-height:1.2}
+.btn-primary{background:#1c1c1c;color:var(--text);border-bottom:3px solid var(--accent);text-transform:uppercase;font-weight:800}
+.btn-primary:hover{background:#252525;transform:translateY(-2px);box-shadow:var(--shadow-md)}
+.btn-secondary{background:#222;color:#ccc;border:1px solid #333}
+.btn-secondary:hover{background:#2a2a2a;color:#fff;border-color:var(--accent)}
+.btn-danger{background:#b3002d;color:#fff;border:0}
+.btn-danger:hover{background:#990026;box-shadow:var(--shadow-sm)}
+.btn-accent{background:var(--accent);color:#000;border:0;font-weight:700}
+.btn-accent:hover{background:#e6c200;transform:translateY(-1px);box-shadow:var(--shadow-sm)}
+.btn-icon{background:0 0;border:0;padding:var(--space-xs);font-size:1.2em;cursor:pointer;border-radius:50%;transition:var(--transition);line-height:1}
+.btn-icon:hover{background:rgba(255,215,0,.1)}
+.input-group{margin-bottom:var(--space-md)}
+input,textarea,select{border-radius:var(--radius-md);transition:var(--transition)}
+input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,215,0,.2)}
+.order-card{border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);transition:var(--transition)}
+.order-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
+.modal-content{border-radius:var(--radius-lg);box-shadow:var(--shadow-lg)}
+body.light-mode .ocean-label{color:#000}
+@media (max-width:600px){.container{margin-top:0;border-radius:0}.header-wrap{padding:15px}form{padding:15px}}
+.order-actions .btn{padding:var(--space-xs) var(--space-sm);font-size:12px}
 </style>
 </head>
 <body>
-
-<div id="auth-overlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; min-height: 100vh; overflow-y: auto; background: var(--bg); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; box-sizing: border-box;">
-  
-  <div style="max-width: 600px; width: 100%; text-align: center; margin-bottom: 30px;">
-    <img src="icon2.png" alt="E&C Logo" style="height: 60px; margin-bottom: 15px; filter: drop-shadow(0 0 5px var(--accent)); cursor: pointer;" onclick="a()" onerror="this.style.display='none'">
-    <h1 style="color: var(--accent); font-size: 26px; margin: 0 0 10px 0; text-transform: uppercase;">E&C Courier</h1>
-    <p style="color: #e0e0e0; font-size: 15px; margin-bottom: 15px; line-height: 1.5;">
-      Request local courier pickups and deliveries quickly and securely.
-    </p>
-    <p style="color: #aaa; font-size: 13px; margin-bottom: 20px; line-height: 1.5;">
-      <strong>Data Usage:</strong> We collect your email, phone, and address strictly to process dispatches at your request.
-    </p>
-    <a href="https://app.eandccourier.ca/privacy" target="_blank" style="background: var(--accent); color: #000; padding: 10px 20px; border-radius: 5px; font-weight: bold; text-decoration: none; display: inline-block; font-size: 14px;">Privacy Policy & Terms</a>
-  </div>
-
-  <div class="container" style="padding: 30px; text-align: center; margin-top: 0; box-shadow: 0 10px 40px rgba(0,0,0,0.8);">
-    <h2 style="color: #fff; margin-top: 0; margin-bottom: 20px; font-weight: 800; text-transform: uppercase; font-size: 18px;">Account Login</h2>
-    
-    <div class="input-group" style="text-align: left; margin-bottom: 15px;">
-      <input type="email" id="auth-email" placeholder="Email Address" required>
-    </div>
-    <div class="input-group" style="text-align: left; margin-bottom: 25px;">
-      <input type="password" id="auth-password" placeholder="Password" required>
-    </div>
-    
-    <button type="button" onclick="d()" class="btn btn-accent" style="width: 100%; margin-bottom: 12px;">Login</button>
-    <button type="button" onclick="e()" class="btn btn-primary" style="width: 100%; margin-bottom: 20px;">Create Account</button>
-    <button type="button" onclick="f()" style="width: 100%; padding: 12px; background: #ffffff; border: 1px solid #dadce0; border-radius: 4px; cursor: pointer; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3); transition: background-color 0.2s;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20px" height="20px"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.519-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg><span style="font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: 500; color: #3c4043;">Sign in with Google</span></button>
-    
-    <a href="#" onclick="g(); return false;" style="color: var(--placeholder); font-size: 13px; text-decoration: underline;">Forgot Password?</a>
-  </div>
+<div id=auth-overlay style="display:none;position:absolute;top:0;left:0;width:100%;min-height:100vh;overflow-y:auto;background:var(--bg);z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;box-sizing:border-box">
+<div style="max-width:600px;width:100%;text-align:center;margin-bottom:30px">
+<img src=icon2.png alt="E&C Logo" style="height:60px;margin-bottom:15px;filter:drop-shadow(0 0 5px var(--accent));cursor:pointer" onclick=a() onerror="this.style.display='none'">
+<h1 style="color:var(--accent);font-size:26px;margin:0 0 10px;text-transform:uppercase">E&C Courier</h1>
+<p style="color:#e0e0e0;font-size:15px;margin-bottom:15px;line-height:1.5">Request local courier pickups and deliveries quickly and securely.</p>
+<p style="color:#aaa;font-size:13px;margin-bottom:20px;line-height:1.5"><strong>Data Usage:</strong> We collect your email, phone, and address strictly to process dispatches at your request.</p>
+<a href=https://app.eandccourier.ca/privacy target=_blank style="background:var(--accent);color:#000;padding:10px 20px;border-radius:5px;font-weight:700;text-decoration:none;display:inline-block;font-size:14px">Privacy Policy & Terms</a>
 </div>
-
-<div class="container" id="main-app-container" style="display: none;">
-  <div class="header-wrap" style="flex-direction: column;">
-    <button id="installAppBtn" style="display:none; background:var(--accent); color:#000; border:none; padding:10px 20px; font-weight:900; border-radius:6px; margin-bottom:15px; cursor:pointer; font-size:14px; text-transform:uppercase;" class="btn btn-accent">Install App</button>
-    <div style="display:flex; justify-content: space-between; width: 100%; align-items: center;">
-        <div style="display:flex; align-items:center; gap:15px;">
-            <img src="icon2.png" alt="E&C Logo" style="cursor: pointer;" onclick="a()" onerror="this.style.display='none'"> 
-            <h1>Request Pickup Now</h1>
-        </div>
-        <div style="display:flex; gap:5px;">
-            <button id="settingsBtn" style="background:transparent; border:none; color:var(--accent); padding:8px 12px; border-radius:4px; cursor:pointer; font-size:16px; line-height:1;" onclick="o()" class="btn-icon">⚙️</button>
-            <button id="viewOrdersBtn" style="background:var(--accent); color:#000; border:none; padding:8px 12px; font-weight:700; border-radius:4px; cursor:pointer; font-size:12px; text-transform:uppercase;" onclick="w()" type="button" class="btn btn-accent">View Orders</button>
-        </div>
-    </div>
-  </div>
-
-  <form id="pickupForm">
-    <input type="text" name="website_url_hp" id="website_url_hp" style="display:none;" tabindex="-1" autocomplete="off">
-    
-    <button type="button" id="autofillDetailsBtn" style="width:100%; padding:10px; background:#333; color:#fff; border:1px solid var(--accent); border-radius:4px; margin-bottom:15px; cursor:pointer; text-transform:uppercase; font-size:12px; font-weight:bold;" onclick="l()" class="btn btn-secondary">Autofill</button>
-    <button type="button" id="autofillBtn" style="display:none; width:100%; padding:10px; background:#333; color:#fff; border:1px solid var(--accent); border-radius:4px; margin-bottom:15px; cursor:pointer; text-transform:uppercase; font-size:12px; font-weight:bold;" onclick="k()" class="btn btn-secondary">Autofill from Last Order</button>
-
-    <div class="section-title">Pickup Details</div>
-    
-    <div class="input-group">
-      <label>Business / Contact Name <span class="required-mark">*</span></label>
-      <input type="text" name="name" placeholder="Who are we picking up from?" required autocomplete="organization">
-    </div>
-
-    <div class="flex-row" style="align-items: flex-end; flex-direction: row !important;">
-      <div class="input-group" style="flex: 2; position: relative;">
-        <label>Pickup Address <span class="required-mark">*</span></label>
-        <input type="text" id="f-pickup" name="pickup_location" placeholder="Street Address" required autocomplete="street-address" style="padding-right: 40px;">
-        <button style="position: absolute; right: 10px; bottom: 15px; background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="E('pickup')" type="button" class="btn-icon">📍</button>
-      </div>
-      <div class="input-group" style="flex: 0 0 auto;">
-        <button type="button" class="address-book-btn btn-icon" onclick="F('pickup')">📖</button>
-      </div>
-      <div class="input-group" style="display: none;">
-        <input type="hidden" name="city" required>
-      </div>
-    </div>
-
-    <div class="flex-row">
-      <div class="input-group" style="flex: 1;">
-        <label>Pickup Email</label>
-        <input type="email" name="p_email" placeholder="notifications@example.com" autocomplete="email">
-      </div>
-      <div class="input-group" style="flex: 1;">
-        <label>Pickup Phone</label>
-        <input type="tel" name="p_phone" placeholder="(204) 555-0123" autocomplete="tel" oninput="h(this)">
-      </div>
-    </div>
-
-    <div class="section-title">Delivery Details</div>
-
-    <div class="input-group">
-      <label>Delivery Name <span class="required-mark">*</span></label>
-      <input type="text" name="delivery_name" placeholder="Business or Contact Name" required>
-    </div>
-
-    <div class="flex-row" style="align-items: flex-end; flex-direction: row !important;">
-      <div class="input-group" style="flex: 2; position: relative;">
-        <label>Delivery Address <span class="required-mark">*</span></label>
-        <input type="text" id="f-drop-address" name="destination" placeholder="Street Address" required style="padding-right: 40px;">
-        <button style="position: absolute; right: 10px; bottom: 15px; background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="E('drop')" type="button" class="btn-icon">📍</button>
-      </div>
-      <div class="input-group" style="flex: 0 0 auto;">
-        <button type="button" class="address-book-btn btn-icon" onclick="F('drop')">📖</button>
-      </div>
-      <div class="input-group" style="display: none;">
-        <input type="hidden" name="drop_city" required>
-      </div>
-    </div>
-
-    <div class="flex-row">
-      <div class="input-group" style="flex: 1;">
-        <label>Delivery Email</label>
-        <input type="email" name="d_email" placeholder="notifications@example.com" autocomplete="email">
-      </div>
-      <div class="input-group" style="flex: 1;">
-        <label>Delivery Phone</label>
-        <input type="tel" name="d_phone" placeholder="(204) 555-0123" autocomplete="tel" oninput="h(this)">
-      </div>
-    </div>
-
-    <div class="section-title">Cargo & Information</div>
-
-    <div class="input-group">
-      <label>Packages / Items / Dimensions <span class="required-mark">*</span></label>
-      <textarea name="package_details" rows="3" placeholder="e.g. 2 Boxes (12x12x12), 1 Skid" required></textarea>
-    </div>
-
-    <div class="input-group">
-      <label>PO Number / Reference</label>
-      <input type="text" name="po_number" placeholder="Optional">
-    </div>
-
-    <div class="input-group">
-      <label>Driver Notes / Instructions</label>
-      <textarea name="other_info" rows="3" placeholder="Gate codes, specific door numbers, hours, etc."></textarea>
-    </div>
-
-    <!-- Address book dropdown (hidden by default) -->
-    <div id="addressBookDropdown" style="display: none; margin-bottom: 15px;">
-      <select id="savedAddressesSelect" onchange="J()">
-        <option value="">-- Select a saved address --</option>
-      </select>
-    </div>
-
-    <button type="submit" id="submitBtn" class="btn btn-primary">Submit Request</button>
-    <button type="button" id="cancelEditBtn" style="display:none; width:100%; margin-top:5px; background:#b3002d; color:white; border:none; padding:12px; border-radius:4px; cursor:pointer; font-weight:700;" onclick="cancelEdit()" class="btn btn-danger">Cancel Edit</button>
-    <button type="button" onclick="clearMainForm()" style="background:transparent; border:1px solid var(--border); color:var(--text); padding:6px 12px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:700; width:100%; margin-top:5px;" class="btn btn-secondary">Clear Form</button>
-    <button type="button" onclick="K()" style="background:transparent; border:1px solid var(--border); color:var(--text); padding:6px 12px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:700; width:100%; margin-top:15px;" class="btn btn-secondary">Logout</button>
-  </form>
-
-  <div id="thanksMessage">
-    <span class="success-icon">✅</span>
-    <h2 style="color: #fff; margin: 0 0 10px 0; text-transform: uppercase; font-size: 18px;">Request Received</h2>
-    <p style="color: #aaa; margin-bottom: 25px; font-size: 14px; line-height: 1.5;">Our dispatch team has been notified and will review your request shortly.</p>
-    <button onclick="location.reload()" type="button" class="success-btn btn btn-accent" style="width: 100%; padding: 15px; border-radius: 6px; cursor: pointer; text-transform: uppercase;">Submit Another</button>
-  </div>
-</div>
-
-<div class="container" id="orders-history-container" style="display: none; padding: 20px;">
-  <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-    <h2 style="color: var(--text); margin: 0; font-size: 18px; text-transform: uppercase;">Order Dashboard</h2>
-    <button onclick="x()" class="btn-back-form btn btn-secondary">BACK TO FORM</button>
-  </div>
-  <!-- Search and filter bar -->
-  <div class="order-search-bar">
-    <input type="text" id="orderSearchInput" placeholder="Search by package, PO, names, address..." oninput="T=this.value; A();">
-    <select id="orderStatusFilter" onchange="U=this.value; A();">
-      <option value="all">All status</option>
-      <option value="in_progress">In progress</option>
-      <option value="completed">Completed</option>
-      <option value="cancelled">Cancelled</option>
-    </select>
-  </div>
-  <div id="live-status-header" style="font-size: 11px; color: #f39c12; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;"></div>
-  <div id="orders-list"></div>
-</div>
-
-<div id="location-picker-modal" class="modal" onclick="if(event.target===this) { this.style.display='none'; document.body.style.overflow=''; }">
-<div class="modal-content" style="padding: 0; max-width: 600px; height: 80vh; display: flex; flex-direction: column; overflow: hidden; position: relative;">
-<div style="padding: 15px; background: var(--card); border-bottom: 1px solid var(--accent); display: flex; justify-content: space-between; align-items: center;">
-<h2 style="color:var(--accent); margin:0; font-size:16px; font-weight:700; text-transform:uppercase;">Pick Location</h2>
-<button class="btn-cancel btn btn-secondary" style="padding: 8px 12px; font-size: 12px; margin:0;" onclick="document.getElementById('location-picker-modal').style.display='none'; document.body.style.overflow='';">CLOSE</button>
-</div>
-<div style="padding: 10px; background: var(--card); border-bottom: 1px solid var(--border); display: flex; gap: 5px;">
-  <input type="text" id="loc-search-bar" placeholder="Search address or paste GPS (e.g. 49.852, -99.951)" style="margin:0; flex:1; padding: 10px;">
-  <button onclick="C()" style="padding: 10px; background: var(--accent); color: #000; border: none; border-radius: 4px; cursor: pointer;" class="btn btn-accent">Go</button>
-</div>
-<div style="flex: 1; position: relative;">
-<div id="picker-map" style="width:100%; height:100%;"></div>
-<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%); pointer-events: none; font-size: 32px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); z-index: 10;">📍</div>
-</div>
-<button class="btn-save btn btn-primary" style="width: 100%; border-radius: 0; padding: 16px; font-size: 16px; position: sticky; bottom: 0; z-index: 11;" onclick="D()">SET LOCATION</button>
+<div class=container style="padding:30px;text-align:center;margin-top:0;box-shadow:0 10px 40px rgba(0,0,0,.8)">
+<h2 style="color:#fff;margin-top:0;margin-bottom:20px;font-weight:800;text-transform:uppercase;font-size:18px">Account Login</h2>
+<div class=input-group style="text-align:left;margin-bottom:15px"><input type=email id=auth-email placeholder="Email Address" required></div>
+<div class=input-group style="text-align:left;margin-bottom:25px"><input type=password id=auth-password placeholder="Password" required></div>
+<button type=button onclick=d() class="btn btn-accent" style="width:100%;margin-bottom:12px">Login</button>
+<button type=button onclick=e() class="btn btn-primary" style="width:100%;margin-bottom:20px">Create Account</button>
+<button type=button onclick=f() style="width:100%;padding:12px;background:#fff;border:1px solid #dadce0;border-radius:4px;cursor:pointer;margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 1px 2px 0 rgba(60,64,67,.3);transition:background-color .2s"><svg xmlns=http://www.w3.org/2000/svg viewBox="0 0 48 48" width=20px height=20px><path fill=#FFC107 d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill=#FF3D00 d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill=#4CAF50 d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.519-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill=#1976D2 d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg><span style="font-family:Roboto,sans-serif;font-size:14px;font-weight:500;color:#3c4043">Sign in with Google</span></button>
+<a href=# onclick="g();return!1" style="color:var(--placeholder);font-size:13px;text-decoration:underline">Forgot Password?</a>
 </div>
 </div>
-
-<!-- Settings Modal -->
-<div id="settings-modal" class="modal" onclick="if(event.target===this) { this.style.display='none'; document.body.style.overflow=''; }">
-<div class="modal-content" style="background: var(--card); margin: 5% auto; padding: 30px; width: 90%; max-width: 550px; border: 1px solid var(--accent); color: var(--text); border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); box-sizing: border-box; max-height: 80vh; overflow-y: auto;">
-  
-  <!-- Main Settings Menu -->
-  <div id="settings-main">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-      <h2 style="color:var(--accent); margin:0;">Settings</h2>
-      <button class="btn-cancel btn btn-secondary" style="padding:5px 10px; font-size:14px;" onclick="document.getElementById('settings-modal').style.display='none'; document.body.style.overflow='';">✖</button>
-    </div>
-
-    <div class="settings-section">
-      <h3>Theme</h3>
-      <div class="theme-toggle">
-        <button id="theme-light" onclick="b('light')" class="btn btn-secondary">Light</button>
-        <button id="theme-dark" onclick="b('dark')" class="btn btn-secondary active">Dark</button>
-      </div>
-    </div>
-
-    <!-- New Preferences title (INSIDE settings-main) -->
-    <div class="settings-section">
-      <h3>Preferences</h3>
-    </div>
-
-    <div class="settings-section">
-      <button class="btn-save btn btn-primary" style="width:100%;" onclick="q()">Autofill Details</button>
-    </div>
-    <div class="settings-section">
-      <button class="btn-save btn btn-primary" style="width:100%;" onclick="r()">Address Book</button>
-    </div>
-
-    <!-- Account section for email/password change -->
-    <div class="settings-section">
-      <h3>Account</h3>
-      <div style="display:flex; gap:10px;">
-        <button class="btn-save btn btn-primary" style="flex:1;" onclick="toggleEmailChange()">Change Email</button>
-        <button class="btn-save btn btn-primary" style="flex:1;" onclick="sendPasswordReset()">Change Password</button>
-      </div>
-      <div id="emailChangeDiv" style="display:none; margin-top:10px;">
-        <input type="email" id="newEmailInput" placeholder="Enter new email" style="width:100%; padding:10px; background:var(--input-bg); color:var(--text); border:1px solid var(--border); margin-bottom:8px;">
-        <button class="btn-save btn btn-primary" style="width:100%;" onclick="changeUserEmail()">Update Email</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Autofill Details Sub-view -->
-  <div id="settings-autofill" style="display: none;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-      <h2 style="color:var(--accent); margin:0;">Autofill Details</h2>
-      <button class="btn-cancel btn btn-secondary" style="padding:5px 10px; font-size:14px;" onclick="p()">← Back</button>
-    </div>
-    <div class="settings-section">
-      <p>Fill in fields to auto-populate when using Autofill.</p>
-      <input type="text" id="default-name" placeholder="Pickup Contact Name" style="margin-bottom:8px;">
-      <div style="position: relative; margin-bottom:8px;">
-        <input type="text" id="default-pickup" placeholder="Pickup Address" style="padding-right: 40px;">
-        <button style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="E('settings-pickup')" type="button" class="btn-icon">📍</button>
-      </div>
-      <input type="text" id="default-city" placeholder="Pickup City" style="margin-bottom:8px;">
-      <input type="email" id="default-p_email" placeholder="Pickup Email" style="margin-bottom:8px;">
-      <input type="tel" id="default-p_phone" placeholder="Pickup Phone" style="margin-bottom:8px;">
-      <input type="text" id="default-delivery_name" placeholder="Delivery Contact Name" style="margin-bottom:8px;">
-      <div style="position: relative; margin-bottom:8px;">
-        <input type="text" id="default-destination" placeholder="Delivery Address" style="padding-right: 40px;">
-        <button style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="E('settings-drop')" type="button" class="btn-icon">📍</button>
-      </div>
-      <input type="text" id="default-drop_city" placeholder="Delivery City" style="margin-bottom:8px;">
-      <input type="email" id="default-d_email" placeholder="Delivery Email" style="margin-bottom:8px;">
-      <input type="tel" id="default-d_phone" placeholder="Delivery Phone" style="margin-bottom:8px;">
-      <input type="text" id="default-package_details" placeholder="Packages/Items/Dimensions" style="margin-bottom:8px;">
-      <input type="text" id="default-po_number" placeholder="PO Number" style="margin-bottom:8px;">
-      <textarea id="default-other_info" placeholder="Driver Notes" rows="2" style="margin-bottom:8px;"></textarea>
-      <button id="save-defaults-btn" class="btn-save btn btn-primary" onclick="m()">Save Autofill Details</button>
-      <button class="btn-cancel btn btn-secondary" onclick="clearAutofillForm()" style="margin-top:5px; width:100%;">Clear</button>
-      <button class="btn-cancel btn btn-secondary" style="margin-top:10px; width:100%;" onclick="p()">← Back to Settings</button>
-    </div>
-  </div>
-
-  <!-- Address Book Sub-view -->
-  <div id="settings-addressbook" style="display: none;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-      <h2 style="color:var(--accent); margin:0;">Address Book</h2>
-      <button class="btn-cancel btn btn-secondary" style="padding:5px 10px; font-size:14px;" onclick="p()">← Back</button>
-    </div>
-    
-    <!-- Address Book List View -->
-    <div id="addressbook-list-view">
-      <button class="btn-save btn btn-primary" style="width:100%; margin-bottom:15px;" onclick="s()">Create New Contact</button>
-      <div id="savedAddressesList"></div>
-    </div>
-
-    <!-- Address Book Create/Edit Form View -->
-    <div id="addressbook-create-view" style="display: none;">
-      <h3 id="addressbook-form-title" style="color:var(--accent); margin-top:0;">Create Contact</h3>
-      <div class="settings-section">
-        <input type="text" id="new-contact-name" placeholder="Contact / Business Name" style="margin-bottom:8px;">
-        <div style="position: relative; margin-bottom:8px;">
-          <input type="text" id="new-contact-address" placeholder="Street Address" style="padding-right: 40px;">
-          <button style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="E('new-contact')" type="button" class="btn-icon">📍</button>
-        </div>
-        <input type="email" id="new-contact-email" placeholder="Email" style="margin-bottom:8px;">
-        <input type="tel" id="new-contact-phone" placeholder="Phone" style="margin-bottom:8px;" oninput="h(this)">
-        <div style="display:flex; gap:10px;">
-          <button class="btn-save btn btn-primary" style="flex:1;" id="save-contact-btn" onclick="u()">Save to Address Book</button>
-          <button class="btn-cancel btn btn-secondary" style="flex:1;" onclick="t()">Cancel</button>
-        </div>
-        <button class="btn-cancel btn btn-secondary" onclick="clearContactForm()" style="margin-top:5px; width:100%;">Clear</button>
-        <!-- Delete contact button (hidden by default) -->
-        <button id="delete-contact-btn" class="btn-cancel btn btn-danger" style="margin-top:5px; width:100%; background:#b3002d; color:white; border:none; display:none;" onclick="deleteCurrentContact()">Delete Contact</button>
-      </div>
-    </div>
-  </div>
-
+<div class=container id=main-app-container style=display:none>
+<div class=header-wrap style=flex-direction:column>
+<button id=installAppBtn style="display:none;background:var(--accent);color:#000;border:0;padding:10px 20px;font-weight:900;border-radius:6px;margin-bottom:15px;cursor:pointer;font-size:14px;text-transform:uppercase" class="btn btn-accent">Install App</button>
+<div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+<div style="display:flex;align-items:center;gap:15px"><img src=icon2.png alt="E&C Logo" style=cursor:pointer onclick=a() onerror="this.style.display='none'"> <h1>Request Pickup Now</h1></div>
+<div style=display:flex;gap:5px><button id=settingsBtn style="background:0 0;border:0;color:var(--accent);padding:8px 12px;border-radius:4px;cursor:pointer;font-size:16px;line-height:1" onclick=o() class=btn-icon>⚙️</button><button id=viewOrdersBtn style="background:var(--accent);color:#000;border:0;padding:8px 12px;font-weight:700;border-radius:4px;cursor:pointer;font-size:12px;text-transform:uppercase" onclick=w() type=button class="btn btn-accent">View Orders</button></div>
 </div>
 </div>
-
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA6umETP8wBUEV41ugAtiNiChUeLmmwmZI&libraries=geometry,drawing,places"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-
+<form id=pickupForm>
+<input type=text name=website_url_hp id=website_url_hp style=display:none tabindex=-1 autocomplete=off>
+<button type=button id=autofillDetailsBtn style="width:100%;padding:10px;background:#333;color:#fff;border:1px solid var(--accent);border-radius:4px;margin-bottom:15px;cursor:pointer;text-transform:uppercase;font-size:12px;font-weight:700" onclick=l() class="btn btn-secondary">Autofill</button>
+<button type=button id=autofillBtn style="display:none;width:100%;padding:10px;background:#333;color:#fff;border:1px solid var(--accent);border-radius:4px;margin-bottom:15px;cursor:pointer;text-transform:uppercase;font-size:12px;font-weight:700" onclick=k() class="btn btn-secondary">Autofill from Last Order</button>
+<div class=section-title>Pickup Details</div>
+<div class=input-group><label>Business / Contact Name <span class=required-mark>*</span></label><input type=text name=name placeholder="Who are we picking up from?" required autocomplete=organization></div>
+<div class=flex-row style="align-items:flex-end;flex-direction:row!important"><div class=input-group style="flex:2;position:relative"><label>Pickup Address <span class=required-mark>*</span></label><input type=text id=f-pickup name=pickup_location placeholder="Street Address" required autocomplete=street-address style=padding-right:40px><button style="position:absolute;right:10px;bottom:15px;background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="E('pickup')" type=button class=btn-icon>📍</button></div><div class=input-group style="flex:0 0 auto"><button type=button class="address-book-btn btn-icon" onclick="F('pickup')">📖</button></div><div class=input-group style=display:none><input type=hidden name=city required></div></div>
+<div class=flex-row><div class=input-group style=flex:1><label>Pickup Email</label><input type=email name=p_email placeholder=notifications@example.com autocomplete=email></div><div class=input-group style=flex:1><label>Pickup Phone</label><input type=tel name=p_phone placeholder="(204) 555-0123" autocomplete=tel oninput=h(this)></div></div>
+<div class=section-title>Delivery Details</div>
+<div class=input-group><label>Delivery Name <span class=required-mark>*</span></label><input type=text name=delivery_name placeholder="Business or Contact Name" required></div>
+<div class=flex-row style="align-items:flex-end;flex-direction:row!important"><div class=input-group style="flex:2;position:relative"><label>Delivery Address <span class=required-mark>*</span></label><input type=text id=f-drop-address name=destination placeholder="Street Address" required style=padding-right:40px><button style="position:absolute;right:10px;bottom:15px;background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="E('drop')" type=button class=btn-icon>📍</button></div><div class=input-group style="flex:0 0 auto"><button type=button class="address-book-btn btn-icon" onclick="F('drop')">📖</button></div><div class=input-group style=display:none><input type=hidden name=drop_city required></div></div>
+<div class=flex-row><div class=input-group style=flex:1><label>Delivery Email</label><input type=email name=d_email placeholder=notifications@example.com autocomplete=email></div><div class=input-group style=flex:1><label>Delivery Phone</label><input type=tel name=d_phone placeholder="(204) 555-0123" autocomplete=tel oninput=h(this)></div></div>
+<div class=section-title>Cargo & Information</div>
+<div class=input-group><label>Packages / Items / Dimensions <span class=required-mark>*</span></label><textarea name=package_details rows=3 placeholder="e.g. 2 Boxes (12x12x12), 1 Skid" required></textarea></div>
+<div class=input-group><label>PO Number / Reference</label><input type=text name=po_number placeholder=Optional></div>
+<div class=input-group><label>Driver Notes / Instructions</label><textarea name=other_info rows=3 placeholder="Gate codes, specific door numbers, hours, etc."></textarea></div>
+<div id=addressBookDropdown style="display:none;margin-bottom:15px"><select id=savedAddressesSelect onchange=J()><option value="">-- Select a saved address --</option></select></div>
+<button type=submit id=submitBtn class="btn btn-primary">Submit Request</button>
+<button type=button id=cancelEditBtn style="display:none;width:100%;margin-top:5px;background:#b3002d;color:#fff;border:0;padding:12px;border-radius:4px;cursor:pointer;font-weight:700" onclick=cancelEdit() class="btn btn-danger">Cancel Edit</button>
+<button type=button onclick=clearMainForm() style="background:0 0;border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:700;width:100%;margin-top:5px" class="btn btn-secondary">Clear Form</button>
+<button type=button onclick=K() style="background:0 0;border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:700;width:100%;margin-top:15px" class="btn btn-secondary">Logout</button>
+</form>
+<div id=thanksMessage><span class=success-icon>✅</span><h2 style="color:#fff;margin:0 0 10px;text-transform:uppercase;font-size:18px">Request Received</h2><p style="color:#aaa;margin-bottom:25px;font-size:14px;line-height:1.5">Our dispatch team has been notified and will review your request shortly.</p><button onclick=location.reload() type=button class="success-btn btn btn-accent" style="width:100%;padding:15px;border-radius:6px;cursor:pointer;text-transform:uppercase">Submit Another</button></div>
+</div>
+<div class=container id=orders-history-container style="display:none;padding:20px">
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><h2 style="color:var(--text);margin:0;font-size:18px;text-transform:uppercase">Order Dashboard</h2><button onclick=x() class="btn-back-form btn btn-secondary">BACK TO FORM</button></div>
+<div class=order-search-bar><input type=text id=orderSearchInput placeholder="Search by package, PO, names, address..." oninput="T=this.value;A()"><select id=orderStatusFilter onchange="U=this.value;A()"><option value=all>All status</option><option value=in_progress>In progress</option><option value=completed>Completed</option><option value=cancelled>Cancelled</option></select></div>
+<div id=live-status-header style="font-size:11px;color:#f39c12;font-weight:700;margin-bottom:20px;text-transform:uppercase;letter-spacing:1px"></div>
+<div id=orders-list></div>
+</div>
+<div id=location-picker-modal class=modal onclick="if(event.target===this){this.style.display='none';document.body.style.overflow=''}">
+<div class=modal-content style="padding:0;max-width:600px;height:80vh;display:flex;flex-direction:column;overflow:hidden;position:relative">
+<div style="padding:15px;background:var(--card);border-bottom:1px solid var(--accent);display:flex;justify-content:space-between;align-items:center"><h2 style="color:var(--accent);margin:0;font-size:16px;font-weight:700;text-transform:uppercase">Pick Location</h2><button class="btn-cancel btn btn-secondary" style="padding:8px 12px;font-size:12px;margin:0" onclick="document.getElementById('location-picker-modal').style.display='none';document.body.style.overflow=''">CLOSE</button></div>
+<div style="padding:10px;background:var(--card);border-bottom:1px solid var(--border);display:flex;gap:5px"><input type=text id=loc-search-bar placeholder="Search address or paste GPS (e.g. 49.852, -99.951)" style="margin:0;flex:1;padding:10px"><button onclick=C() style="padding:10px;background:var(--accent);color:#000;border:0;border-radius:4px;cursor:pointer" class="btn btn-accent">Go</button></div>
+<div style="flex:1;position:relative"><div id=picker-map style=width:100%;height:100%></div><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-100%);pointer-events:none;font-size:32px;text-shadow:0 2px 4px rgba(0,0,0,.5);z-index:10">📍</div></div>
+<button class="btn-save btn btn-primary" style="width:100%;border-radius:0;padding:16px;font-size:16px;position:sticky;bottom:0;z-index:11" onclick=D()>SET LOCATION</button>
+</div>
+</div>
+<div id=settings-modal class=modal onclick="if(event.target===this){this.style.display='none';document.body.style.overflow=''}">
+<div class=modal-content style="background:var(--card);margin:5% auto;padding:30px;width:90%;max-width:550px;border:1px solid var(--accent);color:var(--text);border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.5);box-sizing:border-box;max-height:80vh;overflow-y:auto">
+<div id=settings-main><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><h2 style="color:var(--accent);margin:0">Settings</h2><button class="btn-cancel btn btn-secondary" style="padding:5px 10px;font-size:14px" onclick="document.getElementById('settings-modal').style.display='none';document.body.style.overflow=''">✖</button></div>
+<div class=settings-section><h3>Theme</h3><div class=theme-toggle><button id=theme-light onclick="b('light')" class="btn btn-secondary">Light</button><button id=theme-dark onclick="b('dark')" class="btn btn-secondary active">Dark</button></div></div>
+<div class=settings-section><h3>Preferences</h3></div>
+<div class=settings-section><button class="btn-save btn btn-primary" style=width:100% onclick=q()>Autofill Details</button></div>
+<div class=settings-section><button class="btn-save btn btn-primary" style=width:100% onclick=r()>Address Book</button></div>
+<div class=settings-section><h3>Account</h3><div style=display:flex;gap:10px><button class="btn-save btn btn-primary" style=flex:1 onclick=toggleEmailChange()>Change Email</button><button class="btn-save btn btn-primary" style=flex:1 onclick=sendPasswordReset()>Change Password</button></div><div id=emailChangeDiv style="display:none;margin-top:10px"><input type=email id=newEmailInput placeholder="Enter new email" style="width:100%;padding:10px;background:var(--input-bg);color:var(--text);border:1px solid var(--border);margin-bottom:8px"><button class="btn-save btn btn-primary" style=width:100% onclick=changeUserEmail()>Update Email</button></div></div></div>
+<div id=settings-autofill style=display:none><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><h2 style="color:var(--accent);margin:0">Autofill Details</h2><button class="btn-cancel btn btn-secondary" style="padding:5px 10px;font-size:14px" onclick=p()>← Back</button></div><div class=settings-section><p>Fill in fields to auto-populate when using Autofill.</p><input type=text id=default-name placeholder="Pickup Contact Name" style=margin-bottom:8px><div style="position:relative;margin-bottom:8px"><input type=text id=default-pickup placeholder="Pickup Address" style=padding-right:40px><button style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="E('settings-pickup')" type=button class=btn-icon>📍</button></div><input type=text id=default-city placeholder="Pickup City" style=margin-bottom:8px><input type=email id=default-p_email placeholder="Pickup Email" style=margin-bottom:8px><input type=tel id=default-p_phone placeholder="Pickup Phone" style=margin-bottom:8px><input type=text id=default-delivery_name placeholder="Delivery Contact Name" style=margin-bottom:8px><div style="position:relative;margin-bottom:8px"><input type=text id=default-destination placeholder="Delivery Address" style=padding-right:40px><button style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="E('settings-drop')" type=button class=btn-icon>📍</button></div><input type=text id=default-drop_city placeholder="Delivery City" style=margin-bottom:8px><input type=email id=default-d_email placeholder="Delivery Email" style=margin-bottom:8px><input type=tel id=default-d_phone placeholder="Delivery Phone" style=margin-bottom:8px><input type=text id=default-package_details placeholder="Packages/Items/Dimensions" style=margin-bottom:8px><input type=text id=default-po_number placeholder="PO Number" style=margin-bottom:8px><textarea id=default-other_info placeholder="Driver Notes" rows=2 style=margin-bottom:8px></textarea><button id=save-defaults-btn class="btn-save btn btn-primary" onclick=m()>Save Autofill Details</button><button class="btn-cancel btn btn-secondary" onclick=clearAutofillForm() style="margin-top:5px;width:100%">Clear</button><button class="btn-cancel btn btn-secondary" style="margin-top:10px;width:100%" onclick=p()>← Back to Settings</button></div></div>
+<div id=settings-addressbook style=display:none><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><h2 style="color:var(--accent);margin:0">Address Book</h2><button class="btn-cancel btn btn-secondary" style="padding:5px 10px;font-size:14px" onclick=p()>← Back</button></div><div id=addressbook-list-view><button class="btn-save btn btn-primary" style="width:100%;margin-bottom:15px" onclick=s()>Create New Contact</button><div id=savedAddressesList></div></div><div id=addressbook-create-view style=display:none><h3 id=addressbook-form-title style="color:var(--accent);margin-top:0">Create Contact</h3><div class=settings-section><input type=text id=new-contact-name placeholder="Contact / Business Name" style=margin-bottom:8px><div style="position:relative;margin-bottom:8px"><input type=text id=new-contact-address placeholder="Street Address" style=padding-right:40px><button style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="E('new-contact')" type=button class=btn-icon>📍</button></div><input type=email id=new-contact-email placeholder=Email style=margin-bottom:8px><input type=tel id=new-contact-phone placeholder=Phone style=margin-bottom:8px oninput=h(this)><div style=display:flex;gap:10px><button class="btn-save btn btn-primary" style=flex:1 id=save-contact-btn onclick=u()>Save to Address Book</button><button class="btn-cancel btn btn-secondary" style=flex:1 onclick=t()>Cancel</button></div><button class="btn-cancel btn btn-secondary" onclick=clearContactForm() style="margin-top:5px;width:100%">Clear</button><button id=delete-contact-btn class="btn-cancel btn btn-danger" style="margin-top:5px;width:100%;background:#b3002d;color:#fff;border:0;display:none" onclick=deleteCurrentContact()>Delete Contact</button></div></div></div>
+</div>
+</div>
+<script src=https://maps.googleapis.com/maps/api/js?key=AIzaSyA6umETP8wBUEV41ugAtiNiChUeLmmwmZI&libraries=geometry,drawing,places></script>
+<script src=https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js></script>
+<script src=https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js></script>
+<script src=https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js></script>
 <script>
-var firebaseConfig = {
-  apiKey: "AIzaSyAKmgoXA4m3cRTmxJq4aUyva5SVvFbTNqg",
-  authDomain: "eandccourier-36fcc.firebaseapp.com",
-  databaseURL: "https://eandccourier-36fcc-default-rtdb.firebaseio.com",
-  projectId: "eandccourier-36fcc",
-  storageBucket: "",
-  messagingSenderId: "1067680083511",
-  appId: "1:1067680083511:android:22d1eb3757302492bd19b2"
-};
-firebase.initializeApp(firebaseConfig);
-var db = firebase.database();
-var M=null,N=null,O=null,P=new Set(),Q={},R={},S=null,T='',U='all',V=[],W='pickup',X=null,Y,Z,aa,ab='',ac,ad=!1,ae=!1,af=document.getElementById("pickupForm"),ag=document.getElementById("submitBtn"),ah=firebase.database();
-var editingContactIndex = null; // for address book edit
-
+firebase.initializeApp({apiKey:"AIzaSyAKmgoXA4m3cRTmxJq4aUyva5SVvFbTNqg",authDomain:"eandccourier-36fcc.firebaseapp.com",databaseURL:"https://eandccourier-36fcc-default-rtdb.firebaseio.com",projectId:"eandccourier-36fcc",storageBucket:"",messagingSenderId:"1067680083511",appId:"1:1067680083511:android:22d1eb3757302492bd19b2"});
+var db=firebase.database(),M=null,N=null,O=null,P=new Set,Q={},R={},S=null,T='',U='all',V=[],W='pickup',X=null,Y,Z,aa,ab='',ac,ad=!1,ae=!1,af=document.getElementById("pickupForm"),ag=document.getElementById("submitBtn"),ah=firebase.database(),editingContactIndex=null;
 firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
-db.ref("driver_zones").on("value",_e=>Q=_e.val()||{});
-db.ref("driver_locations").on("value",_f=>{R=_f.val()||{};console.log("driverLocations keys:",Object.keys(R));if(document.getElementById('orders-history-container').style.display==='block')A()});
-
-firebase.auth().onAuthStateChanged(_g=>{var _h=document.getElementById('dev-list');if(_g){if(!_g.emailVerified&&_g.providerData.some(_i=>_i.providerId==='password')){alert("Please check your email and verify your account before logging in.");firebase.auth().signOut();return}
-document.getElementById('auth-overlay').style.display='none';document.getElementById('main-app-container').style.display='block';if(document.querySelector('input[name="p_email"]'))document.querySelector('input[name="p_email"]').value=_g.email;if(O){O();O=null}
-O=db.ref("jobs").orderByChild("created_by").equalTo(_g.email).on('value',_j=>{if(!_j) return; N=_j.val()||{};if(_j.exists()){var _k=_j.val();M=Object.values(_k)[0];document.getElementById('autofillBtn').style.display='block'}else{M=null;document.getElementById('autofillBtn').style.display='none'}
+db.ref("driver_zones").on("value",a=>Q=a.val()||{});
+db.ref("driver_locations").on("value",b=>{R=b.val()||{};console.log("driverLocations keys:",Object.keys(R));if(document.getElementById('orders-history-container').style.display==='block')A()});
+firebase.auth().onAuthStateChanged(c=>{let d=document.getElementById('dev-list');if(c){if(!c.emailVerified&&c.providerData.some(e=>e.providerId==='password')){alert("Please check your email and verify your account before logging in.");firebase.auth().signOut();return}
+document.getElementById('auth-overlay').style.display='none';document.getElementById('main-app-container').style.display='block';if(document.querySelector('input[name="p_email"]'))document.querySelector('input[name="p_email"]').value=c.email;if(O){O();O=null}
+O=db.ref("jobs").orderByChild("created_by").equalTo(c.email).on('value',f=>{if(!f)return;N=f.val()||{};if(f.exists()){let g=Object.values(N)[0];M=g;document.getElementById('autofillBtn').style.display='block'}else{M=null;document.getElementById('autofillBtn').style.display='none'}
 if(document.getElementById('orders-history-container').style.display==='block')A()});
-// Load address book from Firebase
-firebase.database().ref('users/'+_g.uid+'/addressBook').once('value', snap => {
-  V = snap.val() || [];
-  localStorage.setItem('ec_addresses', JSON.stringify(V));
-  G();
-});
-// Load autofill defaults from Firebase
-firebase.database().ref('users/'+_g.uid+'/autofillDefaults').once('value', snap => {
-  var defaults = snap.val() || {};
-  localStorage.setItem('autofillDefaults', JSON.stringify(defaults));
-});
-}else{document.getElementById('auth-overlay').style.display='flex';document.getElementById('main-app-container').style.display='none';if(O){O();O=null}N=null; V = [];}
-firebase.database().ref('developer').on('value',_l=>{if(!_l) return; _h.innerHTML='';var _m=_l.val()||{};Object.values(_m).forEach(_n=>{_h.innerHTML+=`<div class="dev-item"><div class="dev-hdr">${_n.user} - <span style="color: orange;">${_n.app||'Database'}</span> - ${_n.date}</div><div style="color:#eee;">${_n.text}</div>`});_h.scrollTop=_h.scrollHeight})});
-
+firebase.database().ref('users/'+c.uid+'/addressBook').once('value',h=>{V=h.val()||[];localStorage.setItem('ec_addresses',JSON.stringify(V));G()});
+firebase.database().ref('users/'+c.uid+'/autofillDefaults').once('value',i=>{let j=i.val()||{};localStorage.setItem('autofillDefaults',JSON.stringify(j))});
+}else{document.getElementById('auth-overlay').style.display='flex';document.getElementById('main-app-container').style.display='none';if(O){O();O=null}N=null;V=[];}
+firebase.database().ref('developer').on('value',k=>{if(!k)return;d.innerHTML='';let l=k.val()||{};Object.values(l).forEach(m=>{d.innerHTML+=`<div class="dev-item"><div class="dev-hdr">${m.user} - <span style="color:orange;">${m.app||'Database'}</span> - ${m.date}</div><div style="color:#eee;">${m.text}</div>`});d.scrollTop=d.scrollHeight})});
 function a(){document.body.classList.toggle('light-mode');localStorage.setItem('ec_theme',document.body.classList.contains('light-mode')?'light':'dark');c()}
-function b(_o){_o==='light'?document.body.classList.add('light-mode'):document.body.classList.remove('light-mode');localStorage.setItem('ec_theme',_o);c()}
-function c(){var _p=document.body.classList.contains('light-mode'),_q=document.getElementById('theme-light'),_r=document.getElementById('theme-dark');if(_q)_q.classList.toggle('active',_p);if(_r)_r.classList.toggle('active',!_p)}
-function d(){var _s=document.getElementById('auth-email').value.trim(),_t=document.getElementById('auth-password').value.trim();if(!_s||!_t)return alert("Please enter email and password.");firebase.auth().signInWithEmailAndPassword(_s,_t).catch(_u=>alert("Login Error: "+_u.message))}
-function e(){var _v=document.getElementById('auth-email').value.trim(),_w=document.getElementById('auth-password').value.trim();if(!_v||!_w)return alert("Please enter email and password to sign up.");firebase.auth().createUserWithEmailAndPassword(_v,_w).then(_x=>{_x.user.sendEmailVerification();alert("Account created! We sent a verification link to your email. Please verify before logging in.");firebase.auth().signOut()}).catch(_y=>alert("Sign Up Error: "+_y.message))}
-function f(){var _z=new firebase.auth.GoogleAuthProvider();firebase.auth().signInWithPopup(_z).catch(_A=>alert("Google Login Error: "+_A.message))}
-function g(){var _B=document.getElementById('auth-email').value.trim();if(!_B)return alert("Please enter your email address first, then click Forgot Password.");firebase.auth().sendPasswordResetEmail(_B).then(()=>alert("Password reset email sent. Please check your inbox.")).catch(_C=>alert("Error: "+_C.message))}
-function h(_D){var _E=_D.value.replace(/\D/g,'').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);_D.value=!_E[2]?_E[1]:'('+_E[1]+') '+_E[2]+(_E[3]?'-'+_E[3]:'')}
-function i(_F){if(!_F)return'';for(var _G of _F){if(_G.types.includes("locality"))return _G.long_name}for(var _G of _F){if(_G.types.includes("sublocality_level_1"))return _G.long_name}for(var _G of _F){if(_G.types.includes("administrative_area_level_2"))return _G.long_name}return''}
-function j(){if(window.google?.maps?.places){var _H=document.getElementById('f-pickup'),_I=document.getElementById('f-drop-address'),_J={componentRestrictions:{country:'ca'}},_K=new google.maps.places.Autocomplete(_H,_J),_L=new google.maps.places.Autocomplete(_I,_J),_M=document.getElementById('default-pickup'),_N=document.getElementById('default-destination'),_O=document.getElementById('new-contact-address');if(_M){var _P=new google.maps.places.Autocomplete(_M,_J);_P.addListener('place_changed',()=>{var _Q=_P.getPlace();if(_Q?.address_components)document.getElementById('default-city').value=i(_Q.address_components)})}
-if(_N){var _R=new google.maps.places.Autocomplete(_N,_J);_R.addListener('place_changed',()=>{var _S=_R.getPlace();if(_S?.address_components)document.getElementById('default-drop_city').value=i(_S.address_components)})}
-if(_O){var _T=new google.maps.places.Autocomplete(_O,_J);_T.addListener('place_changed',()=>{})}
-if(navigator.geolocation){navigator.geolocation.getCurrentPosition(_U=>{var _V=new google.maps.Circle({center:{lat:_U.coords.latitude,lng:_U.coords.longitude},radius:1e5});_K.setBounds(_V.getBounds());_L.setBounds(_V.getBounds());if(_M)new google.maps.places.Autocomplete(_M,_J).setBounds(_V.getBounds());if(_N)new google.maps.places.Autocomplete(_N,_J).setBounds(_V.getBounds());if(_O)new google.maps.places.Autocomplete(_O,_J).setBounds(_V.getBounds())},_W=>console.warn("Geolocation warning/error, falling back to general CA scope:",_W.message))}
-_K.addListener('place_changed',()=>{ad=!0;var _X=_K.getPlace();document.getElementsByName('city')[0].value=i(_X.address_components)});_L.addListener('place_changed',()=>{ae=!0;var _Y=_L.getPlace();document.getElementsByName('drop_city')[0].value=i(_Y.address_components)});_H.addEventListener('input',()=>{ad=!1});_I.addEventListener('input',()=>{ae=!1})}else setTimeout(j,500)}
+function b(n){n==='light'?document.body.classList.add('light-mode'):document.body.classList.remove('light-mode');localStorage.setItem('ec_theme',n);c()}
+function c(){let o=document.body.classList.contains('light-mode'),p=document.getElementById('theme-light'),q=document.getElementById('theme-dark');if(p)p.classList.toggle('active',o);if(q)q.classList.toggle('active',!o)}
+function d(){let r=document.getElementById('auth-email').value.trim(),s=document.getElementById('auth-password').value.trim();if(!r||!s)return alert("Please enter email and password.");firebase.auth().signInWithEmailAndPassword(r,s).catch(t=>alert("Login Error: "+t.message))}
+function e(){let u=document.getElementById('auth-email').value.trim(),v=document.getElementById('auth-password').value.trim();if(!u||!v)return alert("Please enter email and password to sign up.");firebase.auth().createUserWithEmailAndPassword(u,v).then(w=>{w.user.sendEmailVerification();alert("Account created! We sent a verification link to your email. Please verify before logging in.");firebase.auth().signOut()}).catch(x=>alert("Sign Up Error: "+x.message))}
+function f(){let y=new firebase.auth.GoogleAuthProvider();firebase.auth().signInWithPopup(y).catch(z=>alert("Google Login Error: "+z.message))}
+function g(){let A=document.getElementById('auth-email').value.trim();if(!A)return alert("Please enter your email address first, then click Forgot Password.");firebase.auth().sendPasswordResetEmail(A).then(()=>alert("Password reset email sent. Please check your inbox.")).catch(B=>alert("Error: "+B.message))}
+function h(C){let D=C.value.replace(/\D/g,'').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);C.value=!D[2]?D[1]:'('+D[1]+') '+D[2]+(D[3]?'-'+D[3]:'')}
+function i(E){if(!E)return'';for(let F of E){if(F.types.includes("locality"))return F.long_name}for(let G of E){if(G.types.includes("sublocality_level_1"))return G.long_name}for(let H of E){if(H.types.includes("administrative_area_level_2"))return H.long_name}return''}
+function j(){if(window.google?.maps?.places){let I=document.getElementById('f-pickup'),J=document.getElementById('f-drop-address'),K={componentRestrictions:{country:'ca'}},L=new google.maps.places.Autocomplete(I,K),M=new google.maps.places.Autocomplete(J,K),N=document.getElementById('default-pickup'),O=document.getElementById('default-destination'),P=document.getElementById('new-contact-address');if(N){let Q=new google.maps.places.Autocomplete(N,K);Q.addListener('place_changed',()=>{let R=Q.getPlace();if(R?.address_components)document.getElementById('default-city').value=i(R.address_components)})}
+if(O){let S=new google.maps.places.Autocomplete(O,K);S.addListener('place_changed',()=>{let T=S.getPlace();if(T?.address_components)document.getElementById('default-drop_city').value=i(T.address_components)})}
+if(P){let U=new google.maps.places.Autocomplete(P,K);U.addListener('place_changed',()=>{})}
+if(navigator.geolocation){navigator.geolocation.getCurrentPosition(V=>{let W=new google.maps.Circle({center:{lat:V.coords.latitude,lng:V.coords.longitude},radius:1e5});L.setBounds(W.getBounds());M.setBounds(W.getBounds());if(N)new google.maps.places.Autocomplete(N,K).setBounds(W.getBounds());if(O)new google.maps.places.Autocomplete(O,K).setBounds(W.getBounds());if(P)new google.maps.places.Autocomplete(P,K).setBounds(W.getBounds())},X=>console.warn("Geolocation warning/error, falling back to general CA scope:",X.message))}
+L.addListener('place_changed',()=>{ad=!0;let Y=L.getPlace();document.getElementsByName('city')[0].value=i(Y.address_components)});M.addListener('place_changed',()=>{ae=!0;let Z=M.getPlace();document.getElementsByName('drop_city')[0].value=i(Z.address_components)});I.addEventListener('input',()=>{ad=!1});J.addEventListener('input',()=>{ae=!1})}else setTimeout(j,500)}
 j();
 function k(){if(!M)return;af.name.value=M.name||'';af.pickup_location.value=M.pickup_location||'';af.city.value=M.pickup_city||'';af.p_email.value=M.p_email||'';af.p_phone.value=M.p_phone||'';af.delivery_name.value=M.delivery_name||'';af.destination.value=M.destination||'';af.drop_city.value=M.delivery_city||'';af.d_email.value=M.d_email||'';af.d_phone.value=M.d_phone||'';af.package_details.value=M.package_details||'';af.po_number.value=M.po_number||'';af.other_info.value=M.other_info||'';ad=!0;ae=!0}
-function l(){var _Z=JSON.parse(localStorage.getItem('autofillDefaults')||'{}');if(_Z.name)af.name.value=_Z.name;if(_Z.pickup_location)af.pickup_location.value=_Z.pickup_location;if(_Z.city)af.city.value=_Z.city;if(_Z.p_email)af.p_email.value=_Z.p_email;if(_Z.p_phone)af.p_phone.value=_Z.p_phone;if(_Z.delivery_name)af.delivery_name.value=_Z.delivery_name;if(_Z.destination)af.destination.value=_Z.destination;if(_Z.drop_city)af.drop_city.value=_Z.drop_city;if(_Z.d_email)af.d_email.value=_Z.d_email;if(_Z.d_phone)af.d_phone.value=_Z.d_phone;if(_Z.package_details)af.package_details.value=_Z.package_details;if(_Z.po_number)af.po_number.value=_Z.po_number;if(_Z.other_info)af.other_info.value=_Z.other_info;if(_Z.pickup_location&&_Z.city)ad=!0;if(_Z.destination&&_Z.drop_city)ae=!0}
-function m(){
-  var _$={name:document.getElementById('default-name').value,pickup_location:document.getElementById('default-pickup').value,city:document.getElementById('default-city').value,p_email:document.getElementById('default-p_email').value,p_phone:document.getElementById('default-p_phone').value,delivery_name:document.getElementById('default-delivery_name').value,destination:document.getElementById('default-destination').value,drop_city:document.getElementById('default-drop_city').value,d_email:document.getElementById('default-d_email').value,d_phone:document.getElementById('default-d_phone').value,package_details:document.getElementById('default-package_details').value,po_number:document.getElementById('default-po_number').value,other_info:document.getElementById('default-other_info').value};
-  localStorage.setItem('autofillDefaults',JSON.stringify(_$));
-  var user = firebase.auth().currentUser;
-  if (user) {
-    firebase.database().ref('users/'+user.uid+'/autofillDefaults').set(_$)
-      .catch(err => console.error('Error saving autofill defaults', err));
-  }
-  alert('Defaults saved!');
-}
-function n(){var _aa=JSON.parse(localStorage.getItem('autofillDefaults')||'{}');document.getElementById('default-name').value=_aa.name||'';document.getElementById('default-pickup').value=_aa.pickup_location||'';document.getElementById('default-city').value=_aa.city||'';document.getElementById('default-p_email').value=_aa.p_email||'';document.getElementById('default-p_phone').value=_aa.p_phone||'';document.getElementById('default-delivery_name').value=_aa.delivery_name||'';document.getElementById('default-destination').value=_aa.destination||'';document.getElementById('default-drop_city').value=_aa.drop_city||'';document.getElementById('default-d_email').value=_aa.d_email||'';document.getElementById('default-d_phone').value=_aa.d_phone||'';document.getElementById('default-package_details').value=_aa.package_details||'';document.getElementById('default-po_number').value=_aa.po_number||'';document.getElementById('default-other_info').value=_aa.other_info||''}
+function l(){let a0=JSON.parse(localStorage.getItem('autofillDefaults')||'{}');if(a0.name)af.name.value=a0.name;if(a0.pickup_location)af.pickup_location.value=a0.pickup_location;if(a0.city)af.city.value=a0.city;if(a0.p_email)af.p_email.value=a0.p_email;if(a0.p_phone)af.p_phone.value=a0.p_phone;if(a0.delivery_name)af.delivery_name.value=a0.delivery_name;if(a0.destination)af.destination.value=a0.destination;if(a0.drop_city)af.drop_city.value=a0.drop_city;if(a0.d_email)af.d_email.value=a0.d_email;if(a0.d_phone)af.d_phone.value=a0.d_phone;if(a0.package_details)af.package_details.value=a0.package_details;if(a0.po_number)af.po_number.value=a0.po_number;if(a0.other_info)af.other_info.value=a0.other_info;if(a0.pickup_location&&a0.city)ad=!0;if(a0.destination&&a0.drop_city)ae=!0}
+function m(){let a1={name:document.getElementById('default-name').value,pickup_location:document.getElementById('default-pickup').value,city:document.getElementById('default-city').value,p_email:document.getElementById('default-p_email').value,p_phone:document.getElementById('default-p_phone').value,delivery_name:document.getElementById('default-delivery_name').value,destination:document.getElementById('default-destination').value,drop_city:document.getElementById('default-drop_city').value,d_email:document.getElementById('default-d_email').value,d_phone:document.getElementById('default-d_phone').value,package_details:document.getElementById('default-package_details').value,po_number:document.getElementById('default-po_number').value,other_info:document.getElementById('default-other_info').value};
+localStorage.setItem('autofillDefaults',JSON.stringify(a1));let a2=firebase.auth().currentUser;if(a2)firebase.database().ref('users/'+a2.uid+'/autofillDefaults').set(a1).catch(a3=>console.error('Error saving autofill defaults',a3));alert('Defaults saved!');}
+function n(){let a4=JSON.parse(localStorage.getItem('autofillDefaults')||'{}');document.getElementById('default-name').value=a4.name||'';document.getElementById('default-pickup').value=a4.pickup_location||'';document.getElementById('default-city').value=a4.city||'';document.getElementById('default-p_email').value=a4.p_email||'';document.getElementById('default-p_phone').value=a4.p_phone||'';document.getElementById('default-delivery_name').value=a4.delivery_name||'';document.getElementById('default-destination').value=a4.destination||'';document.getElementById('default-drop_city').value=a4.drop_city||'';document.getElementById('default-d_email').value=a4.d_email||'';document.getElementById('default-d_phone').value=a4.d_phone||'';document.getElementById('default-package_details').value=a4.package_details||'';document.getElementById('default-po_number').value=a4.po_number||'';document.getElementById('default-other_info').value=a4.other_info||''}
 function o(){n();c();G();document.getElementById('settings-main').style.display='block';document.getElementById('settings-autofill').style.display='none';document.getElementById('settings-addressbook').style.display='none';document.getElementById('settings-modal').style.display='block'}
-function p(){document.getElementById('settings-main').style.display='block';document.getElementById('settings-autofill').style.display='none';document.getElementById('settings-addressbook').style.display='none'; // reset editing when back
-  editingContactIndex = null;
-  document.getElementById('delete-contact-btn').style.display = 'none';
-  document.getElementById('save-contact-btn').innerText = 'Save to Address Book';
-  document.getElementById('addressbook-form-title').innerText = 'Create Contact';
-}
+function p(){document.getElementById('settings-main').style.display='block';document.getElementById('settings-autofill').style.display='none';document.getElementById('settings-addressbook').style.display='none';editingContactIndex=null;document.getElementById('delete-contact-btn').style.display='none';document.getElementById('save-contact-btn').innerText='Save to Address Book';document.getElementById('addressbook-form-title').innerText='Create Contact';}
 function q(){document.getElementById('settings-main').style.display='none';document.getElementById('settings-autofill').style.display='block';document.getElementById('settings-addressbook').style.display='none'}
 function r(){document.getElementById('settings-main').style.display='none';document.getElementById('settings-autofill').style.display='none';document.getElementById('settings-addressbook').style.display='block';document.getElementById('addressbook-list-view').style.display='block';document.getElementById('addressbook-create-view').style.display='none';G()}
-function s(){ // create new
-  editingContactIndex = null;
-  document.getElementById('addressbook-list-view').style.display='none';
-  document.getElementById('addressbook-create-view').style.display='block';
-  document.getElementById('addressbook-form-title').innerText = 'Create Contact';
-  document.getElementById('save-contact-btn').innerText = 'Save to Address Book';
-  document.getElementById('delete-contact-btn').style.display = 'none';
-  document.getElementById('new-contact-name').value='';
-  document.getElementById('new-contact-address').value='';
-  document.getElementById('new-contact-email').value='';
-  document.getElementById('new-contact-phone').value='';
-}
-function t(){ // cancel from create/edit
-  document.getElementById('addressbook-list-view').style.display='block';
-  document.getElementById('addressbook-create-view').style.display='none';
-  editingContactIndex = null;
-}
-function u(){ // save or update contact
-  var _ab=document.getElementById('new-contact-name').value.trim(),_ac=document.getElementById('new-contact-address').value.trim(),_ad=document.getElementById('new-contact-email').value.trim(),_ae=document.getElementById('new-contact-phone').value.trim();
-  if(!_ab||!_ac){alert('Please enter at least a name and address.');return}
-  var _af=''; // city not collected
-  var contact = {name:_ab, address:_ac, city:_af, email:_ad, phone:_ae, target:W};
-  if (editingContactIndex !== null) {
-    V[editingContactIndex] = contact; // update
-  } else {
-    V.push(contact);
-  }
-  saveAddressBookToFirebase();
-  G();
-  t(); // back to list
-}
-function editContact(index) {
-  editingContactIndex = index;
-  var c = V[index];
-  document.getElementById('new-contact-name').value = c.name || '';
-  document.getElementById('new-contact-address').value = c.address || '';
-  document.getElementById('new-contact-email').value = c.email || '';
-  document.getElementById('new-contact-phone').value = c.phone || '';
-  document.getElementById('addressbook-list-view').style.display = 'none';
-  document.getElementById('addressbook-create-view').style.display = 'block';
-  document.getElementById('addressbook-form-title').innerText = 'Edit Contact';
-  document.getElementById('save-contact-btn').innerText = 'Update Contact';
-  document.getElementById('delete-contact-btn').style.display = 'block';
-}
-function deleteCurrentContact() {
-  if (editingContactIndex !== null) {
-    if (confirm('Delete this contact?')) {
-      V.splice(editingContactIndex, 1);
-      saveAddressBookToFirebase();
-      G();
-      t();
-    }
-  }
-}
-function v(){var _ag=firebase.auth().currentUser;if(!_ag)return;db.ref("jobs").orderByChild("created_by").equalTo(_ag.email).once('value').then(_ah=>{N=_ah.val()||{};if(document.getElementById('orders-history-container').style.display==='block')A()})}
+function s(){editingContactIndex=null;document.getElementById('addressbook-list-view').style.display='none';document.getElementById('addressbook-create-view').style.display='block';document.getElementById('addressbook-form-title').innerText='Create Contact';document.getElementById('save-contact-btn').innerText='Save to Address Book';document.getElementById('delete-contact-btn').style.display='none';document.getElementById('new-contact-name').value='';document.getElementById('new-contact-address').value='';document.getElementById('new-contact-email').value='';document.getElementById('new-contact-phone').value='';}
+function t(){document.getElementById('addressbook-list-view').style.display='block';document.getElementById('addressbook-create-view').style.display='none';editingContactIndex=null;}
+function u(){let a5=document.getElementById('new-contact-name').value.trim(),a6=document.getElementById('new-contact-address').value.trim(),a7=document.getElementById('new-contact-email').value.trim(),a8=document.getElementById('new-contact-phone').value.trim();if(!a5||!a6){alert('Please enter at least a name and address.');return}
+let a9={name:a5,address:a6,city:'',email:a7,phone:a8,target:W};if(editingContactIndex!==null)V[editingContactIndex]=a9;else V.push(a9);saveAddressBookToFirebase();G();t();}
+function editContact(ba){editingContactIndex=ba;let bb=V[ba];document.getElementById('new-contact-name').value=bb.name||'';document.getElementById('new-contact-address').value=bb.address||'';document.getElementById('new-contact-email').value=bb.email||'';document.getElementById('new-contact-phone').value=bb.phone||'';document.getElementById('addressbook-list-view').style.display='none';document.getElementById('addressbook-create-view').style.display='block';document.getElementById('addressbook-form-title').innerText='Edit Contact';document.getElementById('save-contact-btn').innerText='Update Contact';document.getElementById('delete-contact-btn').style.display='block';}
+function deleteCurrentContact(){if(editingContactIndex!==null&&confirm('Delete this contact?')){V.splice(editingContactIndex,1);saveAddressBookToFirebase();G();t();}}
+function v(){let bc=firebase.auth().currentUser;if(!bc)return;db.ref("jobs").orderByChild("created_by").equalTo(bc.email).once('value').then(bd=>{N=bd.val()||{};if(document.getElementById('orders-history-container').style.display==='block')A()})}
 function w(){document.getElementById('main-app-container').style.display='none';document.getElementById('orders-history-container').style.display='block';v();if(window.X)clearInterval(window.X);window.X=setInterval(()=>{if(document.getElementById('orders-history-container').style.display==='block')A();else{clearInterval(window.X);window.X=null}},2000)}
-function x(){
-  if(window.X){clearInterval(window.X);window.X=null}
-  P.clear();
-  document.getElementById('orderSearchInput').value = '';
-  document.getElementById('orderStatusFilter').value = 'all';
-  T = '';
-  U = 'all';
-  document.getElementById('orders-history-container').style.display='none';
-  document.getElementById('main-app-container').style.display='block';
-  document.getElementById('pickupForm').style.display='block';
-  document.getElementById('thanksMessage').style.display='none';
-  document.getElementById('pickupForm').reset();
-  ad=!1;
-  ae=!1;
-  ag.innerText="Submit Request";
-  ag.disabled=!1;
-  ag.style.opacity="1";
-  S=null; 
-  document.getElementById('cancelEditBtn').style.display='none';
-}
-function y(_ai){ if(!confirm('Are you sure you want to cancel this pending order?')) return; var jobRef=db.ref('jobs/'+_ai);jobRef.once('value', snap=>{var job=snap.val();if(!job) return; var newHistory=(job.job_history?job.job_history+'\n':'')+'[CANCELLED BY USER] DND'; jobRef.update({ job_history: newHistory, status: 'cancelled', cancelled_by_user: true }).catch(_aj=>alert('Error: '+_aj.message)); }).catch(_aj=>alert('Error: '+_aj.message));}
-function z(_ak){
-    if(!confirm("Are you sure you want to edit this order?")) return;
-    var _al = N[_ak];
-    if(!_al) return;
-    S = _ak;
-    af.name.value = _al.name || '';
-    af.pickup_location.value = _al.pickup_location || '';
-    af.city.value = _al.pickup_city || '';
-    af.p_email.value = _al.p_email || '';
-    af.p_phone.value = _al.p_phone || '';
-    af.delivery_name.value = _al.delivery_name || '';
-    af.destination.value = _al.destination || '';
-    af.drop_city.value = _al.delivery_city || '';
-    af.d_email.value = _al.d_email || '';
-    af.d_phone.value = _al.d_phone || '';
-    af.package_details.value = _al.package_details || '';
-    af.po_number.value = _al.po_number || '';
-    af.other_info.value = _al.other_info || '';
-    ad = true;
-    ae = true;
-    ag.innerText = "Update Request";
-    // Clear any live update interval
-    if(window.X) { clearInterval(window.X); window.X = null; }
-    // Hide orders, show main container without resetting form
-    document.getElementById('orders-history-container').style.display = 'none';
-    document.getElementById('main-app-container').style.display = 'block';
-    document.getElementById('pickupForm').style.display = 'block';
-    document.getElementById('thanksMessage').style.display = 'none';
-    // Ensure button is enabled (just in case)
-    ag.disabled = false;
-    ag.style.opacity = "1";
-    document.getElementById('cancelEditBtn').style.display = 'block';
-}
-function A(){if(document.getElementById('orders-history-container').style.display!=='block')return;var _am=document.getElementById('orders-list'),_an=document.getElementById('live-status-header');if(!N||Object.keys(N).length===0){_am.innerHTML='<p style="color:#aaa;">No past orders found.</p>';return}
-var _ao=new Date();_an.innerText="Status Live as of "+_ao.toLocaleString([],{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:!0});_am.innerHTML='';var _ap=[];Object.entries(N).forEach(([_aq,_ar])=>{_ap.push({..._ar,id:_aq})});_ap.sort((_as,_at)=>_at.timestamp-_as.timestamp);var _au=_ap.filter(_av=>{if(U!=='all'){ 
-  if(U==='in_progress' && !['pending_pickup','in_transit','pending_delivery'].includes(_av.status)) return false;
-  if(U==='completed' && (_av.status!=='completed' || _av.cancelled_by_user===true)) return false;
-  if(U==='cancelled' && !(_av.status==='cancelled' || _av.cancelled_by_user===true)) return false;
-}
-if(T.trim()!==''){var _aw=T.toLowerCase(),_ax=(_av.package_details+' '+_av.po_number+' '+_av.name+' '+_av.delivery_name+' '+_av.pickup_location+' '+_av.destination).toLowerCase();if(!_ax.includes(_aw))return!1}return!0});_au.forEach(_ay=>{var _az=new Date(_ay.timestamp).toLocaleString(),_aA=_ay.status||'pending_pickup',_aB=(_ay.assigned_to&&_ay.assigned_to!=='Unassigned')?_ay.assigned_to:null,_aC=!0,_aD=(_aB!==null)||!!_ay.picked_up_by||(_aA==='in_transit')||(_aA==='pending_delivery')||(_aA==='completed'),_aE=!!_ay.picked_up_by||_aA==='in_transit',_aF=(_aA==='completed')||(_aA==='pending_delivery'&&_aB&&R[_aB]?.shift_active===!0),_aG=(_aA==='completed'),_aH=null,_isCancelled = _ay.cancelled_by_user === true;if(_aA==='pending_pickup'&&_aB)_aH=2;else if(_aA==='in_transit')_aH=3;else if(_aA==='pending_delivery'&&_aB&&R[_aB]?.shift_active===!0)_aH=4;else if(_aA==='completed')_aH=null;var _aI=[_aC?'completed':'',_aD?'completed':'',_aE?'completed':'',_aF?'completed':'',_aG?'completed':''];if(_aH)_aI[_aH-1]+=' active';var _aJ='0%';if(_aH){var _aK=0;for(var _aL=0;_aL<_aH-1;_aL++)if(_aI[_aL].includes('completed'))_aK++;_aJ=(_aK*25)+'%'}else{var _aM=[_aC,_aD,_aE,_aF,_aG].filter(Boolean).length;if(_aM>1)_aJ=((_aM-1)*25)+'%'}
-var _aN=_ay.package_details||'N/A',_aO=_ay.po_number?_ay.po_number:'N/A',_aP=(_aA==='completed'),_aQ='order-card-'+_ay.id,_aR=`<div class="ocean-timeline"><div class="ocean-track"><div class="ocean-fill" style="width: ${_aJ};"></div></div><div class="ocean-node ${_aI[0]}"><div class="ocean-label">Ordered</div></div><div class="ocean-node ${_aI[1]}"><div class="ocean-label">Assigned</div></div><div class="ocean-node ${_aI[2]}"><div class="ocean-label">Picked‑Up</div></div><div class="ocean-node ${_aI[3]}"><div class="ocean-label">Out for Delivery</div></div><div class="ocean-node ${_aI[4]}"><div class="ocean-label">Delivered</div></div></div>`, _timelineHtml = _isCancelled ? '' : _aR, _aS = `<div class="order-date">${_az}</div>
-<div style="display:flex; gap:15px; margin-top:10px;">
-  <div style="flex:1;"><strong>Pickup</strong> ${_ay.name}<br><span style="color:#aaa; font-size:12px;">${_ay.pickup_location}</span></div>
-  <div style="flex:1;"><strong>Delivery</strong> ${_ay.delivery_name}<br><span style="color:#aaa; font-size:12px;">${_ay.destination}</span></div>
-</div>
-<div style="margin-top:10px;">
-  <div><strong>Packages/Items/Dimensions</strong><br><span style="color:#aaa; font-size:12px;">${_aN}</span></div>
-  <div style="margin-top:5px;"><strong>PO / Ref</strong><br><span style="color:#aaa; font-size:12px;">${_aO}</span></div>
-</div>
-<div style="margin-top:10px;"><strong>Driver Notes</strong><br><span style="color:#aaa; font-size:12px;">${_ay.other_info || 'None'}</span></div>
-${_timelineHtml}`;if(_aP || _aA === 'cancelled' || _isCancelled){var _aT=P.has(_ay.id),_aU=new Date(_ay.timestamp),_aV=_aU.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}).replace(/,/g,'');var buttonInnerHtml;if (_aA === 'cancelled' || _isCancelled) {buttonInnerHtml = `<div style="display:flex; flex-direction:column; gap:4px;"><span style="font-weight:bold;">${_aV}</span><span class="package-details">${_ay.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${_ay.name||'?'}</span> → <span style="color:#90ee90;">${_ay.delivery_name||'?'}</span></div><div style="color: red; font-weight: bold;">Order Cancelled</div>`;} else {buttonInnerHtml = `<div style="display:flex; flex-direction:column; gap:4px;"><span style="font-weight:bold;">${_aV}</span><span class="package-details">${_ay.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${_ay.name||'?'}</span> → <span style="color:#90ee90;">${_ay.delivery_name||'?'}</span></div>`;}_am.innerHTML+=`<div style="margin-bottom: 2px;"><button onclick="B('${_ay.id}')" style="width: 100%; padding: 6px 10px; background: var(--input-bg); border: 1px solid var(--success); border-radius: 4px; color: var(--text); text-align: left; cursor: pointer; font-size: 12px; line-height: 1.4;">${buttonInnerHtml}</button><div id="${_aQ}" class="order-card" style="display: ${_aT?'block':'none'}; margin-bottom: 0; border-top: none; border-top-left-radius: 0; border-top-right-radius: 0;">${_aS}</div></div>`}else{var _aW='';if(_aA==='pending_pickup')_aW=`<div class="order-actions"><button class="cancel-btn btn btn-danger" onclick="y('${_ay.id}')">Cancel</button><button class="edit-btn btn btn-accent" onclick="z('${_ay.id}')">Edit</button></div>`;_am.innerHTML+=`<div class="order-card">${_aS}${_aW}</div>`}})}
-function B(_aX){var _aY=document.getElementById('order-card-'+_aX);if(_aY){if(_aY.style.display==='none'){_aY.style.display='block';P.add(_aX)}else{_aY.style.display='none';P.delete(_aX)}}}
-af.addEventListener("submit",_aZ=>{_aZ.preventDefault();if(document.getElementById('website_url_hp').value)return;var _ba=localStorage.getItem('lastOrderTime'),_bb=Date.now();if(_ba&&_bb-_ba<30000&&!S){alert("Please wait a moment before submitting another request.");return}
+function x(){if(window.X){clearInterval(window.X);window.X=null}P.clear();document.getElementById('orderSearchInput').value='';document.getElementById('orderStatusFilter').value='all';T='';U='all';document.getElementById('orders-history-container').style.display='none';document.getElementById('main-app-container').style.display='block';document.getElementById('pickupForm').style.display='block';document.getElementById('thanksMessage').style.display='none';document.getElementById('pickupForm').reset();ad=!1;ae=!1;ag.innerText="Submit Request";ag.disabled=!1;ag.style.opacity="1";S=null;document.getElementById('cancelEditBtn').style.display='none';}
+function y(be){if(!confirm('Are you sure you want to cancel this pending order?'))return;let bf=db.ref('jobs/'+be);bf.once('value',bg=>{let bh=bg.val();if(!bh)return;let bi=(bh.job_history?bh.job_history+'\n':'')+'[CANCELLED BY USER] DND';bf.update({job_history:bi,status:'cancelled',cancelled_by_user:true}).catch(bj=>alert('Error: '+bj.message));}).catch(bk=>alert('Error: '+bk.message));}
+function z(bl){if(!confirm("Are you sure you want to edit this order?"))return;let bm=N[bl];if(!bm)return;S=bl;af.name.value=bm.name||'';af.pickup_location.value=bm.pickup_location||'';af.city.value=bm.pickup_city||'';af.p_email.value=bm.p_email||'';af.p_phone.value=bm.p_phone||'';af.delivery_name.value=bm.delivery_name||'';af.destination.value=bm.destination||'';af.drop_city.value=bm.delivery_city||'';af.d_email.value=bm.d_email||'';af.d_phone.value=bm.d_phone||'';af.package_details.value=bm.package_details||'';af.po_number.value=bm.po_number||'';af.other_info.value=bm.other_info||'';ad=!0;ae=!0;ag.innerText="Update Request";if(window.X){clearInterval(window.X);window.X=null}document.getElementById('orders-history-container').style.display='none';document.getElementById('main-app-container').style.display='block';document.getElementById('pickupForm').style.display='block';document.getElementById('thanksMessage').style.display='none';ag.disabled=!1;ag.style.opacity="1";document.getElementById('cancelEditBtn').style.display='block';}
+function A(){if(document.getElementById('orders-history-container').style.display!=='block')return;let bn=document.getElementById('orders-list'),bo=document.getElementById('live-status-header');if(!N||Object.keys(N).length===0){bn.innerHTML='<p style="color:#aaa;">No past orders found.</p>';return}
+let bp=new Date();bo.innerText="Status Live as of "+bp.toLocaleString([],{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:!0});bn.innerHTML='';let bq=[];Object.entries(N).forEach(([br,bs])=>{bq.push({...bs,id:br})});bq.sort((bt,bu)=>bt.timestamp-bu.timestamp).reverse();let bv=bq.filter(bw=>{if(U!=='all'){if(U==='in_progress'&&!['pending_pickup','in_transit','pending_delivery'].includes(bw.status))return!1;if(U==='completed'&&(bw.status!=='completed'||bw.cancelled_by_user===!0))return!1;if(U==='cancelled'&&!(bw.status==='cancelled'||bw.cancelled_by_user===!0))return!1}if(T.trim()!==''){let bx=T.toLowerCase(),by=(bw.package_details+' '+bw.po_number+' '+bw.name+' '+bw.delivery_name+' '+bw.pickup_location+' '+bw.destination).toLowerCase();if(!by.includes(bx))return!1}return!0});bv.forEach(bz=>{let bA=new Date(bz.timestamp).toLocaleString(),bB=bz.status||'pending_pickup',bC=(bz.assigned_to&&bz.assigned_to!=='Unassigned')?bz.assigned_to:null,bD=!0,bE=(bC!==null)||!!bz.picked_up_by||(bB==='in_transit')||(bB==='pending_delivery')||(bB==='completed'),bF=!!bz.picked_up_by||bB==='in_transit',bG=(bB==='completed')||(bB==='pending_delivery'&&bC&&R[bC]?.shift_active===!0),bH=(bB==='completed'),bI=null,bJ=bz.cancelled_by_user===!0;if(bB==='pending_pickup'&&bC)bI=2;else if(bB==='in_transit')bI=3;else if(bB==='pending_delivery'&&bC&&R[bC]?.shift_active===!0)bI=4;else if(bB==='completed')bI=null;let bK=[bD?'completed':'',bE?'completed':'',bF?'completed':'',bG?'completed':'',bH?'completed':''];if(bI)bK[bI-1]+=' active';let bL='0%';if(bI){let bM=0;for(let bN=0;bN<bI-1;bN++)if(bK[bN].includes('completed'))bM++;bL=(bM*25)+'%'}else{let bO=[bD,bE,bF,bG,bH].filter(Boolean).length;if(bO>1)bL=((bO-1)*25)+'%'}
+let bP=bz.package_details||'N/A',bQ=bz.po_number?'PO: '+bz.po_number:'N/A',bR=(bB==='completed'),bS='order-card-'+bz.id,bT=bJ?'':`<div class="ocean-timeline"><div class="ocean-track"><div class="ocean-fill" style="width:${bL};"></div></div><div class="ocean-node ${bK[0]}"><div class="ocean-label">Ordered</div></div><div class="ocean-node ${bK[1]}"><div class="ocean-label">Assigned</div></div><div class="ocean-node ${bK[2]}"><div class="ocean-label">Picked‑Up</div></div><div class="ocean-node ${bK[3]}"><div class="ocean-label">Out for Delivery</div></div><div class="ocean-node ${bK[4]}"><div class="ocean-label">Delivered</div></div></div>`,bU=`<div class="order-date">${bA}</div><div style="display:flex;gap:15px;margin-top:10px;"><div style="flex:1;"><strong>Pickup</strong> ${bz.name}<br><span style="color:#aaa;font-size:12px;">${bz.pickup_location}</span></div><div style="flex:1;"><strong>Delivery</strong> ${bz.delivery_name}<br><span style="color:#aaa;font-size:12px;">${bz.destination}</span></div></div><div style="margin-top:10px;"><div><strong>Packages/Items/Dimensions</strong><br><span style="color:#aaa;font-size:12px;">${bP}</span></div><div style="margin-top:5px;"><strong>PO / Ref</strong><br><span style="color:#aaa;font-size:12px;">${bQ}</span></div></div><div style="margin-top:10px;"><strong>Driver Notes</strong><br><span style="color:#aaa;font-size:12px;">${bz.other_info||'None'}</span></div>${bT}`;if(bR||bB==='cancelled'||bJ){let bV=P.has(bz.id),bW=new Date(bz.timestamp),bX=bW.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}).replace(/,/g,''),bY;if(bB==='cancelled'||bJ)bY=`<div style="display:flex;flex-direction:column;gap:4px;"><span style="font-weight:700;">${bX}</span><span class="package-details">${bz.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${bz.name||'?'}</span> → <span style="color:#90ee90;">${bz.delivery_name||'?'}</span></div><div style="color:red;font-weight:700;">Order Cancelled</div>`;else bY=`<div style="display:flex;flex-direction:column;gap:4px;"><span style="font-weight:700;">${bX}</span><span class="package-details">${bz.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${bz.name||'?'}</span> → <span style="color:#90ee90;">${bz.delivery_name||'?'}</span></div>`;bn.innerHTML+=`<div style="margin-bottom:2px;"><button onclick="B('${bz.id}')" style="width:100%;padding:6px 10px;background:var(--input-bg);border:1px solid var(--success);border-radius:4px;color:var(--text);text-align:left;cursor:pointer;font-size:12px;line-height:1.4;">${bY}</button><div id="${bS}" class="order-card" style="display:${bV?'block':'none'};margin-bottom:0;border-top:0;border-top-left-radius:0;border-top-right-radius:0;">${bU}</div></div>`}else{let bZ='';if(bB==='pending_pickup')bZ=`<div class="order-actions"><button class="cancel-btn btn btn-danger" onclick="y('${bz.id}')">Cancel</button><button class="edit-btn btn btn-accent" onclick="z('${bz.id}')">Edit</button></div>`;bn.innerHTML+=`<div class="order-card">${bU}${bZ}</div>`}})}
+function B(ca){let cb=document.getElementById('order-card-'+ca);if(cb){if(cb.style.display==='none'){cb.style.display='block';P.add(ca)}else{cb.style.display='none';P.delete(ca)}}}
+af.addEventListener("submit",cc=>{cc.preventDefault();if(document.getElementById('website_url_hp').value)return;let cd=localStorage.getItem('lastOrderTime'),ce=Date.now();if(cd&&ce-cd<30000&&!S){alert("Please wait a moment before submitting another request.");return}
 if(!ad||!ae){alert("Please select a verified address from the Google Maps suggestions or the map picker to prevent invalid locations.");return}
-ag.innerText=S?"Updating...":"Transmitting...";ag.style.opacity="0.7";ag.disabled=!0;var _bc=(_bd={},_be='Unassigned')=>{var _bf={name:af.name.value.trim(),pickup_location:af.pickup_location.value.trim(),pickup_city:af.city.value.trim(),city:af.city.value.trim(),p_email:af.p_email.value.trim(),p_phone:af.p_phone.value.trim(),delivery_name:af.delivery_name.value.trim(),destination:af.destination.value.trim(),delivery_city:af.drop_city.value.trim(),d_email:af.d_email.value.trim(),d_phone:af.d_phone.value.trim(),package_details:af.package_details.value.trim(),po_number:af.po_number.value.trim()||"",other_info:af.other_info.value.trim(),job_history:"[Client Request]",status:"pending_pickup",type:"pickup",assigned_to:_be,timestamp:S?N[S]?.timestamp||Date.now():Date.now(),created_by:firebase.auth().currentUser?firebase.auth().currentUser.email:"Web Portal",..._bd};if(S){db.ref("jobs/"+S).update(_bf).then(()=>{localStorage.setItem('lastOrderTime',Date.now());S=null;af.style.display="none";document.getElementById("thanksMessage").style.display="block";window.scrollTo({top:0,behavior:'smooth'}); document.getElementById('cancelEditBtn').style.display='none';}).catch(_bg=>{ag.innerText="Update Request";ag.disabled=!1;ag.style.opacity="1"})}else{db.ref("jobs").push(_bf).then(_bh=>{localStorage.setItem('lastOrderTime',Date.now());var _bi=_bh.key;if(!N)N={};N[_bi]={..._bf,id:_bi};if(document.getElementById('orders-history-container').style.display==='block')A();af.style.display="none";document.getElementById("thanksMessage").style.display="block";window.scrollTo({top:0,behavior:'smooth'})}).catch(_bj=>{ag.innerText="Submit Request";ag.disabled=!1;ag.style.opacity="1"})}};var _bk=new google.maps.Geocoder(),_bl=af.pickup_location.value.trim()+", "+af.city.value.trim(),_bm=!1,_bn=setTimeout(()=>{if(!_bm){_bm=!0;_bc()}},3000);_bk.geocode({address:_bl},(_bo,_bp)=>{if(_bm)return;_bm=!0;clearTimeout(_bn);if(_bp==="OK"&&_bo[0]){var _bq=_bo[0].geometry.location,_br={lat:_bq.lat(),lng:_bq.lng()},_bs='Unassigned';for(var _bt in Q){var _bu=Q[_bt];if(_bu.polygon){var _bv=new google.maps.Polygon({paths:_bu.polygon});if(google.maps.geometry.poly.containsLocation(_bq,_bv)){_bs=_bt;break}}}_bc(_br,_bs)}else _bc()})});
-var Y;window.addEventListener('beforeinstallprompt',_bw=>{_bw.preventDefault();Y=_bw;document.getElementById('installAppBtn').style.display='block'});document.getElementById('installAppBtn').addEventListener('click',async()=>{if(Y){Y.prompt();var _bx=await Y.userChoice;if(_bx.outcome==='accepted')document.getElementById('installAppBtn').style.display='none';Y=null}});
-var Z,aa,ab='';function E(_by){ab=_by;var _bz=document.getElementById('location-picker-modal');_bz.style.display='block';document.body.style.overflow='hidden';if(!Z){Z=new google.maps.Map(document.getElementById('picker-map'),{center:{lat:49.8951,lng:-97.1384},zoom:12,disableDefaultUI:!0,zoomControl:!0,scrollwheel:!0,styles:[{"featureType":"all","elementType":"labels.text.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"all","elementType":"labels.text.stroke","stylers":[{"color":"#000000"},{"lightness":13}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":21}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":17}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":29},{"weight":0.2}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":18}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":16}]},{"featureType":"transit","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":19}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":17}]}]});var _bA=document.getElementById('loc-search-bar'),_bB=new google.maps.places.Autocomplete(_bA);_bB.bindTo('bounds',Z);_bB.addListener('place_changed',()=>{var _bC=_bB.getPlace();if(_bC.geometry){Z.setCenter(_bC.geometry.location);Z.setZoom(17)}});_bA.addEventListener('keydown',_bD=>{if(_bD.key==='Enter'){var _bE=_bA.value,_bF=_bE.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);if(_bF){var _bG={lat:+_bF[1],lng:+_bF[2]};Z.setCenter(_bG);Z.setZoom(17)}else{var _bH=new google.maps.Geocoder();_bH.geocode({address:_bE},(_bI,_bJ)=>{if(_bJ==='OK'&&_bI[0]){Z.setCenter(_bI[0].geometry.location);Z.setZoom(17)}})}}})}}
-function C(){var _bK=document.getElementById('loc-search-bar'),_bL=_bK.value;if(!_bL)return;var _bM=_bL.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);if(_bM){var _bN={lat:+_bM[1],lng:+_bM[2]};Z.setCenter(_bN);Z.setZoom(17)}else{var _bO=new google.maps.Geocoder();_bO.geocode({address:_bL},(_bP,_bQ)=>{if(_bQ==='OK'&&_bP[0]){Z.setCenter(_bP[0].geometry.location);Z.setZoom(17)}else alert('Location not found')})}}
-function D(){var _bR=Z.getCenter(),_bS=new google.maps.Geocoder();_bS.geocode({location:_bR},(_bT,_bU)=>{if(_bU==='OK'&&_bT[0]){var _bV=_bT[0].formatted_address,_bW=i(_bT[0].address_components);if(ab==='pickup'){document.getElementById('f-pickup').value=_bV;document.getElementsByName('city')[0].value=_bW;ad=!0}else if(ab==='drop'){document.getElementById('f-drop-address').value=_bV;document.getElementsByName('drop_city')[0].value=_bW;ae=!0}else if(ab==='settings-pickup'){document.getElementById('default-pickup').value=_bV;document.getElementById('default-city').value=_bW}else if(ab==='settings-drop'){document.getElementById('default-destination').value=_bV;document.getElementById('default-drop_city').value=_bW}else if(ab==='new-contact'){document.getElementById('new-contact-address').value=_bV}}document.getElementById('location-picker-modal').style.display='none';document.body.style.overflow=''})}
-function F(_bX){W=_bX;G();document.getElementById('settings-modal').style.display='block';r()}
-function G(){var _bY=document.getElementById('savedAddressesList');if(!_bY)return;_bY.innerHTML='';V.forEach((_bZ,_ca)=>{_bY.innerHTML+=`<div style="border:1px solid var(--border); padding:8px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center;"><div onclick="editContact(${_ca})" style="flex:1; cursor:pointer;"><strong>${_bZ.name}</strong><br><span style="font-size:12px;">${_bZ.address} ${_bZ.city?'('+_bZ.city+')':''}</span><br><span style="font-size:11px; color:#aaa;">${_bZ.email} ${_bZ.phone?'• '+_bZ.phone:''}</span></div><div><button onclick="H(${_ca}); event.stopPropagation();" style="background:var(--accent); color:#000; border:none; padding:10px 16px; border-radius:8px; font-weight:bold; font-size:14px;" class="btn btn-accent">Select</button></div></div>`});if(V.length===0)_bY.innerHTML='<p>No saved addresses.</p>'}
-function H(_cb){ var _cc=V[_cb]; if(W==='pickup'){ document.getElementById('f-pickup').value=_cc.address; document.getElementsByName('city')[0].value=_cc.city||''; document.getElementsByName('name')[0].value=_cc.name||''; document.getElementsByName('p_email')[0].value=_cc.email||''; document.getElementsByName('p_phone')[0].value=_cc.phone||''; ad=!0 }else{ document.getElementById('f-drop-address').value=_cc.address; document.getElementsByName('drop_city')[0].value=_cc.city||''; document.getElementsByName('delivery_name')[0].value=_cc.name||''; document.getElementsByName('d_email')[0].value=_cc.email||''; document.getElementsByName('d_phone')[0].value=_cc.phone||''; ae=!0 } document.getElementById('settings-modal').style.display='none' }
-function I(_cd){V.splice(_cd,1);saveAddressBookToFirebase();G();}
+ag.innerText=S?"Updating...":"Transmitting...";ag.style.opacity="0.7";ag.disabled=!0;let cf=(cg,ch='Unassigned')=>{let ci={name:af.name.value.trim(),pickup_location:af.pickup_location.value.trim(),pickup_city:af.city.value.trim(),city:af.city.value.trim(),p_email:af.p_email.value.trim(),p_phone:af.p_phone.value.trim(),delivery_name:af.delivery_name.value.trim(),destination:af.destination.value.trim(),delivery_city:af.drop_city.value.trim(),d_email:af.d_email.value.trim(),d_phone:af.d_phone.value.trim(),package_details:af.package_details.value.trim(),po_number:af.po_number.value.trim()||"",other_info:af.other_info.value.trim(),job_history:"[Client Request]",status:"pending_pickup",type:"pickup",assigned_to:ch,timestamp:S?N[S]?.timestamp||Date.now():Date.now(),created_by:firebase.auth().currentUser?firebase.auth().currentUser.email:"Web Portal",...cg};if(S){db.ref("jobs/"+S).update(ci).then(()=>{localStorage.setItem('lastOrderTime',Date.now());S=null;af.style.display="none";document.getElementById("thanksMessage").style.display="block";window.scrollTo({top:0,behavior:'smooth'});document.getElementById('cancelEditBtn').style.display='none';}).catch(cj=>{ag.innerText="Update Request";ag.disabled=!1;ag.style.opacity="1"})}else{db.ref("jobs").push(ci).then(ck=>{localStorage.setItem('lastOrderTime',Date.now());let cl=ck.key;if(!N)N={};N[cl]={...ci,id:cl};if(document.getElementById('orders-history-container').style.display==='block')A();af.style.display="none";document.getElementById("thanksMessage").style.display="block";window.scrollTo({top:0,behavior:'smooth'})}).catch(cm=>{ag.innerText="Submit Request";ag.disabled=!1;ag.style.opacity="1"})}};let cn=new google.maps.Geocoder(),co=af.pickup_location.value.trim()+", "+af.city.value.trim(),cp=!1,cq=setTimeout(()=>{if(!cp){cp=!0;cf()}},3000);cn.geocode({address:co},(cr,cs)=>{if(cp)return;cp=!0;clearTimeout(cq);if(cs==="OK"&&cr[0]){let ct=cr[0].geometry.location,cu={lat:ct.lat(),lng:ct.lng()},cv='Unassigned';for(let cw in Q){let cx=Q[cw];if(cx.polygon){let cy=new google.maps.Polygon({paths:cx.polygon});if(google.maps.geometry.poly.containsLocation(ct,cy)){cv=cw;break}}}cf(cu,cv)}else cf()})});
+var Y;window.addEventListener('beforeinstallprompt',cz=>{cz.preventDefault();Y=cz;document.getElementById('installAppBtn').style.display='block'});document.getElementById('installAppBtn').addEventListener('click',async()=>{if(Y){Y.prompt();let cA=await Y.userChoice;if(cA.outcome==='accepted')document.getElementById('installAppBtn').style.display='none';Y=null}});
+var Z,aa,ab='';function E(cB){ab=cB;let cC=document.getElementById('location-picker-modal');cC.style.display='block';document.body.style.overflow='hidden';if(!Z){Z=new google.maps.Map(document.getElementById('picker-map'),{center:{lat:49.8951,lng:-97.1384},zoom:12,disableDefaultUI:!0,zoomControl:!0,scrollwheel:!0,styles:[{"featureType":"all","elementType":"labels.text.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"all","elementType":"labels.text.stroke","stylers":[{"color":"#000000"},{"lightness":13}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":21}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":17}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":29},{"weight":0.2}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":18}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":16}]},{"featureType":"transit","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":19}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":17}]}]});let cD=document.getElementById('loc-search-bar'),cE=new google.maps.places.Autocomplete(cD);cE.bindTo('bounds',Z);cE.addListener('place_changed',()=>{let cF=cE.getPlace();if(cF.geometry){Z.setCenter(cF.geometry.location);Z.setZoom(17)}});cD.addEventListener('keydown',cG=>{if(cG.key==='Enter'){let cH=cD.value,cI=cH.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);if(cI){let cJ={lat:+cI[1],lng:+cI[2]};Z.setCenter(cJ);Z.setZoom(17)}else{let cK=new google.maps.Geocoder();cK.geocode({address:cH},(cL,cM)=>{if(cM==='OK'&&cL[0]){Z.setCenter(cL[0].geometry.location);Z.setZoom(17)}})}}})}}
+function C(){let cN=document.getElementById('loc-search-bar'),cO=cN.value;if(!cO)return;let cP=cO.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);if(cP){let cQ={lat:+cP[1],lng:+cP[2]};Z.setCenter(cQ);Z.setZoom(17)}else{let cR=new google.maps.Geocoder();cR.geocode({address:cO},(cS,cT)=>{if(cT==='OK'&&cS[0]){Z.setCenter(cS[0].geometry.location);Z.setZoom(17)}else alert('Location not found')})}}
+function D(){let cU=Z.getCenter(),cV=new google.maps.Geocoder();cV.geocode({location:cU},(cW,cX)=>{if(cX==='OK'&&cW[0]){let cY=cW[0].formatted_address,cZ=i(cW[0].address_components);if(ab==='pickup'){document.getElementById('f-pickup').value=cY;document.getElementsByName('city')[0].value=cZ;ad=!0}else if(ab==='drop'){document.getElementById('f-drop-address').value=cY;document.getElementsByName('drop_city')[0].value=cZ;ae=!0}else if(ab==='settings-pickup'){document.getElementById('default-pickup').value=cY;document.getElementById('default-city').value=cZ}else if(ab==='settings-drop'){document.getElementById('default-destination').value=cY;document.getElementById('default-drop_city').value=cZ}else if(ab==='new-contact'){document.getElementById('new-contact-address').value=cY}}document.getElementById('location-picker-modal').style.display='none';document.body.style.overflow=''})}
+function F(ca){W=ca;G();document.getElementById('settings-modal').style.display='block';r()}
+function G(){let cb=document.getElementById('savedAddressesList');if(!cb)return;cb.innerHTML='';V.forEach((cc,cd)=>{cb.innerHTML+=`<div style="border:1px solid var(--border);padding:8px;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;"><div onclick="editContact(${cd})" style="flex:1;cursor:pointer;"><strong>${cc.name}</strong><br><span style="font-size:12px;">${cc.address} ${cc.city?'('+cc.city+')':''}</span><br><span style="font-size:11px;color:#aaa;">${cc.email} ${cc.phone?'• '+cc.phone:''}</span></div><div><button onclick="H(${cd});event.stopPropagation();" style="background:var(--accent);color:#000;border:0;padding:10px 16px;border-radius:8px;font-weight:700;font-size:14px;" class="btn btn-accent">Select</button></div></div>`});if(V.length===0)cb.innerHTML='<p>No saved addresses.</p>';}
+function H(ce){let cf=V[ce];if(W==='pickup'){document.getElementById('f-pickup').value=cf.address;document.getElementsByName('city')[0].value=cf.city||'';document.getElementsByName('name')[0].value=cf.name||'';document.getElementsByName('p_email')[0].value=cf.email||'';document.getElementsByName('p_phone')[0].value=cf.phone||'';ad=!0}else{document.getElementById('f-drop-address').value=cf.address;document.getElementsByName('drop_city')[0].value=cf.city||'';document.getElementsByName('delivery_name')[0].value=cf.name||'';document.getElementsByName('d_email')[0].value=cf.email||'';document.getElementsByName('d_phone')[0].value=cf.phone||'';ae=!0}document.getElementById('settings-modal').style.display='none';}
+function I(cg){V.splice(cg,1);saveAddressBookToFirebase();G();}
 function J(){}
 function K(){if(confirm("Are you sure you want to logout?"))firebase.auth().signOut()}
-function saveAddressBookToFirebase() {
-  var user = firebase.auth().currentUser;
-  if (user) {
-    firebase.database().ref('users/'+user.uid+'/addressBook').set(V)
-      .then(() => {
-        localStorage.setItem('ec_addresses', JSON.stringify(V));
-      })
-      .catch(err => console.error('Error saving address book', err));
-  } else {
-    localStorage.setItem('ec_addresses', JSON.stringify(V));
-  }
-}
-function clearMainForm() {
-  if(!confirm('Are you sure you want to clear the form?')) return;
-  af.reset();
-  ad = false;
-  ae = false;
-}
-function clearAutofillForm() {
-  if(!confirm('Are you sure you want to clear all autofill fields?')) return;
-  document.getElementById('default-name').value = '';
-  document.getElementById('default-pickup').value = '';
-  document.getElementById('default-city').value = '';
-  document.getElementById('default-p_email').value = '';
-  document.getElementById('default-p_phone').value = '';
-  document.getElementById('default-delivery_name').value = '';
-  document.getElementById('default-destination').value = '';
-  document.getElementById('default-drop_city').value = '';
-  document.getElementById('default-d_email').value = '';
-  document.getElementById('default-d_phone').value = '';
-  document.getElementById('default-package_details').value = '';
-  document.getElementById('default-po_number').value = '';
-  document.getElementById('default-other_info').value = '';
-}
-function clearContactForm() {
-  if(!confirm('Are you sure you want to clear the contact form?')) return;
-  document.getElementById('new-contact-name').value = '';
-  document.getElementById('new-contact-address').value = '';
-  document.getElementById('new-contact-email').value = '';
-  document.getElementById('new-contact-phone').value = '';
-}
-// New functions for email/password change
-function toggleEmailChange() {
-  var div = document.getElementById('emailChangeDiv');
-  div.style.display = div.style.display === 'none' ? 'block' : 'none';
-}
-function changeUserEmail() {
-  var newEmail = document.getElementById('newEmailInput').value;
-  var user = firebase.auth().currentUser;
-  if (user && newEmail !== "") {
-    user.verifyBeforeUpdateEmail(newEmail)
-      .then(function() {
-        alert("A verification link has been sent to your new email! Please check your inbox and verify.");
-        document.getElementById('newEmailInput').value = '';
-        document.getElementById('emailChangeDiv').style.display = 'none';
-      })
-      .catch(function(error) {
-        alert("Error: " + error.message);
-      });
-  } else {
-    alert("Please log in and enter a valid email.");
-  }
-}
-function sendPasswordReset() {
-  var user = firebase.auth().currentUser;
-  if (user && user.email) {
-    firebase.auth().sendPasswordResetEmail(user.email)
-      .then(() => {
-        alert("Password reset email sent to " + user.email + ". Please check your inbox.");
-      })
-      .catch(error => {
-        alert("Error: " + error.message);
-      });
-  } else {
-    alert("No user logged in.");
-  }
-}
-function cancelEdit() {
-  if (S) {
-    if (!confirm("Are you sure you want to cancel editing?")) return;
-    S = null;
-    ag.innerText = "Submit Request";
-    document.getElementById('cancelEditBtn').style.display = 'none';
-    // Reset form without confirm
-    af.reset();
-    ad = false;
-    ae = false;
-    w();
-  }
-}
-// Fallback to show auth overlay if neither container is visible after 2 seconds
-setTimeout(function() {
-  if (document.getElementById('auth-overlay').style.display === 'none' && document.getElementById('main-app-container').style.display === 'none') {
-    document.getElementById('auth-overlay').style.display = 'flex';
-  }
-}, 2000);
+function saveAddressBookToFirebase(){let ch=firebase.auth().currentUser;if(ch)firebase.database().ref('users/'+ch.uid+'/addressBook').set(V).then(()=>{localStorage.setItem('ec_addresses',JSON.stringify(V))}).catch(ci=>console.error('Error saving address book',ci));else localStorage.setItem('ec_addresses',JSON.stringify(V));}
+function clearMainForm(){if(!confirm('Are you sure you want to clear the form?'))return;af.reset();ad=!1;ae=!1;}
+function clearAutofillForm(){if(!confirm('Are you sure you want to clear all autofill fields?'))return;document.getElementById('default-name').value='';document.getElementById('default-pickup').value='';document.getElementById('default-city').value='';document.getElementById('default-p_email').value='';document.getElementById('default-p_phone').value='';document.getElementById('default-delivery_name').value='';document.getElementById('default-destination').value='';document.getElementById('default-drop_city').value='';document.getElementById('default-d_email').value='';document.getElementById('default-d_phone').value='';document.getElementById('default-package_details').value='';document.getElementById('default-po_number').value='';document.getElementById('default-other_info').value='';}
+function clearContactForm(){if(!confirm('Are you sure you want to clear the contact form?'))return;document.getElementById('new-contact-name').value='';document.getElementById('new-contact-address').value='';document.getElementById('new-contact-email').value='';document.getElementById('new-contact-phone').value='';}
+function toggleEmailChange(){let cj=document.getElementById('emailChangeDiv');cj.style.display=cj.style.display==='none'?'block':'none';}
+function changeUserEmail(){let ck=document.getElementById('newEmailInput').value,cl=firebase.auth().currentUser;if(cl&&ck!==""){cl.verifyBeforeUpdateEmail(ck).then(function(){alert("A verification link has been sent to your new email! Please check your inbox and verify.");document.getElementById('newEmailInput').value='';document.getElementById('emailChangeDiv').style.display='none';}).catch(function(cm){alert("Error: "+cm.message);});}else alert("Please log in and enter a valid email.");}
+function sendPasswordReset(){let cn=firebase.auth().currentUser;if(cn&&cn.email){firebase.auth().sendPasswordResetEmail(cn.email).then(()=>{alert("Password reset email sent to "+cn.email+". Please check your inbox.");}).catch(co=>{alert("Error: "+co.message);});}else alert("No user logged in.");}
+function cancelEdit(){if(S){if(!confirm("Are you sure you want to cancel editing?"))return;S=null;ag.innerText="Submit Request";document.getElementById('cancelEditBtn').style.display='none';af.reset();ad=!1;ae=!1;w();}}
+setTimeout(function(){if(document.getElementById('auth-overlay').style.display==='none'&&document.getElementById('main-app-container').style.display==='none')document.getElementById('auth-overlay').style.display='flex';},2000);
 </script>
-
-<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
-
-<button id="devBtn" style="display:block; position:fixed; bottom:20px; right:20px; z-index:10001; background:#111; border:1px solid var(--accent); color:var(--accent); padding:10px 15px; font-size:12px; cursor:pointer; border-radius:4px; font-weight:bold; box-shadow: 0 4px 10px rgba(0,0,0,0.5);" onclick="const p=document.getElementById('dev-portal'); p.style.display=(p.style.display==='none'?'flex':'none'); if(p.style.display==='flex' && !ac) { ac = new Quill('#dev-editor', { theme: 'snow', modules: { toolbar: [ ['bold', 'italic', 'underline'], [{ 'list': 'ordered'}, { 'list': 'bullet' }], [{ 'align': [] }] ] } }); }">DEV NOTES</button>
-
-<div id="dev-portal" style="background:#111; color:#fff; padding:20px; border-top:5px solid var(--accent); display:none; flex-direction:column; gap:15px; position:fixed; bottom:0; left:0; width:100%; box-sizing:border-box; z-index:10000; max-height:80vh; overflow-y:auto;">
-  <div style="display: flex; justify-content: space-between; align-items: center;">
-    <h3 style="margin:0; text-transform:uppercase; font-size:14px; letter-spacing:1px; color:var(--accent);">Developer Command Center</h3>
-    <button style="background:transparent; border:1px solid var(--accent); color:var(--accent); padding:2px 8px; cursor:pointer; font-size:14px;" onclick="document.getElementById('dev-portal').style.display='none';">✖</button>
-  </div>
-  <div id="dev-list" style="max-height: 200px; overflow-y: auto; background:#000; padding:10px; border:1px solid #333; font-size:12px; font-family:monospace;">
-    <p style="color:#666;">Authenticating...</p>
-  </div>
-  <div id="dev-editor" style="min-height: 150px; background:#fff; color:#000;"></div>
-  <button onclick="L()" style="padding:10px; background:var(--accent); color:#000; border:none; font-weight:800; cursor:pointer;">POST UPDATE</button>
+<link href=https://cdn.quilljs.com/1.3.6/quill.snow.css rel=stylesheet>
+<script src=https://cdn.quilljs.com/1.3.6/quill.min.js></script>
+<button id=devBtn style="display:block;position:fixed;bottom:20px;right:20px;z-index:10001;background:#111;border:1px solid var(--accent);color:var(--accent);padding:10px 15px;font-size:12px;cursor:pointer;border-radius:4px;font-weight:700;box-shadow:0 4px 10px rgba(0,0,0,.5);" onclick="const p=document.getElementById('dev-portal'); p.style.display=(p.style.display==='none'?'flex':'none'); if(p.style.display==='flex'&&!ac){ ac = new Quill('#dev-editor', { theme: 'snow', modules: { toolbar: [ ['bold','italic','underline'], [{ 'list': 'ordered'},{ 'list': 'bullet'}], [{ 'align': [] }] ] } }); }">DEV NOTES</button>
+<div id=dev-portal style="background:#111;color:#fff;padding:20px;border-top:5px solid var(--accent);display:none;flex-direction:column;gap:15px;position:fixed;bottom:0;left:0;width:100%;box-sizing:border-box;z-index:10000;max-height:80vh;overflow-y:auto;">
+<div style="display:flex;justify-content:space-between;align-items:center;"><h3 style="margin:0;text-transform:uppercase;font-size:14px;letter-spacing:1px;color:var(--accent);">Developer Command Center</h3><button style="background:0 0;border:1px solid var(--accent);color:var(--accent);padding:2px 8px;cursor:pointer;font-size:14px;" onclick="document.getElementById('dev-portal').style.display='none';">✖</button></div>
+<div id=dev-list style="max-height:200px;overflow-y:auto;background:#000;padding:10px;border:1px solid #333;font-size:12px;font-family:monospace;"><p style="color:#666;">Authenticating...</p></div>
+<div id=dev-editor style="min-height:150px;background:#fff;color:#000;"></div>
+<button onclick=L() style="padding:10px;background:var(--accent);color:#000;border:0;font-weight:800;cursor:pointer;">POST UPDATE</button>
 </div>
-
-<style>
-  :root { --accent: #ffd700; } 
-  .dev-item { border-bottom:1px solid #222; padding:8px 0; }
-  .dev-hdr { color:var(--accent); font-weight:800; margin-bottom:4px; font-size:10px; }
-  .ql-toolbar { background: #eee; border: none !important; }
-  .ql-container { border: none !important; }
-</style>
-
-<script>
-var ac;
-function L(){var _ce=firebase.auth().currentUser;if(ac.getText().trim()==="")return;var _cf=_ce?_ce.email.split('@')[0]:"Anonymous",_cg=new Date(),_ch=_cg.toLocaleDateString()+' '+_cg.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});firebase.database().ref('developer').push({text:ac.root.innerHTML,user:_cf,app:"Customer Portal",date:_ch,timestamp:firebase.database.ServerValue.TIMESTAMP}).then(()=>{ac.setText('')}).catch(_ci=>{console.error("Command Center Error:",_ci);alert("Post failed. Check database permissions.")})}
-</script>
+<style>:root{--accent:#ffd700;}.dev-item{border-bottom:1px solid #222;padding:8px 0;}.dev-hdr{color:var(--accent);font-weight:800;margin-bottom:4px;font-size:10px;}.ql-toolbar{background:#eee;border:0!important;}.ql-container{border:0!important;}</style>
+<script>var ac;function L(){let cp=firebase.auth().currentUser;if(ac.getText().trim()==="")return;let cq=cp?cp.email.split('@')[0]:"Anonymous",cr=new Date(),cs=cr.toLocaleDateString()+' '+cr.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});firebase.database().ref('developer').push({text:ac.root.innerHTML,user:cq,app:"Customer Portal",date:cs,timestamp:firebase.database.ServerValue.TIMESTAMP}).then(()=>{ac.setText('')}).catch(ct=>{console.error("Command Center Error:",ct);alert("Post failed. Check database permissions.")})}</script>
 </body>
 </html>
