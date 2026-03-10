@@ -155,7 +155,7 @@ body.light-mode .ocean-label{color:#000}
 /* Stage‑specific icons */
 .ocean-timeline .ocean-node:nth-child(1)::before { content: "\f0ca"; } /* clipboard-list */
 .ocean-timeline .ocean-node:nth-child(2)::before { content: "\f4fc"; } /* user-check */
-.ocean-timeline .ocean-node:nth-child(3)::before { content: "\f4c2"; } /* box-open */
+.ocean-timeline .ocean-node:nth-child(3)::before { content: "\f466"; } /* box (changed from box-open) */
 .ocean-timeline .ocean-node:nth-child(4)::before { content: "\f0d1"; } /* truck */
 .ocean-timeline .ocean-node:nth-child(5)::before { content: "\f00c"; } /* check-circle */
 
@@ -375,6 +375,62 @@ body.light-mode .ocean-node.active::before {
   color: #fff;
 }
 /* ========== END REDESIGN ========== */
+
+/* ========== LIGHT MODE OVERRIDES FOR BUTTONS AND TEXT ========== */
+body.light-mode,
+body.light-mode * {
+  color: #000; /* all text black */
+}
+
+body.light-mode .section-title {
+  color: #000 !important;
+}
+
+body.light-mode .btn-cancel,
+body.light-mode .btn-primary,
+body.light-mode .btn-secondary,
+body.light-mode .btn-danger,
+body.light-mode .btn-accent,
+body.light-mode .cancel-btn,
+body.light-mode .edit-btn,
+body.light-mode .address-book-btn,
+body.light-mode .btn-back-form,
+body.light-mode button[type=submit],
+body.light-mode .success-btn,
+body.light-mode #settingsBtn,
+body.light-mode .order-actions button,
+body.light-mode .btn,
+body.light-mode .btn-icon {
+  background: #fff !important;
+  color: #000 !important;
+  border: 1px solid #000 !important;
+}
+
+/* Optional red border for danger button to keep some meaning */
+body.light-mode .btn-danger,
+body.light-mode .cancel-btn {
+  border-color: #dc3545 !important;
+}
+
+/* Keep accent button border black */
+body.light-mode .btn-accent {
+  border-color: #000 !important;
+}
+
+/* Ensure icons in buttons are black */
+body.light-mode .btn-icon {
+  border: none !important; /* icon buttons usually no border */
+}
+
+/* Override any remaining colored text */
+body.light-mode .package-details,
+body.light-mode .order-card .package-details,
+body.light-mode .ocean-label,
+body.light-mode .header-wrap h1,
+body.light-mode .modal-content h2 {
+  color: #000 !important;
+}
+/* ========== END LIGHT MODE OVERRIDES ========== */
 </style>
 </head>
 <body>
@@ -503,10 +559,35 @@ let a9={name:a5,address:a6,city:'',email:a7,phone:a8,target:W};if(editingContact
 function editContact(ba){editingContactIndex=ba;let bb=V[ba];document.getElementById('new-contact-name').value=bb.name||'';document.getElementById('new-contact-address').value=bb.address||'';document.getElementById('new-contact-email').value=bb.email||'';document.getElementById('new-contact-phone').value=bb.phone||'';document.getElementById('addressbook-list-view').style.display='none';document.getElementById('addressbook-create-view').style.display='block';document.getElementById('addressbook-form-title').innerText='Edit Contact';document.getElementById('save-contact-btn').innerText='Update Contact';document.getElementById('delete-contact-btn').style.display='block';}
 function deleteCurrentContact(){if(editingContactIndex!==null&&confirm('Delete this contact?')){V.splice(editingContactIndex,1);saveAddressBookToFirebase();G();t();}}
 function v(){let bc=firebase.auth().currentUser;if(!bc)return;db.ref("jobs").orderByChild("created_by").equalTo(bc.email).once('value').then(bd=>{N=bd.val()||{};if(document.getElementById('orders-history-container').style.display==='block')A()})}
-function w(){document.getElementById('main-app-container').style.display='none';document.getElementById('orders-history-container').style.display='block';v();if(window.X)clearInterval(window.X);window.X=setInterval(()=>{if(document.getElementById('orders-history-container').style.display==='block')A();else{clearInterval(window.X);window.X=null}},2000)}
-function x(){if(window.X){clearInterval(window.X);window.X=null}P.clear();document.getElementById('orderSearchInput').value='';document.getElementById('orderStatusFilter').value='all';T='';U='all';document.getElementById('orders-history-container').style.display='none';document.getElementById('main-app-container').style.display='block';document.getElementById('pickupForm').style.display='block';document.getElementById('thanksMessage').style.display='none';document.getElementById('pickupForm').reset();ad=!1;ae=!1;ag.innerText="Submit Request";ag.disabled=!1;ag.style.opacity="1";S=null;document.getElementById('cancelEditBtn').style.display='none';}
+function w(){
+  document.getElementById('main-app-container').style.display='none';
+  document.getElementById('orders-history-container').style.display='block';
+  v();
+  // Removed setInterval – relying on real-time listener
+}
+function x(){
+  // Removed clearInterval for X
+  P.clear();
+  document.getElementById('orderSearchInput').value='';
+  document.getElementById('orderStatusFilter').value='all';
+  T='';
+  U='all';
+  document.getElementById('orders-history-container').style.display='none';
+  document.getElementById('main-app-container').style.display='block';
+  document.getElementById('pickupForm').style.display='block';
+  document.getElementById('thanksMessage').style.display='none';
+  document.getElementById('pickupForm').reset();
+  ad=!1;
+  ae=!1;
+  ag.innerText="Submit Request";
+  ag.disabled=!1;
+  ag.style.opacity="1";
+  S=null;
+  document.getElementById('cancelEditBtn').style.display='none';
+}
 function y(be){if(!confirm('Are you sure you want to cancel this pending order?'))return;let bf=db.ref('jobs/'+be);bf.once('value',bg=>{let bh=bg.val();if(!bh)return;let bi=(bh.job_history?bh.job_history+'\n':'')+'[CANCELLED BY USER] DND';bf.update({job_history:bi,status:'cancelled',cancelled_by_user:true}).catch(bj=>alert('Error: '+bj.message));}).catch(bk=>alert('Error: '+bk.message));}
-function z(bl){if(!confirm("Are you sure you want to edit this order?"))return;let bm=N[bl];if(!bm)return;S=bl;af.name.value=bm.name||'';af.pickup_location.value=bm.pickup_location||'';af.city.value=bm.pickup_city||'';af.p_email.value=bm.p_email||'';af.p_phone.value=bm.p_phone||'';af.delivery_name.value=bm.delivery_name||'';af.destination.value=bm.destination||'';af.drop_city.value=bm.delivery_city||'';af.d_email.value=bm.d_email||'';af.d_phone.value=bm.d_phone||'';af.package_details.value=bm.package_details||'';af.po_number.value=bm.po_number||'';af.other_info.value=bm.other_info||'';ad=!0;ae=!0;ag.innerText="Update Request";if(window.X){clearInterval(window.X);window.X=null}document.getElementById('orders-history-container').style.display='none';document.getElementById('main-app-container').style.display='block';document.getElementById('pickupForm').style.display='block';document.getElementById('thanksMessage').style.display='none';ag.disabled=!1;ag.style.opacity="1";document.getElementById('cancelEditBtn').style.display='block';}
+function z(bl){if(!confirm("Are you sure you want to edit this order?"))return;let bm=N[bl];if(!bm)return;S=bl;af.name.value=bm.name||'';af.pickup_location.value=bm.pickup_location||'';af.city.value=bm.pickup_city||'';af.p_email.value=bm.p_email||'';af.p_phone.value=bm.p_phone||'';af.delivery_name.value=bm.delivery_name||'';af.destination.value=bm.destination||'';af.drop_city.value=bm.delivery_city||'';af.d_email.value=bm.d_email||'';af.d_phone.value=bm.d_phone||'';af.package_details.value=bm.package_details||'';af.po_number.value=bm.po_number||'';af.other_info.value=bm.other_info||'';ad=!0;ae=!0;ag.innerText="Update Request";// Removed clearInterval for X
+document.getElementById('orders-history-container').style.display='none';document.getElementById('main-app-container').style.display='block';document.getElementById('pickupForm').style.display='block';document.getElementById('thanksMessage').style.display='none';ag.disabled=!1;ag.style.opacity="1";document.getElementById('cancelEditBtn').style.display='block';}
 function A(){if(document.getElementById('orders-history-container').style.display!=='block')return;let bn=document.getElementById('orders-list'),bo=document.getElementById('live-status-header');if(!N||Object.keys(N).length===0){bn.innerHTML='<p style="color:#aaa;">No past orders found.</p>';return}
 let bp=new Date();bo.innerText="Status Live as of "+bp.toLocaleString([],{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:!0});bn.innerHTML='';let bq=[];Object.entries(N).forEach(([br,bs])=>{bq.push({...bs,id:br})});bq.sort((bt,bu)=>bt.timestamp-bu.timestamp).reverse();let bv=bq.filter(bw=>{if(U!=='all'){if(U==='in_progress'&&!['pending_pickup','in_transit','pending_delivery'].includes(bw.status))return!1;if(U==='completed'&&(bw.status!=='completed'||bw.cancelled_by_user===!0))return!1;if(U==='cancelled'&&!(bw.status==='cancelled'||bw.cancelled_by_user===!0))return!1}if(T.trim()!==''){let bx=T.toLowerCase(),by=(bw.package_details+' '+bw.po_number+' '+bw.name+' '+bw.delivery_name+' '+bw.pickup_location+' '+bw.destination).toLowerCase();if(!by.includes(bx))return!1}return!0});bv.forEach(bz=>{let bA=new Date(bz.timestamp).toLocaleString(),bB=bz.status||'pending_pickup',bC=(bz.assigned_to&&bz.assigned_to!=='Unassigned')?bz.assigned_to:null,bD=!0,bE=(bC!==null)||!!bz.picked_up_by||(bB==='in_transit')||(bB==='pending_delivery')||(bB==='completed'),bF=!!bz.picked_up_by||bB==='in_transit',bG=(bB==='completed')||(bB==='pending_delivery'&&bC&&R[bC]?.shift_active===!0),bH=(bB==='completed'),bI=null,bJ=bz.cancelled_by_user===!0;if(bB==='pending_pickup'&&bC)bI=2;else if(bB==='in_transit')bI=3;else if(bB==='pending_delivery'&&bC&&R[bC]?.shift_active===!0)bI=4;else if(bB==='completed')bI=null;let bK=[bD?'completed':'',bE?'completed':'',bF?'completed':'',bG?'completed':'',bH?'completed':''];if(bI)bK[bI-1]+=' active';let bL='0%';if(bI){let bM=0;for(let bN=0;bN<bI-1;bN++)if(bK[bN].includes('completed'))bM++;bL=(bM*25)+'%'}else{let bO=[bD,bE,bF,bG,bH].filter(Boolean).length;if(bO>1)bL=((bO-1)*25)+'%'}
 let bP=bz.package_details||'N/A',bQ=bz.po_number?'PO: '+bz.po_number:'N/A',bR=(bB==='completed'),bS='order-card-'+bz.id,bT=bJ?'':`<div class="ocean-timeline"><div class="ocean-track"><div class="ocean-fill" style="width:${bL};"></div></div><div class="ocean-node ${bK[0]}"><div class="ocean-label">Ordered</div></div><div class="ocean-node ${bK[1]}"><div class="ocean-label">Assigned</div></div><div class="ocean-node ${bK[2]}"><div class="ocean-label">Picked‑Up</div></div><div class="ocean-node ${bK[3]}"><div class="ocean-label">Out for Delivery</div></div><div class="ocean-node ${bK[4]}"><div class="ocean-label">Delivered</div></div></div>`,bU=`<div class="order-date">${bA}</div><div style="display:flex;gap:15px;margin-top:10px;"><div style="flex:1;"><strong>Pickup</strong> ${bz.name}<br><span style="color:#aaa;font-size:12px;">${bz.pickup_location}</span></div><div style="flex:1;"><strong>Delivery</strong> ${bz.delivery_name}<br><span style="color:#aaa;font-size:12px;">${bz.destination}</span></div></div><div style="margin-top:10px;"><div><strong>Packages/Items/Dimensions</strong><br><span style="color:#aaa;font-size:12px;">${bP}</span></div><div style="margin-top:5px;"><strong>PO / Ref</strong><br><span style="color:#aaa;font-size:12px;">${bQ}</span></div></div><div style="margin-top:10px;"><strong>Driver Notes</strong><br><span style="color:#aaa;font-size:12px;">${bz.other_info||'None'}</span></div>${bT}`;if(bR||bB==='cancelled'||bJ){let bV=P.has(bz.id),bW=new Date(bz.timestamp),bX=bW.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}).replace(/,/g,''),bY;if(bB==='cancelled'||bJ)bY=`<div style="display:flex;flex-direction:column;gap:4px;"><span style="font-weight:700;">${bX}</span><span class="package-details">${bz.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${bz.name||'?'}</span> → <span style="color:#90ee90;">${bz.delivery_name||'?'}</span></div><div style="color:red;font-weight:700;">Order Cancelled</div>`;else bY=`<div style="display:flex;flex-direction:column;gap:4px;"><span style="font-weight:700;">${bX}</span><span class="package-details">${bz.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${bz.name||'?'}</span> → <span style="color:#90ee90;">${bz.delivery_name||'?'}</span></div>`;bn.innerHTML+=`<div style="margin-bottom:2px;"><button onclick="B('${bz.id}')" style="width:100%;padding:6px 10px;background:var(--input-bg);border:1px solid var(--success);border-radius:4px;color:var(--text);text-align:left;cursor:pointer;font-size:12px;line-height:1.4;">${bY}</button><div id="${bS}" class="order-card" style="display:${bV?'block':'none'};margin-bottom:0;border-top:0;border-top-left-radius:0;border-top-right-radius:0;">${bU}</div></div>`}else{let bZ='';if(bB==='pending_pickup')bZ=`<div class="order-actions"><button class="cancel-btn btn btn-danger" onclick="y('${bz.id}')">Cancel</button><button class="edit-btn btn btn-accent" onclick="z('${bz.id}')">Edit</button></div>`;bn.innerHTML+=`<div class="order-card">${bU}${bZ}</div>`}})}
