@@ -337,6 +337,145 @@
   body.light-mode .settings-section h3 {
     color: #000000;
   }
+
+  /* ========== ENHANCED VISUAL DESIGN (ADDED) ========== */
+  :root {
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+    --shadow-md: 0 4px 8px rgba(0,0,0,0.2);
+    --shadow-lg: 0 8px 16px rgba(0,0,0,0.3);
+    --transition: all 0.2s ease;
+  }
+
+  /* Base button styles */
+  .btn {
+    display: inline-block;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    text-align: center;
+    transition: var(--transition);
+    cursor: pointer;
+    border: 1px solid transparent;
+    line-height: 1.2;
+  }
+  .btn-primary {
+    background: #1c1c1c;
+    color: var(--text);
+    border-bottom: 3px solid var(--accent);
+    text-transform: uppercase;
+    font-weight: 800;
+  }
+  .btn-primary:hover {
+    background: #252525;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+  .btn-secondary {
+    background: #222;
+    color: #ccc;
+    border: 1px solid #333;
+  }
+  .btn-secondary:hover {
+    background: #2a2a2a;
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .btn-danger {
+    background: #b3002d;
+    color: white;
+    border: none;
+  }
+  .btn-danger:hover {
+    background: #990026;
+    box-shadow: var(--shadow-sm);
+  }
+  .btn-accent {
+    background: var(--accent);
+    color: #000;
+    border: none;
+    font-weight: 700;
+  }
+  .btn-accent:hover {
+    background: #e6c200;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+  }
+  .btn-icon {
+    background: transparent;
+    border: none;
+    padding: var(--space-xs);
+    font-size: 1.2em;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: var(--transition);
+    line-height: 1;
+  }
+  .btn-icon:hover {
+    background: rgba(255,215,0,0.1);
+  }
+
+  /* Form enhancements */
+  .input-group {
+    margin-bottom: var(--space-md);
+  }
+  input, textarea, select {
+    border-radius: var(--radius-md);
+    transition: var(--transition);
+  }
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(255,215,0,0.2);
+  }
+
+  /* Card enhancements */
+  .order-card {
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+  }
+  .order-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  /* Modal improvements */
+  .modal-content {
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* Timeline label readability in light mode */
+  body.light-mode .ocean-label {
+    color: #000;
+  }
+
+  /* Responsive fine-tuning */
+  @media (max-width: 600px) {
+    .container {
+      margin-top: 0;
+      border-radius: 0;
+    }
+    .header-wrap {
+      padding: 15px;
+    }
+    form {
+      padding: 15px;
+    }
+  }
+
+  /* Consistent spacing for buttons in order actions */
+  .order-actions .btn {
+    padding: var(--space-xs) var(--space-sm);
+    font-size: 12px;
+  }
 </style>
 </head>
 <body>
@@ -365,8 +504,8 @@
       <input type="password" id="auth-password" placeholder="Password" required>
     </div>
     
-    <button type="button" onclick="d()" style="width: 100%; padding: 16px; background: var(--accent); color: #000; font-weight: 800; border: none; border-radius: 6px; cursor: pointer; text-transform: uppercase; margin-bottom: 12px; font-size: 16px;">Login</button>
-    <button type="button" onclick="e()" style="width: 100%; padding: 16px; background: #1c1c1c; color: var(--text); font-weight: 800; border: 1px solid var(--border); border-bottom: 3px solid var(--accent); border-radius: 6px; cursor: pointer; text-transform: uppercase; margin-bottom: 20px; font-size: 16px; transition: all 0.2s;">Create Account</button>
+    <button type="button" onclick="d()" class="btn btn-accent" style="width: 100%; margin-bottom: 12px;">Login</button>
+    <button type="button" onclick="e()" class="btn btn-primary" style="width: 100%; margin-bottom: 20px;">Create Account</button>
     <button type="button" onclick="f()" style="width: 100%; padding: 12px; background: #ffffff; border: 1px solid #dadce0; border-radius: 4px; cursor: pointer; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3); transition: background-color 0.2s;"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="20px" height="20px"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.519-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg><span style="font-family: 'Roboto', sans-serif; font-size: 14px; font-weight: 500; color: #3c4043;">Sign in with Google</span></button>
     
     <a href="#" onclick="g(); return false;" style="color: var(--placeholder); font-size: 13px; text-decoration: underline;">Forgot Password?</a>
@@ -375,15 +514,15 @@
 
 <div class="container" id="main-app-container" style="display: none;">
   <div class="header-wrap" style="flex-direction: column;">
-    <button id="installAppBtn" style="display:none; background:var(--accent); color:#000; border:none; padding:10px 20px; font-weight:900; border-radius:6px; margin-bottom:15px; cursor:pointer; font-size:14px; text-transform:uppercase;">Install App</button>
+    <button id="installAppBtn" style="display:none; background:var(--accent); color:#000; border:none; padding:10px 20px; font-weight:900; border-radius:6px; margin-bottom:15px; cursor:pointer; font-size:14px; text-transform:uppercase;" class="btn btn-accent">Install App</button>
     <div style="display:flex; justify-content: space-between; width: 100%; align-items: center;">
         <div style="display:flex; align-items:center; gap:15px;">
             <img src="icon2.png" alt="E&C Logo" style="cursor: pointer;" onclick="a()" onerror="this.style.display='none'"> 
             <h1>Request Pickup Now</h1>
         </div>
         <div style="display:flex; gap:5px;">
-            <button id="settingsBtn" style="background:transparent; border:none; color:var(--accent); padding:8px 12px; border-radius:4px; cursor:pointer; font-size:16px; line-height:1;" onclick="o()">⚙️</button>
-            <button id="viewOrdersBtn" style="background:var(--accent); color:#000; border:none; padding:8px 12px; font-weight:700; border-radius:4px; cursor:pointer; font-size:12px; text-transform:uppercase;" onclick="w()" type="button">View Orders</button>
+            <button id="settingsBtn" style="background:transparent; border:none; color:var(--accent); padding:8px 12px; border-radius:4px; cursor:pointer; font-size:16px; line-height:1;" onclick="o()" class="btn-icon">⚙️</button>
+            <button id="viewOrdersBtn" style="background:var(--accent); color:#000; border:none; padding:8px 12px; font-weight:700; border-radius:4px; cursor:pointer; font-size:12px; text-transform:uppercase;" onclick="w()" type="button" class="btn btn-accent">View Orders</button>
         </div>
     </div>
   </div>
@@ -391,8 +530,8 @@
   <form id="pickupForm">
     <input type="text" name="website_url_hp" id="website_url_hp" style="display:none;" tabindex="-1" autocomplete="off">
     
-    <button type="button" id="autofillDetailsBtn" style="width:100%; padding:10px; background:#333; color:#fff; border:1px solid var(--accent); border-radius:4px; margin-bottom:15px; cursor:pointer; text-transform:uppercase; font-size:12px; font-weight:bold;" onclick="l()">Autofill</button>
-    <button type="button" id="autofillBtn" style="display:none; width:100%; padding:10px; background:#333; color:#fff; border:1px solid var(--accent); border-radius:4px; margin-bottom:15px; cursor:pointer; text-transform:uppercase; font-size:12px; font-weight:bold;" onclick="k()">Autofill from Last Order</button>
+    <button type="button" id="autofillDetailsBtn" style="width:100%; padding:10px; background:#333; color:#fff; border:1px solid var(--accent); border-radius:4px; margin-bottom:15px; cursor:pointer; text-transform:uppercase; font-size:12px; font-weight:bold;" onclick="l()" class="btn btn-secondary">Autofill</button>
+    <button type="button" id="autofillBtn" style="display:none; width:100%; padding:10px; background:#333; color:#fff; border:1px solid var(--accent); border-radius:4px; margin-bottom:15px; cursor:pointer; text-transform:uppercase; font-size:12px; font-weight:bold;" onclick="k()" class="btn btn-secondary">Autofill from Last Order</button>
 
     <div class="section-title">Pickup Details</div>
     
@@ -405,10 +544,10 @@
       <div class="input-group" style="flex: 2; position: relative;">
         <label>Pickup Address <span class="required-mark">*</span></label>
         <input type="text" id="f-pickup" name="pickup_location" placeholder="Street Address" required autocomplete="street-address" style="padding-right: 40px;">
-        <button style="position: absolute; right: 10px; bottom: 15px; background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="E('pickup')" type="button">📍</button>
+        <button style="position: absolute; right: 10px; bottom: 15px; background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="E('pickup')" type="button" class="btn-icon">📍</button>
       </div>
       <div class="input-group" style="flex: 0 0 auto;">
-        <button type="button" class="address-book-btn" onclick="F('pickup')">📖</button>
+        <button type="button" class="address-book-btn btn-icon" onclick="F('pickup')">📖</button>
       </div>
       <div class="input-group" style="display: none;">
         <input type="hidden" name="city" required>
@@ -437,10 +576,10 @@
       <div class="input-group" style="flex: 2; position: relative;">
         <label>Delivery Address <span class="required-mark">*</span></label>
         <input type="text" id="f-drop-address" name="destination" placeholder="Street Address" required style="padding-right: 40px;">
-        <button style="position: absolute; right: 10px; bottom: 15px; background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="E('drop')" type="button">📍</button>
+        <button style="position: absolute; right: 10px; bottom: 15px; background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="E('drop')" type="button" class="btn-icon">📍</button>
       </div>
       <div class="input-group" style="flex: 0 0 auto;">
-        <button type="button" class="address-book-btn" onclick="F('drop')">📖</button>
+        <button type="button" class="address-book-btn btn-icon" onclick="F('drop')">📖</button>
       </div>
       <div class="input-group" style="display: none;">
         <input type="hidden" name="drop_city" required>
@@ -482,24 +621,24 @@
       </select>
     </div>
 
-    <button type="submit" id="submitBtn">Submit Request</button>
-    <button type="button" id="cancelEditBtn" style="display:none; width:100%; margin-top:5px; background:#b3002d; color:white; border:none; padding:12px; border-radius:4px; cursor:pointer; font-weight:700;" onclick="cancelEdit()">Cancel Edit</button>
-    <button type="button" onclick="clearMainForm()" style="background:transparent; border:1px solid var(--border); color:var(--text); padding:6px 12px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:700; width:100%; margin-top:5px;">Clear Form</button>
-    <button type="button" onclick="K()" style="background:transparent; border:1px solid var(--border); color:var(--text); padding:6px 12px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:700; width:100%; margin-top:15px;">Logout</button>
+    <button type="submit" id="submitBtn" class="btn btn-primary">Submit Request</button>
+    <button type="button" id="cancelEditBtn" style="display:none; width:100%; margin-top:5px; background:#b3002d; color:white; border:none; padding:12px; border-radius:4px; cursor:pointer; font-weight:700;" onclick="cancelEdit()" class="btn btn-danger">Cancel Edit</button>
+    <button type="button" onclick="clearMainForm()" style="background:transparent; border:1px solid var(--border); color:var(--text); padding:6px 12px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:700; width:100%; margin-top:5px;" class="btn btn-secondary">Clear Form</button>
+    <button type="button" onclick="K()" style="background:transparent; border:1px solid var(--border); color:var(--text); padding:6px 12px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:700; width:100%; margin-top:15px;" class="btn btn-secondary">Logout</button>
   </form>
 
   <div id="thanksMessage">
     <span class="success-icon">✅</span>
     <h2 style="color: #fff; margin: 0 0 10px 0; text-transform: uppercase; font-size: 18px;">Request Received</h2>
     <p style="color: #aaa; margin-bottom: 25px; font-size: 14px; line-height: 1.5;">Our dispatch team has been notified and will review your request shortly.</p>
-    <button onclick="location.reload()" type="button" class="success-btn" style="width: 100%; padding: 15px; border-radius: 6px; cursor: pointer; text-transform: uppercase;">Submit Another</button>
+    <button onclick="location.reload()" type="button" class="success-btn btn btn-accent" style="width: 100%; padding: 15px; border-radius: 6px; cursor: pointer; text-transform: uppercase;">Submit Another</button>
   </div>
 </div>
 
 <div class="container" id="orders-history-container" style="display: none; padding: 20px;">
   <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
     <h2 style="color: var(--text); margin: 0; font-size: 18px; text-transform: uppercase;">Order Dashboard</h2>
-    <button onclick="x()" class="btn-back-form">BACK TO FORM</button>
+    <button onclick="x()" class="btn-back-form btn btn-secondary">BACK TO FORM</button>
   </div>
   <!-- Search and filter bar -->
   <div class="order-search-bar">
@@ -519,17 +658,17 @@
 <div class="modal-content" style="padding: 0; max-width: 600px; height: 80vh; display: flex; flex-direction: column; overflow: hidden; position: relative;">
 <div style="padding: 15px; background: var(--card); border-bottom: 1px solid var(--accent); display: flex; justify-content: space-between; align-items: center;">
 <h2 style="color:var(--accent); margin:0; font-size:16px; font-weight:700; text-transform:uppercase;">Pick Location</h2>
-<button class="btn-cancel" style="padding: 8px 12px; font-size: 12px; margin:0;" onclick="document.getElementById('location-picker-modal').style.display='none'; document.body.style.overflow='';">CLOSE</button>
+<button class="btn-cancel btn btn-secondary" style="padding: 8px 12px; font-size: 12px; margin:0;" onclick="document.getElementById('location-picker-modal').style.display='none'; document.body.style.overflow='';">CLOSE</button>
 </div>
 <div style="padding: 10px; background: var(--card); border-bottom: 1px solid var(--border); display: flex; gap: 5px;">
   <input type="text" id="loc-search-bar" placeholder="Search address or paste GPS (e.g. 49.852, -99.951)" style="margin:0; flex:1; padding: 10px;">
-  <button onclick="C()" style="padding: 10px; background: var(--accent); color: #000; border: none; border-radius: 4px; cursor: pointer;">Go</button>
+  <button onclick="C()" style="padding: 10px; background: var(--accent); color: #000; border: none; border-radius: 4px; cursor: pointer;" class="btn btn-accent">Go</button>
 </div>
 <div style="flex: 1; position: relative;">
 <div id="picker-map" style="width:100%; height:100%;"></div>
 <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -100%); pointer-events: none; font-size: 32px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); z-index: 10;">📍</div>
 </div>
-<button class="btn-save" style="width: 100%; border-radius: 0; padding: 16px; font-size: 16px; position: sticky; bottom: 0; z-index: 11;" onclick="D()">SET LOCATION</button>
+<button class="btn-save btn btn-primary" style="width: 100%; border-radius: 0; padding: 16px; font-size: 16px; position: sticky; bottom: 0; z-index: 11;" onclick="D()">SET LOCATION</button>
 </div>
 </div>
 
@@ -541,14 +680,14 @@
   <div id="settings-main">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
       <h2 style="color:var(--accent); margin:0;">Settings</h2>
-      <button class="btn-cancel" style="padding:5px 10px; font-size:14px;" onclick="document.getElementById('settings-modal').style.display='none'; document.body.style.overflow='';">✖</button>
+      <button class="btn-cancel btn btn-secondary" style="padding:5px 10px; font-size:14px;" onclick="document.getElementById('settings-modal').style.display='none'; document.body.style.overflow='';">✖</button>
     </div>
 
     <div class="settings-section">
       <h3>Theme</h3>
       <div class="theme-toggle">
-        <button id="theme-light" onclick="b('light')">Light</button>
-        <button id="theme-dark" onclick="b('dark')" class="active">Dark</button>
+        <button id="theme-light" onclick="b('light')" class="btn btn-secondary">Light</button>
+        <button id="theme-dark" onclick="b('dark')" class="btn btn-secondary active">Dark</button>
       </div>
     </div>
 
@@ -558,22 +697,22 @@
     </div>
 
     <div class="settings-section">
-      <button class="btn-save" style="width:100%;" onclick="q()">Autofill Details</button>
+      <button class="btn-save btn btn-primary" style="width:100%;" onclick="q()">Autofill Details</button>
     </div>
     <div class="settings-section">
-      <button class="btn-save" style="width:100%;" onclick="r()">Address Book</button>
+      <button class="btn-save btn btn-primary" style="width:100%;" onclick="r()">Address Book</button>
     </div>
 
     <!-- Account section for email/password change -->
     <div class="settings-section">
       <h3>Account</h3>
       <div style="display:flex; gap:10px;">
-        <button class="btn-save" style="flex:1;" onclick="toggleEmailChange()">Change Email</button>
-        <button class="btn-save" style="flex:1;" onclick="sendPasswordReset()">Change Password</button>
+        <button class="btn-save btn btn-primary" style="flex:1;" onclick="toggleEmailChange()">Change Email</button>
+        <button class="btn-save btn btn-primary" style="flex:1;" onclick="sendPasswordReset()">Change Password</button>
       </div>
       <div id="emailChangeDiv" style="display:none; margin-top:10px;">
         <input type="email" id="newEmailInput" placeholder="Enter new email" style="width:100%; padding:10px; background:var(--input-bg); color:var(--text); border:1px solid var(--border); margin-bottom:8px;">
-        <button class="btn-save" style="width:100%;" onclick="changeUserEmail()">Update Email</button>
+        <button class="btn-save btn btn-primary" style="width:100%;" onclick="changeUserEmail()">Update Email</button>
       </div>
     </div>
   </div>
@@ -582,14 +721,14 @@
   <div id="settings-autofill" style="display: none;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
       <h2 style="color:var(--accent); margin:0;">Autofill Details</h2>
-      <button class="btn-cancel" style="padding:5px 10px; font-size:14px;" onclick="p()">← Back</button>
+      <button class="btn-cancel btn btn-secondary" style="padding:5px 10px; font-size:14px;" onclick="p()">← Back</button>
     </div>
     <div class="settings-section">
       <p>Fill in fields to auto-populate when using Autofill.</p>
       <input type="text" id="default-name" placeholder="Pickup Contact Name" style="margin-bottom:8px;">
       <div style="position: relative; margin-bottom:8px;">
         <input type="text" id="default-pickup" placeholder="Pickup Address" style="padding-right: 40px;">
-        <button style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="E('settings-pickup')" type="button">📍</button>
+        <button style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="E('settings-pickup')" type="button" class="btn-icon">📍</button>
       </div>
       <input type="text" id="default-city" placeholder="Pickup City" style="margin-bottom:8px;">
       <input type="email" id="default-p_email" placeholder="Pickup Email" style="margin-bottom:8px;">
@@ -597,7 +736,7 @@
       <input type="text" id="default-delivery_name" placeholder="Delivery Contact Name" style="margin-bottom:8px;">
       <div style="position: relative; margin-bottom:8px;">
         <input type="text" id="default-destination" placeholder="Delivery Address" style="padding-right: 40px;">
-        <button style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="E('settings-drop')" type="button">📍</button>
+        <button style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="E('settings-drop')" type="button" class="btn-icon">📍</button>
       </div>
       <input type="text" id="default-drop_city" placeholder="Delivery City" style="margin-bottom:8px;">
       <input type="email" id="default-d_email" placeholder="Delivery Email" style="margin-bottom:8px;">
@@ -605,9 +744,9 @@
       <input type="text" id="default-package_details" placeholder="Packages/Items/Dimensions" style="margin-bottom:8px;">
       <input type="text" id="default-po_number" placeholder="PO Number" style="margin-bottom:8px;">
       <textarea id="default-other_info" placeholder="Driver Notes" rows="2" style="margin-bottom:8px;"></textarea>
-      <button id="save-defaults-btn" class="btn-save" onclick="m()">Save Autofill Details</button>
-      <button class="btn-cancel" onclick="clearAutofillForm()" style="margin-top:5px; width:100%;">Clear</button>
-      <button class="btn-cancel" style="margin-top:10px; width:100%;" onclick="p()">← Back to Settings</button>
+      <button id="save-defaults-btn" class="btn-save btn btn-primary" onclick="m()">Save Autofill Details</button>
+      <button class="btn-cancel btn btn-secondary" onclick="clearAutofillForm()" style="margin-top:5px; width:100%;">Clear</button>
+      <button class="btn-cancel btn btn-secondary" style="margin-top:10px; width:100%;" onclick="p()">← Back to Settings</button>
     </div>
   </div>
 
@@ -615,12 +754,12 @@
   <div id="settings-addressbook" style="display: none;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
       <h2 style="color:var(--accent); margin:0;">Address Book</h2>
-      <button class="btn-cancel" style="padding:5px 10px; font-size:14px;" onclick="p()">← Back</button>
+      <button class="btn-cancel btn btn-secondary" style="padding:5px 10px; font-size:14px;" onclick="p()">← Back</button>
     </div>
     
     <!-- Address Book List View -->
     <div id="addressbook-list-view">
-      <button class="btn-save" style="width:100%; margin-bottom:15px;" onclick="s()">Create New Contact</button>
+      <button class="btn-save btn btn-primary" style="width:100%; margin-bottom:15px;" onclick="s()">Create New Contact</button>
       <div id="savedAddressesList"></div>
     </div>
 
@@ -631,17 +770,17 @@
         <input type="text" id="new-contact-name" placeholder="Contact / Business Name" style="margin-bottom:8px;">
         <div style="position: relative; margin-bottom:8px;">
           <input type="text" id="new-contact-address" placeholder="Street Address" style="padding-right: 40px;">
-          <button style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="E('new-contact')" type="button">📍</button>
+          <button style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: transparent; border: none; font-size: 16px; cursor: pointer; padding: 0;" onclick="E('new-contact')" type="button" class="btn-icon">📍</button>
         </div>
         <input type="email" id="new-contact-email" placeholder="Email" style="margin-bottom:8px;">
         <input type="tel" id="new-contact-phone" placeholder="Phone" style="margin-bottom:8px;" oninput="h(this)">
         <div style="display:flex; gap:10px;">
-          <button class="btn-save" style="flex:1;" id="save-contact-btn" onclick="u()">Save to Address Book</button>
-          <button class="btn-cancel" style="flex:1;" onclick="t()">Cancel</button>
+          <button class="btn-save btn btn-primary" style="flex:1;" id="save-contact-btn" onclick="u()">Save to Address Book</button>
+          <button class="btn-cancel btn btn-secondary" style="flex:1;" onclick="t()">Cancel</button>
         </div>
-        <button class="btn-cancel" onclick="clearContactForm()" style="margin-top:5px; width:100%;">Clear</button>
+        <button class="btn-cancel btn btn-secondary" onclick="clearContactForm()" style="margin-top:5px; width:100%;">Clear</button>
         <!-- Delete contact button (hidden by default) -->
-        <button id="delete-contact-btn" class="btn-cancel" style="margin-top:5px; width:100%; background:#b3002d; color:white; border:none; display:none;" onclick="deleteCurrentContact()">Delete Contact</button>
+        <button id="delete-contact-btn" class="btn-cancel btn btn-danger" style="margin-top:5px; width:100%; background:#b3002d; color:white; border:none; display:none;" onclick="deleteCurrentContact()">Delete Contact</button>
       </div>
     </div>
   </div>
@@ -855,7 +994,7 @@ var _aN=_ay.package_details||'N/A',_aO=_ay.po_number?_ay.po_number:'N/A',_aP=(_a
   <div style="margin-top:5px;"><strong>PO / Ref</strong><br><span style="color:#aaa; font-size:12px;">${_aO}</span></div>
 </div>
 <div style="margin-top:10px;"><strong>Driver Notes</strong><br><span style="color:#aaa; font-size:12px;">${_ay.other_info || 'None'}</span></div>
-${_timelineHtml}`;if(_aP || _aA === 'cancelled' || _isCancelled){var _aT=P.has(_ay.id),_aU=new Date(_ay.timestamp),_aV=_aU.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}).replace(/,/g,'');var buttonInnerHtml;if (_aA === 'cancelled' || _isCancelled) {buttonInnerHtml = `<div style="display:flex; flex-direction:column; gap:4px;"><span style="font-weight:bold;">${_aV}</span><span class="package-details">${_ay.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${_ay.name||'?'}</span> → <span style="color:#90ee90;">${_ay.delivery_name||'?'}</span></div><div style="color: red; font-weight: bold;">Order Cancelled</div>`;} else {buttonInnerHtml = `<div style="display:flex; flex-direction:column; gap:4px;"><span style="font-weight:bold;">${_aV}</span><span class="package-details">${_ay.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${_ay.name||'?'}</span> → <span style="color:#90ee90;">${_ay.delivery_name||'?'}</span></div>`;}_am.innerHTML+=`<div style="margin-bottom: 2px;"><button onclick="B('${_ay.id}')" style="width: 100%; padding: 6px 10px; background: var(--input-bg); border: 1px solid var(--success); border-radius: 4px; color: var(--text); text-align: left; cursor: pointer; font-size: 12px; line-height: 1.4;">${buttonInnerHtml}</button><div id="${_aQ}" class="order-card" style="display: ${_aT?'block':'none'}; margin-bottom: 0; border-top: none; border-top-left-radius: 0; border-top-right-radius: 0;">${_aS}</div></div>`}else{var _aW='';if(_aA==='pending_pickup')_aW=`<div class="order-actions"><button class="cancel-btn" onclick="y('${_ay.id}')">Cancel</button><button class="edit-btn" onclick="z('${_ay.id}')">Edit</button></div>`;_am.innerHTML+=`<div class="order-card">${_aS}${_aW}</div>`}})}
+${_timelineHtml}`;if(_aP || _aA === 'cancelled' || _isCancelled){var _aT=P.has(_ay.id),_aU=new Date(_ay.timestamp),_aV=_aU.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}).replace(/,/g,'');var buttonInnerHtml;if (_aA === 'cancelled' || _isCancelled) {buttonInnerHtml = `<div style="display:flex; flex-direction:column; gap:4px;"><span style="font-weight:bold;">${_aV}</span><span class="package-details">${_ay.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${_ay.name||'?'}</span> → <span style="color:#90ee90;">${_ay.delivery_name||'?'}</span></div><div style="color: red; font-weight: bold;">Order Cancelled</div>`;} else {buttonInnerHtml = `<div style="display:flex; flex-direction:column; gap:4px;"><span style="font-weight:bold;">${_aV}</span><span class="package-details">${_ay.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${_ay.name||'?'}</span> → <span style="color:#90ee90;">${_ay.delivery_name||'?'}</span></div>`;}_am.innerHTML+=`<div style="margin-bottom: 2px;"><button onclick="B('${_ay.id}')" style="width: 100%; padding: 6px 10px; background: var(--input-bg); border: 1px solid var(--success); border-radius: 4px; color: var(--text); text-align: left; cursor: pointer; font-size: 12px; line-height: 1.4;">${buttonInnerHtml}</button><div id="${_aQ}" class="order-card" style="display: ${_aT?'block':'none'}; margin-bottom: 0; border-top: none; border-top-left-radius: 0; border-top-right-radius: 0;">${_aS}</div></div>`}else{var _aW='';if(_aA==='pending_pickup')_aW=`<div class="order-actions"><button class="cancel-btn btn btn-danger" onclick="y('${_ay.id}')">Cancel</button><button class="edit-btn btn btn-accent" onclick="z('${_ay.id}')">Edit</button></div>`;_am.innerHTML+=`<div class="order-card">${_aS}${_aW}</div>`}})}
 function B(_aX){var _aY=document.getElementById('order-card-'+_aX);if(_aY){if(_aY.style.display==='none'){_aY.style.display='block';P.add(_aX)}else{_aY.style.display='none';P.delete(_aX)}}}
 af.addEventListener("submit",_aZ=>{_aZ.preventDefault();if(document.getElementById('website_url_hp').value)return;var _ba=localStorage.getItem('lastOrderTime'),_bb=Date.now();if(_ba&&_bb-_ba<30000&&!S){alert("Please wait a moment before submitting another request.");return}
 if(!ad||!ae){alert("Please select a verified address from the Google Maps suggestions or the map picker to prevent invalid locations.");return}
@@ -865,7 +1004,7 @@ var Z,aa,ab='';function E(_by){ab=_by;var _bz=document.getElementById('location-
 function C(){var _bK=document.getElementById('loc-search-bar'),_bL=_bK.value;if(!_bL)return;var _bM=_bL.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);if(_bM){var _bN={lat:+_bM[1],lng:+_bM[2]};Z.setCenter(_bN);Z.setZoom(17)}else{var _bO=new google.maps.Geocoder();_bO.geocode({address:_bL},(_bP,_bQ)=>{if(_bQ==='OK'&&_bP[0]){Z.setCenter(_bP[0].geometry.location);Z.setZoom(17)}else alert('Location not found')})}}
 function D(){var _bR=Z.getCenter(),_bS=new google.maps.Geocoder();_bS.geocode({location:_bR},(_bT,_bU)=>{if(_bU==='OK'&&_bT[0]){var _bV=_bT[0].formatted_address,_bW=i(_bT[0].address_components);if(ab==='pickup'){document.getElementById('f-pickup').value=_bV;document.getElementsByName('city')[0].value=_bW;ad=!0}else if(ab==='drop'){document.getElementById('f-drop-address').value=_bV;document.getElementsByName('drop_city')[0].value=_bW;ae=!0}else if(ab==='settings-pickup'){document.getElementById('default-pickup').value=_bV;document.getElementById('default-city').value=_bW}else if(ab==='settings-drop'){document.getElementById('default-destination').value=_bV;document.getElementById('default-drop_city').value=_bW}else if(ab==='new-contact'){document.getElementById('new-contact-address').value=_bV}}document.getElementById('location-picker-modal').style.display='none';document.body.style.overflow=''})}
 function F(_bX){W=_bX;G();document.getElementById('settings-modal').style.display='block';r()}
-function G(){var _bY=document.getElementById('savedAddressesList');if(!_bY)return;_bY.innerHTML='';V.forEach((_bZ,_ca)=>{_bY.innerHTML+=`<div style="border:1px solid var(--border); padding:8px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center;"><div onclick="editContact(${_ca})" style="flex:1; cursor:pointer;"><strong>${_bZ.name}</strong><br><span style="font-size:12px;">${_bZ.address} ${_bZ.city?'('+_bZ.city+')':''}</span><br><span style="font-size:11px; color:#aaa;">${_bZ.email} ${_bZ.phone?'• '+_bZ.phone:''}</span></div><div><button onclick="H(${_ca}); event.stopPropagation();" style="background:var(--accent); color:#000; border:none; padding:10px 16px; border-radius:8px; font-weight:bold; font-size:14px;">Select</button></div></div>`});if(V.length===0)_bY.innerHTML='<p>No saved addresses.</p>'}
+function G(){var _bY=document.getElementById('savedAddressesList');if(!_bY)return;_bY.innerHTML='';V.forEach((_bZ,_ca)=>{_bY.innerHTML+=`<div style="border:1px solid var(--border); padding:8px; margin-bottom:5px; display:flex; justify-content:space-between; align-items:center;"><div onclick="editContact(${_ca})" style="flex:1; cursor:pointer;"><strong>${_bZ.name}</strong><br><span style="font-size:12px;">${_bZ.address} ${_bZ.city?'('+_bZ.city+')':''}</span><br><span style="font-size:11px; color:#aaa;">${_bZ.email} ${_bZ.phone?'• '+_bZ.phone:''}</span></div><div><button onclick="H(${_ca}); event.stopPropagation();" style="background:var(--accent); color:#000; border:none; padding:10px 16px; border-radius:8px; font-weight:bold; font-size:14px;" class="btn btn-accent">Select</button></div></div>`});if(V.length===0)_bY.innerHTML='<p>No saved addresses.</p>'}
 function H(_cb){ var _cc=V[_cb]; if(W==='pickup'){ document.getElementById('f-pickup').value=_cc.address; document.getElementsByName('city')[0].value=_cc.city||''; document.getElementsByName('name')[0].value=_cc.name||''; document.getElementsByName('p_email')[0].value=_cc.email||''; document.getElementsByName('p_phone')[0].value=_cc.phone||''; ad=!0 }else{ document.getElementById('f-drop-address').value=_cc.address; document.getElementsByName('drop_city')[0].value=_cc.city||''; document.getElementsByName('delivery_name')[0].value=_cc.name||''; document.getElementsByName('d_email')[0].value=_cc.email||''; document.getElementsByName('d_phone')[0].value=_cc.phone||''; ae=!0 } document.getElementById('settings-modal').style.display='none' }
 function I(_cd){V.splice(_cd,1);saveAddressBookToFirebase();G();}
 function J(){}
