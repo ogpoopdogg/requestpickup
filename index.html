@@ -488,146 +488,127 @@ body.light-mode .modal-content h2 {
   50% { opacity: 1; transform: scale(1.5); }
   100% { opacity: 1; transform: scale(1); }
 }
-/* ========== NEW DASHBOARD FEATURES ========== */
+
+/* ===== NEW FILTER PANEL STYLES ===== */
 .filter-panel {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 15px;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 .filter-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 15px;
-  margin-bottom: 15px;
+  gap: 12px;
+  margin-bottom: 12px;
+  align-items: center;
 }
 .filter-group {
   flex: 1 1 200px;
+  min-width: 150px;
 }
 .filter-group label {
   font-size: 11px;
-  margin-bottom: 3px;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  color: var(--placeholder);
 }
-.filter-group select[multiple] {
-  height: auto;
-  min-height: 80px;
-  padding: 8px;
+.filter-group select, .filter-group input {
+  padding: 8px 10px;
+  font-size: 13px;
 }
-.date-presets {
+.checkbox-group {
   display: flex;
-  gap: 5px;
   flex-wrap: wrap;
-  margin-bottom: 10px;
-}
-.date-presets button {
-  padding: 4px 8px;
-  font-size: 11px;
-}
-.custom-range {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-.custom-range input[type=date] {
-  padding: 8px;
-  font-size: 12px;
-}
-.summary-bar {
-  display: flex;
-  gap: 15px;
-  padding: 10px;
+  gap: 8px;
   background: var(--input-bg);
-  border-radius: 6px;
-  margin-bottom: 15px;
-  font-size: 12px;
-  font-weight: 600;
-  flex-wrap: wrap;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
 }
-.summary-item {
-  color: var(--accent);
-}
-.bulk-toolbar {
+.checkbox-group label {
   display: flex;
   align-items: center;
-  gap: 15px;
-  margin-bottom: 15px;
-  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 12px;
+  text-transform: none;
+  color: var(--text);
 }
-.bulk-actions-dropdown {
-  padding: 6px 12px;
+.checkbox-group input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+}
+.preset-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0;
+}
+.preset-buttons button {
   background: var(--input-bg);
   border: 1px solid var(--border);
   color: var(--text);
+  padding: 6px 12px;
   border-radius: 4px;
   font-size: 12px;
+  cursor: pointer;
+}
+.preset-buttons button:hover {
+  border-color: var(--accent);
 }
 .view-toggle {
   display: flex;
-  gap: 5px;
-  margin-left: auto;
+  gap: 4px;
 }
 .view-toggle button {
-  padding: 6px 12px;
   background: var(--input-bg);
   border: 1px solid var(--border);
   color: var(--text);
-  cursor: pointer;
+  padding: 6px 12px;
   border-radius: 4px;
   font-size: 12px;
+  cursor: pointer;
 }
 .view-toggle button.active {
   background: var(--accent);
   color: #000;
   border-color: var(--accent);
 }
-.preset-buttons {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 10px;
+.tag-badge {
+  display: inline-block;
+  background: var(--accent);
+  color: #000;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  margin-right: 4px;
+  margin-bottom: 4px;
 }
-.preset-buttons button {
-  padding: 4px 8px;
-  font-size: 11px;
-  background: var(--input-bg);
-  border: 1px solid var(--border);
+.tag-badge button {
+  background: transparent;
+  border: none;
+  color: #000;
+  margin-left: 4px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.add-tag-btn {
+  background: transparent;
+  border: 1px dashed var(--border);
   color: var(--text);
-  border-radius: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
   cursor: pointer;
 }
-.preset-buttons button:hover {
-  border-color: var(--accent);
-}
-.chart-container {
-  margin: 20px 0;
-  height: 200px;
-  background: var(--input-bg);
-  border-radius: 8px;
-  padding: 10px;
-}
-.order-table {
+.map-container {
   width: 100%;
-  border-collapse: collapse;
-  display: none;
-}
-.order-table th, .order-table td {
+  height: 200px;
   border: 1px solid var(--border);
-  padding: 8px;
-  text-align: left;
-  font-size: 12px;
-}
-.order-table th {
-  background: var(--card);
-  color: var(--accent);
-  cursor: pointer;
-}
-.order-table tr.expandable {
-  cursor: pointer;
-}
-.order-table .expanded-row {
-  display: none;
-  background: var(--input-bg);
+  border-radius: 4px;
+  margin-top: 10px;
 }
 .load-more-btn {
   width: 100%;
@@ -637,52 +618,40 @@ body.light-mode .modal-content h2 {
   color: var(--text);
   border-radius: 4px;
   cursor: pointer;
-  margin-top: 15px;
-  font-weight: 600;
+  margin-top: 20px;
 }
-.load-more-btn:hover {
-  border-color: var(--accent);
-}
-.tag-badge {
-  display: inline-block;
-  background: var(--accent);
-  color: #000;
-  padding: 2px 6px;
-  border-radius: 12px;
-  font-size: 10px;
-  margin-right: 4px;
-  margin-bottom: 4px;
-}
-.route-map {
+/* Table view */
+.order-table {
   width: 100%;
-  height: 200px;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  margin-top: 10px;
+  border-collapse: collapse;
+  font-size: 12px;
 }
-/* Mobile adjustments */
+.order-table th {
+  text-align: left;
+  padding: 8px;
+  background: var(--input-bg);
+  border-bottom: 2px solid var(--accent);
+  cursor: pointer;
+}
+.order-table td {
+  padding: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.order-table tr.expanded {
+  background: var(--card);
+}
+.order-table .expand-btn {
+  background: transparent;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+}
 @media (max-width: 600px) {
-  .filter-row {
-    flex-direction: column;
-    gap: 10px;
-  }
-  .custom-range {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .bulk-toolbar {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .view-toggle {
-    margin-left: 0;
-  }
   .order-table {
     display: block;
     overflow-x: auto;
   }
 }
-/* ========== END NEW FEATURES ========== */
 </style>
 </head>
 <body>
@@ -738,103 +707,87 @@ body.light-mode .modal-content h2 {
 </div>
 <div class=container id=orders-history-container style="display:none;padding:20px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><h2 style="color:var(--text);margin:0;font-size:18px;text-transform:uppercase">Order Dashboard</h2><button onclick=x() class="btn-back-form btn btn-secondary">BACK TO FORM</button></div>
-<div class=order-search-bar><input type=text id=orderSearchInput placeholder="Search by package, PO, names, address, tags..." oninput="T=this.value;applyFiltersAndRender()"><select id=orderStatusFilter onchange="U=this.value;applyFiltersAndRender()"><option value=all>All status</option><option value=in_progress>In progress</option><option value=completed>Completed</option><option value=cancelled>Cancelled</option></select></div>
+<div class=order-search-bar><input type=text id=orderSearchInput placeholder="Search by package, PO, names, address, tags..." oninput="T=this.value; applyFiltersAndRender()"><select id=orderStatusFilter onchange="U=this.value; applyFiltersAndRender()"><option value=all>All status</option><option value=in_progress>In progress</option><option value=completed>Completed</option><option value=cancelled>Cancelled</option></select></div>
 
 <!-- NEW FILTER PANEL -->
 <div class="filter-panel">
   <div class="filter-row">
     <div class="filter-group">
-      <label>Date Range</label>
-      <div class="date-presets">
-        <button type="button" onclick="setDatePreset('last7')">Last 7</button>
-        <button type="button" onclick="setDatePreset('last30')">Last 30</button>
-        <button type="button" onclick="setDatePreset('thisMonth')">This Month</button>
-        <button type="button" onclick="setDatePreset('lastMonth')">Last Month</button>
-        <button type="button" onclick="setDatePreset('ytd')">YTD</button>
-      </div>
-      <div class="custom-range">
-        <input type="date" id="startDate" onchange="customDateChanged()">
-        <input type="date" id="endDate" onchange="customDateChanged()">
-      </div>
+      <label>Date range</label>
+      <select id="datePreset" onchange="handleDatePresetChange()">
+        <option value="">Custom</option>
+        <option value="7">Last 7 days</option>
+        <option value="30">Last 30 days</option>
+        <option value="month">This month</option>
+        <option value="lastMonth">Last month</option>
+        <option value="year">Year to date</option>
+      </select>
     </div>
     <div class="filter-group">
+      <label>Start</label>
+      <input type="date" id="dateStart" onchange="applyFiltersAndRender()">
+    </div>
+    <div class="filter-group">
+      <label>End</label>
+      <input type="date" id="dateEnd" onchange="applyFiltersAndRender()">
+    </div>
+  </div>
+  <div class="filter-row">
+    <div class="filter-group">
       <label>Status</label>
-      <div style="display:flex; flex-wrap:wrap; gap:5px;">
-        <label><input type="checkbox" value="pending_pickup" checked onchange="statusFilterChanged()"> Pending</label>
-        <label><input type="checkbox" value="in_transit" checked onchange="statusFilterChanged()"> In Transit</label>
-        <label><input type="checkbox" value="pending_delivery" checked onchange="statusFilterChanged()"> Out for Delivery</label>
-        <label><input type="checkbox" value="completed" checked onchange="statusFilterChanged()"> Completed</label>
-        <label><input type="checkbox" value="cancelled" checked onchange="statusFilterChanged()"> Cancelled</label>
+      <div class="checkbox-group" id="statusCheckboxes">
+        <label><input type="checkbox" value="pending_pickup" checked onchange="updateStatusFilter()"> Pending pickup</label>
+        <label><input type="checkbox" value="in_transit" checked onchange="updateStatusFilter()"> In transit</label>
+        <label><input type="checkbox" value="pending_delivery" checked onchange="updateStatusFilter()"> Pending delivery</label>
+        <label><input type="checkbox" value="completed" checked onchange="updateStatusFilter()"> Completed</label>
+        <label><input type="checkbox" value="cancelled" checked onchange="updateStatusFilter()"> Cancelled</label>
       </div>
     </div>
   </div>
   <div class="filter-row">
     <div class="filter-group">
-      <label>Pickup Cities</label>
-      <select multiple id="pickupCityFilter" onchange="cityFilterChanged()"></select>
+      <label>Pickup city</label>
+      <select id="pickupCityFilter" multiple size="2" onchange="applyFiltersAndRender()">
+        <option value="">Any</option>
+      </select>
     </div>
     <div class="filter-group">
-      <label>Delivery Cities</label>
-      <select multiple id="deliveryCityFilter" onchange="cityFilterChanged()"></select>
+      <label>Delivery city</label>
+      <select id="deliveryCityFilter" multiple size="2" onchange="applyFiltersAndRender()">
+        <option value="">Any</option>
+      </select>
     </div>
     <div class="filter-group">
       <label>Tags</label>
-      <select multiple id="tagFilter" onchange="tagFilterChanged()"></select>
+      <select id="tagFilter" multiple size="2" onchange="applyFiltersAndRender()">
+        <option value="">Any</option>
+      </select>
     </div>
   </div>
-  <div class="preset-buttons" id="presetButtons"></div>
-  <button type="button" class="btn btn-secondary" onclick="savePresetPrompt()" style="margin-top:10px;">Save current filters</button>
-</div>
-
-<!-- SUMMARY BAR -->
-<div class="summary-bar" id="summaryBar"></div>
-
-<!-- BULK ACTIONS TOOLBAR -->
-<div class="bulk-toolbar">
-  <label><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"> Select All</label>
-  <select id="bulkActionsSelect" class="bulk-actions-dropdown" style="display:none;" onchange="executeBulkAction()">
-    <option value="">Bulk Actions</option>
-    <option value="addTag">Add tag…</option>
-    <option value="removeTag">Remove tag…</option>
-    <option value="markBilled">Mark as billed</option>
-    <option value="markPaid">Mark as paid</option>
-  </select>
-  <div class="view-toggle">
-    <button id="viewCardsBtn" class="active" onclick="setViewMode('card')">Cards</button>
-    <button id="viewTableBtn" onclick="setViewMode('table')">Table</button>
+  <div class="filter-row">
+    <div class="filter-group">
+      <label>Sort by</label>
+      <select id="sortBy" onchange="applyFiltersAndRender()">
+        <option value="dateDesc">Date (newest first)</option>
+        <option value="dateAsc">Date (oldest first)</option>
+        <option value="status">Status</option>
+        <option value="pickupCity">Pickup city</option>
+        <option value="deliveryCity">Delivery city</option>
+      </select>
+    </div>
+    <div class="filter-group view-toggle">
+      <button id="viewCards" class="active" onclick="setView('cards')">Cards</button>
+      <button id="viewTable" onclick="setView('table')">Table</button>
+    </div>
+    <button class="btn btn-secondary" onclick="saveFilterPreset()">Save filters</button>
   </div>
+  <div class="preset-buttons" id="presetButtons"></div>
 </div>
-
-<!-- CHART -->
-<div class="chart-container">
-  <canvas id="trendChart"></canvas>
-</div>
-
-<!-- ORDERS LIST (CARDS) -->
-<div id=orders-list></div>
-
-<!-- TABLE VIEW (hidden by default) -->
-<table class="order-table" id="orders-table">
-  <thead>
-    <tr>
-      <th><input type="checkbox" id="selectAllTable" onchange="toggleSelectAllTable()"></th>
-      <th onclick="setSort('date')">Date</th>
-      <th onclick="setSort('pickup')">Pickup</th>
-      <th onclick="setSort('delivery')">Delivery</th>
-      <th onclick="setSort('package')">Package</th>
-      <th onclick="setSort('status')">Status</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody id="table-body"></tbody>
-</table>
-
-<!-- LOAD MORE -->
-<button class="load-more-btn" id="loadMoreBtn" onclick="loadMore()">Load More</button>
 
 <div id=live-status-header style="font-size:11px;color:#f39c12;font-weight:700;margin-bottom:20px;text-transform:uppercase;letter-spacing:1px"></div>
+<div id=orders-list></div>
+<button id="loadMoreBtn" class="load-more-btn" onclick="loadMore()" style="display:none">Load More</button>
 </div>
-
 <div id=location-picker-modal class=modal onclick="if(event.target===this){this.style.display='none';document.body.style.overflow=''}">
 <div class=modal-content style="padding:0;max-width:600px;height:80vh;display:flex;flex-direction:column;overflow:hidden;position:relative">
 <div style="padding:15px;background:var(--card);border-bottom:1px solid var(--accent);display:flex;justify-content:space-between;align-items:center"><h2 style="color:var(--accent);margin:0;font-size:16px;font-weight:700;text-transform:uppercase">Pick Location</h2><button class="btn-cancel btn btn-secondary" style="padding:8px 12px;font-size:12px;margin:0" onclick="document.getElementById('location-picker-modal').style.display='none';document.body.style.overflow=''">CLOSE</button></div>
@@ -851,7 +804,7 @@ body.light-mode .modal-content h2 {
 <div class=settings-section><button class="btn-save btn btn-primary" style=width:100% onclick=q()>Autofill Details</button></div>
 <div class=settings-section><button class="btn-save btn btn-primary" style=width:100% onclick=r()>Address Book</button></div>
 <div class=settings-section><h3>Account</h3><div style=display:flex;gap:10px><button class="btn-save btn btn-primary" style=flex:1 onclick=toggleEmailChange()>Change Email</button><button class="btn-save btn btn-primary" style=flex:1 onclick=sendPasswordReset()>Change Password</button></div><div id=emailChangeDiv style="display:none;margin-top:10px"><input type=email id=newEmailInput placeholder="Enter new email" style="width:100%;padding:10px;background:var(--input-bg);color:var(--text);border:1px solid var(--border);margin-bottom:8px"><button class="btn-save btn btn-primary" style=width:100% onclick=changeUserEmail()>Update Email</button></div></div></div>
-<div id=settings-autofill style=display:none><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><h2 style="color:var(--accent);margin:0">Autofill Details</h2><button class="btn-cancel btn btn-secondary" style="padding:5px 10px;font-size:14px" onclick=p()>← Back</button></div><div class=settings-section><p>Fill in fields to auto-populate when using Autofill.</p><input type=text id=default-name placeholder="Pickup Contact Name" style=margin-bottom:8px><div style="position:relative;margin-bottom:8px"><input type=text id=default-pickup placeholder="Pickup Address" style=padding-right:40px><button style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="E('settings-pickup')" type=button class=btn-icon>📍</button></div><input type=text id=default-city placeholder="Pickup City" style=margin-bottom:8px><input type=email id=default-p_email placeholder="Pickup Email" style=margin-bottom:8px><input type=tel id=default-p_phone placeholder="Pickup Phone" style=margin-bottom:8px><input type=text id=default-delivery_name placeholder="Delivery Contact Name" style=margin-bottom:8px><div style="position:relative;margin-bottom:8px"><input type=text id=default-destination placeholder="Delivery Address" style=padding-right:40px><button style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:0 0;border:0;font-size:16px;cursor:pointer;padding=0" onclick="E('settings-drop')" type=button class=btn-icon>📍</button></div><input type=text id=default-drop_city placeholder="Delivery City" style=margin-bottom:8px><input type=email id=default-d_email placeholder="Delivery Email" style=margin-bottom:8px><input type=tel id=default-d_phone placeholder="Delivery Phone" style=margin-bottom:8px><input type=text id=default-package_details placeholder="Packages/Items/Dimensions" style=margin-bottom:8px><input type=text id=default-po_number placeholder="PO Number" style=margin-bottom:8px><textarea id=default-other_info placeholder="Driver Notes" rows=2 style=margin-bottom:8px></textarea><button id=save-defaults-btn class="btn-save btn btn-primary" onclick=m()>Save Autofill Details</button><button class="btn-cancel btn btn-secondary" onclick=clearAutofillForm() style="margin-top:5px;width:100%">Clear</button><button class="btn-cancel btn btn-secondary" style="margin-top:10px;width:100%" onclick=p()>← Back to Settings</button></div></div>
+<div id=settings-autofill style=display:none><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><h2 style="color:var(--accent);margin:0">Autofill Details</h2><button class="btn-cancel btn btn-secondary" style="padding:5px 10px;font-size:14px" onclick=p()>← Back</button></div><div class=settings-section><p>Fill in fields to auto-populate when using Autofill.</p><input type=text id=default-name placeholder="Pickup Contact Name" style=margin-bottom:8px><div style="position:relative;margin-bottom:8px"><input type=text id=default-pickup placeholder="Pickup Address" style=padding-right:40px><button style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="E('settings-pickup')" type=button class=btn-icon>📍</button></div><input type=text id=default-city placeholder="Pickup City" style=margin-bottom:8px><input type=email id=default-p_email placeholder="Pickup Email" style=margin-bottom:8px><input type=tel id=default-p_phone placeholder="Pickup Phone" style=margin-bottom:8px><input type=text id=default-delivery_name placeholder="Delivery Contact Name" style=margin-bottom:8px><div style="position:relative;margin-bottom:8px"><input type=text id=default-destination placeholder="Delivery Address" style=padding-right:40px><button style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="E('settings-drop')" type=button class=btn-icon>📍</button></div><input type=text id=default-drop_city placeholder="Delivery City" style=margin-bottom:8px><input type=email id=default-d_email placeholder="Delivery Email" style=margin-bottom:8px><input type=tel id=default-d_phone placeholder="Delivery Phone" style=margin-bottom:8px><input type=text id=default-package_details placeholder="Packages/Items/Dimensions" style=margin-bottom:8px><input type=text id=default-po_number placeholder="PO Number" style=margin-bottom:8px><textarea id=default-other_info placeholder="Driver Notes" rows=2 style=margin-bottom:8px></textarea><button id=save-defaults-btn class="btn-save btn btn-primary" onclick=m()>Save Autofill Details</button><button class="btn-cancel btn btn-secondary" onclick=clearAutofillForm() style="margin-top:5px;width:100%">Clear</button><button class="btn-cancel btn btn-secondary" style="margin-top:10px;width:100%" onclick=p()>← Back to Settings</button></div></div>
 <div id=settings-addressbook style=display:none><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><h2 style="color:var(--accent);margin:0">Address Book</h2><button class="btn-cancel btn btn-secondary" style="padding:5px 10px;font-size:14px" onclick=p()>← Back</button></div><div id=addressbook-list-view><button class="btn-save btn btn-primary" style="width:100%;margin-bottom:15px" onclick=s()>Create New Contact</button><div id=savedAddressesList></div></div><div id=addressbook-create-view style=display:none><h3 id=addressbook-form-title style="color:var(--accent);margin-top:0">Create Contact</h3><div class=settings-section><input type=text id=new-contact-name placeholder="Contact / Business Name" style=margin-bottom:8px><div style="position:relative;margin-bottom:8px"><input type=text id=new-contact-address placeholder="Street Address" style=padding-right:40px><button style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="E('new-contact')" type=button class=btn-icon>📍</button></div><input type=email id=new-contact-email placeholder=Email style=margin-bottom:8px><input type=tel id=new-contact-phone placeholder=Phone style=margin-bottom:8px oninput=h(this)><div style=display:flex;gap:10px><button class="btn-save btn btn-primary" style=flex:1 id=save-contact-btn onclick=u()>Save to Address Book</button><button class="btn-cancel btn btn-secondary" style=flex:1 onclick=t()>Cancel</button></div><button class="btn-cancel btn btn-secondary" onclick=clearContactForm() style="margin-top:5px;width:100%">Clear</button><button id=delete-contact-btn class="btn-cancel btn btn-danger" style="margin-top:5px;width:100%;background:#b3002d;color:#fff;border:0;display:none" onclick=deleteCurrentContact()>Delete Contact</button></div></div></div>
 </div>
 </div>
@@ -859,46 +812,36 @@ body.light-mode .modal-content h2 {
 <script src=https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js></script>
 <script src=https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js></script>
 <script src=https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 firebase.initializeApp({apiKey:"AIzaSyAKmgoXA4m3cRTmxJq4aUyva5SVvFbTNqg",authDomain:"eandccourier-36fcc.firebaseapp.com",databaseURL:"https://eandccourier-36fcc-default-rtdb.firebaseio.com",projectId:"eandccourier-36fcc",storageBucket:"",messagingSenderId:"1067680083511",appId:"1:1067680083511:android:22d1eb3757302492bd19b2"});
 var db=firebase.database(),M=null,N=null,O=null,P=new Set,Q={},R={},S=null,T='',U='all',V=[],W='pickup',X=null,Y,Z,aa,ab='',ac,ad=!1,ae=!1,af=document.getElementById("pickupForm"),ag=document.getElementById("submitBtn"),ah=firebase.database(),editingContactIndex=null;
-// New global variables for enhanced dashboard
-let allJobs = []; // will hold all jobs from listener
-let filteredJobs = [];
-let currentPage = 1;
-const pageSize = 20;
-let viewMode = 'card';
-let selectedOrders = new Set();
-let sortBy = 'date'; // date, pickup, delivery, package, status
-let sortOrder = 'desc'; // asc/desc
-let chartInstance = null;
+// New global state for filters & pagination
 let filterState = {
-  datePreset: null,
-  startDate: null,
-  endDate: null,
+  datePreset: '',
+  customStart: '',
+  customEnd: '',
   statuses: ['pending_pickup','in_transit','pending_delivery','completed','cancelled'],
   pickupCities: [],
   deliveryCities: [],
-  tags: []
+  tags: [],
+  sortBy: 'dateDesc',
+  viewMode: 'cards',
+  page: 1,
+  pageSize: 20,
+  allFilteredJobs: [],
+  displayedJobs: []
 };
-let presets = []; // will be loaded from Firebase
+let userPresets = [];
 
 firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
 db.ref("driver_zones").on("value",a=>Q=a.val()||{});
 db.ref("driver_locations").on("value",b=>{R=b.val()||{};console.log("driverLocations keys:",Object.keys(R));if(document.getElementById('orders-history-container').style.display==='block')applyFiltersAndRender()});
 firebase.auth().onAuthStateChanged(c=>{let d=document.getElementById('dev-list');if(c){if(!c.emailVerified&&c.providerData.some(e=>e.providerId==='password')){alert("Please check your email and verify your account before logging in.");firebase.auth().signOut();return}
 document.getElementById('auth-overlay').style.display='none';document.getElementById('main-app-container').style.display='block';if(document.querySelector('input[name="p_email"]'))document.querySelector('input[name="p_email"]').value=c.email;if(O){O();O=null}
-O=db.ref("jobs").orderByChild("created_by").equalTo(c.email).on('value',f=>{if(!f)return;N=f.val()||{};allJobs = Object.entries(N).map(([id, job]) => ({ id, ...job })); // convert to array with id
-if(f.exists()){let g=Object.values(N)[0];M=g;document.getElementById('autofillBtn').style.display='block'}else{M=null;document.getElementById('autofillBtn').style.display='none'}
-if(document.getElementById('orders-history-container').style.display==='block')applyFiltersAndRender()});
+O=db.ref("jobs").orderByChild("created_by").equalTo(c.email).on('value',f=>{if(!f)return;N=f.val()||{};if(f.exists()){let g=Object.values(N)[0];M=g;document.getElementById('autofillBtn').style.display='block'}else{M=null;document.getElementById('autofillBtn').style.display='none'}
+if(document.getElementById('orders-history-container').style.display==='block')applyFiltersAndRender(); updateFilterDropdowns();});
 firebase.database().ref('users/'+c.uid+'/addressBook').once('value',h=>{V=h.val()||[];localStorage.setItem('ec_addresses',JSON.stringify(V));G()});
 firebase.database().ref('users/'+c.uid+'/autofillDefaults').once('value',i=>{let j=i.val()||{};localStorage.setItem('autofillDefaults',JSON.stringify(j))});
-// Load presets
-firebase.database().ref('users/'+c.uid+'/filterPresets').on('value',snap=>{
-  presets = snap.val() ? Object.entries(snap.val()).map(([name,val])=>({name, ...val})) : [];
-  renderPresetButtons();
-});
 // Load theme from Firebase
 firebase.database().ref('users/'+c.uid+'/theme').once('value',snap=>{
   let theme=snap.val();
@@ -911,13 +854,19 @@ firebase.database().ref('users/'+c.uid+'/theme').once('value',snap=>{
       localStorage.setItem('ec_theme','dark');
     }
   } else {
+    // fallback to localStorage or default dark
     let saved=localStorage.getItem('ec_theme');
     if(saved==='light') document.body.classList.add('light-mode');
     else if(saved==='dark') document.body.classList.remove('light-mode');
   }
   c(); // update toggle buttons
 });
-}else{document.getElementById('auth-overlay').style.display='flex';document.getElementById('main-app-container').style.display='none';if(O){O();O=null}N=null;V=[]; allJobs = [];}
+// Load filter presets
+firebase.database().ref('users/'+c.uid+'/filterPresets').once('value',snap=>{
+  userPresets = snap.val() || [];
+  renderPresetButtons();
+});
+}else{document.getElementById('auth-overlay').style.display='flex';document.getElementById('main-app-container').style.display='none';if(O){O();O=null}N=null;V=[];}
 firebase.database().ref('developer').on('value',k=>{if(!k)return;d.innerHTML='';let l=k.val()||{};Object.values(l).forEach(m=>{d.innerHTML+=`<div class="dev-item"><div class="dev-hdr">${m.user} - <span style="color:orange;">${m.app||'Database'}</span> - ${m.date}</div><div style="color:#eee;">${m.text}</div>`});d.scrollTop=d.scrollHeight})});
 function a(){document.body.classList.toggle('light-mode');let theme=document.body.classList.contains('light-mode')?'light':'dark';localStorage.setItem('ec_theme',theme);c();let user=firebase.auth().currentUser;if(user){firebase.database().ref('users/'+user.uid+'/theme').set(theme);}}
 function b(n){n==='light'?document.body.classList.add('light-mode'):document.body.classList.remove('light-mode');localStorage.setItem('ec_theme',n);c();let user=firebase.auth().currentUser;if(user){firebase.database().ref('users/'+user.uid+'/theme').set(n);}}
@@ -949,13 +898,15 @@ function u(){let a5=document.getElementById('new-contact-name').value.trim(),a6=
 let a9={name:a5,address:a6,city:'',email:a7,phone:a8,target:W};if(editingContactIndex!==null)V[editingContactIndex]=a9;else V.push(a9);saveAddressBookToFirebase();G();t();}
 function editContact(ba){editingContactIndex=ba;let bb=V[ba];document.getElementById('new-contact-name').value=bb.name||'';document.getElementById('new-contact-address').value=bb.address||'';document.getElementById('new-contact-email').value=bb.email||'';document.getElementById('new-contact-phone').value=bb.phone||'';document.getElementById('addressbook-list-view').style.display='none';document.getElementById('addressbook-create-view').style.display='block';document.getElementById('addressbook-form-title').innerText='Edit Contact';document.getElementById('save-contact-btn').innerText='Update Contact';document.getElementById('delete-contact-btn').style.display='block';}
 function deleteCurrentContact(){if(editingContactIndex!==null&&confirm('Delete this contact?')){V.splice(editingContactIndex,1);saveAddressBookToFirebase();G();t();}}
-function v(){let bc=firebase.auth().currentUser;if(!bc)return;db.ref("jobs").orderByChild("created_by").equalTo(bc.email).once('value').then(bd=>{N=bd.val()||{}; allJobs = Object.entries(N).map(([id, job]) => ({ id, ...job })); if(document.getElementById('orders-history-container').style.display==='block')applyFiltersAndRender()})}
+function v(){let bc=firebase.auth().currentUser;if(!bc)return;db.ref("jobs").orderByChild("created_by").equalTo(bc.email).once('value').then(bd=>{N=bd.val()||{};if(document.getElementById('orders-history-container').style.display==='block')applyFiltersAndRender()})}
 function w(){
   document.getElementById('main-app-container').style.display='none';
   document.getElementById('orders-history-container').style.display='block';
   v();
+  // Removed setInterval – relying on real-time listener
 }
 function x(){
+  // Removed clearInterval for X
   P.clear();
   document.getElementById('orderSearchInput').value='';
   document.getElementById('orderStatusFilter').value='all';
@@ -975,635 +926,317 @@ function x(){
   document.getElementById('cancelEditBtn').style.display='none';
 }
 function y(be){if(!confirm('Are you sure you want to cancel this pending order?'))return;let bf=db.ref('jobs/'+be);bf.once('value',bg=>{let bh=bg.val();if(!bh)return;let bi=(bh.job_history?bh.job_history+'\n':'')+'[CANCELLED BY USER] DND';bf.update({job_history:bi,status:'cancelled',cancelled_by_user:true}).catch(bj=>alert('Error: '+bj.message));}).catch(bk=>alert('Error: '+bk.message));}
-function z(bl){if(!confirm("Are you sure you want to edit this order?"))return;let bm=N[bl];if(!bm)return;S=bl;af.name.value=bm.name||'';af.pickup_location.value=bm.pickup_location||'';af.city.value=bm.pickup_city||'';af.p_email.value=bm.p_email||'';af.p_phone.value=bm.p_phone||'';af.delivery_name.value=bm.delivery_name||'';af.destination.value=bm.destination||'';af.drop_city.value=bm.delivery_city||'';af.d_email.value=bm.d_email||'';af.d_phone.value=bm.d_phone||'';af.package_details.value=bm.package_details||'';af.po_number.value=bm.po_number||'';af.other_info.value=bm.other_info||'';ad=!0;ae=!0;ag.innerText="Update Request";document.getElementById('orders-history-container').style.display='none';document.getElementById('main-app-container').style.display='block';document.getElementById('pickupForm').style.display='block';document.getElementById('thanksMessage').style.display='none';ag.disabled=!1;ag.style.opacity="1";document.getElementById('cancelEditBtn').style.display='block';}
+function z(bl){if(!confirm("Are you sure you want to edit this order?"))return;let bm=N[bl];if(!bm)return;S=bl;af.name.value=bm.name||'';af.pickup_location.value=bm.pickup_location||'';af.city.value=bm.pickup_city||'';af.p_email.value=bm.p_email||'';af.p_phone.value=bm.p_phone||'';af.delivery_name.value=bm.delivery_name||'';af.destination.value=bm.destination||'';af.drop_city.value=bm.delivery_city||'';af.d_email.value=bm.d_email||'';af.d_phone.value=bm.d_phone||'';af.package_details.value=bm.package_details||'';af.po_number.value=bm.po_number||'';af.other_info.value=bm.other_info||'';ad=!0;ae=!0;ag.innerText="Update Request";// Removed clearInterval for X
+document.getElementById('orders-history-container').style.display='none';document.getElementById('main-app-container').style.display='block';document.getElementById('pickupForm').style.display='block';document.getElementById('thanksMessage').style.display='none';ag.disabled=!1;ag.style.opacity="1";document.getElementById('cancelEditBtn').style.display='block';}
 
-// New helper functions for enhanced dashboard
-function applyFiltersAndRender() {
-  // Combine search, status, date, city, tag filters
-  let searchTerm = T.toLowerCase();
-  let statusFilter = U; // from dropdown (legacy)
-  // Get selected statuses from checkboxes
-  let statusCheckboxes = document.querySelectorAll('input[type="checkbox"][value]');
-  let selectedStatuses = [];
-  statusCheckboxes.forEach(cb => {
-    if(cb.checked) selectedStatuses.push(cb.value);
+// New filter functions
+function handleDatePresetChange() {
+  let preset = document.getElementById('datePreset').value;
+  let startInput = document.getElementById('dateStart');
+  let endInput = document.getElementById('dateEnd');
+  let today = new Date();
+  let start = new Date();
+  if (preset === '7') {
+    start.setDate(today.getDate() - 7);
+  } else if (preset === '30') {
+    start.setDate(today.getDate() - 30);
+  } else if (preset === 'month') {
+    start = new Date(today.getFullYear(), today.getMonth(), 1);
+  } else if (preset === 'lastMonth') {
+    start = new Date(today.getFullYear(), today.getMonth()-1, 1);
+    today = new Date(today.getFullYear(), today.getMonth(), 0);
+  } else if (preset === 'year') {
+    start = new Date(today.getFullYear(), 0, 1);
+  } else {
+    // custom, do nothing
+    applyFiltersAndRender();
+    return;
+  }
+  startInput.value = start.toISOString().split('T')[0];
+  endInput.value = today.toISOString().split('T')[0];
+  applyFiltersAndRender();
+}
+function updateStatusFilter() {
+  let checkboxes = document.querySelectorAll('#statusCheckboxes input[type=checkbox]');
+  filterState.statuses = [];
+  checkboxes.forEach(cb => { if(cb.checked) filterState.statuses.push(cb.value); });
+  applyFiltersAndRender();
+}
+function updateFilterDropdowns() {
+  if(!N) return;
+  let pickupCities = new Set(), deliveryCities = new Set(), allTags = new Set();
+  Object.values(N).forEach(job => {
+    if(job.pickup_city) pickupCities.add(job.pickup_city);
+    if(job.delivery_city) deliveryCities.add(job.delivery_city);
+    if(job.tags && Array.isArray(job.tags)) job.tags.forEach(t => allTags.add(t));
   });
-  filterState.statuses = selectedStatuses;
-
-  let start = filterState.startDate ? new Date(filterState.startDate) : null;
-  let end = filterState.endDate ? new Date(filterState.endDate) : null;
-  if(end) end.setHours(23,59,59,999);
-
-  filteredJobs = allJobs.filter(job => {
+  let pickupSelect = document.getElementById('pickupCityFilter');
+  let deliverySelect = document.getElementById('deliveryCityFilter');
+  let tagSelect = document.getElementById('tagFilter');
+  pickupSelect.innerHTML = '<option value="">Any</option>';
+  deliverySelect.innerHTML = '<option value="">Any</option>';
+  tagSelect.innerHTML = '<option value="">Any</option>';
+  [...pickupCities].sort().forEach(c => { pickupSelect.innerHTML += `<option value="${c}">${c}</option>`; });
+  [...deliveryCities].sort().forEach(c => { deliverySelect.innerHTML += `<option value="${c}">${c}</option>`; });
+  [...allTags].sort().forEach(t => { tagSelect.innerHTML += `<option value="${t}">${t}</option>`; });
+}
+function applyFiltersAndRender() {
+  if(!N) return;
+  // Collect filter values
+  let searchTerm = T.toLowerCase();
+  let statusFilter = U; // keep original single status? we'll use multi now
+  // Override with multi status
+  let statuses = filterState.statuses;
+  let startDate = document.getElementById('dateStart').value;
+  let endDate = document.getElementById('dateEnd').value;
+  let pickupCities = Array.from(document.getElementById('pickupCityFilter').selectedOptions).map(o => o.value).filter(v=>v);
+  let deliveryCities = Array.from(document.getElementById('deliveryCityFilter').selectedOptions).map(o => o.value).filter(v=>v);
+  let tags = Array.from(document.getElementById('tagFilter').selectedOptions).map(o => o.value).filter(v=>v);
+  let sortBy = document.getElementById('sortBy').value;
+  
+  let jobsArray = [];
+  Object.entries(N).forEach(([id, job]) => {
+    jobsArray.push({...job, id});
+  });
+  // Filter
+  let filtered = jobsArray.filter(job => {
+    // status
+    if(statuses.length && !statuses.includes(job.status)) return false;
+    // date range
+    if(startDate && job.timestamp < new Date(startDate).getTime()) return false;
+    if(endDate) {
+      let end = new Date(endDate);
+      end.setHours(23,59,59,999);
+      if(job.timestamp > end.getTime()) return false;
+    }
+    // cities
+    if(pickupCities.length && !pickupCities.includes(job.pickup_city)) return false;
+    if(deliveryCities.length && !deliveryCities.includes(job.delivery_city)) return false;
+    // tags: if any tag selected, job must have at least one of them
+    if(tags.length && (!job.tags || !job.tags.some(t => tags.includes(t)))) return false;
     // search
     if(searchTerm) {
-      let haystack = (job.package_details + ' ' + job.po_number + ' ' + job.name + ' ' + job.delivery_name + ' ' + job.pickup_location + ' ' + job.destination + ' ' + (job.tags ? job.tags.join(' ') : '')).toLowerCase();
+      let haystack = (job.package_details+' '+job.po_number+' '+job.name+' '+job.delivery_name+' '+job.pickup_location+' '+job.destination+' '+(job.tags?job.tags.join(' '):'')).toLowerCase();
       if(!haystack.includes(searchTerm)) return false;
     }
-    // status dropdown (legacy) but also checkbox; combine: if status dropdown not 'all', override checkboxes? We'll use checkboxes as primary, ignore dropdown for now.
-    if(selectedStatuses.length && !selectedStatuses.includes(job.status)) return false;
-    // date range
-    if(job.timestamp) {
-      let jobDate = new Date(job.timestamp);
-      if(start && jobDate < start) return false;
-      if(end && jobDate > end) return false;
-    }
-    // pickup city
-    if(filterState.pickupCities.length && !filterState.pickupCities.includes(job.pickup_city)) return false;
-    // delivery city
-    if(filterState.deliveryCities.length && !filterState.deliveryCities.includes(job.delivery_city)) return false;
-    // tags (any match)
-    if(filterState.tags.length && (!job.tags || !job.tags.some(t => filterState.tags.includes(t)))) return false;
     return true;
   });
-
-  // Update summary counts
-  updateSummaryBar();
-
-  // Populate city and tag dropdowns based on filteredJobs (before applying those filters? To avoid circular, we use allJobs for options but filterState already applied? We'll populate based on allJobs but respect other filters? Better: use allJobs but exclude the filter itself? For simplicity, we'll populate from filteredJobs (which already have other filters) but then the city filter would affect its own options, which is okay because it's a dynamic refinement.)
-  populateCityTagOptions();
-
   // Sort
-  sortJobs();
-
-  // Reset pagination
-  currentPage = 1;
-  renderCurrentView();
-  updateChart();
-}
-
-function populateCityTagOptions() {
-  let pickupCitiesSet = new Set();
-  let deliveryCitiesSet = new Set();
-  let tagsSet = new Set();
-  filteredJobs.forEach(job => {
-    if(job.pickup_city) pickupCitiesSet.add(job.pickup_city);
-    if(job.delivery_city) deliveryCitiesSet.add(job.delivery_city);
-    if(job.tags) job.tags.forEach(t => tagsSet.add(t));
-  });
-  let pickupSelect = document.getElementById('pickupCityFilter');
-  let deliverySelect = document.getElementById('deliveryCityFilter');
-  let tagSelect = document.getElementById('tagFilter');
-  // preserve selected values
-  let selectedPickup = Array.from(pickupSelect.selectedOptions).map(o => o.value);
-  let selectedDelivery = Array.from(deliverySelect.selectedOptions).map(o => o.value);
-  let selectedTags = Array.from(tagSelect.selectedOptions).map(o => o.value);
-  pickupSelect.innerHTML = '';
-  deliverySelect.innerHTML = '';
-  tagSelect.innerHTML = '';
-  pickupCitiesSet.forEach(c => {
-    let opt = document.createElement('option');
-    opt.value = c; opt.text = c;
-    if(selectedPickup.includes(c)) opt.selected = true;
-    pickupSelect.appendChild(opt);
-  });
-  deliveryCitiesSet.forEach(c => {
-    let opt = document.createElement('option');
-    opt.value = c; opt.text = c;
-    if(selectedDelivery.includes(c)) opt.selected = true;
-    deliverySelect.appendChild(opt);
-  });
-  tagsSet.forEach(t => {
-    let opt = document.createElement('option');
-    opt.value = t; opt.text = t;
-    if(selectedTags.includes(t)) opt.selected = true;
-    tagSelect.appendChild(opt);
-  });
-  filterState.pickupCities = selectedPickup;
-  filterState.deliveryCities = selectedDelivery;
-  filterState.tags = selectedTags;
-}
-
-function updateSummaryBar() {
-  let counts = { pending_pickup:0, in_transit:0, pending_delivery:0, completed:0, cancelled:0 };
-  filteredJobs.forEach(j => {
-    if(counts.hasOwnProperty(j.status)) counts[j.status]++;
-  });
-  let bar = document.getElementById('summaryBar');
-  bar.innerHTML = `Pending: ${counts.pending_pickup} | In Transit: ${counts.in_transit} | Out for Delivery: ${counts.pending_delivery} | Completed: ${counts.completed} | Cancelled: ${counts.cancelled}`;
-}
-
-function sortJobs() {
-  let field = sortBy;
-  let order = sortOrder === 'asc' ? 1 : -1;
-  filteredJobs.sort((a,b) => {
-    let aval, bval;
-    if(field === 'date') aval = a.timestamp, bval = b.timestamp;
-    else if(field === 'pickup') aval = a.pickup_location, bval = b.pickup_location;
-    else if(field === 'delivery') aval = a.destination, bval = b.destination;
-    else if(field === 'package') aval = a.package_details, bval = b.package_details;
-    else if(field === 'status') aval = a.status, bval = b.status;
-    if(aval < bval) return -1 * order;
-    if(aval > bval) return 1 * order;
+  filtered.sort((a,b) => {
+    if(sortBy === 'dateAsc') return a.timestamp - b.timestamp;
+    if(sortBy === 'dateDesc') return b.timestamp - a.timestamp;
+    if(sortBy === 'status') return a.status.localeCompare(b.status);
+    if(sortBy === 'pickupCity') return (a.pickup_city||'').localeCompare(b.pickup_city||'');
+    if(sortBy === 'deliveryCity') return (a.delivery_city||'').localeCompare(b.delivery_city||'');
     return 0;
   });
+  filterState.allFilteredJobs = filtered;
+  filterState.page = 1;
+  renderCurrentPage();
 }
-
-function setSort(field) {
-  if(sortBy === field) sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
-  else { sortBy = field; sortOrder = 'asc'; }
-  applyFiltersAndRender();
-}
-
-function renderCurrentView() {
-  if(viewMode === 'card') renderCards();
+function renderCurrentPage() {
+  let start = (filterState.page - 1) * filterState.pageSize;
+  let end = start + filterState.pageSize;
+  filterState.displayedJobs = filterState.allFilteredJobs.slice(0, end);
+  document.getElementById('loadMoreBtn').style.display = end < filterState.allFilteredJobs.length ? 'block' : 'none';
+  if(filterState.viewMode === 'cards') renderCards();
   else renderTable();
-  updateSelectAllCheckbox();
 }
-
 function renderCards() {
-  let container = document.getElementById('orders-list');
-  let start = (currentPage-1)*pageSize;
-  let end = start + pageSize;
-  let pageJobs = filteredJobs.slice(start, end);
-  container.innerHTML = '';
-  pageJobs.forEach(job => {
-    let card = document.createElement('div');
-    card.className = 'order-card';
-    card.id = 'order-card-'+job.id;
-    let checkedAttr = selectedOrders.has(job.id) ? 'checked' : '';
-    let tagsHtml = (job.tags || []).map(t => `<span class="tag-badge">${t}</span>`).join('');
-    card.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <input type="checkbox" class="order-checkbox" data-id="${job.id}" ${checkedAttr} onchange="toggleOrderSelection('${job.id}', this.checked)">
-        <div class="order-date">${new Date(job.timestamp).toLocaleString()}</div>
-        ${job.status === 'pending_pickup' ? `
-          <div>
-            <button class="cancel-btn" onclick="y('${job.id}')">Cancel</button>
-            <button class="edit-btn" onclick="z('${job.id}')">Edit</button>
-          </div>
-        ` : ''}
-      </div>
-      <div style="display:flex;gap:15px;">
-        <div style="flex:1;"><strong>Pickup</strong> ${job.name}<br><span style="color:#aaa;font-size:12px;">${job.pickup_location}</span></div>
-        <div style="flex:1;"><strong>Delivery</strong> ${job.delivery_name}<br><span style="color:#aaa;font-size:12px;">${job.destination}</span></div>
-      </div>
-      <div style="margin-top:10px;">
-        <div><strong>Packages</strong><br><span style="color:#aaa;font-size:12px;">${job.package_details}</span></div>
-        <div><strong>PO</strong><br><span style="color:#aaa;font-size:12px;">${job.po_number || 'N/A'}</span></div>
-        <div><strong>Tags</strong> ${tagsHtml}</div>
-      </div>
-      <div style="margin-top:10px;">
-        <button class="btn btn-secondary" onclick="toggleExpand('${job.id}')">Show Route</button>
-        <div id="map-${job.id}" style="display:none; margin-top:10px;" class="route-map"></div>
-      </div>
-    `;
-    container.appendChild(card);
-  });
-  if(pageJobs.length === 0) container.innerHTML = '<p>No orders found.</p>';
-  // load more button visibility
-  document.getElementById('loadMoreBtn').style.display = end >= filteredJobs.length ? 'none' : 'block';
-}
-
-function renderTable() {
-  let tbody = document.getElementById('table-body');
-  let start = (currentPage-1)*pageSize;
-  let end = start + pageSize;
-  let pageJobs = filteredJobs.slice(start, end);
-  tbody.innerHTML = '';
-  pageJobs.forEach(job => {
-    let row = document.createElement('tr');
-    row.className = 'expandable';
-    let checkedAttr = selectedOrders.has(job.id) ? 'checked' : '';
-    row.innerHTML = `
-      <td><input type="checkbox" class="table-checkbox" data-id="${job.id}" ${checkedAttr} onchange="toggleOrderSelection('${job.id}', this.checked)"></td>
-      <td>${new Date(job.timestamp).toLocaleDateString()}</td>
-      <td>${job.name}<br>${job.pickup_location}</td>
-      <td>${job.delivery_name}<br>${job.destination}</td>
-      <td>${job.package_details}</td>
-      <td>${job.status}</td>
-      <td><button onclick="toggleExpand('${job.id}')">Show</button></td>
-    `;
-    tbody.appendChild(row);
-    // expanded row hidden
-    let expRow = document.createElement('tr');
-    expRow.className = 'expanded-row';
-    expRow.id = 'exp-'+job.id;
-    expRow.innerHTML = `<td colspan="7"><div id="map-${job.id}" class="route-map"></div></td>`;
-    tbody.appendChild(expRow);
-  });
-  document.getElementById('loadMoreBtn').style.display = end >= filteredJobs.length ? 'none' : 'block';
-}
-
-function setViewMode(mode) {
-  viewMode = mode;
-  document.getElementById('viewCardsBtn').classList.toggle('active', mode==='card');
-  document.getElementById('viewTableBtn').classList.toggle('active', mode==='table');
-  document.getElementById('orders-list').style.display = mode==='card' ? 'block' : 'none';
-  document.getElementById('orders-table').style.display = mode==='table' ? 'table' : 'none';
-  renderCurrentView();
-}
-
-function toggleOrderSelection(id, checked) {
-  if(checked) selectedOrders.add(id);
-  else selectedOrders.delete(id);
-  updateBulkActionsVisibility();
-  updateSelectAllCheckbox();
-}
-
-function toggleSelectAll() {
-  let selectAll = document.getElementById('selectAllCheckbox').checked;
-  let checkboxes = document.querySelectorAll('.order-checkbox, .table-checkbox');
-  checkboxes.forEach(cb => {
-    cb.checked = selectAll;
-    let id = cb.dataset.id;
-    if(selectAll) selectedOrders.add(id);
-    else selectedOrders.delete(id);
-  });
-  updateBulkActionsVisibility();
-}
-
-function toggleSelectAllTable() {
-  let selectAll = document.getElementById('selectAllTable').checked;
-  let checkboxes = document.querySelectorAll('.table-checkbox');
-  checkboxes.forEach(cb => {
-    cb.checked = selectAll;
-    let id = cb.dataset.id;
-    if(selectAll) selectedOrders.add(id);
-    else selectedOrders.delete(id);
-  });
-  updateBulkActionsVisibility();
-}
-
-function updateSelectAllCheckbox() {
-  let totalCheckboxes = document.querySelectorAll('.order-checkbox, .table-checkbox').length;
-  let selectedCount = selectedOrders.size;
-  let selectAllMain = document.getElementById('selectAllCheckbox');
-  let selectAllTable = document.getElementById('selectAllTable');
-  if(selectAllMain) selectAllMain.checked = totalCheckboxes > 0 && selectedCount === totalCheckboxes;
-  if(selectAllTable) selectAllTable.checked = totalCheckboxes > 0 && selectedCount === totalCheckboxes;
-}
-
-function updateBulkActionsVisibility() {
-  let bulkSelect = document.getElementById('bulkActionsSelect');
-  bulkSelect.style.display = selectedOrders.size > 0 ? 'inline-block' : 'none';
-}
-
-function executeBulkAction() {
-  let action = document.getElementById('bulkActionsSelect').value;
-  if(!action) return;
-  if(action === 'addTag') {
-    let tags = prompt("Enter tag(s) to add (comma-separated)");
-    if(tags) {
-      let tagArray = tags.split(',').map(t => t.trim());
-      selectedOrders.forEach(id => {
-        let jobRef = db.ref('jobs/'+id);
-        jobRef.once('value', snap => {
-          let job = snap.val();
-          let currentTags = job.tags || [];
-          tagArray.forEach(t => { if(!currentTags.includes(t)) currentTags.push(t); });
-          jobRef.update({ tags: currentTags });
-        });
-      });
+  // Use existing A() logic but with filtered list
+  let bn=document.getElementById('orders-list'),bo=document.getElementById('live-status-header');
+  if(filterState.displayedJobs.length===0){ bn.innerHTML='<p style="color:#aaa;">No orders match filters.</p>'; return; }
+  let bp=new Date(); bo.innerText="Status Live as of "+bp.toLocaleString([],{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:!0});
+  bn.innerHTML='';
+  filterState.displayedJobs.forEach(bz=>{
+    let bA=new Date(bz.timestamp).toLocaleString(),bB=bz.status||'pending_pickup',bC=(bz.assigned_to&&bz.assigned_to!=='Unassigned')?bz.assigned_to:null,bD=!0,bE=(bC!==null)||!!bz.picked_up_by||(bB==='in_transit')||(bB==='pending_delivery')||(bB==='completed'),bF=!!bz.picked_up_by||bB==='in_transit',bG=(bB==='completed')||(bB==='pending_delivery'&&bC&&R[bC]?.shift_active===!0),bH=(bB==='completed'),bJ=bz.cancelled_by_user===!0;
+    if(bB==='pending_pickup'&&bC)bI=2; else if(bB==='in_transit')bI=3; else if(bB==='pending_delivery'&&bC&&R[bC]?.shift_active===!0)bI=4; else if(bB==='completed')bI=null;
+    let bK=[bD?'completed':'',bE?'completed':'',bF?'completed':'',bG?'completed':'',bH?'completed':'']; if(bI)bK[bI-1]+=' active';
+    let bL='0%'; if(bI){ let bM=0; for(let bN=0;bN<bI-1;bN++)if(bK[bN].includes('completed'))bM++; bL=(bM*25)+'%' } else { let bO=[bD,bE,bF,bG,bH].filter(Boolean).length; if(bO>1)bL=((bO-1)*25)+'%' }
+    let bP=bz.package_details||'N/A',bQ=bz.po_number?'PO: '+bz.po_number:'N/A',bR=(bB==='completed'),bS='order-card-'+bz.id,bT=bJ?'':`<div class="ocean-timeline"><div class="ocean-track"><div class="ocean-fill" style="width:${bL};"></div></div><div class="ocean-node ${bK[0]}"><div class="ocean-label">Ordered</div></div><div class="ocean-node ${bK[1]}"><div class="ocean-label">Assigned</div></div><div class="ocean-node ${bK[2]}"><div class="ocean-label">Picked‑Up</div></div><div class="ocean-node ${bK[3]}"><div class="ocean-label">Out for Delivery</div></div><div class="ocean-node ${bK[4]}"><div class="ocean-label">Delivered</div></div></div>`;
+    let tagsHtml = '<div><strong>Tags</strong><br>';
+    if(bz.tags && bz.tags.length) {
+      bz.tags.forEach(t => tagsHtml += `<span class="tag-badge">${t} <button onclick="removeTag('${bz.id}','${t}')">✖</button></span>`);
     }
-  } else if(action === 'removeTag') {
-    let tag = prompt("Enter tag to remove");
-    if(tag) {
-      selectedOrders.forEach(id => {
-        let jobRef = db.ref('jobs/'+id);
-        jobRef.once('value', snap => {
-          let job = snap.val();
-          let currentTags = job.tags || [];
-          currentTags = currentTags.filter(t => t !== tag);
-          jobRef.update({ tags: currentTags });
-        });
-      });
-    }
-  } else if(action === 'markBilled') {
-    selectedOrders.forEach(id => {
-      let jobRef = db.ref('jobs/'+id);
-      jobRef.once('value', snap => {
-        let job = snap.val();
-        let currentTags = job.tags || [];
-        if(!currentTags.includes('billed')) currentTags.push('billed');
-        jobRef.update({ tags: currentTags });
-      });
-    });
-  } else if(action === 'markPaid') {
-    selectedOrders.forEach(id => {
-      let jobRef = db.ref('jobs/'+id);
-      jobRef.once('value', snap => {
-        let job = snap.val();
-        let currentTags = job.tags || [];
-        if(!currentTags.includes('paid')) currentTags.push('paid');
-        jobRef.update({ tags: currentTags });
-      });
-    });
-  }
-  document.getElementById('bulkActionsSelect').value = '';
-}
-
-function toggleExpand(id) {
-  let mapDiv = document.getElementById('map-'+id);
-  if(mapDiv.style.display === 'none' || mapDiv.style.display === '') {
-    mapDiv.style.display = 'block';
-    drawRoute(id);
-  } else {
-    mapDiv.style.display = 'none';
-  }
-}
-
-function drawRoute(jobId) {
-  let job = allJobs.find(j => j.id === jobId);
-  if(!job) return;
-  let mapDiv = document.getElementById('map-'+jobId);
-  // if already initialized, skip
-  if(mapDiv.dataset.initialized) return;
-  mapDiv.dataset.initialized = 'true';
-  let map = new google.maps.Map(mapDiv, {
-    center: { lat: 49.8951, lng: -97.1384 },
-    zoom: 12,
-    mapTypeId: 'roadmap'
-  });
-  let directionsService = new google.maps.DirectionsService();
-  let directionsRenderer = new google.maps.DirectionsRenderer({ polylineOptions: { strokeColor: '#FFD700' } });
-  directionsRenderer.setMap(map);
-
-  // Get coordinates: if job has lat/lng fields, use them; else geocode
-  let origin = job.pickup_location + (job.pickup_city ? ', ' + job.pickup_city : '');
-  let dest = job.destination + (job.delivery_city ? ', ' + job.delivery_city : '');
-  directionsService.route({
-    origin: origin,
-    destination: dest,
-    travelMode: 'DRIVING'
-  }, (result, status) => {
-    if(status === 'OK') {
-      directionsRenderer.setDirections(result);
+    tagsHtml += `<button class="add-tag-btn" onclick="addTag('${bz.id}')">+ Add tag</button></div>`;
+    let mapBtn = `<button class="btn btn-secondary" onclick="showRoute('${bz.id}', this)">Show Route</button><div class="map-container" id="map-${bz.id}" style="display:none"></div>`;
+    let bU=`<div class="order-date">${bA}</div><div style="display:flex;gap:15px;margin-top:10px;"><div style="flex:1;"><strong>Pickup</strong> ${bz.name}<br><span style="color:#aaa;font-size:12px;">${bz.pickup_location}</span></div><div style="flex:1;"><strong>Delivery</strong> ${bz.delivery_name}<br><span style="color:#aaa;font-size:12px;">${bz.destination}</span></div></div><div style="margin-top:10px;"><div><strong>Packages/Items/Dimensions</strong><br><span style="color:#aaa;font-size:12px;">${bP}</span></div><div style="margin-top:5px;"><strong>PO / Ref</strong><br><span style="color:#aaa;font-size:12px;">${bQ}</span></div></div><div style="margin-top:10px;"><strong>Driver Notes</strong><br><span style="color:#aaa;font-size:12px;">${bz.other_info||'None'}</span></div>${tagsHtml}${mapBtn}${bT}`;
+    if(bR||bB==='cancelled'||bJ){ // collapsed card
+      let bX=new Date(bz.timestamp).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}).replace(/,/g,'');
+      let bY; if(bB==='cancelled'||bJ) bY=`<div style="display:flex;flex-direction:column;gap:4px;"><span style="font-weight:700;">${bX}</span><span class="package-details">${bz.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${bz.name||'?'}</span> → <span style="color:#90ee90;">${bz.delivery_name||'?'}</span></div><div style="color:red;font-weight:700;">Order Cancelled</div>`;
+      else bY=`<div style="display:flex;flex-direction:column;gap:4px;"><span style="font-weight:700;">${bX}</span><span class="package-details">${bz.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${bz.name||'?'}</span> → <span style="color:#90ee90;">${bz.delivery_name||'?'}</span></div>`;
+      bn.innerHTML+=`<div style="margin-bottom:2px;"><button onclick="B('${bz.id}')" style="width:100%;padding:6px 10px;background:var(--input-bg);border:1px solid var(--success);border-radius:4px;color:var(--text);text-align:left;cursor:pointer;font-size:12px;line-height:1.4;">${bY}</button><div id="${bS}" class="order-card" style="display:${P.has(bz.id)?'block':'none'};margin-bottom:0;border-top:0;border-top-left-radius:0;border-top-right-radius:0;">${bU}</div></div>`;
     } else {
-      mapDiv.innerHTML = 'Could not load route.';
+      let cardContent = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <div class="order-date" style="margin-bottom:0; border-bottom:0; padding-bottom:0;">${bA}</div>
+          ${bB==='pending_pickup' ? `
+            <div style="display:flex; gap:8px;">
+              <button class="cancel-btn" onclick="y('${bz.id}')">Cancel</button>
+              <button class="edit-btn" onclick="z('${bz.id}')">Edit</button>
+            </div>
+          ` : ''}
+        </div>
+        ${bU}
+      `;
+      bn.innerHTML += `<div class="order-card">${cardContent}</div>`;
     }
   });
 }
-
-function setDatePreset(preset) {
-  let now = new Date();
-  let start, end;
-  if(preset === 'last7') {
-    end = new Date();
-    start = new Date(); start.setDate(now.getDate()-7);
-  } else if(preset === 'last30') {
-    end = new Date();
-    start = new Date(); start.setDate(now.getDate()-30);
-  } else if(preset === 'thisMonth') {
-    start = new Date(now.getFullYear(), now.getMonth(), 1);
-    end = new Date(now.getFullYear(), now.getMonth()+1, 0);
-  } else if(preset === 'lastMonth') {
-    start = new Date(now.getFullYear(), now.getMonth()-1, 1);
-    end = new Date(now.getFullYear(), now.getMonth(), 0);
-  } else if(preset === 'ytd') {
-    start = new Date(now.getFullYear(), 0, 1);
-    end = new Date();
-  }
-  document.getElementById('startDate').value = start.toISOString().split('T')[0];
-  document.getElementById('endDate').value = end.toISOString().split('T')[0];
-  filterState.startDate = start;
-  filterState.endDate = end;
-  filterState.datePreset = preset;
-  applyFiltersAndRender();
-}
-
-function customDateChanged() {
-  filterState.startDate = document.getElementById('startDate').value ? new Date(document.getElementById('startDate').value) : null;
-  filterState.endDate = document.getElementById('endDate').value ? new Date(document.getElementById('endDate').value) : null;
-  filterState.datePreset = null;
-  applyFiltersAndRender();
-}
-
-function statusFilterChanged() {
-  applyFiltersAndRender();
-}
-
-function cityFilterChanged() {
-  let pickupSelect = document.getElementById('pickupCityFilter');
-  let deliverySelect = document.getElementById('deliveryCityFilter');
-  filterState.pickupCities = Array.from(pickupSelect.selectedOptions).map(o => o.value);
-  filterState.deliveryCities = Array.from(deliverySelect.selectedOptions).map(o => o.value);
-  applyFiltersAndRender();
-}
-
-function tagFilterChanged() {
-  let tagSelect = document.getElementById('tagFilter');
-  filterState.tags = Array.from(tagSelect.selectedOptions).map(o => o.value);
-  applyFiltersAndRender();
-}
-
-function savePresetPrompt() {
-  let name = prompt("Enter preset name");
-  if(!name) return;
-  let user = firebase.auth().currentUser;
-  if(!user) return;
-  let preset = {
-    name: name,
-    datePreset: filterState.datePreset,
-    startDate: filterState.startDate ? filterState.startDate.toISOString() : null,
-    endDate: filterState.endDate ? filterState.endDate.toISOString() : null,
-    statuses: filterState.statuses,
-    pickupCities: filterState.pickupCities,
-    deliveryCities: filterState.deliveryCities,
-    tags: filterState.tags
-  };
-  db.ref('users/'+user.uid+'/filterPresets/'+name).set(preset).then(() => {
-    alert('Preset saved');
+function renderTable() {
+  let bn=document.getElementById('orders-list');
+  if(filterState.displayedJobs.length===0){ bn.innerHTML='<p style="color:#aaa;">No orders match filters.</p>'; return; }
+  let html = '<table class="order-table"><thead><tr><th></th><th onclick="setSort(\'dateDesc\')">Date</th><th>Pickup</th><th>Delivery</th><th>Package</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+  filterState.displayedJobs.forEach(job => {
+    let expanded = P.has(job.id) ? 'expanded' : '';
+    let status = job.status;
+    let actions = '';
+    if(status === 'pending_pickup') {
+      actions = `<button class="cancel-btn" onclick="y('${job.id}')">Cancel</button> <button class="edit-btn" onclick="z('${job.id}')">Edit</button>`;
+    }
+    html += `<tr class="${expanded}"><td><button class="expand-btn" onclick="B('${job.id}')">${P.has(job.id)?'▼':'▶'}</button></td><td>${new Date(job.timestamp).toLocaleDateString()}</td><td>${job.name}<br>${job.pickup_location}</td><td>${job.delivery_name}<br>${job.destination}</td><td>${job.package_details}</td><td>${status}</td><td>${actions}</td></tr>`;
+    if(P.has(job.id)) {
+      html += `<tr><td colspan="7"><div class="order-card" style="margin:0;">${job.package_details} ... map and tags here</div></td></tr>`;
+    }
   });
+  html += '</tbody></table>';
+  bn.innerHTML = html;
 }
-
+function setView(mode) {
+  filterState.viewMode = mode;
+  document.getElementById('viewCards').classList.toggle('active', mode==='cards');
+  document.getElementById('viewTable').classList.toggle('active', mode==='table');
+  renderCurrentPage();
+}
+function loadMore() {
+  filterState.page++;
+  renderCurrentPage();
+}
+function saveFilterPreset() {
+  let name = prompt('Enter preset name');
+  if(!name) return;
+  let preset = {
+    name,
+    datePreset: document.getElementById('datePreset').value,
+    start: document.getElementById('dateStart').value,
+    end: document.getElementById('dateEnd').value,
+    statuses: filterState.statuses,
+    pickupCities: Array.from(document.getElementById('pickupCityFilter').selectedOptions).map(o=>o.value),
+    deliveryCities: Array.from(document.getElementById('deliveryCityFilter').selectedOptions).map(o=>o.value),
+    tags: Array.from(document.getElementById('tagFilter').selectedOptions).map(o=>o.value),
+    sortBy: document.getElementById('sortBy').value
+  };
+  let user = firebase.auth().currentUser;
+  if(user) {
+    db.ref('users/'+user.uid+'/filterPresets').once('value', snap => {
+      let presets = snap.val() || [];
+      presets.push(preset);
+      db.ref('users/'+user.uid+'/filterPresets').set(presets).then(() => {
+        userPresets = presets;
+        renderPresetButtons();
+      });
+    });
+  }
+}
 function renderPresetButtons() {
   let container = document.getElementById('presetButtons');
   container.innerHTML = '';
-  presets.forEach(p => {
+  userPresets.forEach((preset, idx) => {
     let btn = document.createElement('button');
-    btn.innerText = p.name;
-    btn.onclick = () => applyPreset(p);
+    btn.innerText = preset.name;
+    btn.onclick = () => applyPreset(idx);
     container.appendChild(btn);
   });
 }
-
-function applyPreset(preset) {
-  // restore filterState from preset
-  filterState.datePreset = preset.datePreset;
-  filterState.startDate = preset.startDate ? new Date(preset.startDate) : null;
-  filterState.endDate = preset.endDate ? new Date(preset.endDate) : null;
-  filterState.statuses = preset.statuses || ['pending_pickup','in_transit','pending_delivery','completed','cancelled'];
-  filterState.pickupCities = preset.pickupCities || [];
-  filterState.deliveryCities = preset.deliveryCities || [];
-  filterState.tags = preset.tags || [];
-  // update UI
-  if(filterState.startDate) document.getElementById('startDate').value = filterState.startDate.toISOString().split('T')[0];
-  if(filterState.endDate) document.getElementById('endDate').value = filterState.endDate.toISOString().split('T')[0];
-  let statusCheckboxes = document.querySelectorAll('input[type="checkbox"][value]');
-  statusCheckboxes.forEach(cb => {
+function applyPreset(idx) {
+  let preset = userPresets[idx];
+  document.getElementById('datePreset').value = preset.datePreset || '';
+  document.getElementById('dateStart').value = preset.start || '';
+  document.getElementById('dateEnd').value = preset.end || '';
+  filterState.statuses = preset.statuses || [];
+  document.querySelectorAll('#statusCheckboxes input[type=checkbox]').forEach(cb => {
     cb.checked = filterState.statuses.includes(cb.value);
   });
+  // set selects
+  let pickup = document.getElementById('pickupCityFilter');
+  [...pickup.options].forEach(opt => opt.selected = preset.pickupCities.includes(opt.value));
+  let delivery = document.getElementById('deliveryCityFilter');
+  [...delivery.options].forEach(opt => opt.selected = preset.deliveryCities.includes(opt.value));
+  let tag = document.getElementById('tagFilter');
+  [...tag.options].forEach(opt => opt.selected = preset.tags.includes(opt.value));
+  document.getElementById('sortBy').value = preset.sortBy || 'dateDesc';
   applyFiltersAndRender();
 }
-
-function loadMore() {
-  currentPage++;
-  renderCurrentView();
-}
-
-function updateChart() {
-  // aggregate daily counts from filteredJobs
-  let dailyCounts = {};
-  filteredJobs.forEach(job => {
-    if(job.timestamp) {
-      let date = new Date(job.timestamp).toLocaleDateString();
-      dailyCounts[date] = (dailyCounts[date] || 0) + 1;
-    }
-  });
-  let labels = Object.keys(dailyCounts).sort((a,b) => new Date(a) - new Date(b));
-  let data = labels.map(d => dailyCounts[d]);
-  let ctx = document.getElementById('trendChart').getContext('2d');
-  if(chartInstance) chartInstance.destroy();
-  chartInstance = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: 'Orders',
-        data: data,
-        borderColor: '#FFD700',
-        backgroundColor: 'rgba(255,215,0,0.1)',
-        tension: 0.1
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: { y: { beginAtZero: true } }
-    }
+function addTag(jobId) {
+  let tag = prompt('Enter tag');
+  if(!tag) return;
+  let jobRef = db.ref('jobs/'+jobId);
+  jobRef.once('value', snap => {
+    let job = snap.val();
+    let tags = job.tags || [];
+    if(!tags.includes(tag)) tags.push(tag);
+    jobRef.update({tags});
   });
 }
-
-// Override original A() with new functionality, but keep name for compatibility
-function A() {
-  applyFiltersAndRender();
+function removeTag(jobId, tag) {
+  if(!confirm('Remove tag?')) return;
+  let jobRef = db.ref('jobs/'+jobId);
+  jobRef.once('value', snap => {
+    let job = snap.val();
+    let tags = job.tags || [];
+    tags = tags.filter(t => t !== tag);
+    jobRef.update({tags});
+  });
 }
-
-// Also need to modify submit to include tags field
-// In submit handler, add tags: [] if new, or preserve if editing
-// We'll modify the cf function inside submit listener
-// Since the original submit listener is long, we'll replace it with our own that includes tags
-// But we need to keep the original listener registration. We'll override the event listener later.
-// For simplicity, we'll modify the cf function definition inside the submit listener. Since we are replacing the entire file, we can just rewrite the submit handler to include tags.
-
-// Let's replace the existing submit handler with a new one that includes tags.
-// We'll remove the old addEventListener and add a new one after the original script, but since we are outputting the whole file, we can just edit the existing one.
-
-// I'll rewrite the submit handler inside the script to include tags.
-// The original submit handler is at the bottom. We'll replace it.
-
-// I'll now insert the new submit handler.
-
-// But to avoid duplication, I'll just rewrite the entire script section with all new functions and the modified submit handler.
-
-// Since the file is huge, I'll continue with the new functions and then at the end, I'll modify the submit listener.
-
-// We need to also modify the cf function to include tags.
-// In the original, cf creates job object. We'll add tags: S ? (N[S]?.tags || []) : [].
-
-// I'll insert that.
-
-// Also we need to ensure that when updating, we preserve tags if not overwritten.
-
-// I'll now produce the final script with all additions and modifications.
-
-// I'll add the new functions above and then modify the submit listener.
-
-// Let's do it.
-</script>
-<!-- Replace the original submit listener with an updated one -->
-<script>
-// Re-attach submit listener with tags support
-document.getElementById('pickupForm').removeEventListener('submit', af.submit); // remove old if any
-document.getElementById('pickupForm').addEventListener('submit', function(cc) {
-  cc.preventDefault();
-  if(document.getElementById('website_url_hp').value) return;
-  let cd=localStorage.getItem('lastOrderTime'),ce=Date.now();
-  if(cd&&ce-cd<30000&&!S){
-    alert("Please wait a moment before submitting another request.");
+function showRoute(jobId, btn) {
+  let mapDiv = document.getElementById('map-'+jobId);
+  if(mapDiv.style.display === 'block') { mapDiv.style.display = 'none'; btn.innerText = 'Show Route'; return; }
+  mapDiv.style.display = 'block';
+  btn.innerText = 'Hide Route';
+  let job = N[jobId];
+  if(!job) return;
+  let pickupLat = job.lat, pickupLng = job.lng;
+  let deliveryLat = job.delivery_lat, deliveryLng = job.delivery_lng;
+  // if missing, geocode (simplified: use stored coordinates if available, else fallback)
+  if(!pickupLat || !deliveryLat) {
+    mapDiv.innerHTML = 'Coordinates missing, cannot display route.';
     return;
   }
-  if(!ad||!ae){
-    alert("Please select a verified address from the Google Maps suggestions or the map picker to prevent invalid locations.");
-    return;
-  }
-  ag.innerText=S?"Updating...":"Transmitting...";
-  ag.style.opacity="0.7";
-  ag.disabled=!0;
-  let cf=(cg,ch='Unassigned')=>{
-    let ci={
-      name:af.name.value.trim(),
-      pickup_location:af.pickup_location.value.trim(),
-      pickup_city:af.city.value.trim(),
-      p_email:af.p_email.value.trim(),
-      p_phone:af.p_phone.value.trim(),
-      delivery_name:af.delivery_name.value.trim(),
-      destination:af.destination.value.trim(),
-      delivery_city:af.drop_city.value.trim(),
-      d_email:af.d_email.value.trim(),
-      d_phone:af.d_phone.value.trim(),
-      package_details:af.package_details.value.trim(),
-      po_number:af.po_number.value.trim()||"",
-      other_info:af.other_info.value.trim(),
-      job_history:"[Client Request]",
-      status:"pending_pickup",
-      type:"pickup",
-      assigned_to:ch,
-      timestamp:S?N[S]?.timestamp||Date.now():Date.now(),
-      created_by:firebase.auth().currentUser?firebase.auth().currentUser.email:"Web Portal",
-      tags: S ? (N[S]?.tags || []) : []  // preserve tags if editing, else empty
-    };
-    if(cg) { ci.pickup_lat = cg.lat; ci.pickup_lng = cg.lng; }
-    if(S){
-      db.ref("jobs/"+S).update(ci).then(()=>{
-        localStorage.setItem('lastOrderTime',Date.now());
-        S=null;
-        af.style.display="none";
-        document.getElementById("thanksMessage").style.display="block";
-        window.scrollTo({top:0,behavior:'smooth'});
-        document.getElementById('cancelEditBtn').style.display='none';
-      }).catch(cj=>{
-        ag.innerText="Update Request";
-        ag.disabled=!1;
-        ag.style.opacity="1";
-      });
-    } else {
-      db.ref("jobs").push(ci).then(ck=>{
-        localStorage.setItem('lastOrderTime',Date.now());
-        let cl=ck.key;
-        if(!N)N={};
-        N[cl]={...ci,id:cl};
-        if(document.getElementById('orders-history-container').style.display==='block') applyFiltersAndRender();
-        af.style.display="none";
-        document.getElementById("thanksMessage").style.display="block";
-        window.scrollTo({top:0,behavior:'smooth'});
-      }).catch(cm=>{
-        ag.innerText="Submit Request";
-        ag.disabled=!1;
-        ag.style.opacity="1";
-      });
-    }
-  };
-  let cn=new google.maps.Geocoder(), co=af.pickup_location.value.trim()+", "+af.city.value.trim(), cp=!1, cq=setTimeout(()=>{
-    if(!cp){ cp=!0; cf(); }
-  },3000);
-  cn.geocode({address:co},(cr,cs)=>{
-    if(cp) return;
-    cp=!0; clearTimeout(cq);
-    if(cs==="OK"&&cr[0]){
-      let ct=cr[0].geometry.location, cu={lat:ct.lat(),lng:ct.lng()}, cv='Unassigned';
-      for(let cw in Q){
-        let cx=Q[cw];
-        if(cx.polygon){
-          let cy=new google.maps.Polygon({paths:cx.polygon});
-          if(google.maps.geometry.poly.containsLocation(ct,cy)){ cv=cw; break; }
-        }
-      }
-      cf(cu,cv);
-    } else cf();
+  let map = new google.maps.Map(mapDiv, { center: {lat: pickupLat, lng: pickupLng}, zoom: 10 });
+  let directionsService = new google.maps.DirectionsService();
+  let directionsRenderer = new google.maps.DirectionsRenderer({ map: map, polylineOptions: { strokeColor: '#FFD700', strokeWeight: 5 } });
+  directionsService.route({
+    origin: {lat: pickupLat, lng: pickupLng},
+    destination: {lat: deliveryLat, lng: deliveryLng},
+    travelMode: 'DRIVING'
+  }, (result, status) => {
+    if(status === 'OK') directionsRenderer.setDirections(result);
+    else mapDiv.innerHTML = 'Directions failed: '+status;
   });
-});
+}
+function B(ca){let cb=document.getElementById('order-card-'+ca);if(cb){if(cb.style.display==='none'){cb.style.display='block';P.add(ca)}else{cb.style.display='none';P.delete(ca)} if(filterState.viewMode==='table') renderTable();}}
+af.addEventListener("submit",cc=>{cc.preventDefault();if(document.getElementById('website_url_hp').value)return;let cd=localStorage.getItem('lastOrderTime'),ce=Date.now();if(cd&&ce-cd<30000&&!S){alert("Please wait a moment before submitting another request.");return}
+if(!ad||!ae){alert("Please select a verified address from the Google Maps suggestions or the map picker to prevent invalid locations.");return}
+ag.innerText=S?"Updating...":"Transmitting...";ag.style.opacity="0.7";ag.disabled=!0;let cf=(cg,ch='Unassigned')=>{let ci={name:af.name.value.trim(),pickup_location:af.pickup_location.value.trim(),pickup_city:af.city.value.trim(),city:af.city.value.trim(),p_email:af.p_email.value.trim(),p_phone:af.p_phone.value.trim(),delivery_name:af.delivery_name.value.trim(),destination:af.destination.value.trim(),delivery_city:af.drop_city.value.trim(),d_email:af.d_email.value.trim(),d_phone:af.d_phone.value.trim(),package_details:af.package_details.value.trim(),po_number:af.po_number.value.trim()||"",other_info:af.other_info.value.trim(),job_history:"[Client Request]",status:"pending_pickup",type:"pickup",assigned_to:ch,timestamp:S?N[S]?.timestamp||Date.now():Date.now(),created_by:firebase.auth().currentUser?firebase.auth().currentUser.email:"Web Portal",tags: [], ...cg};if(S){db.ref("jobs/"+S).update(ci).then(()=>{localStorage.setItem('lastOrderTime',Date.now());S=null;af.style.display="none";document.getElementById("thanksMessage").style.display="block";window.scrollTo({top:0,behavior:'smooth'});document.getElementById('cancelEditBtn').style.display='none';}).catch(cj=>{ag.innerText="Update Request";ag.disabled=!1;ag.style.opacity="1"})}else{db.ref("jobs").push(ci).then(ck=>{localStorage.setItem('lastOrderTime',Date.now());let cl=ck.key;if(!N)N={};N[cl]={...ci,id:cl};if(document.getElementById('orders-history-container').style.display==='block')applyFiltersAndRender();af.style.display="none";document.getElementById("thanksMessage").style.display="block";window.scrollTo({top:0,behavior:'smooth'})}).catch(cm=>{ag.innerText="Submit Request";ag.disabled=!1;ag.style.opacity="1"})}};let cn=new google.maps.Geocoder(),co=af.pickup_location.value.trim()+", "+af.city.value.trim(),cp=!1,cq=setTimeout(()=>{if(!cp){cp=!0;cf()}},3000);cn.geocode({address:co},(cr,cs)=>{if(cp)return;cp=!0;clearTimeout(cq);if(cs==="OK"&&cr[0]){let ct=cr[0].geometry.location,cu={lat:ct.lat(),lng:ct.lng()},cv='Unassigned';for(let cw in Q){let cx=Q[cw];if(cx.polygon){let cy=new google.maps.Polygon({paths:cx.polygon});if(google.maps.geometry.poly.containsLocation(ct,cy)){cv=cw;break}}}cf(cu,cv)}else cf()})});
+var Y;window.addEventListener('beforeinstallprompt',cz=>{cz.preventDefault();Y=cz;document.getElementById('installAppBtn').style.display='block'});document.getElementById('installAppBtn').addEventListener('click',async()=>{if(Y){Y.prompt();let cA=await Y.userChoice;if(cA.outcome==='accepted')document.getElementById('installAppBtn').style.display='none';Y=null}});
+var Z,aa,ab='';function E(cB){ab=cB;let cC=document.getElementById('location-picker-modal');cC.style.display='block';document.body.style.overflow='hidden';if(!Z){Z=new google.maps.Map(document.getElementById('picker-map'),{center:{lat:49.8951,lng:-97.1384},zoom:12,disableDefaultUI:!0,zoomControl:!0,scrollwheel:!0,styles:[{"featureType":"all","elementType":"labels.text.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"all","elementType":"labels.text.stroke","stylers":[{"color":"#000000"},{"lightness":13}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":21}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":17}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":29},{"weight":0.2}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":18}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":16}]},{"featureType":"transit","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":19}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":17}]}]});let cD=document.getElementById('loc-search-bar'),cE=new google.maps.places.Autocomplete(cD);cE.bindTo('bounds',Z);cE.addListener('place_changed',()=>{let cF=cE.getPlace();if(cF.geometry){Z.setCenter(cF.geometry.location);Z.setZoom(17)}});cD.addEventListener('keydown',cG=>{if(cG.key==='Enter'){let cH=cD.value,cI=cH.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);if(cI){let cJ={lat:+cI[1],lng:+cI[2]};Z.setCenter(cJ);Z.setZoom(17)}else{let cK=new google.maps.Geocoder();cK.geocode({address:cH},(cL,cM)=>{if(cM==='OK'&&cL[0]){Z.setCenter(cL[0].geometry.location);Z.setZoom(17)}})}}})}}
+function C(){let cN=document.getElementById('loc-search-bar'),cO=cN.value;if(!cO)return;let cP=cO.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);if(cP){let cQ={lat:+cP[1],lng:+cP[2]};Z.setCenter(cQ);Z.setZoom(17)}else{let cR=new google.maps.Geocoder();cR.geocode({address:cO},(cS,cT)=>{if(cT==='OK'&&cS[0]){Z.setCenter(cS[0].geometry.location);Z.setZoom(17)}else alert('Location not found')})}}
+function D(){let cU=Z.getCenter(),cV=new google.maps.Geocoder();cV.geocode({location:cU},(cW,cX)=>{if(cX==='OK'&&cW[0]){let cY=cW[0].formatted_address,cZ=i(cW[0].address_components);if(ab==='pickup'){document.getElementById('f-pickup').value=cY;document.getElementsByName('city')[0].value=cZ;ad=!0}else if(ab==='drop'){document.getElementById('f-drop-address').value=cY;document.getElementsByName('drop_city')[0].value=cZ;ae=!0}else if(ab==='settings-pickup'){document.getElementById('default-pickup').value=cY;document.getElementById('default-city').value=cZ}else if(ab==='settings-drop'){document.getElementById('default-destination').value=cY;document.getElementById('default-drop_city').value=cZ}else if(ab==='new-contact'){document.getElementById('new-contact-address').value=cY}}document.getElementById('location-picker-modal').style.display='none';document.body.style.overflow=''})}
+function F(ca){W=ca;G();document.getElementById('settings-modal').style.display='block';r()}
+function G(){let cb=document.getElementById('savedAddressesList');if(!cb)return;cb.innerHTML='';V.forEach((cc,cd)=>{cb.innerHTML+=`<div style="border:1px solid var(--border);padding:8px;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;"><div onclick="editContact(${cd})" style="flex:1;cursor:pointer;"><strong>${cc.name}</strong><br><span style="font-size:12px;">${cc.address} ${cc.city?'('+cc.city+')':''}</span><br><span style="font-size:11px;color:#aaa;">${cc.email} ${cc.phone?'• '+cc.phone:''}</span></div><div><button onclick="H(${cd});event.stopPropagation();" style="background:var(--accent);color:#000;border:0;padding:10px 16px;border-radius:8px;font-weight:700;font-size:14px;" class="btn btn-accent">Select</button></div></div>`});if(V.length===0)cb.innerHTML='<p>No saved addresses.</p>';}
+function H(ce){let cf=V[ce];if(W==='pickup'){document.getElementById('f-pickup').value=cf.address;document.getElementsByName('city')[0].value=cf.city||'';document.getElementsByName('name')[0].value=cf.name||'';document.getElementsByName('p_email')[0].value=cf.email||'';document.getElementsByName('p_phone')[0].value=cf.phone||'';ad=!0}else{document.getElementById('f-drop-address').value=cf.address;document.getElementsByName('drop_city')[0].value=cf.city||'';document.getElementsByName('delivery_name')[0].value=cf.name||'';document.getElementsByName('d_email')[0].value=cf.email||'';document.getElementsByName('d_phone')[0].value=cf.phone||'';ae=!0}document.getElementById('settings-modal').style.display='none';}
+function I(cg){V.splice(cg,1);saveAddressBookToFirebase();G();}
+function J(){}
+function K(){if(confirm("Are you sure you want to logout?"))firebase.auth().signOut()}
+function saveAddressBookToFirebase(){let ch=firebase.auth().currentUser;if(ch)firebase.database().ref('users/'+ch.uid+'/addressBook').set(V).then(()=>{localStorage.setItem('ec_addresses',JSON.stringify(V))}).catch(ci=>console.error('Error saving address book',ci));else localStorage.setItem('ec_addresses',JSON.stringify(V));}
+function clearMainForm(){if(!confirm('Are you sure you want to clear the form?'))return;af.reset();ad=!1;ae=!1;}
+function clearAutofillForm(){if(!confirm('Are you sure you want to clear all autofill fields?'))return;document.getElementById('default-name').value='';document.getElementById('default-pickup').value='';document.getElementById('default-city').value='';document.getElementById('default-p_email').value='';document.getElementById('default-p_phone').value='';document.getElementById('default-delivery_name').value='';document.getElementById('default-destination').value='';document.getElementById('default-drop_city').value='';document.getElementById('default-d_email').value='';document.getElementById('default-d_phone').value='';document.getElementById('default-package_details').value='';document.getElementById('default-po_number').value='';document.getElementById('default-other_info').value='';}
+function clearContactForm(){if(!confirm('Are you sure you want to clear the contact form?'))return;document.getElementById('new-contact-name').value='';document.getElementById('new-contact-address').value='';document.getElementById('new-contact-email').value='';document.getElementById('new-contact-phone').value='';}
+function toggleEmailChange(){let cj=document.getElementById('emailChangeDiv');cj.style.display=cj.style.display==='none'?'block':'none';}
+function changeUserEmail(){let ck=document.getElementById('newEmailInput').value,cl=firebase.auth().currentUser;if(cl&&ck!==""){cl.verifyBeforeUpdateEmail(ck).then(function(){alert("A verification link has been sent to your new email! Please check your inbox and verify.");document.getElementById('newEmailInput').value='';document.getElementById('emailChangeDiv').style.display='none';}).catch(function(cm){alert("Error: "+cm.message);});}else alert("Please log in and enter a valid email.");}
+function sendPasswordReset(){let cn=firebase.auth().currentUser;if(cn&&cn.email){firebase.auth().sendPasswordResetEmail(cn.email).then(()=>{alert("Password reset email sent to "+cn.email+". Please check your inbox.");}).catch(co=>{alert("Error: "+co.message);});}else alert("No user logged in.");}
+function cancelEdit(){if(S){if(!confirm("Are you sure you want to cancel editing?"))return;S=null;ag.innerText="Submit Request";document.getElementById('cancelEditBtn').style.display='none';af.reset();ad=!1;ae=!1;w();}}
+setTimeout(function(){if(document.getElementById('auth-overlay').style.display==='none'&&document.getElementById('main-app-container').style.display==='none')document.getElementById('auth-overlay').style.display='flex';},2000);
 </script>
 <link href=https://cdn.quilljs.com/1.3.6/quill.snow.css rel=stylesheet>
 <script src=https://cdn.quilljs.com/1.3.6/quill.min.js></script>
