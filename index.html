@@ -488,6 +488,72 @@ body.light-mode .modal-content h2 {
   50% { opacity: 1; transform: scale(1.5); }
   100% { opacity: 1; transform: scale(1); }
 }
+/* ===== NEW STYLES FOR DATE RANGE, TAGS, PAGINATION, HOVER REMOVAL ===== */
+/* Center fields in active timeline cards */
+#orders-history-container .order-card .centered-field {
+  text-align: center;
+}
+/* Remove hover effects in order dashboard */
+#orders-history-container .order-card:hover,
+#orders-history-container button:hover,
+#orders-history-container .btn:hover,
+#orders-history-container .cancel-btn:hover,
+#orders-history-container .edit-btn:hover {
+  transform: none !important;
+  box-shadow: none !important;
+  border-color: var(--border) !important;
+  background: inherit !important;
+  color: inherit !important;
+}
+/* Dark mode: add yellow border to buttons that have no border */
+body:not(.light-mode) .btn-danger,
+body:not(.light-mode) .btn-accent,
+body:not(.light-mode) .btn-icon,
+body:not(.light-mode) #settingsBtn,
+body:not(.light-mode) #installAppBtn {
+  border: 1px solid var(--accent) !important;
+}
+/* Load more button */
+#loadMoreBtn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+#loadMoreBtn:hover {
+  background: var(--card);
+}
+/* Date range controls */
+.date-range-controls {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 10px 0;
+}
+.date-range-controls select,
+.date-range-controls input,
+.date-range-controls button {
+  padding: 8px;
+  background: var(--input-bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+/* Tags styling */
+.user-tags span {
+  display: inline-block;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-right: 5px;
+  font-size: 11px;
+}
 </style>
 </head>
 <body>
@@ -544,8 +610,25 @@ body.light-mode .modal-content h2 {
 <div class=container id=orders-history-container style="display:none;padding:20px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><h2 style="color:var(--text);margin:0;font-size:18px;text-transform:uppercase">Order Dashboard</h2><button onclick=x() class="btn-back-form btn btn-secondary">BACK TO FORM</button></div>
 <div class=order-search-bar><input type=text id=orderSearchInput placeholder="Search by package, PO, names, address..." oninput="T=this.value;A()"><select id=orderStatusFilter onchange="U=this.value;A()"><option value=all>All status</option><option value=in_progress>In progress</option><option value=completed>Completed</option><option value=cancelled>Cancelled</option></select></div>
+<!-- Date range picker -->
+<div class="date-range-controls">
+  <select id="datePreset">
+    <option value="">No date filter</option>
+    <option value="7">Last 7 days</option>
+    <option value="30">Last 30 days</option>
+    <option value="thisMonth">This Month</option>
+    <option value="lastMonth">Last Month</option>
+    <option value="ytd">Year-to-Date</option>
+  </select>
+  <input type="date" id="startDate">
+  <input type="date" id="endDate">
+  <button id="applyDateRange" class="btn btn-secondary">Apply</button>
+  <button id="clearDateRange" class="btn btn-secondary">Clear</button>
+</div>
 <div id=live-status-header style="font-size:11px;color:#f39c12;font-weight:700;margin-bottom:20px;text-transform:uppercase;letter-spacing:1px"></div>
 <div id=orders-list></div>
+<!-- Load more button (hidden initially) -->
+<button id="loadMoreBtn" style="display:none;" onclick="loadMoreOrders()">Load More</button>
 </div>
 <div id=location-picker-modal class=modal onclick="if(event.target===this){this.style.display='none';document.body.style.overflow=''}">
 <div class=modal-content style="padding:0;max-width:600px;height:80vh;display:flex;flex-direction:column;overflow:hidden;position:relative">
@@ -574,6 +657,8 @@ body.light-mode .modal-content h2 {
 <script>
 firebase.initializeApp({apiKey:"AIzaSyAKmgoXA4m3cRTmxJq4aUyva5SVvFbTNqg",authDomain:"eandccourier-36fcc.firebaseapp.com",databaseURL:"https://eandccourier-36fcc-default-rtdb.firebaseio.com",projectId:"eandccourier-36fcc",storageBucket:"",messagingSenderId:"1067680083511",appId:"1:1067680083511:android:22d1eb3757302492bd19b2"});
 var db=firebase.database(),M=null,N=null,O=null,P=new Set,Q={},R={},S=null,T='',U='all',V=[],W='pickup',X=null,Y,Z,aa,ab='',ac,ad=!1,ae=!1,af=document.getElementById("pickupForm"),ag=document.getElementById("submitBtn"),ah=firebase.database(),editingContactIndex=null;
+// Date range and pagination variables
+let datePreset = '', customStart = '', customEnd = '', dateRangeActive = false, orderLimit = 20;
 firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
 db.ref("driver_zones").on("value",a=>Q=a.val()||{});
 db.ref("driver_locations").on("value",b=>{R=b.val()||{};console.log("driverLocations keys:",Object.keys(R));if(document.getElementById('orders-history-container').style.display==='block')A()});
@@ -664,34 +749,137 @@ function x(){
 function y(be){if(!confirm('Are you sure you want to cancel this pending order?'))return;let bf=db.ref('jobs/'+be);bf.once('value',bg=>{let bh=bg.val();if(!bh)return;let bi=(bh.job_history?bh.job_history+'\n':'')+'[CANCELLED BY USER] DND';bf.update({job_history:bi,status:'cancelled',cancelled_by_user:true}).catch(bj=>alert('Error: '+bj.message));}).catch(bk=>alert('Error: '+bk.message));}
 function z(bl){if(!confirm("Are you sure you want to edit this order?"))return;let bm=N[bl];if(!bm)return;S=bl;af.name.value=bm.name||'';af.pickup_location.value=bm.pickup_location||'';af.city.value=bm.pickup_city||'';af.p_email.value=bm.p_email||'';af.p_phone.value=bm.p_phone||'';af.delivery_name.value=bm.delivery_name||'';af.destination.value=bm.destination||'';af.drop_city.value=bm.delivery_city||'';af.d_email.value=bm.d_email||'';af.d_phone.value=bm.d_phone||'';af.package_details.value=bm.package_details||'';af.po_number.value=bm.po_number||'';af.other_info.value=bm.other_info||'';ad=!0;ae=!0;ag.innerText="Update Request";// Removed clearInterval for X
 document.getElementById('orders-history-container').style.display='none';document.getElementById('main-app-container').style.display='block';document.getElementById('pickupForm').style.display='block';document.getElementById('thanksMessage').style.display='none';ag.disabled=!1;ag.style.opacity="1";document.getElementById('cancelEditBtn').style.display='block';}
-function A(){if(document.getElementById('orders-history-container').style.display!=='block')return;let bn=document.getElementById('orders-list'),bo=document.getElementById('live-status-header');if(!N||Object.keys(N).length===0){bn.innerHTML='<p style="color:#aaa;">No past orders found.</p>';return}
-let bp=new Date();bo.innerText="Status Live as of "+bp.toLocaleString([],{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:!0});bn.innerHTML='';let bq=[];Object.entries(N).forEach(([br,bs])=>{bq.push({...bs,id:br})});bq.sort((bt,bu)=>bt.timestamp-bu.timestamp).reverse();let bv=bq.filter(bw=>{if(U!=='all'){if(U==='in_progress'&&!['pending_pickup','in_transit','pending_delivery'].includes(bw.status))return!1;if(U==='completed'&&(bw.status!=='completed'||bw.cancelled_by_user===!0))return!1;if(U==='cancelled'&&!(bw.status==='cancelled'||bw.cancelled_by_user===!0))return!1}if(T.trim()!==''){let bx=T.toLowerCase(),by=(bw.package_details+' '+bw.po_number+' '+bw.name+' '+bw.delivery_name+' '+bw.pickup_location+' '+bw.destination).toLowerCase();if(!by.includes(bx))return!1}return!0});bv.forEach(bz=>{let bA=new Date(bz.timestamp).toLocaleString(),bB=bz.status||'pending_pickup',bC=(bz.assigned_to&&bz.assigned_to!=='Unassigned')?bz.assigned_to:null,bD=!0,bE=(bC!==null)||!!bz.picked_up_by||(bB==='in_transit')||(bB==='pending_delivery')||(bB==='completed'),bF=!!bz.picked_up_by||bB==='in_transit',bG=(bB==='completed')||(bB==='pending_delivery'&&bC&&R[bC]?.shift_active===!0),bH=(bB==='completed'),bI=null,bJ=bz.cancelled_by_user===!0;if(bB==='pending_pickup'&&bC)bI=2;else if(bB==='in_transit')bI=3;else if(bB==='pending_delivery'&&bC&&R[bC]?.shift_active===!0)bI=4;else if(bB==='completed')bI=null;let bK=[bD?'completed':'',bE?'completed':'',bF?'completed':'',bG?'completed':'',bH?'completed':''];if(bI)bK[bI-1]+=' active';let bL='0%';if(bI){let bM=0;for(let bN=0;bN<bI-1;bN++)if(bK[bN].includes('completed'))bM++;bL=(bM*25)+'%'}else{let bO=[bD,bE,bF,bG,bH].filter(Boolean).length;if(bO>1)bL=((bO-1)*25)+'%'}
-let bP=bz.package_details||'N/A',bQ=bz.po_number?'PO: '+bz.po_number:'N/A',bR=(bB==='completed'),bS='order-card-'+bz.id,bT=bJ?'':`<div class="ocean-timeline"><div class="ocean-track"><div class="ocean-fill" style="width:${bL};"></div></div><div class="ocean-node ${bK[0]}"><div class="ocean-label">Ordered</div></div><div class="ocean-node ${bK[1]}"><div class="ocean-label">Assigned</div></div><div class="ocean-node ${bK[2]}"><div class="ocean-label">Picked‑Up</div></div><div class="ocean-node ${bK[3]}"><div class="ocean-label">Out for Delivery</div></div><div class="ocean-node ${bK[4]}"><div class="ocean-label">Delivered</div></div></div>`,bU=`<div class="order-date">${bA}</div><div style="display:flex;gap:15px;margin-top:10px;"><div style="flex:1;"><strong>Pickup</strong> ${bz.name}<br><span style="color:#aaa;font-size:12px;">${bz.pickup_location}</span></div><div style="flex:1;"><strong>Delivery</strong> ${bz.delivery_name}<br><span style="color:#aaa;font-size:12px;">${bz.destination}</span></div></div><div style="margin-top:10px;"><div><strong>Packages/Items/Dimensions</strong><br><span style="color:#aaa;font-size:12px;">${bP}</span></div><div style="margin-top:5px;"><strong>PO / Ref</strong><br><span style="color:#aaa;font-size:12px;">${bQ}</span></div></div><div style="margin-top:10px;"><strong>Driver Notes</strong><br><span style="color:#aaa;font-size:12px;">${bz.other_info||'None'}</span></div>${bT}`;if(bR||bB==='cancelled'||bJ){let bV=P.has(bz.id),bW=new Date(bz.timestamp),bX=bW.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}).replace(/,/g,''),bY;if(bB==='cancelled'||bJ)bY=`<div style="display:flex;flex-direction:column;gap:4px;"><span style="font-weight:700;">${bX}</span><span class="package-details">${bz.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${bz.name||'?'}</span> → <span style="color:#90ee90;">${bz.delivery_name||'?'}</span></div><div style="color:red;font-weight:700;">Order Cancelled</div>`;else bY=`<div style="display:flex;flex-direction:column;gap:4px;"><span style="font-weight:700;">${bX}</span><span class="package-details">${bz.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${bz.name||'?'}</span> → <span style="color:#90ee90;">${bz.delivery_name||'?'}</span></div>`;bn.innerHTML+=`<div style="margin-bottom:2px;"><button onclick="B('${bz.id}')" style="width:100%;padding:6px 10px;background:var(--input-bg);border:1px solid var(--success);border-radius:4px;color:var(--text);text-align:left;cursor:pointer;font-size:12px;line-height:1.4;">${bY}</button><div id="${bS}" class="order-card" style="display:${bV?'block':'none'};margin-bottom:0;border-top:0;border-top-left-radius:0;border-top-right-radius:0;">${bU}</div></div>`} else {
-  // Build the card content without the original date line, because we'll put date and buttons together
-  let cardContent = `
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-      <div class="order-date" style="margin-bottom:0; border-bottom:0; padding-bottom:0;">${bA}</div>
-      ${bB==='pending_pickup' ? `
-        <div style="display:flex; gap:8px;">
-          <button class="cancel-btn" onclick="y('${bz.id}')">Cancel</button>
-          <button class="edit-btn" onclick="z('${bz.id}')">Edit</button>
-        </div>
-      ` : ''}
-    </div>
-    <div style="display:flex;gap:15px;margin-top:10px;">
-      <div style="flex:1;"><strong>Pickup</strong> ${bz.name}<br><span style="color:#aaa;font-size:12px;">${bz.pickup_location}</span></div>
-      <div style="flex:1;"><strong>Delivery</strong> ${bz.delivery_name}<br><span style="color:#aaa;font-size:12px;">${bz.destination}</span></div>
-    </div>
-    <div style="margin-top:10px;">
-      <div><strong>Packages/Items/Dimensions</strong><br><span style="color:#aaa;font-size:12px;">${bP}</span></div>
-      <div style="margin-top:5px;"><strong>PO / Ref</strong><br><span style="color:#aaa;font-size:12px;">${bQ}</span></div>
-    </div>
-    <div style="margin-top:10px;"><strong>Driver Notes</strong><br><span style="color:#aaa;font-size:12px;">${bz.other_info || 'None'}</span></div>
-    ${bT}
-  `;
-  bn.innerHTML += `<div class="order-card">${cardContent}</div>`;
+function promptAddTag(orderId) {
+  let tag = prompt("Enter a tag/note for this order:");
+  if (tag && tag.trim()) {
+    let jobRef = firebase.database().ref('jobs/'+orderId);
+    jobRef.child('user_tags').once('value', snapshot => {
+      let tags = snapshot.val() || [];
+      tags.push(tag.trim());
+      jobRef.update({ user_tags: tags }).then(() => {
+        if (document.getElementById('orders-history-container').style.display === 'block') {
+          A();
+        }
+      });
+    });
   }
-});
+}
+function loadMoreOrders() {
+  orderLimit += 20;
+  A();
+}
+function A(){
+  if(document.getElementById('orders-history-container').style.display!=='block')return;
+  let bn=document.getElementById('orders-list'),bo=document.getElementById('live-status-header');
+  if(!N||Object.keys(N).length===0){bn.innerHTML='<p style="color:#aaa;">No past orders found.</p>';return}
+  let bp=new Date();bo.innerText="Status Live as of "+bp.toLocaleString([],{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:!0});
+  bn.innerHTML='';
+  let bq=[];Object.entries(N).forEach(([br,bs])=>{bq.push({...bs,id:br})});
+  bq.sort((bt,bu)=>bt.timestamp-bu.timestamp).reverse();
+  // Date range filtering
+  let minTime = null, maxTime = null;
+  if (dateRangeActive && customStart && customEnd) {
+    let startDateObj = new Date(customStart);
+    startDateObj.setHours(0,0,0,0);
+    minTime = startDateObj.getTime();
+    let endDateObj = new Date(customEnd);
+    endDateObj.setHours(23,59,59,999);
+    maxTime = endDateObj.getTime();
+  }
+  if (minTime !== null && maxTime !== null) {
+    bq = bq.filter(order => order.timestamp >= minTime && order.timestamp <= maxTime);
+  }
+  let bv=bq.filter(bw=>{
+    if(U!=='all'){
+      if(U==='in_progress'&&!['pending_pickup','in_transit','pending_delivery'].includes(bw.status))return!1;
+      if(U==='completed'&&(bw.status!=='completed'||bw.cancelled_by_user===!0))return!1;
+      if(U==='cancelled'&&!(bw.status==='cancelled'||bw.cancelled_by_user===!0))return!1
+    }
+    if(T.trim()!==''){
+      let bx=T.toLowerCase(),by=(bw.package_details+' '+bw.po_number+' '+bw.name+' '+bw.delivery_name+' '+bw.pickup_location+' '+bw.destination).toLowerCase();
+      if(!by.includes(bx))return!1
+    }
+    return!0
+  });
+  let displayCount = dateRangeActive ? bv.length : Math.min(orderLimit, bv.length);
+  let hasMore = !dateRangeActive && bv.length > orderLimit;
+  for(let i=0; i<displayCount; i++) {
+    let bz = bv[i];
+    let bA = new Date(bz.timestamp).toLocaleString(),
+        bB = bz.status || 'pending_pickup',
+        bC = (bz.assigned_to && bz.assigned_to !== 'Unassigned') ? bz.assigned_to : null,
+        bD = true,
+        bE = (bC !== null) || !!bz.picked_up_by || (bB === 'in_transit') || (bB === 'pending_delivery') || (bB === 'completed'),
+        bF = !!bz.picked_up_by || bB === 'in_transit',
+        bG = (bB === 'completed') || (bB === 'pending_delivery' && bC && R[bC]?.shift_active === true),
+        bH = (bB === 'completed'),
+        bI = null,
+        bJ = bz.cancelled_by_user === true;
+    if (bB === 'pending_pickup' && bC) bI = 2;
+    else if (bB === 'in_transit') bI = 3;
+    else if (bB === 'pending_delivery' && bC && R[bC]?.shift_active === true) bI = 4;
+    else if (bB === 'completed') bI = null;
+    let bK = [bD?'completed':'', bE?'completed':'', bF?'completed':'', bG?'completed':'', bH?'completed':''];
+    if (bI) bK[bI-1] += ' active';
+    let bL = '0%';
+    if (bI) {
+      let bM = 0;
+      for (let bN = 0; bN < bI-1; bN++) if (bK[bN].includes('completed')) bM++;
+      bL = (bM * 25) + '%';
+    } else {
+      let bO = [bD,bE,bF,bG,bH].filter(Boolean).length;
+      if (bO > 1) bL = ((bO-1) * 25) + '%';
+    }
+    let bP = bz.package_details || 'N/A',
+        bQ = bz.po_number ? 'PO: ' + bz.po_number : 'N/A',
+        bR = (bB === 'completed'),
+        bS = 'order-card-'+bz.id,
+        bT = bJ ? '' : `<div class="ocean-timeline"><div class="ocean-track"><div class="ocean-fill" style="width:${bL};"></div></div><div class="ocean-node ${bK[0]}"><div class="ocean-label">Ordered</div></div><div class="ocean-node ${bK[1]}"><div class="ocean-label">Assigned</div></div><div class="ocean-node ${bK[2]}"><div class="ocean-label">Picked‑Up</div></div><div class="ocean-node ${bK[3]}"><div class="ocean-label">Out for Delivery</div></div><div class="ocean-node ${bK[4]}"><div class="ocean-label">Delivered</div></div></div>`,
+        bU = `<div class="order-date">${bA}</div><div style="display:flex;gap:15px;margin-top:10px;"><div style="flex:1;"><strong>Pickup</strong> ${bz.name}<br><span style="color:#aaa;font-size:12px;">${bz.pickup_location}</span></div><div style="flex:1;"><strong>Delivery</strong> ${bz.delivery_name}<br><span style="color:#aaa;font-size:12px;">${bz.destination}</span></div></div><div style="margin-top:10px; text-align:center;"><div><strong>Packages/Items/Dimensions</strong><br><span style="color:#aaa;font-size:12px;">${bP}</span></div><div style="margin-top:5px; text-align:center;"><strong>PO / Ref</strong><br><span style="color:#aaa;font-size:12px;">${bQ}</span></div></div><div style="margin-top:10px; text-align:center;"><strong>Driver Notes</strong><br><span style="color:#aaa;font-size:12px;">${bz.other_info || 'None'}</span></div><div class="user-tags" style="text-align:left; margin-top:10px;"><div style="margin-bottom:5px;">${bz.user_tags ? bz.user_tags.map(tag => `<span>${tag}</span>`).join('') : ''}</div><button class="btn btn-secondary" onclick="promptAddTag('${bz.id}')" style="font-size:11px; padding:4px 8px;">+ tag</button></div>${bT}`;
+    if (bR || bB === 'cancelled' || bJ) {
+      let bV = P.has(bz.id),
+          bW = new Date(bz.timestamp),
+          bX = bW.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}).replace(/,/g,''),
+          bY;
+      if (bB === 'cancelled' || bJ) bY = `<div style="display:flex;flex-direction:column;gap:4px;"><span style="font-weight:700;">${bX}</span><span class="package-details">${bz.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${bz.name||'?'}</span> → <span style="color:#90ee90;">${bz.delivery_name||'?'}</span></div><div style="color:red;font-weight:700;">Order Cancelled</div>`;
+      else bY = `<div style="display:flex;flex-direction:column;gap:4px;"><span style="font-weight:700;">${bX}</span><span class="package-details">${bz.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${bz.name||'?'}</span> → <span style="color:#90ee90;">${bz.delivery_name||'?'}</span></div>`;
+      bn.innerHTML += `<div style="margin-bottom:2px;"><button onclick="B('${bz.id}')" style="width:100%;padding:6px 10px;background:var(--input-bg);border:1px solid var(--success);border-radius:4px;color:var(--text);text-align:left;cursor:pointer;font-size:12px;line-height:1.4;">${bY}</button><div id="${bS}" class="order-card" style="display:${bV?'block':'none'};margin-bottom:0;border-top:0;border-top-left-radius:0;border-top-right-radius:0;"><div class="order-date">${bA}</div><div style="display:flex;gap:15px;margin-top:10px;"><div style="flex:1;"><strong>Pickup</strong> ${bz.name}<br><span style="color:#aaa;font-size:12px;">${bz.pickup_location}</span></div><div style="flex:1;"><strong>Delivery</strong> ${bz.delivery_name}<br><span style="color:#aaa;font-size:12px;">${bz.destination}</span></div></div><div style="margin-top:10px; text-align:center;"><div><strong>Packages/Items/Dimensions</strong><br><span style="color:#aaa;font-size:12px;">${bP}</span></div><div style="margin-top:5px; text-align:center;"><strong>PO / Ref</strong><br><span style="color:#aaa;font-size:12px;">${bQ}</span></div></div><div style="margin-top:10px; text-align:center;"><strong>Driver Notes</strong><br><span style="color:#aaa;font-size:12px;">${bz.other_info || 'None'}</span></div><div class="user-tags" style="text-align:left; margin-top:10px;"><div style="margin-bottom:5px;">${bz.user_tags ? bz.user_tags.map(tag => `<span>${tag}</span>`).join('') : ''}</div><button class="btn btn-secondary" onclick="promptAddTag('${bz.id}')" style="font-size:11px; padding:4px 8px;">+ tag</button></div></div></div>`;
+    } else {
+      let cardContent = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <div class="order-date" style="margin-bottom:0; border-bottom:0; padding-bottom:0;">${bA}</div>
+          ${bB === 'pending_pickup' ? `
+            <div style="display:flex; gap:8px;">
+              <button class="cancel-btn" onclick="y('${bz.id}')">Cancel</button>
+              <button class="edit-btn" onclick="z('${bz.id}')">Edit</button>
+            </div>
+          ` : ''}
+        </div>
+        <div style="display:flex;gap:15px;margin-top:10px;">
+          <div style="flex:1;"><strong>Pickup</strong> ${bz.name}<br><span style="color:#aaa;font-size:12px;">${bz.pickup_location}</span></div>
+          <div style="flex:1;"><strong>Delivery</strong> ${bz.delivery_name}<br><span style="color:#aaa;font-size:12px;">${bz.destination}</span></div>
+        </div>
+        <div style="margin-top:10px; text-align:center;">
+          <div><strong>Packages/Items/Dimensions</strong><br><span style="color:#aaa;font-size:12px;">${bP}</span></div>
+          <div style="margin-top:5px; text-align:center;"><strong>PO / Ref</strong><br><span style="color:#aaa;font-size:12px;">${bQ}</span></div>
+        </div>
+        <div style="margin-top:10px; text-align:center;"><strong>Driver Notes</strong><br><span style="color:#aaa;font-size:12px;">${bz.other_info || 'None'}</span></div>
+        <div class="user-tags" style="text-align:left; margin-top:10px;">
+          <div style="margin-bottom:5px;">${bz.user_tags ? bz.user_tags.map(tag => `<span>${tag}</span>`).join('') : ''}</div>
+          <button class="btn btn-secondary" onclick="promptAddTag('${bz.id}')" style="font-size:11px; padding:4px 8px;">+ tag</button>
+        </div>
+        ${bT}
+      `;
+      bn.innerHTML += `<div class="order-card">${cardContent}</div>`;
+    }
+  }
+  // Show/hide load more button
+  let loadMoreBtn = document.getElementById('loadMoreBtn');
+  if (hasMore) {
+    loadMoreBtn.style.display = 'block';
+  } else {
+    loadMoreBtn.style.display = 'none';
+  }
 }
 function B(ca){let cb=document.getElementById('order-card-'+ca);if(cb){if(cb.style.display==='none'){cb.style.display='block';P.add(ca)}else{cb.style.display='none';P.delete(ca)}}}
 af.addEventListener("submit",cc=>{cc.preventDefault();if(document.getElementById('website_url_hp').value)return;let cd=localStorage.getItem('lastOrderTime'),ce=Date.now();if(cd&&ce-cd<30000&&!S){alert("Please wait a moment before submitting another request.");return}
@@ -716,6 +904,55 @@ function changeUserEmail(){let ck=document.getElementById('newEmailInput').value
 function sendPasswordReset(){let cn=firebase.auth().currentUser;if(cn&&cn.email){firebase.auth().sendPasswordResetEmail(cn.email).then(()=>{alert("Password reset email sent to "+cn.email+". Please check your inbox.");}).catch(co=>{alert("Error: "+co.message);});}else alert("No user logged in.");}
 function cancelEdit(){if(S){if(!confirm("Are you sure you want to cancel editing?"))return;S=null;ag.innerText="Submit Request";document.getElementById('cancelEditBtn').style.display='none';af.reset();ad=!1;ae=!1;w();}}
 setTimeout(function(){if(document.getElementById('auth-overlay').style.display==='none'&&document.getElementById('main-app-container').style.display==='none')document.getElementById('auth-overlay').style.display='flex';},2000);
+// Date range event listeners
+document.getElementById('datePreset').addEventListener('change', function(e) {
+  let preset = e.target.value;
+  let now = new Date();
+  let start = null, end = null;
+  if (preset === '7') {
+    start = new Date(now.getTime() - 7*24*60*60*1000);
+    end = now;
+  } else if (preset === '30') {
+    start = new Date(now.getTime() - 30*24*60*60*1000);
+    end = now;
+  } else if (preset === 'thisMonth') {
+    start = new Date(now.getFullYear(), now.getMonth(), 1);
+    end = now;
+  } else if (preset === 'lastMonth') {
+    start = new Date(now.getFullYear(), now.getMonth()-1, 1);
+    end = new Date(now.getFullYear(), now.getMonth(), 0);
+  } else if (preset === 'ytd') {
+    start = new Date(now.getFullYear(), 0, 1);
+    end = now;
+  }
+  if (start) {
+    document.getElementById('startDate').value = start.toISOString().split('T')[0];
+    document.getElementById('endDate').value = end.toISOString().split('T')[0];
+    customStart = start.toISOString().split('T')[0];
+    customEnd = end.toISOString().split('T')[0];
+    dateRangeActive = true;
+  } else {
+    customStart = '';
+    customEnd = '';
+    dateRangeActive = false;
+  }
+  A();
+});
+document.getElementById('applyDateRange').addEventListener('click', function() {
+  customStart = document.getElementById('startDate').value;
+  customEnd = document.getElementById('endDate').value;
+  dateRangeActive = !!(customStart && customEnd);
+  A();
+});
+document.getElementById('clearDateRange').addEventListener('click', function() {
+  document.getElementById('startDate').value = '';
+  document.getElementById('endDate').value = '';
+  document.getElementById('datePreset').value = '';
+  customStart = '';
+  customEnd = '';
+  dateRangeActive = false;
+  A();
+});
 </script>
 <link href=https://cdn.quilljs.com/1.3.6/quill.snow.css rel=stylesheet>
 <script src=https://cdn.quilljs.com/1.3.6/quill.min.js></script>
