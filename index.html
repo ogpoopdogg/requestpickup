@@ -214,8 +214,9 @@ body.light-mode .ocean-label{color:#000}
 
 @media (max-width: 480px) {
   .ocean-label {
-    font-size: 9px;
-    width: 60px;
+    font-size: 8px;
+    width: 50px;
+    top: 36px;
   }
 }
 
@@ -245,9 +246,9 @@ body.light-mode .ocean-label{color:#000}
   border-color: var(--accent);
 }
 
-/* Expanded card style */
+/* Expanded card style - removed thick yellow border */
 .order-card[style*="display: block"] {
-  border-left: 6px solid var(--accent);
+  border-left: 1px solid var(--border);
   background: var(--input-bg);
 }
 
@@ -366,7 +367,7 @@ body.light-mode .order-card:hover {
 
 body.light-mode .order-card[style*="display: block"] {
   background: #f9f9f9;
-  border-left-color: var(--accent);
+  border-left-color: var(--border);
 }
 
 body.light-mode .ocean-node {
@@ -422,6 +423,11 @@ body.light-mode .btn-icon {
   border: 1px solid #000 !important;
 }
 
+/* Force all text inside order cards to black in light mode */
+body.light-mode .order-card * {
+  color: #000 !important;
+}
+
 /* Optional red border for danger button to keep some meaning */
 body.light-mode .btn-danger,
 body.light-mode .cancel-btn {
@@ -447,6 +453,41 @@ body.light-mode .modal-content h2 {
   color: #000 !important;
 }
 /* ========== END LIGHT MODE OVERRIDES ========== */
+
+/* Animated checkmark for success message */
+.success-icon {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 15px;
+  position: relative;
+}
+.success-icon svg {
+  width: 100%;
+  height: 100%;
+}
+.check-path {
+  stroke: #00b32d;
+  stroke-width: 8;
+  fill: none;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: drawCheck 0.7s ease forwards;
+}
+@keyframes drawCheck {
+  to { stroke-dashoffset: 0; }
+}
+.sparkle {
+  fill: white;
+  filter: drop-shadow(0 0 2px gold);
+  opacity: 0;
+  animation: sparkle 0.3s ease 0.7s forwards;
+}
+@keyframes sparkle {
+  0% { opacity: 0; transform: scale(0.5); }
+  50% { opacity: 1; transform: scale(1.5); }
+  100% { opacity: 1; transform: scale(1); }
+}
 </style>
 </head>
 <body>
@@ -498,7 +539,7 @@ body.light-mode .modal-content h2 {
 <button type=button onclick=clearMainForm() style="background:0 0;border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:700;width:100%;margin-top:5px" class="btn btn-secondary">Clear Form</button>
 <button type=button onclick=K() style="background:0 0;border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:700;width:100%;margin-top:15px" class="btn btn-secondary">Logout</button>
 </form>
-<div id=thanksMessage><span class=success-icon>✅</span><h2 style="color:#fff;margin:0 0 10px;text-transform:uppercase;font-size:18px">Request Received</h2><p style="color:#aaa;margin-bottom:25px;font-size:14px;line-height:1.5">Our dispatch team has been notified and will review your request shortly.</p><button onclick=location.reload() type=button class="success-btn btn btn-accent" style="width:100%;padding:15px;border-radius:6px;cursor:pointer;text-transform:uppercase">Submit Another</button></div>
+<div id=thanksMessage><span class="success-icon"><svg viewBox="0 0 100 100"><path class="check-path" d="M20 50 L40 70 L80 30" /><circle class="sparkle" cx="80" cy="30" r="8" /></svg></span><h2 style="color:#fff;margin:0 0 10px;text-transform:uppercase;font-size:18px">Request Received</h2><p style="color:#aaa;margin-bottom:25px;font-size:14px;line-height:1.5">Our dispatch team has been notified and will review your request shortly.</p><button onclick=location.reload() type=button class="success-btn btn btn-accent" style="width:100%;padding:15px;border-radius:6px;cursor:pointer;text-transform:uppercase">Submit Another</button></div>
 </div>
 <div class=container id=orders-history-container style="display:none;padding:20px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><h2 style="color:var(--text);margin:0;font-size:18px;text-transform:uppercase">Order Dashboard</h2><button onclick=x() class="btn-back-form btn btn-secondary">BACK TO FORM</button></div>
@@ -542,10 +583,29 @@ O=db.ref("jobs").orderByChild("created_by").equalTo(c.email).on('value',f=>{if(!
 if(document.getElementById('orders-history-container').style.display==='block')A()});
 firebase.database().ref('users/'+c.uid+'/addressBook').once('value',h=>{V=h.val()||[];localStorage.setItem('ec_addresses',JSON.stringify(V));G()});
 firebase.database().ref('users/'+c.uid+'/autofillDefaults').once('value',i=>{let j=i.val()||{};localStorage.setItem('autofillDefaults',JSON.stringify(j))});
+// Load theme from Firebase
+firebase.database().ref('users/'+c.uid+'/theme').once('value',snap=>{
+  let theme=snap.val();
+  if(theme){
+    if(theme==='light' && !document.body.classList.contains('light-mode')){
+      document.body.classList.add('light-mode');
+      localStorage.setItem('ec_theme','light');
+    } else if(theme==='dark' && document.body.classList.contains('light-mode')){
+      document.body.classList.remove('light-mode');
+      localStorage.setItem('ec_theme','dark');
+    }
+  } else {
+    // fallback to localStorage or default dark
+    let saved=localStorage.getItem('ec_theme');
+    if(saved==='light') document.body.classList.add('light-mode');
+    else if(saved==='dark') document.body.classList.remove('light-mode');
+  }
+  c(); // update toggle buttons
+});
 }else{document.getElementById('auth-overlay').style.display='flex';document.getElementById('main-app-container').style.display='none';if(O){O();O=null}N=null;V=[];}
 firebase.database().ref('developer').on('value',k=>{if(!k)return;d.innerHTML='';let l=k.val()||{};Object.values(l).forEach(m=>{d.innerHTML+=`<div class="dev-item"><div class="dev-hdr">${m.user} - <span style="color:orange;">${m.app||'Database'}</span> - ${m.date}</div><div style="color:#eee;">${m.text}</div>`});d.scrollTop=d.scrollHeight})});
-function a(){document.body.classList.toggle('light-mode');localStorage.setItem('ec_theme',document.body.classList.contains('light-mode')?'light':'dark');c()}
-function b(n){n==='light'?document.body.classList.add('light-mode'):document.body.classList.remove('light-mode');localStorage.setItem('ec_theme',n);c()}
+function a(){document.body.classList.toggle('light-mode');let theme=document.body.classList.contains('light-mode')?'light':'dark';localStorage.setItem('ec_theme',theme);c();let user=firebase.auth().currentUser;if(user){firebase.database().ref('users/'+user.uid+'/theme').set(theme);}}
+function b(n){n==='light'?document.body.classList.add('light-mode'):document.body.classList.remove('light-mode');localStorage.setItem('ec_theme',n);c();let user=firebase.auth().currentUser;if(user){firebase.database().ref('users/'+user.uid+'/theme').set(n);}}
 function c(){let o=document.body.classList.contains('light-mode'),p=document.getElementById('theme-light'),q=document.getElementById('theme-dark');if(p)p.classList.toggle('active',o);if(q)q.classList.toggle('active',!o)}
 function d(){let r=document.getElementById('auth-email').value.trim(),s=document.getElementById('auth-password').value.trim();if(!r||!s)return alert("Please enter email and password.");firebase.auth().signInWithEmailAndPassword(r,s).catch(t=>alert("Login Error: "+t.message))}
 function e(){let u=document.getElementById('auth-email').value.trim(),v=document.getElementById('auth-password').value.trim();if(!u||!v)return alert("Please enter email and password to sign up.");firebase.auth().createUserWithEmailAndPassword(u,v).then(w=>{w.user.sendEmailVerification();alert("Account created! We sent a verification link to your email. Please verify before logging in.");firebase.auth().signOut()}).catch(x=>alert("Sign Up Error: "+x.message))}
