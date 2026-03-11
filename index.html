@@ -576,7 +576,15 @@ firebase.initializeApp({apiKey:"AIzaSyAKmgoXA4m3cRTmxJq4aUyva5SVvFbTNqg",authDom
 var db=firebase.database(),M=null,N=null,O=null,P=new Set,Q={},R={},S=null,T='',U='all',V=[],W='pickup',X=null,Y,Z,aa,ab='',ac,ad=!1,ae=!1,af=document.getElementById("pickupForm"),ag=document.getElementById("submitBtn"),ah=firebase.database(),editingContactIndex=null;
 firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
 db.ref("driver_zones").on("value",a=>Q=a.val()||{});
-db.ref("driver_locations").on("value",b=>{R=b.val()||{};console.log("driverLocations keys:",Object.keys(R));if(document.getElementById('orders-history-container').style.display==='block')A()});
+db.ref("driver_locations").on("value", b => {
+  R = b.val() || {};
+  console.log("driverLocations keys:", Object.keys(R));
+  setTimeout(() => {
+    if (document.getElementById('orders-history-container').style.display === 'block') {
+      A();
+    }
+  }, 0);
+});
 firebase.auth().onAuthStateChanged(c=>{let d=document.getElementById('dev-list');if(c){if(!c.emailVerified&&c.providerData.some(e=>e.providerId==='password')){alert("Please check your email and verify your account before logging in.");firebase.auth().signOut();return}
 document.getElementById('auth-overlay').style.display='none';document.getElementById('main-app-container').style.display='block';if(document.querySelector('input[name="p_email"]'))document.querySelector('input[name="p_email"]').value=c.email;if(O){O();O=null}
 O=db.ref("jobs").orderByChild("created_by").equalTo(c.email).on('value',f=>{if(!f)return;N=f.val()||{};if(f.exists()){let g=Object.values(N)[0];M=g;document.getElementById('autofillBtn').style.display='block'}else{M=null;document.getElementById('autofillBtn').style.display='none'}
