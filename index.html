@@ -77,16 +77,15 @@ input:focus,textarea:focus,select:focus{border-color:var(--accent);outline:0;box
 /* Specific icon buttons in forms */
 #f-pickup + .btn-icon, #f-drop-address + .btn-icon { right:8px; }
 /* Submit button */
-button[type=submit]{width:100%;margin-top:25px;padding:18px;background:var(--accent);color:#000;font-weight:800;border:none;border-radius:40px;cursor:pointer;text-transform:uppercase;font-size:18px;letter-spacing:1.5px;transition:var(--transition);box-shadow:var(--shadow-sm);}
+button[type=submit]{width:100%;margin-top:25px;padding:18px;background:var(--accent);color:#000;border:none;border-radius:40px;cursor:pointer;text-transform:uppercase;font-size:18px;letter-spacing:1.5px;transition:var(--transition);box-shadow:var(--shadow-sm);}
 button[type=submit]:hover{background:#e6c200;transform:translateY(-2px);box-shadow:var(--shadow-md);}
 button[type=submit]:active{transform:scale(0.98);}
 #thanksMessage{display:none;padding:40px 30px;text-align:center;animation:scaleIn .4s ease-out}
 .success-icon{display:inline-block;width:40px;height:40px;margin-bottom:15px;position:relative;}
 .success-icon svg{width:100%;height:100%;}
-.check-path{stroke:var(--success);stroke-width:8;fill:none;stroke-dasharray:100;stroke-dashoffset:100;animation:drawCheck 0.7s ease forwards;}
+.check-path{stroke:var(--success);stroke-width:8;fill:none;stroke-dasharray:100;stroke-dashoffset:100;animation:drawCheck 0.7s ease forwards, glowPulse 0.6s ease 0.7s forwards;}
 @keyframes drawCheck{to{stroke-dashoffset:0;}}
-.sparkle{fill:white;filter:drop-shadow(0 0 2px gold);opacity:0;animation:sparkle 0.3s ease 0.7s forwards;}
-@keyframes sparkle{0%{opacity:0;transform:scale(0.5);}50%{opacity:1;transform:scale(1.5);}100%{opacity:1;transform:scale(1);}}
+@keyframes glowPulse{0%{filter:drop-shadow(0 0 0 gold);}50%{filter:drop-shadow(0 0 12px gold);}100%{filter:drop-shadow(0 0 6px gold);}}
 .modal{display:none;position:fixed;z-index:2000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);}
 .modal-content{background:var(--card);margin:5% auto;padding:24px;width:90%;max-width:550px;border-top:3px solid var(--accent);color:var(--text);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);box-sizing:border-box;max-height:80vh;overflow-y:auto;}
 .modal-content h2{color:var(--accent);margin-top:0;}
@@ -211,14 +210,17 @@ button, .btn, [role=button]{min-height:44px; min-width:44px;}
 </div>
 <div class=container id=main-app-container style=display:none>
 <div class=header-wrap style=flex-direction:column>
-<div style="display:flex; gap:10px; margin-bottom:15px;">
-  <button id=installAppBtn style="display:none;background:var(--accent);color:#000;border:0;padding:10px 20px;font-weight:900;border-radius:40px;cursor:pointer;font-size:14px;text-transform:uppercase" class="btn btn-accent">Install App</button>
-  <button id=logoutHeaderBtn style="background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 12px;font-weight:700;border-radius:40px;cursor:pointer;font-size:12px;text-transform:uppercase" onclick=K() type=button class="btn btn-secondary">Logout</button>
-</div>
-<div style="display:flex;justify-content:space-between;width:100%;align-items:center">
-<div style="display:flex;align-items:center;gap:15px"><img src=icon2.png alt="E&C Logo" style="height:45px;cursor:pointer" onclick=a() onerror="this.style.display='none'"> <h1>Request Pickup Now</h1></div>
-<div style=display:flex;gap:5px><button id=settingsBtn style="background:0 0;border:0;color:var(--accent);padding:8px 12px;border-radius:4px;cursor:pointer;font-size:16px;line-height:1" onclick=o() class="btn-icon">⚙️</button><button id=viewOrdersBtn style="background:var(--accent);color:#000;border:0;padding:8px 12px;font-weight:700;border-radius:40px;cursor:pointer;font-size:12px;text-transform:uppercase" onclick=w() type=button class="btn btn-accent">View Orders</button></div>
-</div>
+  <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+    <div><img src=icon2.png alt="E&C Logo" style="height:40px; cursor:pointer" onclick=a() onerror="this.style.display='none'"></div>
+    <div style="display:flex; gap:8px;">
+      <button id=installAppBtn style="display:none; background:var(--accent); color:#000; border:0; padding:8px 12px; font-weight:900; border-radius:40px; cursor:pointer; font-size:12px; text-transform:uppercase">Install App</button>
+      <button id=settingsBtn style="background:0 0; border:0; color:var(--accent); padding:8px 12px; border-radius:4px; cursor:pointer; font-size:16px; line-height:1" onclick=o() class="btn-icon">⚙️</button>
+    </div>
+  </div>
+  <div style="text-align:center; width:100%; margin-top:10px;">
+    <h1 style="font-size:22px; margin:0 0 5px;">Request Pickup Now</h1>
+    <button id=viewOrdersBtn style="background:var(--accent); color:#000; border:0; padding:8px 12px; font-weight:700; border-radius:40px; cursor:pointer; font-size:12px; text-transform:uppercase" onclick=w() type=button class="btn btn-accent">View Orders</button>
+  </div>
 </div>
 <form id=pickupForm>
 <input type=text name=website_url_hp id=website_url_hp style=display:none tabindex=-1 autocomplete=off>
@@ -261,7 +263,10 @@ button, .btn, [role=button]{min-height:44px; min-width:44px;}
 <button type=button id=cancelEditBtn style="display:none;width:100%;margin-top:5px;background:#b3002d;color:#fff;border:0;padding:12px;border-radius:40px;cursor:pointer;font-weight:700" onclick=cancelEdit() class="btn btn-danger">Cancel Edit</button>
 <button type=button onclick=clearMainForm() style="background:0 0;border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:40px;cursor:pointer;font-size:12px;font-weight:700;width:100%;margin-top:15px" class="btn btn-secondary">Clear Form</button>
 </form>
-<div id=thanksMessage><span class="success-icon"><svg viewBox="0 0 100 100"><path class="check-path" d="M20 50 L40 70 L80 30" /><circle class="sparkle" cx="80" cy="30" r="8" /></svg></span><h2 style="color:#fff;margin:0 0 10px;text-transform:uppercase;font-size:18px">Request Received</h2><p style="color:#aaa;margin-bottom:25px;font-size:14px;line-height:1.5">Our dispatch team has been notified and will review your request shortly.</p><button onclick=location.reload() type=button class="success-btn btn btn-accent" style="width:100%;padding:15px;border-radius:40px;cursor:pointer;text-transform:uppercase">Submit Another</button></div>
+<div id=thanksMessage><span class="success-icon"><svg viewBox="0 0 100 100"><path class="check-path" d="M20 50 L40 70 L80 30" /></svg></span><h2 style="color:#fff;margin:0 0 10px;text-transform:uppercase;font-size:18px">Request Received</h2><p style="color:#aaa;margin-bottom:25px;font-size:14px;line-height:1.5">Our dispatch team has been notified and will review your request shortly.</p><button onclick=location.reload() type=button class="success-btn btn btn-accent" style="width:100%;padding:15px;border-radius:40px;cursor:pointer;text-transform:uppercase">Submit Another</button></div>
+<div style="margin-top:20px; padding:0 25px 25px; text-align:right;">
+  <button id="logoutBottomBtn" class="btn btn-secondary" onclick="K()" style="padding:10px 20px;">Logout</button>
+</div>
 </div>
 <div class=container id=orders-history-container style="display:none;padding:20px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><h2 style="color:var(--text);margin:0;font-size:18px;text-transform:uppercase">Order Dashboard</h2><button onclick=x() class="btn-back-form btn btn-secondary">BACK TO FORM</button></div>
@@ -277,8 +282,8 @@ button, .btn, [role=button]{min-height:44px; min-width:44px;}
     <option value="lastMonth">Last Month</option>
     <option value="ytd">Year-to-Date</option>
   </select>
-  <input type="date" id="startDate" placeholder="📅">
-  <input type="date" id="endDate" placeholder="📅">
+  <input type="date" id="startDate" placeholder="From 📅">
+  <input type="date" id="endDate" placeholder="To 📅">
   <button id="applyDateRange" class="btn btn-secondary">Apply</button>
   <button id="clearDateRange" class="btn btn-secondary">Clear</button>
 </div>
@@ -437,15 +442,18 @@ function promptAddTag(orderId) {
   let tag = prompt("Enter a tag/note for this order:");
   if (tag && tag.trim()) {
     let jobRef = firebase.database().ref('jobs/'+orderId);
-    jobRef.child('user_tags').once('value', snapshot => {
-      let tags = snapshot.val() || [];
-      tags.push(tag.trim());
-      jobRef.update({ user_tags: tags }).then(() => {
-        if (document.getElementById('orders-history-container').style.display === 'block') {
-          A();
-        }
-      });
-    });
+    jobRef.child('user_tags').transaction(function(currentTags) {
+      if (currentTags === null) {
+        return [tag.trim()];
+      } else {
+        currentTags.push(tag.trim());
+        return currentTags;
+      }
+    }).then(() => {
+      if (document.getElementById('orders-history-container').style.display === 'block') {
+        A();
+      }
+    }).catch(err => console.error("Tag update failed", err));
   }
 }
 function loadMoreOrders() {
@@ -622,7 +630,7 @@ af.addEventListener("submit",cc=>{cc.preventDefault();if(document.getElementById
 if(!ad||!ae){alert("Please select a verified address from the Google Maps suggestions or the map picker to prevent invalid locations.");return}
 ag.innerText=S?"Updating...":"Transmitting...";ag.style.opacity="0.7";ag.disabled=!0;let cf=(cg,ch='Unassigned')=>{let ci={name:af.name.value.trim(),pickup_location:af.pickup_location.value.trim(),pickup_city:af.city.value.trim(),city:af.city.value.trim(),p_email:af.p_email.value.trim(),p_phone:af.p_phone.value.trim(),delivery_name:af.delivery_name.value.trim(),destination:af.destination.value.trim(),delivery_city:af.drop_city.value.trim(),d_email:af.d_email.value.trim(),d_phone:af.d_phone.value.trim(),package_details:af.package_details.value.trim(),po_number:af.po_number.value.trim()||"",other_info:af.other_info.value.trim(),job_history:"[Client Request]",status:"pending_pickup",type:"pickup",assigned_to:ch,timestamp:S?N[S]?.timestamp||Date.now():Date.now(),created_by:firebase.auth().currentUser?firebase.auth().currentUser.email:"Web Portal",...cg};if(S){db.ref("jobs/"+S).update(ci).then(()=>{localStorage.setItem('lastOrderTime',Date.now());S=null;af.style.display="none";document.getElementById("thanksMessage").style.display="block";window.scrollTo({top:0,behavior:'smooth'});document.getElementById('cancelEditBtn').style.display='none';}).catch(cj=>{ag.innerText="Update Request";ag.disabled=!1;ag.style.opacity="1"})}else{db.ref("jobs").push(ci).then(ck=>{localStorage.setItem('lastOrderTime',Date.now());let cl=ck.key;if(!N)N={};N[cl]={...ci,id:cl};if(document.getElementById('orders-history-container').style.display==='block')A();af.style.display="none";document.getElementById("thanksMessage").style.display="block";window.scrollTo({top:0,behavior:'smooth'})}).catch(cm=>{ag.innerText="Submit Request";ag.disabled=!1;ag.style.opacity="1"})}};let cn=new google.maps.Geocoder(),co=af.pickup_location.value.trim()+", "+af.city.value.trim(),cp=!1,cq=setTimeout(()=>{if(!cp){cp=!0;cf()}},3000);cn.geocode({address:co},(cr,cs)=>{if(cp)return;cp=!0;clearTimeout(cq);if(cs==="OK"&&cr[0]){let ct=cr[0].geometry.location,cu={lat:ct.lat(),lng:ct.lng()},cv='Unassigned';for(let cw in Q){let cx=Q[cw];if(cx.polygon){let cy=new google.maps.Polygon({paths:cx.polygon});if(google.maps.geometry.poly.containsLocation(ct,cy)){cv=cw;break}}}cf(cu,cv)}else cf()})});
 var Y;window.addEventListener('beforeinstallprompt',cz=>{cz.preventDefault();Y=cz;document.getElementById('installAppBtn').style.display='block'});document.getElementById('installAppBtn').addEventListener('click',async()=>{if(Y){Y.prompt();let cA=await Y.userChoice;if(cA.outcome==='accepted')document.getElementById('installAppBtn').style.display='none';Y=null}});
-var Z,aa,ab='';function E(cB){ab=cB;let cC=document.getElementById('location-picker-modal');cC.style.display='block';document.body.style.overflow='hidden';if(!Z){Z=new google.maps.Map(document.getElementById('picker-map'),{center:{lat:49.8951,lng:-97.1384},zoom:12,disableDefaultUI:!0,zoomControl:!0,scrollwheel:!0,styles:[{"featureType":"all","elementType":"labels.text.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"all","elementType":"labels.text.stroke","stylers":[{"color":"#000000"},{"lightness":13}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":21}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":17}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":29},{"weight":0.2}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":18}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":16}]},{"featureType":"transit","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":19}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":17}]}]});let cD=document.getElementById('loc-search-bar'),cE=new google.maps.places.Autocomplete(cD);cE.bindTo('bounds',Z);cE.addListener('place_changed',()=>{let cF=cE.getPlace();if(cF.geometry){Z.setCenter(cF.geometry.location);Z.setZoom(17)}});cD.addEventListener('keydown',cG=>{if(cG.key==='Enter'){let cH=cD.value,cI=cH.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);if(cI){let cJ={lat:+cI[1],lng:+cI[2]};Z.setCenter(cJ);Z.setZoom(17)}else{let cK=new google.maps.Geocoder();cK.geocode({address:cH},(cL,cM)=>{if(cM==='OK'&&cL[0]){Z.setCenter(cL[0].geometry.location);Z.setZoom(17)}})}}})}}
+var Z,aa,ab='';function E(cB){ab=cB;let cC=document.getElementById('location-picker-modal');cC.style.display='block';document.body.style.overflow='hidden';if(!Z){Z=new google.maps.Map(document.getElementById('picker-map'),{center:{lat:49.8951,lng:-97.1384},zoom:12,gestureHandling:'greedy',disableDefaultUI:!0,zoomControl:!0,scrollwheel:!0,styles:[{"featureType":"all","elementType":"labels.text.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"all","elementType":"labels.text.stroke","stylers":[{"color":"#000000"},{"lightness":13}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":21}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":17}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":29},{"weight":0.2}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":18}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":16}]},{"featureType":"transit","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":19}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":17}]}]});let cD=document.getElementById('loc-search-bar'),cE=new google.maps.places.Autocomplete(cD);cE.bindTo('bounds',Z);cE.addListener('place_changed',()=>{let cF=cE.getPlace();if(cF.geometry){Z.setCenter(cF.geometry.location);Z.setZoom(17)}});cD.addEventListener('keydown',cG=>{if(cG.key==='Enter'){let cH=cD.value,cI=cH.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);if(cI){let cJ={lat:+cI[1],lng:+cI[2]};Z.setCenter(cJ);Z.setZoom(17)}else{let cK=new google.maps.Geocoder();cK.geocode({address:cH},(cL,cM)=>{if(cM==='OK'&&cL[0]){Z.setCenter(cL[0].geometry.location);Z.setZoom(17)}})}}})}}
 function C(){let cN=document.getElementById('loc-search-bar'),cO=cN.value;if(!cO)return;let cP=cO.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);if(cP){let cQ={lat:+cP[1],lng:+cP[2]};Z.setCenter(cQ);Z.setZoom(17)}else{let cR=new google.maps.Geocoder();cR.geocode({address:cO},(cS,cT)=>{if(cT==='OK'&&cS[0]){Z.setCenter(cS[0].geometry.location);Z.setZoom(17)}else alert('Location not found')})}}
 function D(){let cU=Z.getCenter(),cV=new google.maps.Geocoder();cV.geocode({location:cU},(cW,cX)=>{if(cX==='OK'&&cW[0]){let cY=cW[0].formatted_address,cZ=i(cW[0].address_components);if(ab==='pickup'){document.getElementById('f-pickup').value=cY;document.getElementsByName('city')[0].value=cZ;ad=!0}else if(ab==='drop'){document.getElementById('f-drop-address').value=cY;document.getElementsByName('drop_city')[0].value=cZ;ae=!0}else if(ab==='settings-pickup'){document.getElementById('default-pickup').value=cY;document.getElementById('default-city').value=cZ}else if(ab==='settings-drop'){document.getElementById('default-destination').value=cY;document.getElementById('default-drop_city').value=cZ}else if(ab==='new-contact'){document.getElementById('new-contact-address').value=cY}}document.getElementById('location-picker-modal').style.display='none';document.body.style.overflow=''})}
 function F(ca){W=ca;G();document.getElementById('settings-modal').style.display='block';r()}
