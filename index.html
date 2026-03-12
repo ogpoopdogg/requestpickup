@@ -205,7 +205,7 @@ body.light-mode .ocean-label{color:#000}
 }
 
 .ocean-label {
-  top: 42px;
+  top: 50px;
   font-size: 10px;
   line-height: 1.2;
   white-space: normal;
@@ -216,7 +216,7 @@ body.light-mode .ocean-label{color:#000}
   .ocean-label {
     font-size: 8px;
     width: 50px;
-    top: 36px;
+    top: 44px;
   }
 }
 
@@ -513,8 +513,8 @@ body:not(.light-mode) #settingsBtn,
 body:not(.light-mode) #installAppBtn {
   border: 1px solid var(--accent) !important;
 }
-/* Remove yellow border from pin buttons */
-.btn-icon[onclick^="E("] {
+/* Remove yellow border from pin and address book buttons */
+.btn-icon[onclick^="E("], .btn-icon[onclick^="F("] {
   border: none !important;
 }
 /* Load more button */
@@ -553,10 +553,10 @@ body:not(.light-mode) #installAppBtn {
   display: inline-block;
   background: var(--input-bg);
   border: 1px solid var(--border);
-  padding: 4px 16px;
+  padding: 3px 12px;
   border-radius: 12px;
   margin-right: 5px;
-  font-size: 22px;
+  font-size: 15px;
 }
 /* Light mode specific overrides for pickup/delivery names */
 body.light-mode .order-card span[style*="color:#ffd700"],
@@ -567,6 +567,11 @@ body.light-mode #logoutHeaderBtn {
   border-color: #000 !important;
   color: #000 !important;
   background: transparent !important;
+}
+
+/* Soft golden glow for in‑progress order cards */
+.in-progress-card {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2), 0 0 15px 5px rgba(255,215,0,0.3);
 }
 </style>
 </head>
@@ -591,10 +596,13 @@ body.light-mode #logoutHeaderBtn {
 </div>
 <div class=container id=main-app-container style=display:none>
 <div class=header-wrap style=flex-direction:column>
-<button id=installAppBtn style="display:none;background:var(--accent);color:#000;border:0;padding:10px 20px;font-weight:900;border-radius:6px;margin-bottom:15px;cursor:pointer;font-size:14px;text-transform:uppercase" class="btn btn-accent">Install App</button>
+<div style="display:flex; gap:10px; margin-bottom:15px;">
+  <button id=installAppBtn style="display:none;background:var(--accent);color:#000;border:0;padding:10px 20px;font-weight:900;border-radius:6px;cursor:pointer;font-size:14px;text-transform:uppercase" class="btn btn-accent">Install App</button>
+  <button id=logoutHeaderBtn style="background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 12px;font-weight:700;border-radius:4px;cursor:pointer;font-size:12px;text-transform:uppercase" onclick=K() type=button>Logout</button>
+</div>
 <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
 <div style="display:flex;align-items:center;gap:15px"><img src=icon2.png alt="E&C Logo" style=cursor:pointer onclick=a() onerror="this.style.display='none'"> <h1>Request Pickup Now</h1></div>
-<div style=display:flex;gap:5px><button id=settingsBtn style="background:0 0;border:0;color:var(--accent);padding:8px 12px;border-radius:4px;cursor:pointer;font-size:16px;line-height:1" onclick=o() class=btn-icon>⚙️</button><button id=viewOrdersBtn style="background:var(--accent);color:#000;border:0;padding:8px 12px;font-weight:700;border-radius:4px;cursor:pointer;font-size:12px;text-transform:uppercase" onclick=w() type=button class="btn btn-accent">View Orders</button><button id=logoutHeaderBtn style="background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 12px;font-weight:700;border-radius:4px;cursor:pointer;font-size:12px;text-transform:uppercase" onclick=K() type=button>Logout</button></div>
+<div style=display:flex;gap:5px><button id=settingsBtn style="background:0 0;border:0;color:var(--accent);padding:8px 12px;border-radius:4px;cursor:pointer;font-size:16px;line-height:1" onclick=o() class=btn-icon>⚙️</button><button id=viewOrdersBtn style="background:var(--accent);color:#000;border:0;padding:8px 12px;font-weight:700;border-radius:4px;cursor:pointer;font-size:12px;text-transform:uppercase" onclick=w() type=button class="btn btn-accent">View Orders</button></div>
 </div>
 </div>
 <form id=pickupForm>
@@ -848,7 +856,7 @@ function A(){
         bR = (bB === 'completed'),
         bS = 'order-card-'+bz.id,
         bT = bJ ? '' : `<div class="ocean-timeline"><div class="ocean-track"><div class="ocean-fill" style="width:${bL};"></div></div><div class="ocean-node ${bK[0]}"><div class="ocean-label">Ordered</div></div><div class="ocean-node ${bK[1]}"><div class="ocean-label">Assigned</div></div><div class="ocean-node ${bK[2]}"><div class="ocean-label">Picked‑Up</div></div><div class="ocean-node ${bK[3]}"><div class="ocean-label">Out for Delivery</div></div><div class="ocean-node ${bK[4]}"><div class="ocean-label">Delivered</div></div></div>`,
-        bU = `<div class="order-date">${bA}</div><div style="display:flex;gap:15px;margin-top:10px;"><div style="flex:1;"><strong>Pickup</strong> ${bz.name}<br><span style="color:#aaa;font-size:12px;">${bz.pickup_location}</span></div><div style="flex:1;"><strong>Delivery</strong> ${bz.delivery_name}<br><span style="color:#aaa;font-size:12px;">${bz.destination}</span></div></div><div style="margin-top:10px; text-align:center;"><div><strong>Packages/Items/Dimensions</strong><br><span style="color:#aaa;font-size:12px;">${bP}</span></div><div style="margin-top:5px; text-align:center;"><strong>PO / Ref</strong><br><span style="color:#aaa;font-size:12px;">${bQ}</span></div></div><div style="margin-top:10px; text-align:center;"><strong>Driver Notes</strong><br><span style="color:#aaa;font-size:12px;">${bz.other_info || 'None'}</span></div><div class="user-tags" style="text-align:left; margin-top:10px;"><div style="margin-bottom:5px;">${bz.user_tags ? bz.user_tags.map(tag => `<span>${tag}</span>`).join('') : ''}</div><button class="btn btn-secondary" onclick="promptAddTag('${bz.id}')" style="font-size:22px; padding:8px 16px;">+ tag</button></div>${bT}`;
+        bU = `<div class="order-date">${bA}</div><div style="display:flex;gap:15px;margin-top:10px;"><div style="flex:1;"><strong>Pickup</strong> ${bz.name}<br><span style="color:#aaa;font-size:12px;">${bz.pickup_location}</span></div><div style="flex:1;"><strong>Delivery</strong> ${bz.delivery_name}<br><span style="color:#aaa;font-size:12px;">${bz.destination}</span></div></div><div style="margin-top:10px; text-align:center;"><div><strong>Packages/Items/Dimensions</strong><br><span style="color:#aaa;font-size:12px;">${bP}</span></div><div style="margin-top:5px; text-align:center;"><strong>PO / Ref</strong><br><span style="color:#aaa;font-size:12px;">${bQ}</span></div></div><div style="margin-top:10px; text-align:center;"><strong>Driver Notes</strong><br><span style="color:#aaa;font-size:12px;">${bz.other_info || 'None'}</span></div><div class="user-tags" style="text-align:left; margin-top:10px;"><div style="margin-bottom:5px;">${bz.user_tags ? bz.user_tags.map(tag => `<span>${tag}</span>`).join('') : ''}</div><button class="btn btn-secondary" onclick="promptAddTag('${bz.id}')" style="font-size:15px; padding:6px 12px;">+ tag</button></div>${bT}`;
     if (bR || bB === 'cancelled' || bJ) {
       let bV = P.has(bz.id),
           bW = new Date(bz.timestamp),
@@ -856,7 +864,7 @@ function A(){
           bY;
       if (bB === 'cancelled' || bJ) bY = `<div style="display:flex;flex-direction:column;gap:4px;"><span style="font-weight:700;">${bX}</span><span class="package-details">${bz.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${bz.name||'?'}</span> → <span style="color:#90ee90;">${bz.delivery_name||'?'}</span></div><div style="color:red;font-weight:700;">Order Cancelled</div>`;
       else bY = `<div style="display:flex;flex-direction:column;gap:4px;"><span style="font-weight:700;">${bX}</span><span class="package-details">${bz.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${bz.name||'?'}</span> → <span style="color:#90ee90;">${bz.delivery_name||'?'}</span></div>`;
-      bn.innerHTML += `<div style="margin-bottom:2px;"><button onclick="B('${bz.id}')" style="width:100%;padding:6px 10px;background:var(--input-bg);border:1px solid #ccc;border-radius:4px;color:var(--text);text-align:left;cursor:pointer;font-size:12px;line-height:1.4;">${bY}</button><div id="${bS}" class="order-card" style="display:${bV?'block':'none'};margin-bottom:0;border-top:0;border-top-left-radius:0;border-top-right-radius:0;"><div class="order-date">${bA}</div><div style="display:flex;gap:15px;margin-top:10px;"><div style="flex:1;"><strong>Pickup</strong> ${bz.name}<br><span style="color:#aaa;font-size:12px;">${bz.pickup_location}</span></div><div style="flex:1;"><strong>Delivery</strong> ${bz.delivery_name}<br><span style="color:#aaa;font-size:12px;">${bz.destination}</span></div></div><div style="margin-top:10px; text-align:center;"><div><strong>Packages/Items/Dimensions</strong><br><span style="color:#aaa;font-size:12px;">${bP}</span></div><div style="margin-top:5px; text-align:center;"><strong>PO / Ref</strong><br><span style="color:#aaa;font-size:12px;">${bQ}</span></div></div><div style="margin-top:10px; text-align:center;"><strong>Driver Notes</strong><br><span style="color:#aaa;font-size:12px;">${bz.other_info || 'None'}</span></div><div class="user-tags" style="text-align:left; margin-top:10px;"><div style="margin-bottom:5px;">${bz.user_tags ? bz.user_tags.map(tag => `<span>${tag}</span>`).join('') : ''}</div><button class="btn btn-secondary" onclick="promptAddTag('${bz.id}')" style="font-size:22px; padding:8px 16px;">+ tag</button></div></div></div>`;
+      bn.innerHTML += `<div style="margin-bottom:2px;"><button onclick="B('${bz.id}')" style="width:100%;padding:6px 10px;background:var(--input-bg);border:1px solid #ccc;border-radius:4px;color:var(--text);text-align:left;cursor:pointer;font-size:12px;line-height:1.4;">${bY}</button><div id="${bS}" class="order-card" style="display:${bV?'block':'none'};margin-bottom:0;border-top:0;border-top-left-radius:0;border-top-right-radius:0;"><div class="order-date">${bA}</div><div style="display:flex;gap:15px;margin-top:10px;"><div style="flex:1;"><strong>Pickup</strong> ${bz.name}<br><span style="color:#aaa;font-size:12px;">${bz.pickup_location}</span></div><div style="flex:1;"><strong>Delivery</strong> ${bz.delivery_name}<br><span style="color:#aaa;font-size:12px;">${bz.destination}</span></div></div><div style="margin-top:10px; text-align:center;"><div><strong>Packages/Items/Dimensions</strong><br><span style="color:#aaa;font-size:12px;">${bP}</span></div><div style="margin-top:5px; text-align:center;"><strong>PO / Ref</strong><br><span style="color:#aaa;font-size:12px;">${bQ}</span></div></div><div style="margin-top:10px; text-align:center;"><strong>Driver Notes</strong><br><span style="color:#aaa;font-size:12px;">${bz.other_info || 'None'}</span></div><div class="user-tags" style="text-align:left; margin-top:10px;"><div style="margin-bottom:5px;">${bz.user_tags ? bz.user_tags.map(tag => `<span>${tag}</span>`).join('') : ''}</div><button class="btn btn-secondary" onclick="promptAddTag('${bz.id}')" style="font-size:15px; padding:6px 12px;">+ tag</button></div></div></div>`;
     } else {
       let cardContent = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
@@ -879,11 +887,11 @@ function A(){
         <div style="margin-top:10px; text-align:center;"><strong>Driver Notes</strong><br><span style="color:#aaa;font-size:12px;">${bz.other_info || 'None'}</span></div>
         <div class="user-tags" style="text-align:left; margin-top:10px;">
           <div style="margin-bottom:5px;">${bz.user_tags ? bz.user_tags.map(tag => `<span>${tag}</span>`).join('') : ''}</div>
-          <button class="btn btn-secondary" onclick="promptAddTag('${bz.id}')" style="font-size:22px; padding:8px 16px;">+ tag</button>
+          <button class="btn btn-secondary" onclick="promptAddTag('${bz.id}')" style="font-size:15px; padding:6px 12px;">+ tag</button>
         </div>
         ${bT}
       `;
-      bn.innerHTML += `<div class="order-card">${cardContent}</div>`;
+      bn.innerHTML += `<div class="order-card in-progress-card">${cardContent}</div>`;
     }
   }
   // Show/hide load more button
