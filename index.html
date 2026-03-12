@@ -10,8 +10,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--accent:#ffd700;--bg:#222;--card:#141414;--text:#e0e0e0;--input-bg:#1e1e1e;--border:#333;--placeholder:#777;--success:#00b32d}
-body.light-mode{--bg:#f8f8f8;--card:#f2f2f2;--text:#000;--input-bg:#f9f9f9;--border:#ddd;--placeholder:#888}
+:root{--accent:#ffd700;--bg:#222;--card:#141414;--text:#e0e0e0;--input-bg:#1e1e1e;--border:#333;--placeholder:#777;--success:#00b32d;--radius-sm:4px;--radius-md:6px;--radius-lg:8px;--space-xs:4px;--space-sm:8px;--space-md:16px;--space-lg:24px;--space-xl:32px;--shadow-sm:0 2px 4px rgba(0,0,0,.1);--shadow-md:0 4px 8px rgba(0,0,0,.2);--shadow-lg:0 8px 16px rgba(0,0,0,.3);--transition:all 0.2s ease;}
+body.light-mode{--bg:#f8f8f8;--card:#f2f2f2;--text:#000;--input-bg:#f9f9f9;--border:#ddd;--placeholder:#888;--shadow-sm:0 2px 4px rgba(0,0,0,0.05);--shadow-md:0 4px 8px rgba(0,0,0,0.08);--shadow-lg:0 8px 16px rgba(0,0,0,0.1);}
 body.light-mode h1{background:0 0;color:#000;-webkit-text-fill-color:#000}
 body.light-mode .section-title{color:#b39700}
 body.light-mode button[type=submit]{background:#fff;color:#000;border-color:#00b32d}
@@ -32,554 +32,157 @@ body.light-mode #settingsBtn{color:#000!important}
 .order-actions{margin-top:8px}
 @keyframes fadeInPage{0%{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
 @keyframes glow-pulse{0%{box-shadow:0 0 2px rgba(255,215,0,.1);border-color:var(--border)}50%{box-shadow:0 0 8px rgba(255,215,0,.3);border-color:var(--accent)}to{box-shadow:0 0 2px rgba(255,215,0,.1);border-color:var(--border)}}
-body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background-color:var(--bg);color:var(--text);margin:0;display:flex;justify-content:center;align-items:flex-start;padding:20px 15px;box-sizing:border-box;min-height:100vh}
-.container{background:var(--card);width:100%;max-width:600px;border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,.6);border:1px solid var(--border);animation:fadeInPage .5s ease-out;overflow:hidden;position:relative;margin-top:10px}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background-color:var(--bg);color:var(--text);margin:0;display:flex;justify-content:center;align-items:flex-start;padding:20px 15px;box-sizing:border-box;min-height:100vh;line-height:1.5;}
+.container{background:var(--card);width:100%;max-width:600px;border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);border:1px solid var(--border);animation:fadeInPage .5s ease-out;overflow:hidden;position:relative;margin-top:10px;}
 .header-wrap{background:#000;border-bottom:2px solid var(--accent);padding:25px 20px;display:flex;align-items:center;justify-content:center;gap:15px}
-.header-wrap img{height:35px;width:auto;filter:drop-shadow(0 0 2px var(--accent))}
-h1{color:var(--text);margin:0;font-size:22px;font-weight:800;text-transform:uppercase;letter-spacing:1px;background:linear-gradient(90deg,var(--accent) 0,#fff 50%,var(--accent) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;background-size:200% auto;animation:text-shine 4s linear infinite}
+.header-wrap img{height:40px;width:auto;filter:drop-shadow(0 0 2px var(--accent))}
+h1{color:var(--text);margin:0;font-size:24px;font-weight:800;text-transform:uppercase;letter-spacing:1px;background:linear-gradient(90deg,var(--accent) 0,#fff 50%,var(--accent) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;background-size:200% auto;animation:text-shine 4s linear infinite}
 @keyframes text-shine{to{background-position:200% center}}
 form{padding:25px}
 .section-title{color:var(--accent);font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;margin:20px 0 10px;display:flex;align-items:center}
 .section-title:after{content:'';flex:1;height:1px;background:var(--border);margin-left:10px}
 .section-title:first-of-type{margin-top:0}
-.input-group{margin-bottom:12px}
-label{display:block;font-size:13px;font-weight:700;color:#888;margin-bottom:5px;margin-left:2px}
+.input-group{margin-bottom:16px;position:relative;}
+label{display:block;font-size:13px;font-weight:600;color:var(--placeholder);margin-bottom:5px;margin-left:2px}
 .required-mark{color:var(--accent);margin-left:2px}
-input,textarea,select{width:100%;padding:15px 16px;background:var(--input-bg);border:1px solid var(--border);color:var(--text);border-radius:6px;font-size:17px;box-sizing:border-box;transition:all .2s;font-family:inherit}
-input:focus,textarea:focus{border-color:var(--accent);outline:0;box-shadow:0 0 8px rgba(255,215,0,.15);background:#252525}
-::placeholder{color:var(--placeholder);font-size:16px}
+input,textarea,select{width:100%;padding:14px 16px;background:var(--input-bg);border:1px solid var(--border);color:var(--text);border-radius:var(--radius-md);font-size:16px;box-sizing:border-box;transition:var(--transition);font-family:inherit}
+input:focus,textarea:focus,select:focus{border-color:var(--accent);outline:0;box-shadow:0 0 0 3px rgba(255,215,0,0.2);background:var(--input-bg);}
+::placeholder{color:var(--placeholder);font-size:15px;font-weight:400;}
 .flex-row{display:flex;gap:12px}
 @media (max-width:500px){.flex-row{flex-direction:column;gap:12px}}
-button[type=submit]{width:100%;margin-top:25px;padding:20px;background:#1c1c1c;color:var(--text);font-weight:800;border:1px solid var(--border);border-bottom:3px solid var(--accent);cursor:pointer;border-radius:6px;text-transform:uppercase;font-size:18px;letter-spacing:1.5px;transition:all .2s}
-button[type=submit]:hover{background:#252525;transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.3)}
-button[type=submit]:active{transform:translateY(1px)}
+/* ===== BUTTONS ===== */
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 20px;border-radius:var(--radius-md);font-weight:600;transition:var(--transition);cursor:pointer;border:1px solid transparent;line-height:1.2;text-decoration:none;gap:8px;}
+.btn-primary{background:var(--accent);color:#000;border:1px solid var(--accent);font-weight:700;box-shadow:var(--shadow-sm);}
+.btn-primary:hover{background:#e6c200;transform:translateY(-2px);box-shadow:var(--shadow-md);}
+.btn-primary:active{transform:translateY(0);}
+.btn-secondary{background:transparent;color:var(--text);border:1px solid var(--border);}
+.btn-secondary:hover{background:var(--input-bg);border-color:var(--accent);}
+.btn-danger{background:#b3002d;color:#fff;border:1px solid #b3002d;}
+.btn-danger:hover{background:#990026;box-shadow:var(--shadow-sm);}
+.btn-accent{background:var(--accent);color:#000;border:1px solid var(--accent);font-weight:700;}
+.btn-accent:hover{background:#e6c200;transform:translateY(-2px);box-shadow:var(--shadow-md);}
+.btn-icon{background:transparent;border:none;padding:8px;font-size:1.2em;cursor:pointer;border-radius:50%;transition:var(--transition);line-height:1;color:var(--text);}
+.btn-icon:hover{background:rgba(255,215,0,0.15);color:var(--accent);}
+/* Icon inside input */
+.input-icon-wrapper{position:relative;display:flex;align-items:center;}
+.input-icon-wrapper input{padding-right:80px; /* space for two icons */}
+.input-icon-wrapper .btn-icon{position:absolute;right:4px;top:50%;transform:translateY(-50%);z-index:2;background:transparent;border:none;padding:8px;}
+.input-icon-wrapper .btn-icon:first-of-type{right:40px;} /* adjust if two icons */
+/* For single icon */
+.input-icon-wrapper .btn-icon.single{right:8px;}
+/* For address book button separate, but we'll handle with flex */
+.address-book-btn.btn-icon{border:none; background:transparent; padding:8px;}
+/* Specific icon buttons in forms */
+#f-pickup + .btn-icon, #f-drop-address + .btn-icon { right:8px; }
+/* Submit button */
+button[type=submit]{width:100%;margin-top:25px;padding:18px;background:var(--accent);color:#000;font-weight:800;border:none;border-radius:var(--radius-md);cursor:pointer;text-transform:uppercase;font-size:18px;letter-spacing:1.5px;transition:var(--transition);box-shadow:var(--shadow-sm);}
+button[type=submit]:hover{background:#e6c200;transform:translateY(-2px);box-shadow:var(--shadow-md);}
+button[type=submit]:active{transform:translateY(1px);}
 #thanksMessage{display:none;padding:40px 30px;text-align:center;animation:fadeInPage .4s}
-.success-icon{font-size:40px;color:var(--success);margin-bottom:15px;display:block}
-.success-btn{background:var(--accent)!important;color:#000!important;border:0!important;font-weight:900!important}
-.modal{display:none;position:fixed;z-index:2000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.85);backdrop-filter:blur(2px)}
-.modal-content{background:var(--card);margin:5% auto;padding:30px;width:90%;max-width:550px;border:1px solid var(--accent);color:var(--text);border-radius:8px;box-shadow:0 10px 30px rgba(0,0,0,.5);box-sizing:border-box}
-.btn-cancel{background:#222;color:#ccc;border:1px solid #333;padding:12px;font-weight:700;cursor:pointer;font-size:13px;border-radius:4px}
-.btn-save{background:var(--success);color:#000;border:0;padding:12px;font-weight:700;text-transform:uppercase;cursor:pointer;font-size:13px;border-radius:4px}
-.order-card{background:var(--input-bg);border:1px solid var(--border);padding:15px;border-radius:6px;margin-bottom:25px;box-shadow:0 4px 15px rgba(0,0,0,.3)}
-.order-date{font-size:12px;color:var(--placeholder);margin-bottom:10px;border-bottom:1px solid var(--border);padding-bottom:5px}
-.dashboard-section{margin-bottom:10px;font-size:13px;color:var(--text)}
-.dashboard-section strong{color:#888;text-transform:uppercase;font-size:11px;display:block;margin-bottom:3px}
-.loc-flex{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px}
-.dashboard-meta{display:flex;flex-wrap:wrap;gap:10px;background:#111;padding:5px 10px;border-radius:4px;margin-top:5px;border:1px solid #222}
-.meta-item{flex:1;min-width:100px}
-.btn-back-form{background:#222;color:#ccc;border:1px solid #333;padding:8px 12px;font-weight:700;cursor:pointer;font-size:12px;border-radius:4px}
-.ocean-timeline{display:flex;position:relative;margin-top:35px;align-items:center;justify-content:space-between;padding:0 10px;margin-bottom:20px}
-.ocean-track{position:absolute;top:50%;left:10px;right:10px;height:4px;background:#e0e0e0;z-index:0;transform:translateY(-50%);border-radius:2px}
-.ocean-fill{position:absolute;top:0;left:0;height:100%;background:#007bff;border-radius:2px;transition:width .6s cubic-bezier(.25,.8,.25,1)}
-.ocean-node{position:relative;z-index:1;width:16px;height:16px;border-radius:50%;background:#fff;border:2px solid #aaa;box-shadow:0 2px 4px rgba(0,0,0,.1);display:flex;align-items:center;justify-content:center;transition:all .4s}
-.ocean-node.completed{background:#007bff;border-color:#0056b3}
-.ocean-node.active{background:#ffc107;border-color:#e0a800;box-shadow:0 0 8px #ffc107;animation:pulse 1.5s infinite}
-@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.2)}to{transform:scale(1)}}
-.ocean-label{position:absolute;top:24px;font-size:10px;text-transform:uppercase;font-weight:700;color:#fff;text-align:center;width:70px;left:50%;transform:translateX(-50%);letter-spacing:.5px}
-.ocean-node.active .ocean-label{color:#fff}
-.ocean-node.completed .ocean-label{color:#fff}
-#settings-modal .modal-content{max-width:500px}
-.settings-section{margin-bottom:20px}
-.settings-section h3{color:var(--accent);margin-top:0}
-.theme-toggle{display:flex;align-items:center;gap:10px;margin-bottom:20px}
-.theme-toggle button{flex:1;padding:10px;background:var(--input-bg);border:1px solid var(--border);color:var(--text);cursor:pointer;border-radius:4px}
-.theme-toggle button.active{background:var(--accent);color:#000;border-color:var(--accent)}
-#save-defaults-btn{margin-top:10px}
-.order-search-bar{display:flex;gap:8px;margin:15px 0 20px;flex-wrap:wrap}
-.order-search-bar input{flex:2;min-width:200px;padding:12px}
-.order-search-bar select{flex:1;min-width:120px;padding:12px}
-.order-actions{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
-.cancel-btn {
-  background: transparent;
-  color: #b3002d;
-  border: 1px solid #b3002d;
-  padding: 4px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 700;
-  transition: all 0.2s;
-}
-.cancel-btn:hover {
-  background: #b3002d;
-  color: #fff;
-}
-.edit-btn {
-  background: transparent;
-  color: var(--accent);
-  border: 1px solid var(--accent);
-  padding: 4px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 700;
-  transition: all 0.2s;
-}
-.edit-btn:hover {
-  background: var(--accent);
-  color: #000;
-}
-.address-book-btn{background:#333;color:var(--text);border:1px solid var(--accent);padding:8px;border-radius:4px;cursor:pointer;font-size:12px}
-.saved-address-dropdown{margin-bottom:10px}
-#location-picker-modal{z-index:2001}
-body.light-mode #settings-modal .modal-content h2{color:#000}
-body.light-mode .settings-section h3{color:#000}
-:root{--space-xs:4px;--space-sm:8px;--space-md:16px;--space-lg:24px;--space-xl:32px;--radius-sm:4px;--radius-md:6px;--radius-lg:8px;--shadow-sm:0 2px 4px rgba(0,0,0,.1);--shadow-md:0 4px 8px rgba(0,0,0,.2);--shadow-lg:0 8px 16px rgba(0,0,0,.3);--transition:all .2s}
-.btn{display:inline-block;padding:var(--space-sm) var(--space-md);border-radius:var(--radius-md);font-weight:600;text-align:center;transition:var(--transition);cursor:pointer;border:1px solid transparent;line-height:1.2}
-.btn-primary{background:#1c1c1c;color:var(--text);border-bottom:3px solid var(--accent);text-transform:uppercase;font-weight:800}
-.btn-primary:hover{background:#252525;transform:translateY(-2px);box-shadow:var(--shadow-md)}
-.btn-secondary{background:#222;color:#ccc;border:1px solid #333}
-.btn-secondary:hover{background:#2a2a2a;color:#fff;border-color:var(--accent)}
-.btn-danger{background:#b3002d;color:#fff;border:0}
-.btn-danger:hover{background:#990026;box-shadow:var(--shadow-sm)}
-.btn-accent{background:var(--accent);color:#000;border:0;font-weight:700}
-.btn-accent:hover{background:#e6c200;transform:translateY(-1px);box-shadow:var(--shadow-sm)}
-.btn-icon{background:0 0;border:0;padding:var(--space-xs);font-size:1.2em;cursor:pointer;border-radius:50%;transition:var(--transition);line-height:1}
-.btn-icon:hover{background:rgba(255,215,0,.1)}
-.input-group{margin-bottom:var(--space-md)}
-input,textarea,select{border-radius:var(--radius-md);transition:var(--transition)}
-input:focus,textarea:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,215,0,.2)}
-.order-card{border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);transition:var(--transition)}
-.order-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
-.modal-content{border-radius:var(--radius-lg);box-shadow:var(--shadow-lg)}
-body.light-mode .ocean-label{color:#000}
-@media (max-width:600px){.container{margin-top:0;border-radius:0}.header-wrap{padding:15px}form{padding:15px}}
-.order-actions .btn{padding:var(--space-xs) var(--space-sm);font-size:12px}
-
-/* ========== PROFESSIONAL DASHBOARD REDESIGN ========== */
-/* Timeline nodes with Font Awesome icons */
-.ocean-timeline {
-  margin-top: 45px; /* extra space for larger nodes */
-}
-
-.ocean-node {
-  width: 36px;
-  height: 36px;
-  background: var(--input-bg);
-  border: 2px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.ocean-node::before {
-  font-family: "Font Awesome 6 Free";
-  font-weight: 900;
-  font-size: 16px;
-  color: var(--text);
-  display: block;
-  line-height: 1;
-}
-
-.ocean-node.completed::before {
-  color: #fff;
-}
-
-.ocean-node.active::before {
-  color: #000;
-}
-
-/* Stage‑specific icons */
-.ocean-timeline .ocean-node:nth-child(2)::before { content: "\f0ca"; } /* Ordered */
-.ocean-timeline .ocean-node:nth-child(3)::before { content: "\f007"; } /* Assigned */
-.ocean-timeline .ocean-node:nth-child(4)::before { content: "\f466"; } /* Picked‑Up */
-.ocean-timeline .ocean-node:nth-child(5)::before { content: "\f0d1"; } /* Out for Delivery */
-.ocean-timeline .ocean-node:nth-child(6)::before { content: "\f00c"; } /* Delivered */
-.ocean-node.completed {
-  background: #007bff;
-  border-color: #0056b3;
-}
-
-.ocean-node.active {
-  background: #28a745;
-  border-color: #1e7e34;
-  animation: glow-pulse 2s infinite;
-}
-
-/* Refined pulse for active node */
-@keyframes glow-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7); }
-  70% { box-shadow: 0 0 0 10px rgba(255, 193, 7, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
-}
-
-.ocean-label {
-  top: 50px;
-  font-size: 10px;
-  line-height: 1.2;
-  white-space: normal;
-  word-break: break-word;
-}
-
-@media (max-width: 480px) {
-  .ocean-label {
-    font-size: 8px;
-    width: 50px;
-    top: 44px;
-  }
-}
-
-.ocean-track {
-  background: var(--border);
-}
-
-.ocean-fill {
-  background: linear-gradient(90deg, #007bff, #3399ff);
-  box-shadow: 0 0 8px rgba(0,123,255,0.5);
-}
-
-/* Job cards – modern panels */
-.order-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-.order-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0,0,0,0.3);
-  border-color: var(--accent);
-}
-
-/* Expanded card style - removed thick yellow border */
-.order-card[style*="display: block"] {
-  border-left: 1px solid var(--border);
-  background: var(--input-bg);
-}
-
-/* Inner sections with subtle panels */
-.order-card .order-date {
-  font-size: 12px;
-  color: var(--placeholder);
-  margin-bottom: 15px;
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 10px;
-  letter-spacing: 0.5px;
-}
-
-.order-card > .order-date + div {
-  background: var(--bg);
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  border: 1px solid var(--border);
-}
-
-.order-card > .order-date + div + div {
-  background: var(--bg);
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  border: 1px solid var(--border);
-}
-
-.order-card > .order-date + div + div + div {
-  background: var(--bg);
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  border: 1px solid var(--border);
-}
-
-.order-card strong {
-  display: block;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--placeholder);
-  margin-bottom: 4px;
-}
-
-.order-card .package-details {
-  font-weight: 700;
-  color: var(--accent);
-}
-
-/* Buttons */
-.btn-back-form,
-.btn-secondary, .btn-danger, .btn-accent {
-  border-radius: 6px;
-  padding: 8px 16px;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  border: none;
-  cursor: pointer;
-}
-
-.btn-back-form {
-  background: var(--input-bg);
-  color: var(--text);
-  border: 1px solid var(--border);
-}
-.btn-back-form:hover {
-  background: var(--card);
-  border-color: var(--accent);
-}
-.btn-back-form {
-  background: var(--input-bg);
-  color: var(--text);
-  border: 1px solid var(--border);
-}
-.btn-back-form:hover {
-  background: var(--card);
-  border-color: var(--accent);
-}
-
-/* Search bar */
-.order-search-bar input,
-.order-search-bar select {
-  padding: 12px 16px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--input-bg);
-  color: var(--text);
-  font-size: 14px;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.order-search-bar input:focus,
-.order-search-bar select:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(255,215,0,0.2);
-  outline: none;
-}
-
-/* Typography */
-body {
-  font-family: 'Inter', 'Poppins', 'Helvetica Neue', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-}
-
-/* Light mode adjustments */
-body.light-mode .order-card {
-  background: #fff;
-  border-color: #e0e0e0;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-}
-
-body.light-mode .order-card:hover {
-  box-shadow: 0 12px 24px rgba(0,0,0,0.1);
-}
-
-body.light-mode .order-card[style*="display: block"] {
-  background: #f9f9f9;
-  border-left-color: var(--border);
-}
-
-body.light-mode .ocean-node {
-  background: #f0f0f0;
-  border-color: #ccc;
-}
-
-body.light-mode .ocean-node.completed {
-  background: #007bff;
-  border-color: #0056b3;
-}
-
-body.light-mode .ocean-node.active {
-  background: #28a745;
-  border-color: #1e7e34;
-}
-
-body.light-mode .ocean-node::before {
-  color: #333;
-}
-
-body.light-mode .ocean-node.completed::before,
-body.light-mode .ocean-node.active::before {
-  color: #fff;
-}
-/* ========== END REDESIGN ========== */
-
-/* ========== LIGHT MODE OVERRIDES FOR BUTTONS AND TEXT ========== */
-body.light-mode,
-body.light-mode * {
-  color: #000; /* all text black */
-}
-
-body.light-mode .section-title {
-  color: #000 !important;
-}
-
-body.light-mode .btn-cancel,
-body.light-mode .btn-primary,
-body.light-mode .btn-secondary,
-body.light-mode .btn-danger,
-body.light-mode .btn-accent,
-body.light-mode .address-book-btn,
-body.light-mode .btn-back-form,
-body.light-mode button[type=submit],
-body.light-mode .success-btn,
-body.light-mode #settingsBtn,
-body.light-mode .order-actions button,
-body.light-mode .btn,
-body.light-mode .btn-icon {
-  background: #fff !important;
-  color: #000 !important;
-  border: 1px solid #000 !important;
-}
-
-/* Force all text inside order cards to black in light mode */
-body.light-mode .order-card * {
-  color: #000 !important;
-}
-
-/* Optional red border for danger button to keep some meaning */
-body.light-mode .btn-danger,
-body.light-mode .cancel-btn {
-  border-color: #dc3545 !important;
-}
-
-/* Keep accent button border black */
-body.light-mode .btn-accent {
-  border-color: #000 !important;
-}
-
-/* Ensure icons in buttons are black */
-body.light-mode .btn-icon {
-  border: none !important; /* icon buttons usually no border */
-}
-
-/* Override any remaining colored text */
-body.light-mode .package-details,
-body.light-mode .order-card .package-details,
-body.light-mode .ocean-label,
-body.light-mode .header-wrap h1,
-body.light-mode .modal-content h2 {
-  color: #000 !important;
-}
-/* ========== END LIGHT MODE OVERRIDES ========== */
-
-/* Animated checkmark for success message */
-.success-icon {
-  display: inline-block;
-  width: 40px;
-  height: 40px;
-  margin-bottom: 15px;
-  position: relative;
-}
-.success-icon svg {
-  width: 100%;
-  height: 100%;
-}
-.check-path {
-  stroke: #00b32d;
-  stroke-width: 8;
-  fill: none;
-  stroke-dasharray: 100;
-  stroke-dashoffset: 100;
-  animation: drawCheck 0.7s ease forwards;
-}
-@keyframes drawCheck {
-  to { stroke-dashoffset: 0; }
-}
-.sparkle {
-  fill: white;
-  filter: drop-shadow(0 0 2px gold);
-  opacity: 0;
-  animation: sparkle 0.3s ease 0.7s forwards;
-}
-@keyframes sparkle {
-  0% { opacity: 0; transform: scale(0.5); }
-  50% { opacity: 1; transform: scale(1.5); }
-  100% { opacity: 1; transform: scale(1); }
-}
-/* ===== NEW STYLES FOR DATE RANGE, TAGS, PAGINATION, HOVER REMOVAL ===== */
-/* Center fields in active timeline cards */
-#orders-history-container .order-card .centered-field {
-  text-align: center;
-}
-/* Remove hover effects in order dashboard */
-#orders-history-container .order-card:hover,
-#orders-history-container button:hover,
-#orders-history-container .btn:hover,
-#orders-history-container .cancel-btn:hover,
-#orders-history-container .edit-btn:hover {
-  transform: none !important;
-  box-shadow: none !important;
-  border-color: var(--border) !important;
-  background: inherit !important;
-  color: inherit !important;
-}
-/* Dark mode: add yellow border to buttons that have no border */
-body:not(.light-mode) .btn-danger,
-body:not(.light-mode) .btn-accent,
-body:not(.light-mode) .btn-icon,
-body:not(.light-mode) #settingsBtn,
-body:not(.light-mode) #installAppBtn {
-  border: 1px solid var(--accent) !important;
-}
-/* Remove yellow border from pin and address book buttons */
-.btn-icon[onclick^="E("], .btn-icon[onclick^="F("] {
-  border: none !important;
-}
-/* Load more button */
-#loadMoreBtn {
-  width: 100%;
-  margin-top: 10px;
-  padding: 12px;
-  background: var(--input-bg);
-  border: 1px solid var(--border);
-  color: var(--text);
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 600;
-}
-#loadMoreBtn:hover {
-  background: var(--card);
-}
+.success-icon{display:inline-block;width:40px;height:40px;margin-bottom:15px;position:relative;}
+.success-icon svg{width:100%;height:100%;}
+.check-path{stroke:var(--success);stroke-width:8;fill:none;stroke-dasharray:100;stroke-dashoffset:100;animation:drawCheck 0.7s ease forwards;}
+@keyframes drawCheck{to{stroke-dashoffset:0;}}
+.sparkle{fill:white;filter:drop-shadow(0 0 2px gold);opacity:0;animation:sparkle 0.3s ease 0.7s forwards;}
+@keyframes sparkle{0%{opacity:0;transform:scale(0.5);}50%{opacity:1;transform:scale(1.5);}100%{opacity:1;transform:scale(1);}}
+.modal{display:none;position:fixed;z-index:2000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,.85);backdrop-filter:blur(2px);}
+.modal-content{background:var(--card);margin:5% auto;padding:30px;width:90%;max-width:550px;border:1px solid var(--accent);color:var(--text);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);box-sizing:border-box;max-height:80vh;overflow-y:auto;}
+.modal-content h2{color:var(--accent);margin-top:0;}
+.btn-cancel{background:transparent;color:var(--text);border:1px solid var(--border);padding:10px 16px;border-radius:var(--radius-md);cursor:pointer;font-weight:600;}
+.btn-save{background:var(--success);color:#000;border:0;padding:10px 16px;border-radius:var(--radius-md);cursor:pointer;font-weight:700;}
+.order-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-bottom:20px;box-shadow:var(--shadow-sm);transition:var(--transition);}
+.order-card:hover{box-shadow:var(--shadow-md);border-color:var(--accent);}
+.order-card .order-date{font-size:12px;color:var(--placeholder);margin-bottom:15px;border-bottom:1px solid var(--border);padding-bottom:10px;letter-spacing:0.5px;}
+.order-card strong{display:block;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--placeholder);margin-bottom:4px;}
+.order-card .package-details{font-weight:700;color:var(--accent);}
+.dashboard-section{margin-bottom:10px;font-size:13px;color:var(--text);}
+.dashboard-section strong{color:#888;text-transform:uppercase;font-size:11px;display:block;margin-bottom:3px;}
+.loc-flex{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;}
+.dashboard-meta{display:flex;flex-wrap:wrap;gap:10px;background:#111;padding:5px 10px;border-radius:var(--radius-md);margin-top:5px;border:1px solid #222;}
+.meta-item{flex:1;min-width:100px;}
+.btn-back-form{background:var(--input-bg);color:var(--text);border:1px solid var(--border);padding:8px 12px;font-weight:600;cursor:pointer;font-size:12px;border-radius:var(--radius-md);}
+.btn-back-form:hover{background:var(--card);border-color:var(--accent);}
+.ocean-timeline{display:flex;position:relative;margin-top:45px;align-items:center;justify-content:space-between;padding:0 10px;margin-bottom:20px;}
+.ocean-track{position:absolute;top:50%;left:10px;right:10px;height:4px;background:var(--border);z-index:0;transform:translateY(-50%);border-radius:2px;}
+.ocean-fill{position:absolute;top:0;left:0;height:100%;background:var(--accent);border-radius:2px;transition:width .6s cubic-bezier(.25,.8,.25,1);}
+.ocean-node{position:relative;z-index:1;width:36px;height:36px;border-radius:50%;background:var(--input-bg);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all 0.3s ease;box-shadow:var(--shadow-sm);}
+.ocean-node::before{font-family:"Font Awesome 6 Free";font-weight:900;font-size:16px;color:var(--text);display:block;line-height:1;}
+.ocean-node.completed{background:var(--success);border-color:var(--success);}
+.ocean-node.completed::before{color:#fff;}
+.ocean-node.active{background:var(--accent);border-color:var(--accent);animation:glow-pulse 2s infinite;}
+.ocean-node.active::before{color:#000;}
+.ocean-timeline .ocean-node:nth-child(2)::before{content:"\f0ca";} /* Ordered */
+.ocean-timeline .ocean-node:nth-child(3)::before{content:"\f007";} /* Assigned */
+.ocean-timeline .ocean-node:nth-child(4)::before{content:"\f466";} /* Picked‑Up */
+.ocean-timeline .ocean-node:nth-child(5)::before{content:"\f0d1";} /* Out for Delivery */
+.ocean-timeline .ocean-node:nth-child(6)::before{content:"\f00c";} /* Delivered */
+@keyframes glow-pulse{0%{box-shadow:0 0 0 0 rgba(255,215,0,0.7);}70%{box-shadow:0 0 0 10px rgba(255,215,0,0);}100%{box-shadow:0 0 0 0 rgba(255,215,0,0);}}
+.ocean-label{position:absolute;top:50px;font-size:10px;font-weight:600;text-transform:uppercase;color:var(--text);text-align:center;width:60px;left:50%;transform:translateX(-50%);letter-spacing:.5px;white-space:normal;word-break:break-word;}
+@media (max-width:480px){.ocean-label{font-size:8px;width:50px;top:44px;}}
+#settings-modal .modal-content{max-width:500px;}
+.settings-section{margin-bottom:20px;}
+.settings-section h3{color:var(--accent);margin-top:0;}
+.theme-toggle{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+.theme-toggle button{flex:1;padding:10px;background:var(--input-bg);border:1px solid var(--border);color:var(--text);cursor:pointer;border-radius:var(--radius-md);}
+.theme-toggle button.active{background:var(--accent);color:#000;border-color:var(--accent);}
+#save-defaults-btn{margin-top:10px;}
+.order-search-bar{display:flex;gap:8px;margin:15px 0 20px;flex-wrap:wrap;}
+.order-search-bar input{flex:2;min-width:200px;padding:12px 16px;}
+.order-search-bar select{flex:1;min-width:120px;padding:12px 16px;}
+.order-actions{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;}
+.cancel-btn{background:transparent;color:#b3002d;border:1px solid #b3002d;padding:6px 12px;border-radius:var(--radius-md);cursor:pointer;font-size:12px;font-weight:700;transition:var(--transition);}
+.cancel-btn:hover{background:#b3002d;color:#fff;}
+.edit-btn{background:transparent;color:var(--accent);border:1px solid var(--accent);padding:6px 12px;border-radius:var(--radius-md);cursor:pointer;font-size:12px;font-weight:700;transition:var(--transition);}
+.edit-btn:hover{background:var(--accent);color:#000;}
+/* Address book and pin icons */
+.btn-icon[onclick^="E("], .btn-icon[onclick^="F("] { border: none; background: transparent; }
+/* Light mode overrides for buttons and text */
+body.light-mode .btn-icon { color: #000; }
+body.light-mode .btn-icon:hover { background: rgba(0,0,0,0.05); }
+body.light-mode .btn-primary, body.light-mode .btn-accent { background: var(--accent); color: #000; border-color: var(--accent); }
+body.light-mode .btn-secondary { background: #fff; color: #000; border-color: #ccc; }
+body.light-mode .btn-secondary:hover { background: #f0f0f0; }
+body.light-mode .btn-danger { background: #b3002d; color: #fff; border-color: #b3002d; }
+body.light-mode .order-card { background: #fff; border-color: #e0e0e0; }
+body.light-mode .order-card:hover { border-color: var(--accent); }
+body.light-mode .ocean-node { background: #f0f0f0; border-color: #ccc; }
+body.light-mode .ocean-node.completed { background: var(--success); border-color: var(--success); }
+body.light-mode .ocean-node.active { background: var(--accent); border-color: var(--accent); }
+body.light-mode .ocean-node::before { color: #333; }
+body.light-mode .ocean-node.completed::before, body.light-mode .ocean-node.active::before { color: #fff; }
 /* Date range controls */
-.date-range-controls {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin: 10px 0;
-}
-.date-range-controls select,
-.date-range-controls input,
-.date-range-controls button {
-  padding: 8px;
-  background: var(--input-bg);
-  color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-}
-/* Tags styling */
-.user-tags span {
-  display: inline-block;
-  background: var(--input-bg);
-  border: 1px solid var(--border);
-  padding: 3px 12px;
-  border-radius: 12px;
-  margin-right: 5px;
-  font-size: 15px;
-}
-/* Light mode specific overrides for pickup/delivery names */
-body.light-mode .order-card span[style*="color:#ffd700"],
-body.light-mode .order-card span[style*="color:#90ee90"] {
-  color: #000 !important;
-}
-body.light-mode #logoutHeaderBtn {
-  border-color: #000 !important;
-  color: #000 !important;
-  background: transparent !important;
-}
-
-/* Soft golden glow for in‑progress order cards */
-.in-progress-card {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2), 0 0 15px 5px rgba(255,215,0,0.3);
-}
+.date-range-controls{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;}
+.date-range-controls select,.date-range-controls input,.date-range-controls button{padding:8px 12px;background:var(--input-bg);color:var(--text);border:1px solid var(--border);border-radius:var(--radius-md);}
+.user-tags span{display:inline-block;background:var(--input-bg);border:1px solid var(--border);padding:4px 12px;border-radius:20px;margin-right:5px;font-size:13px;}
+#loadMoreBtn{width:100%;margin-top:10px;padding:12px;background:var(--input-bg);border:1px solid var(--border);color:var(--text);border-radius:var(--radius-md);cursor:pointer;font-weight:600;}
+#loadMoreBtn:hover{background:var(--card);}
+.in-progress-card{box-shadow:0 4px 12px rgba(0,0,0,0.2), 0 0 15px 5px rgba(255,215,0,0.3);}
+/* Auth overlay */
+#auth-overlay .container{background:var(--card);padding:30px;}
+/* Responsive touch targets */
+button, .btn, [role=button]{min-height:44px; min-width:44px;}
+/* Additional polish */
+.header-wrap > div:first-child { gap: 15px; }
+#main-app-container .header-wrap { flex-direction: column; }
+#main-app-container .header-wrap > div:last-child { width: 100%; justify-content: space-between; }
+/* Fix for icon buttons inside input */
+.input-icon-wrapper { position: relative; }
+.input-icon-wrapper input { width: 100%; }
+.input-icon-wrapper .btn-icon { position: absolute; right: 4px; top: 50%; transform: translateY(-50%); background: transparent; border: none; }
+.input-icon-wrapper .btn-icon.address-book { right: 40px; } /* if two icons */
+/* Specific adjustments for pickup/delivery rows */
+#f-pickup, #f-drop-address { padding-right: 80px; }
+/* Address book button separate but inline */
+.flex-row .input-group:last-child .btn-icon { border: none; background: transparent; }
+/* Ensure buttons are aligned */
+.flex-row .input-group .btn-icon { margin-left: 4px; }
 </style>
 </head>
 <body>
 <div id=auth-overlay style="display:none;position:absolute;top:0;left:0;width:100%;min-height:100vh;overflow-y:auto;background:var(--bg);z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;box-sizing:border-box">
 <div style="max-width:600px;width:100%;text-align:center;margin-bottom:30px">
-<img src=icon2.png alt="E&C Logo" style="height:60px;margin-bottom:15px;filter:drop-shadow(0 0 5px var(--accent));cursor:pointer" onclick=a() onerror="this.style.display='none'">
-<h1 style="color:var(--accent);font-size:26px;margin:0 0 10px;text-transform:uppercase">E&C Courier</h1>
+<img src=icon2.png alt="E&C Logo" style="height:70px;margin-bottom:15px;filter:drop-shadow(0 0 5px var(--accent));cursor:pointer" onclick=a() onerror="this.style.display='none'">
+<h1 style="color:var(--accent);font-size:28px;margin:0 0 10px;text-transform:uppercase">E&C Courier</h1>
 <p style="color:#e0e0e0;font-size:15px;margin-bottom:15px;line-height:1.5">Request local courier pickups and deliveries quickly and securely.</p>
 <p style="color:#aaa;font-size:13px;margin-bottom:20px;line-height:1.5"><strong>Data Usage:</strong> We collect your email, phone, and address strictly to process dispatches at your request.</p>
 <a href=https://app.eandccourier.ca/privacy target=_blank style="background:var(--accent);color:#000;padding:10px 20px;border-radius:5px;font-weight:700;text-decoration:none;display:inline-block;font-size:14px">Privacy Policy & Terms</a>
@@ -598,11 +201,11 @@ body.light-mode #logoutHeaderBtn {
 <div class=header-wrap style=flex-direction:column>
 <div style="display:flex; gap:10px; margin-bottom:15px;">
   <button id=installAppBtn style="display:none;background:var(--accent);color:#000;border:0;padding:10px 20px;font-weight:900;border-radius:6px;cursor:pointer;font-size:14px;text-transform:uppercase" class="btn btn-accent">Install App</button>
-  <button id=logoutHeaderBtn style="background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 12px;font-weight:700;border-radius:4px;cursor:pointer;font-size:12px;text-transform:uppercase" onclick=K() type=button>Logout</button>
+  <button id=logoutHeaderBtn style="background:transparent;border:1px solid var(--accent);color:var(--accent);padding:8px 12px;font-weight:700;border-radius:4px;cursor:pointer;font-size:12px;text-transform:uppercase" onclick=K() type=button class="btn btn-secondary">Logout</button>
 </div>
 <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
-<div style="display:flex;align-items:center;gap:15px"><img src=icon2.png alt="E&C Logo" style=cursor:pointer onclick=a() onerror="this.style.display='none'"> <h1>Request Pickup Now</h1></div>
-<div style=display:flex;gap:5px><button id=settingsBtn style="background:0 0;border:0;color:var(--accent);padding:8px 12px;border-radius:4px;cursor:pointer;font-size:16px;line-height:1" onclick=o() class=btn-icon>⚙️</button><button id=viewOrdersBtn style="background:var(--accent);color:#000;border:0;padding:8px 12px;font-weight:700;border-radius:4px;cursor:pointer;font-size:12px;text-transform:uppercase" onclick=w() type=button class="btn btn-accent">View Orders</button></div>
+<div style="display:flex;align-items:center;gap:15px"><img src=icon2.png alt="E&C Logo" style="height:45px;cursor:pointer" onclick=a() onerror="this.style.display='none'"> <h1>Request Pickup Now</h1></div>
+<div style=display:flex;gap:5px><button id=settingsBtn style="background:0 0;border:0;color:var(--accent);padding:8px 12px;border-radius:4px;cursor:pointer;font-size:16px;line-height:1" onclick=o() class="btn-icon">⚙️</button><button id=viewOrdersBtn style="background:var(--accent);color:#000;border:0;padding:8px 12px;font-weight:700;border-radius:4px;cursor:pointer;font-size:12px;text-transform:uppercase" onclick=w() type=button class="btn btn-accent">View Orders</button></div>
 </div>
 </div>
 <form id=pickupForm>
@@ -611,11 +214,27 @@ body.light-mode #logoutHeaderBtn {
 <button type=button id=autofillBtn style="display:none;width:100%;padding:10px;background:#333;color:#fff;border:1px solid var(--accent);border-radius:4px;margin-bottom:15px;cursor:pointer;text-transform:uppercase;font-size:12px;font-weight:700" onclick=k() class="btn btn-secondary">Autofill from Last Order</button>
 <div class=section-title>Pickup Details</div>
 <div class=input-group><label>Business / Contact Name <span class=required-mark>*</span></label><input type=text name=name placeholder="Who are we picking up from?" required autocomplete=organization></div>
-<div class=flex-row style="align-items:flex-end;flex-direction:row!important"><div class=input-group style="flex:2;position:relative"><label>Pickup Address <span class=required-mark>*</span></label><input type=text id=f-pickup name=pickup_location placeholder="Street Address" required autocomplete=street-address style=padding-right:40px><button style="position:absolute;right:10px;bottom:15px;background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="E('pickup')" type=button class=btn-icon>📍</button></div><div class=input-group style="flex:0 0 auto"><button type=button class="address-book-btn btn-icon" onclick="F('pickup')">📖</button></div><div class=input-group style=display:none><input type=hidden name=city required></div></div>
+<div class=flex-row style="align-items:center;flex-direction:row!important">
+  <div class=input-group style="flex:2;position:relative">
+    <label>Pickup Address <span class=required-mark>*</span></label>
+    <input type=text id=f-pickup name=pickup_location placeholder="Street Address" required autocomplete=street-address>
+    <button style="position:absolute;right:40px;bottom:50%;transform:translateY(50%);background:0 0;border:0;font-size:16px;cursor:pointer;padding:8px;" onclick="E('pickup')" type=button class=btn-icon>📍</button>
+    <button style="position:absolute;right:4px;bottom:50%;transform:translateY(50%);background:0 0;border:0;font-size:16px;cursor:pointer;padding:8px;" onclick="F('pickup')" type=button class="btn-icon address-book">📖</button>
+  </div>
+  <div class=input-group style=display:none><input type=hidden name=city required></div>
+</div>
 <div class=flex-row><div class=input-group style=flex:1><label>Pickup Email</label><input type=email name=p_email placeholder=notifications@example.com autocomplete=email></div><div class=input-group style=flex:1><label>Pickup Phone</label><input type=tel name=p_phone placeholder="(204) 555-0123" autocomplete=tel oninput=h(this)></div></div>
 <div class=section-title>Delivery Details</div>
 <div class=input-group><label>Delivery Name <span class=required-mark>*</span></label><input type=text name=delivery_name placeholder="Business or Contact Name" required></div>
-<div class=flex-row style="align-items:flex-end;flex-direction:row!important"><div class=input-group style="flex:2;position:relative"><label>Delivery Address <span class=required-mark>*</span></label><input type=text id=f-drop-address name=destination placeholder="Street Address" required style=padding-right:40px><button style="position:absolute;right:10px;bottom:15px;background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="E('drop')" type=button class=btn-icon>📍</button></div><div class=input-group style="flex:0 0 auto"><button type=button class="address-book-btn btn-icon" onclick="F('drop')">📖</button></div><div class=input-group style=display:none><input type=hidden name=drop_city required></div></div>
+<div class=flex-row style="align-items:center;flex-direction:row!important">
+  <div class=input-group style="flex:2;position:relative">
+    <label>Delivery Address <span class=required-mark>*</span></label>
+    <input type=text id=f-drop-address name=destination placeholder="Street Address" required>
+    <button style="position:absolute;right:40px;bottom:50%;transform:translateY(50%);background:0 0;border:0;font-size:16px;cursor:pointer;padding:8px;" onclick="E('drop')" type=button class=btn-icon>📍</button>
+    <button style="position:absolute;right:4px;bottom:50%;transform:translateY(50%);background:0 0;border:0;font-size:16px;cursor:pointer;padding:8px;" onclick="F('drop')" type=button class="btn-icon address-book">📖</button>
+  </div>
+  <div class=input-group style=display:none><input type=hidden name=drop_city required></div>
+</div>
 <div class=flex-row><div class=input-group style=flex:1><label>Delivery Email</label><input type=email name=d_email placeholder=notifications@example.com autocomplete=email></div><div class=input-group style=flex:1><label>Delivery Phone</label><input type=tel name=d_phone placeholder="(204) 555-0123" autocomplete=tel oninput=h(this)></div></div>
 <div class=section-title>Cargo & Information</div>
 <div class=input-group><label>Packages / Items / Dimensions <span class=required-mark>*</span></label><textarea name=package_details rows=3 placeholder="e.g. 2 Boxes (12x12x12), 1 Skid" required></textarea></div>
