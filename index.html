@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--accent:#ffd700;--bg:#121212;--card:#1E1E1E;--text:#e0e0e0;--input-bg:#2A2A2A;--border:#555;--placeholder:#5F6368;--success:#008080;--radius-sm:4px;--radius-md:6px;--radius-lg:8px;--space-xs:4px;--space-sm:8px;--space-md:16px;--space-lg:24px;--space-xl:32px;--shadow-sm:0 4px 12px rgba(0,0,0,0.15);--shadow-md:0 8px 24px rgba(0,0,0,0.2);--shadow-lg:0 16px 32px -8px rgba(0,0,0,0.3);--transition:all 0.2s ease;}
+:root{--accent:#ffd700;--bg:#121212;--card:#1E1E1E;--text:#ffffff;--input-bg:#2A2A2A;--border:#555;--placeholder:#5F6368;--success:#008080;--radius-sm:4px;--radius-md:6px;--radius-lg:8px;--space-xs:4px;--space-sm:8px;--space-md:16px;--space-lg:24px;--space-xl:32px;--shadow-sm:0 4px 12px rgba(0,0,0,0.15);--shadow-md:0 8px 24px rgba(0,0,0,0.2);--shadow-lg:0 16px 32px -8px rgba(0,0,0,0.3);--transition:all 0.2s ease;}
 body.light-mode{--accent:#E5C100;--bg:#e9e9e9;--card:#FFFFFF;--text:#1E1E1E;--input-bg:#FAFAFA;--border:#E0E0E0;--placeholder:#9AA0A6;--shadow-sm:0 4px 12px rgba(0,0,0,0.05);--shadow-md:0 8px 20px -6px rgba(0,0,0,0.1);--shadow-lg:0 16px 30px -10px rgba(0,0,0,0.1);}
 body.light-mode h1{background:0 0;color:#000;-webkit-text-fill-color:#000}
 body.light-mode .section-title{color:#b39700}
@@ -43,7 +43,7 @@ form{padding:25px}
 .section-title{color:var(--accent);font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;margin:20px 0 10px;display:flex;align-items:center}
 .section-title:after{content:'';flex:1;height:1px;background:var(--border);margin-left:10px}
 .section-title:first-of-type{margin-top:0}
-.input-group{margin-bottom:16px;position:relative;}
+.input-group{margin-bottom:12px;position:relative;}
 label{display:block;font-size:14px;font-weight:500;color:var(--placeholder);margin-bottom:5px;margin-left:2px}
 .required-mark{color:var(--accent);margin-left:2px}
 input,textarea,select{width:100%;padding:14px 16px;background:var(--input-bg);border:1px solid var(--border);color:var(--text);border-radius:var(--radius-md);font-size:16px;box-sizing:border-box;transition:var(--transition);font-family:inherit}
@@ -52,17 +52,16 @@ input:focus,textarea:focus,select:focus{border-color:var(--accent);outline:0;box
 .flex-row{display:flex;gap:12px}
 @media (max-width:500px){.flex-row{flex-direction:column;gap:12px}}
 /* ===== BUTTONS ===== */
-.btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 20px;border-radius:40px;font-weight:600;transition:var(--transition);cursor:pointer;border:1px solid transparent;line-height:1.2;text-decoration:none;gap:8px;}
-.btn-primary{background:var(--accent);color:#000;border:1px solid var(--accent);font-weight:700;box-shadow:var(--shadow-sm);}
-.btn-primary:hover{background:#e6c200;transform:translateY(-2px);box-shadow:var(--shadow-md);}
-.btn-primary:active{transform:scale(0.98);}
-.btn-secondary{background:transparent;color:var(--text);border:1px solid var(--border);border-radius:40px;}
-.btn-secondary:hover{background:rgba(255,215,0,0.1);border-color:var(--accent);color:var(--accent);}
-.btn-danger{background:#b3002d;color:#fff;border:1px solid #b3002d;border-radius:40px;}
-.btn-danger:hover{background:#990026;box-shadow:var(--shadow-sm);}
-.btn-accent{background:var(--accent);color:#000;border:1px solid var(--accent);font-weight:700;border-radius:40px;}
-.btn-accent:hover{background:#e6c200;transform:translateY(-2px);box-shadow:var(--shadow-md);}
-.btn-accent:active{transform:scale(0.98);}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:10px 20px;border-radius:40px;font-weight:600;transition:var(--transition);cursor:pointer;border:1px solid transparent;line-height:1.2;text-decoration:none;gap:8px;min-height:44px; min-width:44px;}
+.btn-primary, .btn-accent, .btn-save { background: var(--accent); color: #000; border: none; font-weight: 700; box-shadow: var(--shadow-sm); }
+.btn-primary:hover, .btn-accent:hover, .btn-save:hover { background: #e6c200; transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.btn-primary:active, .btn-accent:active, .btn-save:active { transform: scale(0.98); }
+.btn-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); border-radius: 40px; }
+.btn-secondary:hover { background: rgba(255,215,0,0.1); border-color: var(--accent); color: var(--accent); }
+.btn-danger { background: transparent; color: #b3002d; border: 1px solid #b3002d; border-radius: 40px; }
+.btn-danger:hover { background: #b3002d; color: #fff; box-shadow: var(--shadow-sm); }
+.btn-cancel { background: transparent; color: var(--text); border: 1px solid var(--border); border-radius: 40px; }
+.btn-cancel:hover { background: rgba(255,215,0,0.1); border-color: var(--accent); color: var(--accent); }
 .btn-icon{background:transparent;border:none;padding:8px;font-size:1.2em;cursor:pointer;border-radius:50%;transition:var(--transition);line-height:1;color:var(--text);}
 .btn-icon:hover{background:rgba(255,215,0,0.15);color:var(--accent);}
 /* Icon inside input */
@@ -91,10 +90,10 @@ button[type=submit]:active{transform:scale(0.98);}
 .modal-content h2{color:var(--accent);margin-top:0;}
 .btn-cancel{background:transparent;color:var(--text);border:1px solid var(--border);padding:10px 16px;border-radius:40px;cursor:pointer;font-weight:600;}
 .btn-save{background:var(--success);color:#000;border:0;padding:10px 16px;border-radius:40px;cursor:pointer;font-weight:700;}
-.order-card{background:var(--card);border-radius:var(--radius-lg);padding:20px;margin-bottom:20px;box-shadow:var(--shadow-sm);transition:var(--transition);}
+.order-card{background:var(--card);border-radius:var(--radius-lg);padding:16px;margin-bottom:16px;box-shadow:var(--shadow-sm);transition:var(--transition);}
 .order-card:hover{box-shadow:var(--shadow-md);border-color:var(--accent);}
-.order-card .order-date{font-size:12px;color:var(--placeholder);margin-bottom:15px;border-bottom:1px solid var(--border);padding-bottom:10px;letter-spacing:0.5px;}
-.order-card strong{display:block;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--placeholder);margin-bottom:4px;}
+.order-card .order-date{font-size:12px;color:var(--text);margin-bottom:8px;border-bottom:1px solid var(--border);padding-bottom:8px;letter-spacing:0.5px;}
+.order-card strong{display:block;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:var(--accent);margin-bottom:4px;}
 .order-card .package-details{font-weight:700;color:var(--accent);}
 .dashboard-section{margin-bottom:10px;font-size:13px;color:var(--text);}
 .dashboard-section strong{color:#888;text-transform:uppercase;font-size:11px;display:block;margin-bottom:3px;}
@@ -108,7 +107,7 @@ button[type=submit]:active{transform:scale(0.98);}
 .ocean-fill{position:absolute;top:0;left:0;height:100%;background:var(--accent);border-radius:2px;transition:width .6s cubic-bezier(.25,.8,.25,1);}
 .ocean-node{position:relative;z-index:1;width:36px;height:36px;border-radius:50%;background:var(--input-bg);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;transition:all 0.3s ease;box-shadow:var(--shadow-sm);}
 .ocean-node::before{font-family:"Font Awesome 6 Free";font-weight:900;font-size:16px;color:var(--text);display:block;line-height:1;}
-.ocean-node.completed{background:var(--success);border-color:var(--success);}
+.ocean-node.completed{background:#42A5F5;border-color:#42A5F5;}
 .ocean-node.completed::before{color:#fff;}
 .ocean-node.active{background:var(--accent);border-color:var(--accent);animation:glow-pulse 2s infinite;}
 .ocean-node.active::before{color:#000;}
@@ -157,9 +156,13 @@ body.light-mode .ocean-node.completed::before, body.light-mode .ocean-node.activ
 .date-range-controls select,.date-range-controls input,.date-range-controls button{padding:8px 12px;background:var(--input-bg);color:var(--text);border:1px solid var(--border);border-radius:40px;}
 /* Filter card */
 .filter-card{background:var(--card);padding:16px;border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);margin-bottom:20px;}
-.user-tags span{display:inline-block;background:var(--input-bg);border:1px solid var(--border);padding:4px 12px;border-radius:20px;margin-right:5px;font-size:13px;}
-#loadMoreBtn{width:100%;margin-top:10px;padding:12px;background:var(--input-bg);border:1px solid var(--border);color:var(--text);border-radius:40px;cursor:pointer;font-weight:600;}
-#loadMoreBtn:hover{background:var(--card);}
+.filter-controls { display: none; } /* initially hidden */
+.filter-card.expanded .filter-controls { display: block; }
+.user-tags span{display:inline-block;background:var(--input-bg);border:1px solid var(--border);padding:2px 8px;border-radius:20px;margin-right:5px;margin-bottom:4px;font-size:13px;}
+.user-tags button.tag-button, .user-tags .btn-secondary { background: var(--input-bg); border:1px solid var(--border); color: var(--text); padding:2px 8px; border-radius:20px; font-size:13px; font-weight:400; min-height:auto; } 
+.user-tags button.tag-button:hover { background: var(--accent); color:#000; border-color:var(--accent); }
+#loadMoreBtn{width:100%;margin-top:10px;padding:12px;background:var(--accent);color:#000;border:none;border-radius:40px;cursor:pointer;font-weight:600;}
+#loadMoreBtn:hover{background:#e6c200;transform:translateY(-2px);box-shadow:var(--shadow-md);}
 .in-progress-card{box-shadow:0 4px 12px rgba(0,0,0,0.2), 0 0 15px 5px rgba(255,215,0,0.3);}
 /* Auth overlay */
 #auth-overlay .container{background:var(--card);padding:30px;}
@@ -193,6 +196,21 @@ body.light-mode #orders-list button span[style*="color:#ffd700"],
 body.light-mode #orders-list button span[style*="color:#90ee90"] {
   color: #000 !important;
 }
+/* Category titles inside order cards */
+.order-card .category-title { color: #FFB74D; font-size: 12px; font-weight:600; margin-bottom:2px; }
+.order-card .category-value { color: var(--text); font-size: 14px; margin-bottom:8px; }
+/* Address book cards */
+.address-book-card { border:1px solid var(--border); border-radius:var(--radius-lg); padding:12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:flex-start; background:var(--card); }
+.address-book-info { flex:1; cursor:pointer; }
+.address-book-info .contact-name { font-weight:600; color:var(--text); font-size:16px; }
+.address-book-info .contact-address { color:var(--text); font-size:14px; margin-top:2px; }
+.address-book-select { margin-left:8px; }
+.address-book-select .btn { padding:8px 16px; font-size:14px; }
+/* Toggle filter button */
+#toggleFilterBtn { width:100%; display:flex; align-items:center; justify-content:space-between; background:var(--input-bg); border:1px solid var(--border); color:var(--text); padding:12px 16px; border-radius:40px; margin-bottom:12px; font-weight:600; }
+#toggleFilterBtn i { font-size:16px; }
+#toggleFilterBtn .arrow { transition:transform 0.2s; }
+#toggleFilterBtn.expanded .arrow { transform:rotate(180deg); }
 </style>
 </head>
 <body>
@@ -277,22 +295,25 @@ body.light-mode #orders-list button span[style*="color:#90ee90"] {
 <div class=container id=orders-history-container style="display:none;padding:20px">
 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px"><h2 style="color:var(--text);margin:0;font-size:18px;text-transform:uppercase">Order Dashboard</h2><button onclick=x() class="btn-back-form btn btn-secondary">BACK TO FORM</button></div>
 <div class="filter-card">
-<div class=order-search-bar><input type=text id=orderSearchInput placeholder="Search by package, PO, names, address..." oninput="T=this.value;A()"><select id=orderStatusFilter onchange="U=this.value;A()"><option value=all>All status</option><option value=in_progress>In progress</option><option value=completed>Completed</option><option value=cancelled>Cancelled</option></select></div>
-<!-- Date range picker -->
-<div class="date-range-controls">
-  <select id="datePreset">
-    <option value="">No date filter</option>
-    <option value="7">Last 7 days</option>
-    <option value="30">Last 30 days</option>
-    <option value="thisMonth">This Month</option>
-    <option value="lastMonth">Last Month</option>
-    <option value="ytd">Year-to-Date</option>
-  </select>
-  <input type="date" id="startDate" placeholder="From 📅">
-  <input type="date" id="endDate" placeholder="To 📅">
-  <button id="applyDateRange" class="btn btn-secondary">Apply</button>
-  <button id="clearDateRange" class="btn btn-secondary">Clear</button>
-</div>
+  <button id="toggleFilterBtn" class="btn" onclick="toggleFilters()"><span><i class="fas fa-search"></i> Search/Filters</span><i class="fas fa-chevron-down arrow"></i></button>
+  <div class="filter-controls">
+    <div class=order-search-bar><input type=text id=orderSearchInput placeholder="Search by package, PO, names, address..." oninput="T=this.value;A()"><select id=orderStatusFilter onchange="U=this.value;A()"><option value=all>All status</option><option value=in_progress>In progress</option><option value=completed>Completed</option><option value=cancelled>Cancelled</option></select></div>
+    <!-- Date range picker -->
+    <div class="date-range-controls">
+      <select id="datePreset">
+        <option value="">No date filter</option>
+        <option value="7">Last 7 days</option>
+        <option value="30">Last 30 days</option>
+        <option value="thisMonth">This Month</option>
+        <option value="lastMonth">Last Month</option>
+        <option value="ytd">Year-to-Date</option>
+      </select>
+      <input type="date" id="startDate" placeholder="From 📅">
+      <input type="date" id="endDate" placeholder="To 📅">
+      <button id="applyDateRange" class="btn btn-secondary">Apply</button>
+      <button id="clearDateRange" class="btn btn-secondary">Clear</button>
+    </div>
+  </div>
 </div>
 <div id=live-status-header style="font-size:11px;color:#f39c12;font-weight:700;margin-bottom:20px;text-transform:uppercase;letter-spacing:1px"></div>
 <div id=orders-list></div>
@@ -551,7 +572,14 @@ function A(){
     }
     badgeHtml = getStatusBadge(adjustedStatus),
         bT = bJ ? '' : `<div class="ocean-timeline"><div class="ocean-track"><div class="ocean-fill" style="width:${bL};"></div></div><div class="ocean-node ${bK[0]}"><div class="ocean-label">Ordered</div></div><div class="ocean-node ${bK[1]}"><div class="ocean-label">Assigned</div></div><div class="ocean-node ${bK[2]}"><div class="ocean-label">Picked‑Up</div></div><div class="ocean-node ${bK[3]}"><div class="ocean-label">Out for Delivery</div></div><div class="ocean-node ${bK[4]}"><div class="ocean-label">Delivered</div></div></div>`,
-        bU = `<div class="order-date">${bA}</div>${badgeHtml}<div style="display:flex;gap:15px;margin-top:10px;"><div style="flex:1;"><strong>Pickup</strong> ${bz.name}<br><span style="color:#aaa;font-size:12px;">${bz.pickup_location}</span></div><div style="flex:1;"><strong>Delivery</strong> ${bz.delivery_name}<br><span style="color:#aaa;font-size:12px;">${bz.destination}</span></div></div><div style="margin-top:10px; text-align:center;"><div><strong>Packages/Items/Dimensions</strong><br><span style="color:#aaa;font-size:12px;">${bP}</span></div><div style="margin-top:5px; text-align:center;"><strong>PO / Ref</strong><br><span style="color:#aaa;font-size:12px;">${bQ}</span></div></div><div style="margin-top:10px; text-align:center;"><strong>Driver Notes</strong><br><span style="color:#aaa;font-size:12px;">${bz.other_info || 'None'}</span></div><div class="user-tags" style="text-align:left; margin-top:10px;"><div style="margin-bottom:5px;">${bz.user_tags ? bz.user_tags.map(tag => `<span>${tag}</span>`).join('') : ''}</div><button class="btn btn-secondary" onclick="promptAddTag('${bz.id}')" style="font-size:15px; padding:6px 12px;">+ tag</button></div>${bT}`;
+        // New stacked pickup/delivery
+        pickupDeliveryHtml = `<div style="margin-top:8px;">
+          <div><span style="color:var(--accent); font-weight:600;">Pickup:</span> <span style="color:var(--text);">${bz.name}</span></div>
+          <div style="color:var(--text); font-size:14px; margin-left:0;">${bz.pickup_location}</div>
+          <div style="margin-top:8px;"><span style="color:var(--accent); font-weight:600;">Delivery:</span> <span style="color:var(--text);">${bz.delivery_name}</span></div>
+          <div style="color:var(--text); font-size:14px; margin-left:0;">${bz.destination}</div>
+        </div>`,
+        bU = `<div class="order-date">${bA}</div>${badgeHtml}${pickupDeliveryHtml}<div style="margin-top:8px;"><div><span class="category-title">Packages/Items/Dimensions</span><div class="category-value">${bP}</div></div><div><span class="category-title">PO / Ref</span><div class="category-value">${bQ}</div></div><div><span class="category-title">Driver Notes</span><div class="category-value">${bz.other_info || 'None'}</div></div></div><div class="user-tags" style="text-align:left; margin-top:8px;"><div style="margin-bottom:4px;">${bz.user_tags ? bz.user_tags.map(tag => `<span>${tag}</span>`).join('') : ''}</div><button class="btn btn-secondary tag-button" onclick="promptAddTag('${bz.id}')" style="font-size:13px; padding:2px 8px; min-height:auto;">+ tag</button></div>${bT}`;
     if (bB === 'cancelled' || bJ) {
       let bV = P.has(bz.id),
           bW = new Date(bz.timestamp),
@@ -559,7 +587,7 @@ function A(){
           bY;
       if (bB === 'cancelled' || bJ) bY = `<div style="display:flex;flex-direction:column;gap:4px;"><span style="font-weight:700;">${bX}</span><span class="package-details">${bz.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${bz.name||'?'}</span> → <span style="color:#90ee90;">${bz.delivery_name||'?'}</span></div><div style="color:red;font-weight:700;">Order Cancelled</div>`;
       else bY = `<div style="display:flex;flex-direction:column;gap:4px;"><span style="font-weight:700;">${bX}</span><span class="package-details">${bz.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${bz.name||'?'}</span> → <span style="color:#90ee90;">${bz.delivery_name||'?'}</span></div>`;
-      bn.innerHTML += `<div style="margin-bottom:2px;"><button onclick="B('${bz.id}')" style="width:100%;padding:6px 10px;background:var(--input-bg);border:1px solid #ccc;border-radius:4px;color:var(--text);text-align:left;cursor:pointer;font-size:12px;line-height:1.4;">${bY}</button><div id="${bS}" class="order-card" style="display:${bV?'block':'none'};margin-bottom:0;border-top:0;border-top-left-radius:0;border-top-right-radius:0;"><div class="order-date">${bA}</div>${badgeHtml}<div style="display:flex;gap:15px;margin-top:10px;"><div style="flex:1;"><strong>Pickup</strong> ${bz.name}<br><span style="color:#aaa;font-size:12px;">${bz.pickup_location}</span></div><div style="flex:1;"><strong>Delivery</strong> ${bz.delivery_name}<br><span style="color:#aaa;font-size:12px;">${bz.destination}</span></div></div><div style="margin-top:10px; text-align:center;"><div><strong>Packages/Items/Dimensions</strong><br><span style="color:#aaa;font-size:12px;">${bP}</span></div><div style="margin-top:5px; text-align:center;"><strong>PO / Ref</strong><br><span style="color:#aaa;font-size:12px;">${bQ}</span></div></div><div style="margin-top:10px; text-align:center;"><strong>Driver Notes</strong><br><span style="color:#aaa;font-size:12px;">${bz.other_info || 'None'}</span></div><div class="user-tags" style="text-align:left; margin-top:10px;"><div style="margin-bottom:5px;">${bz.user_tags ? bz.user_tags.map(tag => `<span>${tag}</span>`).join('') : ''}</div><button class="btn btn-secondary" onclick="promptAddTag('${bz.id}')" style="font-size:15px; padding:6px 12px;">+ tag</button></div></div></div>`;
+      bn.innerHTML += `<div style="margin-bottom:2px;"><button onclick="B('${bz.id}')" style="width:100%;padding:6px 10px;background:var(--input-bg);border:1px solid #ccc;border-radius:4px;color:var(--text);text-align:left;cursor:pointer;font-size:12px;line-height:1.4;">${bY}</button><div id="${bS}" class="order-card" style="display:${bV?'block':'none'};margin-bottom:0;border-top:0;border-top-left-radius:0;border-top-right-radius:0;"><div class="order-date">${bA}</div>${badgeHtml}${pickupDeliveryHtml}<div style="margin-top:8px;"><div><span class="category-title">Packages/Items/Dimensions</span><div class="category-value">${bP}</div></div><div><span class="category-title">PO / Ref</span><div class="category-value">${bQ}</div></div><div><span class="category-title">Driver Notes</span><div class="category-value">${bz.other_info || 'None'}</div></div></div><div class="user-tags" style="text-align:left; margin-top:8px;"><div style="margin-bottom:4px;">${bz.user_tags ? bz.user_tags.map(tag => `<span>${tag}</span>`).join('') : ''}</div><button class="btn btn-secondary tag-button" onclick="promptAddTag('${bz.id}')" style="font-size:13px; padding:2px 8px; min-height:auto;">+ tag</button></div></div></div>`;
     } else if (bB === 'completed') {
       let bV = P.has(bz.id),
           bW = new Date(bz.timestamp),
@@ -573,18 +601,15 @@ function A(){
       }
       let cardContent = `
         <div class="order-date">${bA}</div>${badgeHtml}
-        <div style="display:flex;gap:15px;margin-top:10px;">
-          <div style="flex:1;"><strong>Pickup</strong> ${bz.name}<br><span style="color:#aaa;font-size:12px;">${bz.pickup_location}</span></div>
-          <div style="flex:1;"><strong>Delivery</strong> ${bz.delivery_name}<br><span style="color:#aaa;font-size:12px;">${bz.destination}</span></div>
+        ${pickupDeliveryHtml}
+        <div style="margin-top:8px;">
+          <div><span class="category-title">Packages/Items/Dimensions</span><div class="category-value">${bP}</div></div>
+          <div><span class="category-title">PO / Ref</span><div class="category-value">${bQ}</div></div>
+          <div><span class="category-title">Driver Notes</span><div class="category-value">${bz.other_info || 'None'}</div></div>
         </div>
-        <div style="margin-top:10px; text-align:center;">
-          <div><strong>Packages/Items/Dimensions</strong><br><span style="color:#aaa;font-size:12px;">${bP}</span></div>
-          <div style="margin-top:5px; text-align:center;"><strong>PO / Ref</strong><br><span style="color:#aaa;font-size:12px;">${bQ}</span></div>
-        </div>
-        <div style="margin-top:10px; text-align:center;"><strong>Driver Notes</strong><br><span style="color:#aaa;font-size:12px;">${bz.other_info || 'None'}</span></div>
-        <div class="user-tags" style="text-align:left; margin-top:10px;">
-          <div style="margin-bottom:5px;">${bz.user_tags ? bz.user_tags.map(tag => `<span>${tag}</span>`).join('') : ''}</div>
-          <button class="btn btn-secondary" onclick="promptAddTag('${bz.id}')" style="font-size:15px; padding:6px 12px;">+ tag</button>
+        <div class="user-tags" style="text-align:left; margin-top:8px;">
+          <div style="margin-bottom:4px;">${bz.user_tags ? bz.user_tags.map(tag => `<span>${tag}</span>`).join('') : ''}</div>
+          <button class="btn btn-secondary tag-button" onclick="promptAddTag('${bz.id}')" style="font-size:13px; padding:2px 8px; min-height:auto;">+ tag</button>
         </div>
         ${bT}
         ${deliveryText}
@@ -610,18 +635,15 @@ function A(){
           ` : ''}
         </div>
         ${badgeHtml}
-        <div style="display:flex;gap:15px;margin-top:10px;">
-          <div style="flex:1;"><strong>Pickup</strong> ${bz.name}<br><span style="color:#aaa;font-size:12px;">${bz.pickup_location}</span></div>
-          <div style="flex:1;"><strong>Delivery</strong> ${bz.delivery_name}<br><span style="color:#aaa;font-size:12px;">${bz.destination}</span></div>
+        ${pickupDeliveryHtml}
+        <div style="margin-top:8px;">
+          <div><span class="category-title">Packages/Items/Dimensions</span><div class="category-value">${bP}</div></div>
+          <div><span class="category-title">PO / Ref</span><div class="category-value">${bQ}</div></div>
+          <div><span class="category-title">Driver Notes</span><div class="category-value">${bz.other_info || 'None'}</div></div>
         </div>
-        <div style="margin-top:10px; text-align:center;">
-          <div><strong>Packages/Items/Dimensions</strong><br><span style="color:#aaa;font-size:12px;">${bP}</span></div>
-          <div style="margin-top:5px; text-align:center;"><strong>PO / Ref</strong><br><span style="color:#aaa;font-size:12px;">${bQ}</span></div>
-        </div>
-        <div style="margin-top:10px; text-align:center;"><strong>Driver Notes</strong><br><span style="color:#aaa;font-size:12px;">${bz.other_info || 'None'}</span></div>
-        <div class="user-tags" style="text-align:left; margin-top:10px;">
-          <div style="margin-bottom:5px;">${bz.user_tags ? bz.user_tags.map(tag => `<span>${tag}</span>`).join('') : ''}</div>
-          <button class="btn btn-secondary" onclick="promptAddTag('${bz.id}')" style="font-size:15px; padding:6px 12px;">+ tag</button>
+        <div class="user-tags" style="text-align:left; margin-top:8px;">
+          <div style="margin-bottom:4px;">${bz.user_tags ? bz.user_tags.map(tag => `<span>${tag}</span>`).join('') : ''}</div>
+          <button class="btn btn-secondary tag-button" onclick="promptAddTag('${bz.id}')" style="font-size:13px; padding:2px 8px; min-height:auto;">+ tag</button>
         </div>
         ${bT}
         ${deliveryText}
@@ -646,7 +668,23 @@ var Z,aa,ab='';function E(cB){ab=cB;let cC=document.getElementById('location-pic
 function C(){let cN=document.getElementById('loc-search-bar'),cO=cN.value;if(!cO)return;let cP=cO.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);if(cP){let cQ={lat:+cP[1],lng:+cP[2]};Z.setCenter(cQ);Z.setZoom(17)}else{let cR=new google.maps.Geocoder();cR.geocode({address:cO},(cS,cT)=>{if(cT==='OK'&&cS[0]){Z.setCenter(cS[0].geometry.location);Z.setZoom(17)}else alert('Location not found')})}}
 function D(){let cU=Z.getCenter(),cV=new google.maps.Geocoder();cV.geocode({location:cU},(cW,cX)=>{if(cX==='OK'&&cW[0]){let cY=cW[0].formatted_address,cZ=i(cW[0].address_components);if(ab==='pickup'){document.getElementById('f-pickup').value=cY;document.getElementsByName('city')[0].value=cZ;ad=!0}else if(ab==='drop'){document.getElementById('f-drop-address').value=cY;document.getElementsByName('drop_city')[0].value=cZ;ae=!0}else if(ab==='settings-pickup'){document.getElementById('default-pickup').value=cY;document.getElementById('default-city').value=cZ}else if(ab==='settings-drop'){document.getElementById('default-destination').value=cY;document.getElementById('default-drop_city').value=cZ}else if(ab==='new-contact'){document.getElementById('new-contact-address').value=cY}}document.getElementById('location-picker-modal').style.display='none';document.body.style.overflow=''})}
 function F(ca){W=ca;G();document.getElementById('settings-modal').style.display='block';r()}
-function G(){let cb=document.getElementById('savedAddressesList');if(!cb)return;cb.innerHTML='';V.forEach((cc,cd)=>{cb.innerHTML+=`<div style="border:1px solid var(--border);padding:8px;margin-bottom:5px;display:flex;justify-content:space-between;align-items:center;"><div onclick="editContact(${cd})" style="flex:1;cursor:pointer;"><strong>${cc.name}</strong><br><span style="font-size:12px;">${cc.address} ${cc.city?'('+cc.city+')':''}</span><br><span style="font-size:11px;color:#aaa;">${cc.email} ${cc.phone?'• '+cc.phone:''}</span></div><div><button onclick="H(${cd});event.stopPropagation();" style="background:var(--accent);color:#000;border:0;padding:10px 16px;border-radius:40px;font-weight:700;font-size:14px;" class="btn btn-accent">Select</button></div></div>`});if(V.length===0)cb.innerHTML='<p>No saved addresses.</p>';}
+function G(){
+  let cb=document.getElementById('savedAddressesList');
+  if(!cb)return;
+  cb.innerHTML='';
+  V.forEach((cc,cd)=>{
+    cb.innerHTML+=`<div class="address-book-card">
+      <div class="address-book-info" onclick="editContact(${cd})">
+        <div class="contact-name">${cc.name}</div>
+        <div class="contact-address">${cc.address} ${cc.city?'('+cc.city+')':''}</div>
+      </div>
+      <div class="address-book-select">
+        <button onclick="H(${cd});event.stopPropagation();" class="btn btn-primary">Select</button>
+      </div>
+    </div>`;
+  });
+  if(V.length===0)cb.innerHTML='<p>No saved addresses.</p>';
+}
 function H(ce){let cf=V[ce];if(W==='pickup'){document.getElementById('f-pickup').value=cf.address;document.getElementsByName('city')[0].value=cf.city||'';document.getElementsByName('name')[0].value=cf.name||'';document.getElementsByName('p_email')[0].value=cf.email||'';document.getElementsByName('p_phone')[0].value=cf.phone||'';ad=!0}else{document.getElementById('f-drop-address').value=cf.address;document.getElementsByName('drop_city')[0].value=cf.city||'';document.getElementsByName('delivery_name')[0].value=cf.name||'';document.getElementsByName('d_email')[0].value=cf.email||'';document.getElementsByName('d_phone')[0].value=cf.phone||'';ae=!0}document.getElementById('settings-modal').style.display='none';}
 function I(cg){V.splice(cg,1);saveAddressBookToFirebase();G();}
 function J(){}
@@ -707,6 +745,22 @@ document.getElementById('clearDateRange').addEventListener('click', function() {
   customEnd = '';
   dateRangeActive = false;
   A();
+});
+// Toggle filter function
+function toggleFilters() {
+  let btn = document.getElementById('toggleFilterBtn');
+  let controls = document.querySelector('.filter-controls');
+  btn.classList.toggle('expanded');
+  if (controls.style.display === 'none' || controls.style.display === '') {
+    controls.style.display = 'block';
+  } else {
+    controls.style.display = 'none';
+  }
+}
+// Initialize filter controls hidden
+document.addEventListener('DOMContentLoaded', function() {
+  let controls = document.querySelector('.filter-controls');
+  if (controls) controls.style.display = 'none';
 });
 </script>
 <link href=https://cdn.quilljs.com/1.3.6/quill.snow.css rel=stylesheet>
