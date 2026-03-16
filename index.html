@@ -147,7 +147,7 @@ body.light-mode .btn-danger { background: #b3002d; color: #fff; border-color: #b
 body.light-mode .order-card { background: #fff; border-color: #e0e0e0; }
 body.light-mode .order-card:hover { border-color: var(--accent); }
 body.light-mode .ocean-node { background: #f0f0f0; border-color: #ccc; }
-body.light-mode .ocean-node.completed { background: var(--success); border-color: var(--success); }
+body.light-mode .ocean-node.completed { background: #42A5F5; border-color: #42A5F5; }
 body.light-mode .ocean-node.active { background: var(--accent); border-color: var(--accent); }
 body.light-mode .ocean-node::before { color: #333; }
 body.light-mode .ocean-node.completed::before, body.light-mode .ocean-node.active::before { color: #fff; }
@@ -296,6 +296,21 @@ body:not(.light-mode) #location-picker-modal .btn-primary {
 #location-picker-modal {
     z-index: 3000;
 }
+/* 2) Light mode order card text black */
+body.light-mode .order-card .category-title,
+body.light-mode .order-card .order-date,
+body.light-mode .order-card .category-value,
+body.light-mode .order-card .user-tags span {
+    color: #000 !important;
+}
+/* Status badges text black in light mode */
+body.light-mode .status-pending,
+body.light-mode .status-transit,
+body.light-mode .status-outfordelivery,
+body.light-mode .status-completed,
+body.light-mode .status-cancelled {
+    color: #000 !important;
+}
 </style>
 </head>
 <body>
@@ -421,7 +436,7 @@ body:not(.light-mode) #location-picker-modal .btn-primary {
 <div class=modal-content style="padding:0;max-width:600px;height:80vh;display:flex;flex-direction:column;overflow:hidden;position:relative">
 <div style="padding:15px;background:var(--card);border-bottom:1px solid var(--accent);display:flex;justify-content:space-between;align-items:center"><h2 style="color:var(--accent);margin:0;font-size:16px;font-weight:700;text-transform:uppercase">Pick Location</h2><button class="btn-cancel btn btn-secondary" style="padding:8px 12px;font-size:12px;margin:0" onclick="document.getElementById('location-picker-modal').style.display='none';document.body.style.overflow=''">CLOSE</button></div>
 <div style="padding:10px;background:var(--card);border-bottom:1px solid var(--border);display:flex;gap:5px"><input type=text id=loc-search-bar placeholder="Search address or paste GPS (e.g. 49.852, -99.951)" style="margin:0;flex:1;padding:10px"><button onclick=C() style="padding:10px;background:var(--accent);color:#000;border:0;border-radius:40px;cursor:pointer" class="btn btn-accent">Go</button></div>
-<div style="flex:1;position:relative"><div id=picker-map style=width:100%;height:100%></div><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-100%);pointer-events:none;font-size:32px;text-shadow:0 2px 4px rgba(0,0,0,.5);z-index:10"><i class="fas fa-map-pin"></i></div></div>
+<div style="flex:1;position:relative"><div id=picker-map style=width:100%;height:100%></div><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-100%);pointer-events:none;font-size:32px;text-shadow:0 2px 4px rgba(0,0,0,.5);z-index:10"><i class="fas fa-map-pin" style="color: red;"></i></div></div>
 <button class="btn-save btn btn-primary" style="width:100%;border-radius:0;padding:16px;font-size:16px;position:sticky;bottom:0;z-index:11" onclick=D()>SET LOCATION</button>
 </div>
 </div>
@@ -434,7 +449,7 @@ body:not(.light-mode) #location-picker-modal .btn-primary {
 <div class=settings-section><button class="btn-save btn btn-primary" style=width:100% onclick=r()>Address Book</button></div>
 <div class=settings-section><h3>Account</h3><div style=display:flex;gap:10px><button class="btn-save btn btn-primary" style=flex:1 onclick=toggleEmailChange()>Change Email</button><button class="btn-save btn btn-primary" style=flex:1 onclick=sendPasswordReset()>Change Password</button></div><div id=emailChangeDiv style="display:none;margin-top:10px"><input type=email id=newEmailInput placeholder="Enter new email" style="width:100%;padding:10px;background:var(--input-bg);color:var(--text);border:1px solid var(--border);margin-bottom:8px"><button class="btn-save btn btn-primary" style=width:100% onclick=changeUserEmail()>Update Email</button></div></div></div>
 <div id=settings-autofill style=display:none><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><h2 style="color:var(--accent);margin:0">Autofill Details</h2><button class="btn-cancel btn btn-secondary" style="padding:5px 10px;font-size:14px" onclick=p()>← Back</button></div><div class=settings-section><p>Fill in fields to auto-populate when using Autofill.</p><input type=text id=default-name placeholder="Pickup Contact Name" style=margin-bottom:8px><div style="position:relative;margin-bottom:8px"><input type=text id=default-pickup placeholder="Pickup Address" style=padding-right:40px><button style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="E('settings-pickup')" type=button class=btn-icon><i class="fas fa-map-pin"></i></button></div><input type=text id=default-city placeholder="Pickup City" style=margin-bottom:8px><input type=email id=default-p_email placeholder="Pickup Email" style=margin-bottom:8px><input type=tel id=default-p_phone placeholder="Pickup Phone" style=margin-bottom:8px><input type=text id=default-delivery_name placeholder="Delivery Contact Name" style=margin-bottom:8px><div style="position:relative;margin-bottom:8px"><input type=text id=default-destination placeholder="Delivery Address" style=padding-right:40px><button style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="E('settings-drop')" type=button class=btn-icon><i class="fas fa-map-pin"></i></button></div><input type=text id=default-drop_city placeholder="Delivery City" style=margin-bottom:8px><input type=email id=default-d_email placeholder="Delivery Email" style=margin-bottom:8px><input type=tel id=default-d_phone placeholder="Delivery Phone" style=margin-bottom:8px><input type=text id=default-package_details placeholder="Packages/Items/Dimensions" style=margin-bottom:8px><input type=text id=default-po_number placeholder="PO Number" style=margin-bottom:8px><textarea id=default-other_info placeholder="Driver Notes" rows=2 style=margin-bottom:8px></textarea><button id=save-defaults-btn class="btn-save btn btn-primary" onclick=m()>Save Autofill Details</button><button class="btn-cancel btn btn-secondary" onclick=clearAutofillForm() style="margin-top:15px;width:100%">Clear</button><button class="btn-cancel btn btn-secondary" style="margin-top:10px;width:100%" onclick=p()>← Back to Settings</button></div></div>
-<div id=settings-addressbook style=display:none><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><h2 style="color:var(--accent);margin:0">Address Book</h2><button class="btn-cancel btn btn-secondary" style="padding:5px 10px;font-size:14px" onclick=p()>← Back</button></div><div id=addressbook-list-view><button class="btn-save btn btn-primary" style="width:100%;margin-bottom:15px" onclick=s()>Create New Contact</button><div id=savedAddressesList></div></div><div id=addressbook-create-view style=display:none><h3 id=addressbook-form-title style="color:var(--accent);margin-top:0">Create Contact</h3><div class=settings-section><input type=text id=new-contact-name placeholder="Contact / Business Name" style=margin-bottom:8px><div style="position:relative;margin-bottom:8px"><input type=text id=new-contact-address placeholder="Street Address" style=padding-right:40px><button style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="E('new-contact')" type=button class=btn-icon><i class="fas fa-map-pin"></i></button></div><input type=email id=new-contact-email placeholder=Email style=margin-bottom:8px><input type=tel id=new-contact-phone placeholder=Phone style=margin-bottom:8px oninput=h(this)><div style=display:flex;gap:10px><button class="btn-save btn btn-primary" style=flex:1 id=save-contact-btn onclick=u()>Save to Address Book</button><button class="btn-cancel btn btn-secondary" style=flex:1 onclick=t()>Cancel</button></div><button class="btn-cancel btn btn-secondary" onclick=clearContactForm() style="margin-top:5px;width:100%">Clear</button><button id=delete-contact-btn class="btn-cancel btn btn-danger" style="margin-top:5px;width:100%;background:#b3002d;color:#fff;border:0;display:none" onclick=deleteCurrentContact()>Delete Contact</button></div></div></div>
+<div id=settings-addressbook style=display:none><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><h2 style="color:var(--accent);margin:0">Address Book</h2><button class="btn-cancel btn btn-secondary" style="padding:5px 10px;font-size:14px" onclick=p()>← Back</button></div><div id=addressbook-list-view><button class="btn-save btn btn-primary" style="width:100%;margin-bottom:15px" onclick=s()>Create New Contact</button><input type="text" id="addressSearchInput" placeholder="Search contacts..." style="width:100%; margin-bottom:15px; padding:10px; box-sizing:border-box;" oninput="updateAddressFilter(this.value)"><div id=savedAddressesList></div></div><div id=addressbook-create-view style=display:none><h3 id=addressbook-form-title style="color:var(--accent);margin-top:0">Create Contact</h3><div class=settings-section><input type=text id=new-contact-name placeholder="Contact / Business Name" style=margin-bottom:8px><div style="position:relative;margin-bottom:8px"><input type=text id=new-contact-address placeholder="Street Address" style=padding-right:40px><button style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:0 0;border:0;font-size:16px;cursor:pointer;padding:0" onclick="E('new-contact')" type=button class=btn-icon><i class="fas fa-map-pin"></i></button></div><input type=email id=new-contact-email placeholder=Email style=margin-bottom:8px><input type=tel id=new-contact-phone placeholder=Phone style=margin-bottom:8px oninput=h(this)><div style=display:flex;gap:10px><button class="btn-save btn btn-primary" style=flex:1 id=save-contact-btn onclick=u()>Save to Address Book</button><button class="btn-cancel btn btn-secondary" style=flex:1 onclick=t()>Cancel</button></div><button class="btn-cancel btn btn-secondary" onclick=clearContactForm() style="margin-top:5px;width:100%">Clear</button><button id=delete-contact-btn class="btn-cancel btn btn-danger" style="margin-top:5px;width:100%;background:#b3002d;color:#fff;border:0;display:none" onclick=deleteCurrentContact()>Delete Contact</button></div></div></div>
 </div>
 </div>
 <script src=https://maps.googleapis.com/maps/api/js?key=AIzaSyA6umETP8wBUEV41ugAtiNiChUeLmmwmZI&libraries=geometry,drawing,places></script>
@@ -444,6 +459,7 @@ body:not(.light-mode) #location-picker-modal .btn-primary {
 <script>
 firebase.initializeApp({apiKey:"AIzaSyAKmgoXA4m3cRTmxJq4aUyva5SVvFbTNqg",authDomain:"eandccourier-36fcc.firebaseapp.com",databaseURL:"https://eandccourier-36fcc-default-rtdb.firebaseio.com",projectId:"eandccourier-36fcc",storageBucket:"",messagingSenderId:"1067680083511",appId:"1:1067680083511:android:22d1eb3757302492bd19b2"});
 var db=firebase.database(),M=null,N=null,O=null,P=new Set,Q={},R={},S=null,T='',U='all',V=[],W='pickup',X=null,Y,Z,aa,ab='',ac,ad=!1,ae=!1,af=document.getElementById("pickupForm"),ag=document.getElementById("submitBtn"),ah=firebase.database(),editingContactIndex=null;
+let addressFilter = ''; // for address book search
 // Date range and pagination variables
 let datePreset = '', customStart = '', customEnd = '', dateRangeActive = false, orderLimit = 20;
 firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL).catch(console.error);
@@ -550,13 +566,32 @@ function n(){let a4=JSON.parse(localStorage.getItem('autofillDefaults')||'{}');d
 function o(){n();c();G();document.getElementById('settings-main').style.display='block';document.getElementById('settings-autofill').style.display='none';document.getElementById('settings-addressbook').style.display='none';document.getElementById('settings-modal').style.display='block'}
 function p(){document.getElementById('settings-main').style.display='block';document.getElementById('settings-autofill').style.display='none';document.getElementById('settings-addressbook').style.display='none';editingContactIndex=null;document.getElementById('delete-contact-btn').style.display='none';document.getElementById('save-contact-btn').innerText='Save to Address Book';document.getElementById('addressbook-form-title').innerText='Create Contact';}
 function q(){document.getElementById('settings-main').style.display='none';document.getElementById('settings-autofill').style.display='block';document.getElementById('settings-addressbook').style.display='none'}
-function r(){document.getElementById('settings-main').style.display='none';document.getElementById('settings-autofill').style.display='none';document.getElementById('settings-addressbook').style.display='block';document.getElementById('addressbook-list-view').style.display='block';document.getElementById('addressbook-create-view').style.display='none';G()}
+function r(){
+  document.getElementById('settings-main').style.display='none';
+  document.getElementById('settings-autofill').style.display='none';
+  document.getElementById('settings-addressbook').style.display='block';
+  document.getElementById('addressbook-list-view').style.display='block';
+  document.getElementById('addressbook-create-view').style.display='none';
+  addressFilter = '';
+  let searchInput = document.getElementById('addressSearchInput');
+  if (searchInput) searchInput.value = '';
+  G();
+}
 function s(){editingContactIndex=null;document.getElementById('addressbook-list-view').style.display='none';document.getElementById('addressbook-create-view').style.display='block';document.getElementById('addressbook-form-title').innerText='Create Contact';document.getElementById('save-contact-btn').innerText='Save to Address Book';document.getElementById('delete-contact-btn').style.display='none';document.getElementById('new-contact-name').value='';document.getElementById('new-contact-address').value='';document.getElementById('new-contact-email').value='';document.getElementById('new-contact-phone').value='';}
-function t(){document.getElementById('addressbook-list-view').style.display='block';document.getElementById('addressbook-create-view').style.display='none';editingContactIndex=null;}
+function t(){
+  document.getElementById('addressbook-list-view').style.display='block';
+  document.getElementById('addressbook-create-view').style.display='none';
+  editingContactIndex=null;
+  addressFilter = '';
+  let searchInput = document.getElementById('addressSearchInput');
+  if (searchInput) searchInput.value = '';
+  G();
+}
 function u(){let a5=document.getElementById('new-contact-name').value.trim(),a6=document.getElementById('new-contact-address').value.trim(),a7=document.getElementById('new-contact-email').value.trim(),a8=document.getElementById('new-contact-phone').value.trim();if(!a5||!a6){alert('Please enter at least a name and address.');return}
 let a9={name:a5,address:a6,city:'',email:a7,phone:a8,target:W};if(editingContactIndex!==null)V[editingContactIndex]=a9;else V.push(a9);saveAddressBookToFirebase();G();t();}
 function editContact(ba){editingContactIndex=ba;let bb=V[ba];document.getElementById('new-contact-name').value=bb.name||'';document.getElementById('new-contact-address').value=bb.address||'';document.getElementById('new-contact-email').value=bb.email||'';document.getElementById('new-contact-phone').value=bb.phone||'';document.getElementById('addressbook-list-view').style.display='none';document.getElementById('addressbook-create-view').style.display='block';document.getElementById('addressbook-form-title').innerText='Edit Contact';document.getElementById('save-contact-btn').innerText='Update Contact';document.getElementById('delete-contact-btn').style.display='block';}
 function deleteCurrentContact(){if(editingContactIndex!==null&&confirm('Delete this contact?')){V.splice(editingContactIndex,1);saveAddressBookToFirebase();G();t();}}
+function updateAddressFilter(val) { addressFilter = val; G(); }
 function v(){let bc=firebase.auth().currentUser;if(!bc)return;db.ref("jobs").orderByChild("created_by").equalTo(bc.email).once('value').then(bd=>{N=bd.val()||{};if(document.getElementById('orders-history-container').style.display==='block')A()})}
 function w(){
   document.getElementById('main-app-container').style.display='none';
@@ -805,18 +840,21 @@ function G(){
   let cb=document.getElementById('savedAddressesList');
   if(!cb)return;
   cb.innerHTML='';
-  V.forEach((cc,cd)=>{
+  let filtered = addressFilter ? V.filter(contact => 
+    (contact.name + contact.address + (contact.email||'') + (contact.phone||'')).toLowerCase().includes(addressFilter.toLowerCase())
+  ) : V;
+  filtered.forEach((cc,cd)=>{
     cb.innerHTML+=`<div class="address-book-card">
-      <div class="address-book-info" onclick="editContact(${cd})">
+      <div class="address-book-info" onclick="editContact(${V.indexOf(cc)})">
         <div class="contact-name">${cc.name}</div>
         <div class="contact-address">${cc.address} ${cc.city?'('+cc.city+')':''}</div>
       </div>
       <div class="address-book-select">
-        <button onclick="H(${cd});event.stopPropagation();" class="btn btn-primary">Select</button>
+        <button onclick="H(${V.indexOf(cc)});event.stopPropagation();" class="btn btn-primary">Select</button>
       </div>
     </div>`;
   });
-  if(V.length===0)cb.innerHTML='<p>No saved addresses.</p>';
+  if(filtered.length===0)cb.innerHTML='<p>No matching contacts.</p>';
 }
 function H(ce){let cf=V[ce];if(W==='pickup'){document.getElementById('f-pickup').value=cf.address;document.getElementsByName('city')[0].value=cf.city||'';document.getElementsByName('name')[0].value=cf.name||'';document.getElementsByName('p_email')[0].value=cf.email||'';document.getElementsByName('p_phone')[0].value=cf.phone||'';ad=!0}else{document.getElementById('f-drop-address').value=cf.address;document.getElementsByName('drop_city')[0].value=cf.city||'';document.getElementsByName('delivery_name')[0].value=cf.name||'';document.getElementsByName('d_email')[0].value=cf.email||'';document.getElementsByName('d_phone')[0].value=cf.phone||'';ae=!0}document.getElementById('settings-modal').style.display='none';}
 function I(cg){V.splice(cg,1);saveAddressBookToFirebase();G();}
