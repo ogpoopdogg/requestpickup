@@ -391,6 +391,69 @@ body.light-mode .status-cancelled {
     </label>
   </div>
 </div>
+<!-- BEGIN SCHEDULING & RECURRING UI -->
+<div class="section-title">Scheduling</div>
+<div class="input-group">
+  <div style="display:flex; gap:20px; align-items:center; margin-bottom:10px;">
+    <label style="display:flex; align-items:center; gap:5px; cursor:pointer;">
+      <input type="radio" name="schedule_type" value="immediate" checked> Immediate
+    </label>
+    <label style="display:flex; align-items:center; gap:5px; cursor:pointer;">
+      <input type="radio" name="schedule_type" value="scheduled"> Schedule for later
+    </label>
+  </div>
+  <div id="scheduled-datetime-container" style="display:none; margin-bottom:10px;">
+    <input type="datetime-local" id="scheduled_datetime" style="width:100%;">
+  </div>
+  <div style="margin-bottom:10px;">
+    <label style="display:flex; align-items:center; gap:5px; cursor:pointer;">
+      <input type="checkbox" id="recurring_checkbox"> Make this a recurring order
+    </label>
+  </div>
+  <div id="recurrence-panel" style="display:none; border:1px solid var(--border); padding:15px; border-radius:var(--radius-md); margin-top:10px;">
+    <div class="input-group">
+      <label>Frequency</label>
+      <select id="recur_freq">
+        <option value="daily">Daily</option>
+        <option value="weekly">Weekly</option>
+        <option value="monthly">Monthly</option>
+      </select>
+    </div>
+    <div class="input-group">
+      <label>Interval (every X periods)</label>
+      <input type="number" id="recur_interval" value="1" min="1">
+    </div>
+    <div id="weekly-days" style="display:none; margin-bottom:10px;">
+      <label>Days of week</label>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <label><input type="checkbox" value="1"> Mon</label>
+        <label><input type="checkbox" value="2"> Tue</label>
+        <label><input type="checkbox" value="3"> Wed</label>
+        <label><input type="checkbox" value="4"> Thu</label>
+        <label><input type="checkbox" value="5"> Fri</label>
+        <label><input type="checkbox" value="6"> Sat</label>
+        <label><input type="checkbox" value="7"> Sun</label>
+      </div>
+    </div>
+    <div id="monthly-day" style="display:none; margin-bottom:10px;">
+      <label>Day of month</label>
+      <input type="number" id="recur_day_of_month" min="1" max="31" value="1">
+    </div>
+    <div class="input-group">
+      <label>Start date & time</label>
+      <input type="datetime-local" id="recur_start_date">
+    </div>
+    <div class="input-group">
+      <label style="display:flex; align-items:center; gap:5px;">
+        <input type="checkbox" id="recur_no_end" checked> No end date
+      </label>
+      <div id="recur_end_container" style="display:none; margin-top:5px;">
+        <input type="datetime-local" id="recur_end_date">
+      </div>
+    </div>
+  </div>
+</div>
+<!-- END SCHEDULING & RECURRING UI -->
 <div class=input-group><label>PO Number / Reference</label><input type=text name=po_number placeholder=Optional></div>
 <div class=input-group><label>Driver Notes / Instructions</label><textarea name=other_info rows=3 placeholder="Gate codes, specific door numbers, hours, etc."></textarea></div>
 <div id=addressBookDropdown style="display:none;margin-bottom:15px"><select id=savedAddressesSelect onchange=J()><option value="">-- Select a saved address --</option></select></div>
@@ -431,6 +494,12 @@ body.light-mode .status-cancelled {
 <div id=orders-list></div>
 <!-- Load more button (hidden initially) -->
 <button id="loadMoreBtn" style="display:none;" onclick="loadMoreOrders()">Load More</button>
+<!-- BEGIN RECURRING SCHEDULES SECTION (will be populated by JS) -->
+<div id="recurring-schedules-container" style="margin-top:30px;">
+  <h3 style="color:var(--accent); margin-bottom:15px;">Recurring Orders</h3>
+  <div id="recurring-schedules-list"></div>
+</div>
+<!-- END RECURRING SCHEDULES SECTION -->
 </div>
 <div id=location-picker-modal class=modal onclick="if(event.target===this){this.style.display='none';document.body.style.overflow=''}">
 <div class=modal-content style="padding:0;max-width:600px;height:80vh;display:flex;flex-direction:column;overflow:hidden;position:relative">
@@ -459,6 +528,10 @@ body.light-mode .status-cancelled {
 <script>
 firebase.initializeApp({apiKey:"AIzaSyAKmgoXA4m3cRTmxJq4aUyva5SVvFbTNqg",authDomain:"eandccourier-36fcc.firebaseapp.com",databaseURL:"https://eandccourier-36fcc-default-rtdb.firebaseio.com",projectId:"eandccourier-36fcc",storageBucket:"",messagingSenderId:"1067680083511",appId:"1:1067680083511:android:22d1eb3757302492bd19b2"});
 var db=firebase.database(),M=null,N=null,O=null,P=new Set,Q={},R={},S=null,T='',U='all',V=[],W='pickup',X=null,Y,Z,aa,ab='',ac,ad=!1,ae=!1,af=document.getElementById("pickupForm"),ag=document.getElementById("submitBtn"),ah=firebase.database(),editingContactIndex=null;
+// Recurring schedules variables
+let recurringSchedules = {};
+let editingRecurringId = null; // for editing a recurring schedule
+
 let addressFilter = ''; // for address book search
 // Date range and pagination variables
 let datePreset = '', customStart = '', customEnd = '', dateRangeActive = false, orderLimit = 20;
@@ -515,7 +588,14 @@ firebase.database().ref('users/'+c.uid+'/theme').once('value',snap=>{
       // (Firebase automatically cleans up on page reload, but for completeness)
       // You could store the reference and remove it in the else branch.
     }
-    // ------------------------------------------------                                                                                       
+    // ------------------------------------------------
+    // Recurring schedules listener
+    db.ref("recurring_schedules").orderByChild("customer_uid").equalTo(c.uid).on('value', snap => {
+      recurringSchedules = snap.val() || {};
+      if (document.getElementById('orders-history-container').style.display === 'block') {
+        A(); // re-render dashboard to include recurring section
+      }
+    });
 }else{document.getElementById('auth-overlay').style.display='flex';document.getElementById('main-app-container').style.display='none';if(O){O();O=null}N=null;V=[];}
 firebase.database().ref('developer').on('value',k=>{if(!k)return;d.innerHTML='';let l=k.val()||{};Object.values(l).forEach(m=>{d.innerHTML+=`<div class="dev-item"><div class="dev-hdr">${m.user} - <span style="color:orange;">${m.app||'Database'}</span> - ${m.date}</div><div style="color:#eee;">${m.text}</div>`});d.scrollTop=d.scrollHeight})});
 function a(){document.body.classList.toggle('light-mode');let theme=document.body.classList.contains('light-mode')?'light':'dark';localStorage.setItem('ec_theme',theme);c();let user=firebase.auth().currentUser;if(user){firebase.database().ref('users/'+user.uid+'/theme').set(theme);}}
@@ -617,6 +697,7 @@ function x(){
   ag.disabled=!1;
   ag.style.opacity="1";
   S=null;
+  editingRecurringId = null; // reset recurring edit
   document.getElementById('cancelEditBtn').style.display='none';
 }
 function y(be){if(!confirm('Are you sure you want to cancel this pending order?'))return;let bf=db.ref('jobs/'+be);bf.once('value',bg=>{let bh=bg.val();if(!bh)return;let bi=(bh.job_history?bh.job_history+'\n':'')+'[CANCELLED BY USER] DND';bf.update({job_history:bi,status:'cancelled',cancelled_by_user:true}).catch(bj=>alert('Error: '+bj.message));}).catch(bk=>alert('Error: '+bk.message));}
@@ -666,10 +747,27 @@ function getStatusBadge(status) {
   let s = statusMap[status] || { text: status, icon: 'fa-question-circle', class: '' };
   return `<span class="status-badge ${s.class}"><i class="fas ${s.icon}"></i>${s.text}</span>`;
 }
+// Helper to format recurrence pattern
+function formatPattern(pattern) {
+  let freq = pattern.frequency;
+  let interval = pattern.interval || 1;
+  let str = `Every ${interval} `;
+  if (freq === 'daily') str += 'day';
+  else if (freq === 'weekly') {
+    str += 'week on ';
+    let days = pattern.days_of_week.map(d => ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][d-1]).join(', ');
+    str += days;
+  } else if (freq === 'monthly') {
+    str += `month on day ${pattern.day_of_month}`;
+  }
+  if (interval > 1) str += 's';
+  return str;
+}
 function A(){
   if(document.getElementById('orders-history-container').style.display!=='block')return;
   let bn=document.getElementById('orders-list'),bo=document.getElementById('live-status-header');
-  if(!N||Object.keys(N).length===0){bn.innerHTML='<p style="color:#aaa;">No past orders found.</p>';return}
+  if(!N||Object.keys(N).length===0){bn.innerHTML='<p style="color:#aaa;">No past orders found.</p>';}
+  else {
   let bp=new Date();bo.innerText="Status Live as of "+bp.toLocaleString([],{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:!0});
   bn.innerHTML='';
   let bq=[];Object.entries(N).forEach(([br,bs])=>{bq.push({...bs,id:br})});
@@ -739,6 +837,11 @@ function A(){
         else adjustedStatus = 'pending_pickup';
     }
     badgeHtml = getStatusBadge(adjustedStatus),
+    // Add scheduled badge if scheduled_time exists and is in future
+    let scheduledBadge = '';
+    if (bz.scheduled_time && bz.scheduled_time > Date.now()) {
+      scheduledBadge = `<span class="status-badge" style="background:#9C27B0; color:#fff; margin-left:5px;"><i class="fas fa-calendar-alt"></i> Scheduled: ${new Date(bz.scheduled_time).toLocaleString()}</span>`;
+    }
         bT = bJ ? '' : `<div class="ocean-timeline"><div class="ocean-track"><div class="ocean-fill" style="width:${bL};"></div></div><div class="ocean-node ${bK[0]}"><div class="ocean-label">Ordered</div></div><div class="ocean-node ${bK[1]}"><div class="ocean-label">Assigned</div></div><div class="ocean-node ${bK[2]}"><div class="ocean-label">Picked‑Up</div></div><div class="ocean-node ${bK[3]}"><div class="ocean-label">Out for Delivery</div></div><div class="ocean-node ${bK[4]}"><div class="ocean-label">Delivered</div></div></div>`,
         // New stacked pickup/delivery
         pickupDeliveryHtml = `<div style="margin-top:8px;">
@@ -747,7 +850,7 @@ function A(){
           <div style="margin-top:8px;"><span style="color:var(--accent); font-weight:600;">Delivery:</span> <span style="color:var(--text);">${bz.delivery_name}</span></div>
           <div style="color:var(--text); font-size:14px; margin-left:0;">${bz.destination}</div>
         </div>`,
-        bU = `<div class="order-date">${bA}</div>${badgeHtml}${pickupDeliveryHtml}<div style="margin-top:8px;"><div><span class="category-title">Packages/Items/Dimensions</span><div class="category-value">${bP}</div></div><div><span class="category-title">PO / Ref</span><div class="category-value">${bQ}</div></div><div><span class="category-title">Driver Notes</span><div class="category-value">${bz.other_info || 'None'}</div></div></div><div class="user-tags" style="text-align:left; margin-top:8px;"><div style="margin-bottom:4px;">${bz.user_tags ? bz.user_tags.map(tag => `<span>${tag}</span>`).join('') : ''}</div><button class="btn btn-secondary tag-button" onclick="promptAddTag('${bz.id}')" style="font-size:13px; padding:2px 8px; min-height:auto;">+ tag</button></div>${bT}`;
+        bU = `<div class="order-date">${bA}</div>${badgeHtml}${scheduledBadge}${pickupDeliveryHtml}<div style="margin-top:8px;"><div><span class="category-title">Packages/Items/Dimensions</span><div class="category-value">${bP}</div></div><div><span class="category-title">PO / Ref</span><div class="category-value">${bQ}</div></div><div><span class="category-title">Driver Notes</span><div class="category-value">${bz.other_info || 'None'}</div></div></div><div class="user-tags" style="text-align:left; margin-top:8px;"><div style="margin-bottom:4px;">${bz.user_tags ? bz.user_tags.map(tag => `<span>${tag}</span>`).join('') : ''}</div><button class="btn btn-secondary tag-button" onclick="promptAddTag('${bz.id}')" style="font-size:13px; padding:2px 8px; min-height:auto;">+ tag</button></div>${bT}`;
     if (bB === 'cancelled' || bJ) {
       let bV = P.has(bz.id),
           bW = new Date(bz.timestamp),
@@ -755,7 +858,7 @@ function A(){
           bY;
       if (bB === 'cancelled' || bJ) bY = `<div style="display:flex;flex-direction:column;gap:4px;"><span style="font-weight:700;">${bX}</span><span class="package-details">${bz.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${bz.name||'?'}</span> → <span style="color:#90ee90;">${bz.delivery_name||'?'}</span></div><div style="color:red;font-weight:700;">Order Cancelled</div>`;
       else bY = `<div style="display:flex;flex-direction:column;gap:4px;"><span style="font-weight:700;">${bX}</span><span class="package-details">${bz.package_details||'N/A'}</span></div><div><span style="color:#ffd700;">${bz.name||'?'}</span> → <span style="color:#90ee90;">${bz.delivery_name||'?'}</span></div>`;
-      bn.innerHTML += `<div style="margin-bottom:2px;"><button onclick="B('${bz.id}')" style="width:100%;padding:6px 10px;background:var(--input-bg);border:1px solid #ccc;border-radius:4px;color:var(--text);text-align:left;cursor:pointer;font-size:12px;line-height:1.4;">${bY}</button><div id="${bS}" class="order-card" style="display:${bV?'block':'none'};margin-bottom:0;border-top:0;border-top-left-radius:0;border-top-right-radius:0;"><div class="order-date">${bA}</div>${badgeHtml}${pickupDeliveryHtml}<div style="margin-top:8px;"><div><span class="category-title">Packages/Items/Dimensions</span><div class="category-value">${bP}</div></div><div><span class="category-title">PO / Ref</span><div class="category-value">${bQ}</div></div><div><span class="category-title">Driver Notes</span><div class="category-value">${bz.other_info || 'None'}</div></div></div><div class="user-tags" style="text-align:left; margin-top:8px;"><div style="margin-bottom:4px;">${bz.user_tags ? bz.user_tags.map(tag => `<span>${tag}</span>`).join('') : ''}</div><button class="btn btn-secondary tag-button" onclick="promptAddTag('${bz.id}')" style="font-size:13px; padding:2px 8px; min-height:auto;">+ tag</button></div></div></div>`;
+      bn.innerHTML += `<div style="margin-bottom:2px;"><button onclick="B('${bz.id}')" style="width:100%;padding:6px 10px;background:var(--input-bg);border:1px solid #ccc;border-radius:4px;color:var(--text);text-align:left;cursor:pointer;font-size:12px;line-height:1.4;">${bY}</button><div id="${bS}" class="order-card" style="display:${bV?'block':'none'};margin-bottom:0;border-top:0;border-top-left-radius:0;border-top-right-radius:0;"><div class="order-date">${bA}</div>${badgeHtml}${scheduledBadge}${pickupDeliveryHtml}<div style="margin-top:8px;"><div><span class="category-title">Packages/Items/Dimensions</span><div class="category-value">${bP}</div></div><div><span class="category-title">PO / Ref</span><div class="category-value">${bQ}</div></div><div><span class="category-title">Driver Notes</span><div class="category-value">${bz.other_info || 'None'}</div></div></div><div class="user-tags" style="text-align:left; margin-top:8px;"><div style="margin-bottom:4px;">${bz.user_tags ? bz.user_tags.map(tag => `<span>${tag}</span>`).join('') : ''}</div><button class="btn btn-secondary tag-button" onclick="promptAddTag('${bz.id}')" style="font-size:13px; padding:2px 8px; min-height:auto;">+ tag</button></div></div></div>`;
     } else if (bB === 'completed') {
       let bV = P.has(bz.id),
           bW = new Date(bz.timestamp),
@@ -768,7 +871,7 @@ function A(){
         deliveryText = `<div style="text-align:center; margin-top:10px; color: #00b32d; font-weight:700;">Delivered on ${deliveryDate}</div>`;
       }
       let cardContent = `
-        <div class="order-date">${bA}</div>${badgeHtml}
+        <div class="order-date">${bA}</div>${badgeHtml}${scheduledBadge}
         ${pickupDeliveryHtml}
         <div style="margin-top:8px;">
           <div><span class="category-title">Packages/Items/Dimensions</span><div class="category-value">${bP}</div></div>
@@ -802,7 +905,7 @@ function A(){
             </div>
           ` : ''}
         </div>
-        ${badgeHtml}
+        ${badgeHtml}${scheduledBadge}
         ${pickupDeliveryHtml}
         <div style="margin-top:8px;">
           <div><span class="category-title">Packages/Items/Dimensions</span><div class="category-value">${bP}</div></div>
@@ -826,11 +929,216 @@ function A(){
   } else {
     loadMoreBtn.style.display = 'none';
   }
+  } // end else for N
+  // Render recurring schedules
+  let recurringContainer = document.getElementById('recurring-schedules-list');
+  if (!recurringContainer) return;
+  recurringContainer.innerHTML = '';
+  if (Object.keys(recurringSchedules).length === 0) {
+    recurringContainer.innerHTML = '<p style="color:#aaa;">No recurring orders.</p>';
+    return;
+  }
+  for (let [id, sched] of Object.entries(recurringSchedules)) {
+    if (!sched.active) continue; // skip inactive
+    let patternStr = formatPattern(sched.pattern);
+    let nextOccurrence = sched.next_generation ? new Date(sched.next_generation).toLocaleString() : 'N/A';
+    let card = document.createElement('div');
+    card.className = 'order-card';
+    card.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div><strong>${sched.name || 'Unnamed'}</strong></div>
+        <div><span class="status-badge" style="background:#4CAF50; color:#fff;">Active</span></div>
+      </div>
+      <div style="margin-top:8px;"><span class="category-title">Pattern</span><div class="category-value">${patternStr}</div></div>
+      <div><span class="category-title">Next occurrence</span><div class="category-value">${nextOccurrence}</div></div>
+      <div style="margin-top:10px; display:flex; gap:10px;">
+        <button class="edit-btn" onclick="editRecurringSchedule('${id}')">Edit</button>
+        <button class="cancel-btn" onclick="deactivateRecurringSchedule('${id}')">Cancel</button>
+      </div>
+    `;
+    recurringContainer.appendChild(card);
+  }
 }
 function B(ca){let cb=document.getElementById('order-card-'+ca);if(cb){if(cb.style.display==='none'){cb.style.display='block';P.add(ca)}else{cb.style.display='none';P.delete(ca)}}}
+// Edit recurring schedule: populate main form and set editingRecurringId
+function editRecurringSchedule(id) {
+  let sched = recurringSchedules[id];
+  if (!sched) return;
+  editingRecurringId = id;
+  // Populate main form with details
+  let d = sched.details;
+  af.name.value = d.name || '';
+  af.pickup_location.value = d.pickup_location || '';
+  af.city.value = d.pickup_city || '';
+  af.p_email.value = d.p_email || '';
+  af.p_phone.value = d.p_phone || '';
+  af.delivery_name.value = d.delivery_name || '';
+  af.destination.value = d.destination || '';
+  af.drop_city.value = d.delivery_city || '';
+  af.d_email.value = d.d_email || '';
+  af.d_phone.value = d.d_phone || '';
+  af.package_details.value = d.package_details || '';
+  af.po_number.value = d.po_number || '';
+  af.other_info.value = d.other_info || '';
+  if (d.payment) {
+    let radios = document.getElementsByName('payment');
+    for (let r of radios) if (r.value === d.payment) r.checked = true;
+  }
+  ad = true; ae = true; // addresses verified from original schedule
+
+  // Set scheduling UI
+  let startDate = new Date(sched.pattern.start_date);
+  let now = Date.now();
+  // Set schedule_type to scheduled if start_date is in future? We'll just set to scheduled and fill datetime
+  if (sched.pattern.start_date) {
+    document.querySelector('input[name="schedule_type"][value="scheduled"]').checked = true;
+    document.getElementById('scheduled_datetime').value = startDate.toISOString().slice(0,16);
+    document.getElementById('scheduled-datetime-container').style.display = 'block';
+  } else {
+    document.querySelector('input[name="schedule_type"][value="immediate"]').checked = true;
+  }
+  // Check recurring checkbox and show panel
+  document.getElementById('recurring_checkbox').checked = true;
+  document.getElementById('recurrence-panel').style.display = 'block';
+  // Fill recurrence fields
+  document.getElementById('recur_freq').value = sched.pattern.frequency;
+  document.getElementById('recur_interval').value = sched.pattern.interval || 1;
+  // Days of week
+  if (sched.pattern.frequency === 'weekly' && sched.pattern.days_of_week) {
+    document.getElementById('weekly-days').style.display = 'block';
+    let checkboxes = document.querySelectorAll('#weekly-days input[type="checkbox"]');
+    checkboxes.forEach(cb => {
+      cb.checked = sched.pattern.days_of_week.includes(parseInt(cb.value));
+    });
+  } else {
+    document.getElementById('weekly-days').style.display = 'none';
+  }
+  // Monthly day
+  if (sched.pattern.frequency === 'monthly') {
+    document.getElementById('monthly-day').style.display = 'block';
+    document.getElementById('recur_day_of_month').value = sched.pattern.day_of_month || 1;
+  } else {
+    document.getElementById('monthly-day').style.display = 'none';
+  }
+  // Start date
+  document.getElementById('recur_start_date').value = startDate.toISOString().slice(0,16);
+  // End date
+  if (sched.pattern.end_date) {
+    document.getElementById('recur_no_end').checked = false;
+    document.getElementById('recur_end_container').style.display = 'block';
+    document.getElementById('recur_end_date').value = new Date(sched.pattern.end_date).toISOString().slice(0,16);
+  } else {
+    document.getElementById('recur_no_end').checked = true;
+    document.getElementById('recur_end_container').style.display = 'none';
+  }
+  // Change submit button text
+  ag.innerText = "Update Recurring Schedule";
+  // Hide order dashboard, show main form
+  document.getElementById('orders-history-container').style.display = 'none';
+  document.getElementById('main-app-container').style.display = 'block';
+  document.getElementById('pickupForm').style.display = 'block';
+  document.getElementById('thanksMessage').style.display = 'none';
+  ag.disabled = false;
+  ag.style.opacity = "1";
+  document.getElementById('cancelEditBtn').style.display = 'block'; // reuse cancel edit button
+}
+// Deactivate recurring schedule
+function deactivateRecurringSchedule(id) {
+  if (!confirm("Deactivate this recurring order?")) return;
+  db.ref('recurring_schedules/' + id).update({ active: false }).catch(err => alert("Error: " + err.message));
+}
 af.addEventListener("submit",cc=>{cc.preventDefault();if(document.getElementById('website_url_hp').value)return;let cd=localStorage.getItem('lastOrderTime'),ce=Date.now();if(cd&&ce-cd<30000&&!S){alert("Please wait a moment before submitting another request.");return}
 if(!ad||!ae){alert("Please select a verified address from the Google Maps suggestions or the map picker to prevent invalid locations.");return}
-ag.innerText=S?"Updating...":"Transmitting...";ag.style.opacity="0.7";ag.disabled=!0;let cf=(cg,ch='Unassigned')=>{let ci={name:af.name.value.trim(),pickup_location:af.pickup_location.value.trim(),pickup_city:af.city.value.trim(),city:af.city.value.trim(),p_email:af.p_email.value.trim(),p_phone:af.p_phone.value.trim(),delivery_name:af.delivery_name.value.trim(),destination:af.destination.value.trim(),delivery_city:af.drop_city.value.trim(),d_email:af.d_email.value.trim(),d_phone:af.d_phone.value.trim(),package_details:af.package_details.value.trim(),po_number:af.po_number.value.trim()||"",other_info:af.other_info.value.trim(),payment: document.querySelector('input[name="payment"]:checked')?.value || '',job_history:"[Client Request]",status:"pending_pickup",type:"pickup",assigned_to:ch,timestamp:S?N[S]?.timestamp||Date.now():Date.now(),created_by:firebase.auth().currentUser?firebase.auth().currentUser.email:"Web Portal",...cg};if(S){db.ref("jobs/"+S).update(ci).then(()=>{localStorage.setItem('lastOrderTime',Date.now());S=null;af.style.display="none";document.getElementById("thanksMessage").style.display="block";window.scrollTo({top:0,behavior:'smooth'});document.getElementById('cancelEditBtn').style.display='none';}).catch(cj=>{ag.innerText="Update Request";ag.disabled=!1;ag.style.opacity="1"})}else{db.ref("jobs").push(ci).then(ck=>{localStorage.setItem('lastOrderTime',Date.now());let cl=ck.key;if(!N)N={};N[cl]={...ci,id:cl};if(document.getElementById('orders-history-container').style.display==='block')A();af.style.display="none";document.getElementById("thanksMessage").style.display="block";window.scrollTo({top:0,behavior:'smooth'})}).catch(cm=>{ag.innerText="Submit Request";ag.disabled=!1;ag.style.opacity="1"})}};let cn=new google.maps.Geocoder(),co=af.pickup_location.value.trim()+", "+af.city.value.trim(),cp=!1,cq=setTimeout(()=>{if(!cp){cp=!0;cf()}},3000);cn.geocode({address:co},(cr,cs)=>{if(cp)return;cp=!0;clearTimeout(cq);if(cs==="OK"&&cr[0]){let ct=cr[0].geometry.location,cu={lat:ct.lat(),lng:ct.lng()},cv='Unassigned';for(let cw in Q){let cx=Q[cw];if(cx.polygon){let cy=new google.maps.Polygon({paths:cx.polygon});if(google.maps.geometry.poly.containsLocation(ct,cy)){cv=cw;break}}}cf(cu,cv)}else cf()})});
+ag.innerText=S?"Updating...":"Transmitting...";ag.style.opacity="0.7";ag.disabled=!0;
+
+// Read scheduling & recurring values
+let scheduleType = document.querySelector('input[name="schedule_type"]:checked').value;
+let scheduledDateTime = document.getElementById('scheduled_datetime').value;
+let isRecurring = document.getElementById('recurring_checkbox').checked;
+let scheduledTime = null;
+if (scheduleType === 'scheduled' && scheduledDateTime) {
+  scheduledTime = new Date(scheduledDateTime).getTime();
+}
+
+// Handle recurring schedule creation/update
+if (isRecurring || editingRecurringId) {
+  // Build pattern object
+  let freq = document.getElementById('recur_freq').value;
+  let interval = parseInt(document.getElementById('recur_interval').value) || 1;
+  let pattern = { frequency: freq, interval: interval };
+  if (freq === 'weekly') {
+    let days = [];
+    document.querySelectorAll('#weekly-days input[type="checkbox"]:checked').forEach(cb => days.push(parseInt(cb.value)));
+    pattern.days_of_week = days;
+  } else if (freq === 'monthly') {
+    pattern.day_of_month = parseInt(document.getElementById('recur_day_of_month').value) || 1;
+  }
+  let startDate = document.getElementById('recur_start_date').value;
+  if (!startDate) {
+    alert("Please set a start date for the recurring schedule.");
+    ag.innerText = editingRecurringId ? "Update Recurring Schedule" : "Submit Request";
+    ag.disabled = false; ag.style.opacity = "1"; return;
+  }
+  pattern.start_date = new Date(startDate).getTime();
+  let noEnd = document.getElementById('recur_no_end').checked;
+  if (!noEnd) {
+    let endDate = document.getElementById('recur_end_date').value;
+    if (endDate) pattern.end_date = new Date(endDate).getTime();
+  }
+  // Build details object from form fields
+  let details = {
+    name: af.name.value.trim(),
+    pickup_location: af.pickup_location.value.trim(),
+    pickup_city: af.city.value.trim(),
+    p_email: af.p_email.value.trim(),
+    p_phone: af.p_phone.value.trim(),
+    delivery_name: af.delivery_name.value.trim(),
+    destination: af.destination.value.trim(),
+    delivery_city: af.drop_city.value.trim(),
+    d_email: af.d_email.value.trim(),
+    d_phone: af.d_phone.value.trim(),
+    package_details: af.package_details.value.trim(),
+    po_number: af.po_number.value.trim() || "",
+    other_info: af.other_info.value.trim(),
+    payment: document.querySelector('input[name="payment"]:checked')?.value || ''
+  };
+  let user = firebase.auth().currentUser;
+  if (!user) { alert("Not logged in"); return; }
+  let scheduleData = {
+    customer_uid: user.uid,
+    name: "Recurring order", // Could add a name field, but for simplicity use default
+    details: details,
+    pattern: pattern,
+    active: true,
+    created_at: Date.now(),
+    last_edited_by: user.email,
+    next_generation: pattern.start_date // initially next generation = start date
+  };
+  if (editingRecurringId) {
+    // Update existing schedule
+    db.ref('recurring_schedules/' + editingRecurringId).update(scheduleData).then(() => {
+      alert("Recurring schedule updated.");
+      editingRecurringId = null;
+      x(); // go back to dashboard
+    }).catch(err => { alert("Error: " + err.message); ag.innerText = "Update Recurring Schedule"; ag.disabled = false; ag.style.opacity = "1"; });
+  } else {
+    // Create new recurring schedule
+    db.ref('recurring_schedules').push(scheduleData).then(() => {
+      alert("Recurring order created.");
+      x(); // go back to dashboard
+    }).catch(err => { alert("Error: " + err.message); ag.innerText = "Submit Request"; ag.disabled = false; ag.style.opacity = "1"; });
+  }
+  return; // exit early, no job creation
+}
+
+// Otherwise proceed with job creation (immediate or scheduled)
+let cf = (cg,ch='Unassigned',scheduledTime=null) => {
+  let ci={name:af.name.value.trim(),pickup_location:af.pickup_location.value.trim(),pickup_city:af.city.value.trim(),city:af.city.value.trim(),p_email:af.p_email.value.trim(),p_phone:af.p_phone.value.trim(),delivery_name:af.delivery_name.value.trim(),destination:af.destination.value.trim(),delivery_city:af.drop_city.value.trim(),d_email:af.d_email.value.trim(),d_phone:af.d_phone.value.trim(),package_details:af.package_details.value.trim(),po_number:af.po_number.value.trim()||"",other_info:af.other_info.value.trim(),payment: document.querySelector('input[name="payment"]:checked')?.value || '',job_history:"[Client Request]",status:"pending_pickup",type:"pickup",assigned_to:ch,timestamp:S?N[S]?.timestamp||Date.now():Date.now(),created_by:firebase.auth().currentUser?firebase.auth().currentUser.email:"Web Portal",...cg};
+  // Add scheduled_time if provided
+  if (scheduledTime) ci.scheduled_time = scheduledTime;
+  if(S){db.ref("jobs/"+S).update(ci).then(()=>{localStorage.setItem('lastOrderTime',Date.now());S=null;af.style.display="none";document.getElementById("thanksMessage").style.display="block";window.scrollTo({top:0,behavior:'smooth'});document.getElementById('cancelEditBtn').style.display='none';}).catch(cj=>{ag.innerText="Update Request";ag.disabled=!1;ag.style.opacity="1"})}else{db.ref("jobs").push(ci).then(ck=>{localStorage.setItem('lastOrderTime',Date.now());let cl=ck.key;if(!N)N={};N[cl]={...ci,id:cl};if(document.getElementById('orders-history-container').style.display==='block')A();af.style.display="none";document.getElementById("thanksMessage").style.display="block";window.scrollTo({top:0,behavior:'smooth'})}).catch(cm=>{ag.innerText="Submit Request";ag.disabled=!1;ag.style.opacity="1"})}};
+let cn=new google.maps.Geocoder(),co=af.pickup_location.value.trim()+", "+af.city.value.trim(),cp=!1,cq=setTimeout(()=>{if(!cp){cp=!0;cf({},'Unassigned',scheduledTime)}},3000);
+cn.geocode({address:co},(cr,cs)=>{if(cp)return;cp=!0;clearTimeout(cq);if(cs==="OK"&&cr[0]){let ct=cr[0].geometry.location,cu={lat:ct.lat(),lng:ct.lng()},cv='Unassigned';for(let cw in Q){let cx=Q[cw];if(cx.polygon){let cy=new google.maps.Polygon({paths:cx.polygon});if(google.maps.geometry.poly.containsLocation(ct,cy)){cv=cw;break}}}cf(cu,cv,scheduledTime)}else cf({},'Unassigned',scheduledTime)})});
 var Y;window.addEventListener('beforeinstallprompt',cz=>{cz.preventDefault();Y=cz;document.getElementById('installAppBtn').style.display='block'});document.getElementById('installAppBtn').addEventListener('click',async()=>{if(Y){Y.prompt();let cA=await Y.userChoice;if(cA.outcome==='accepted')document.getElementById('installAppBtn').style.display='none';Y=null}});
 var Z,aa,ab='';function E(cB){ab=cB;let cC=document.getElementById('location-picker-modal');cC.style.display='block';document.body.style.overflow='hidden';if(!Z){Z=new google.maps.Map(document.getElementById('picker-map'),{center:{lat:49.8951,lng:-97.1384},zoom:12,gestureHandling:'greedy',disableDefaultUI:!0,zoomControl:!0,scrollwheel:!0,styles:[{"featureType":"all","elementType":"labels.text.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"all","elementType":"labels.text.stroke","stylers":[{"color":"#000000"},{"lightness":13}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":21}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":17}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":29},{"weight":0.2}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":18}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":16}]},{"featureType":"transit","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":19}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":17}]}]});let cD=document.getElementById('loc-search-bar'),cE=new google.maps.places.Autocomplete(cD);cE.bindTo('bounds',Z);cE.addListener('place_changed',()=>{let cF=cE.getPlace();if(cF.geometry){Z.setCenter(cF.geometry.location);Z.setZoom(17)}});cD.addEventListener('keydown',cG=>{if(cG.key==='Enter'){let cH=cD.value,cI=cH.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);if(cI){let cJ={lat:+cI[1],lng:+cI[2]};Z.setCenter(cJ);Z.setZoom(17)}else{let cK=new google.maps.Geocoder();cK.geocode({address:cH},(cL,cM)=>{if(cM==='OK'&&cL[0]){Z.setCenter(cL[0].geometry.location);Z.setZoom(17)}})}}})}}
 function C(){let cN=document.getElementById('loc-search-bar'),cO=cN.value;if(!cO)return;let cP=cO.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);if(cP){let cQ={lat:+cP[1],lng:+cP[2]};Z.setCenter(cQ);Z.setZoom(17)}else{let cR=new google.maps.Geocoder();cR.geocode({address:cO},(cS,cT)=>{if(cT==='OK'&&cS[0]){Z.setCenter(cS[0].geometry.location);Z.setZoom(17)}else alert('Location not found')})}}
@@ -867,7 +1175,27 @@ function clearContactForm(){if(!confirm('Are you sure you want to clear the cont
 function toggleEmailChange(){let cj=document.getElementById('emailChangeDiv');cj.style.display=cj.style.display==='none'?'block':'none';}
 function changeUserEmail(){let ck=document.getElementById('newEmailInput').value,cl=firebase.auth().currentUser;if(cl&&ck!==""){cl.verifyBeforeUpdateEmail(ck).then(function(){alert("A verification link has been sent to your new email! Please check your inbox and verify.");document.getElementById('newEmailInput').value='';document.getElementById('emailChangeDiv').style.display='none';}).catch(function(cm){alert("Error: "+cm.message);});}else alert("Please log in and enter a valid email.");}
 function sendPasswordReset(){let cn=firebase.auth().currentUser;if(cn&&cn.email){firebase.auth().sendPasswordResetEmail(cn.email).then(()=>{alert("Password reset email sent to "+cn.email+". Please check your inbox.");}).catch(co=>{alert("Error: "+co.message);});}else alert("No user logged in.");}
-function cancelEdit(){if(S){if(!confirm("Are you sure you want to cancel editing?"))return;S=null;ag.innerText="Submit Request";document.getElementById('cancelEditBtn').style.display='none';af.reset();ad=!1;ae=!1;w();}}
+function cancelEdit(){
+  if(S){
+    if(!confirm("Are you sure you want to cancel editing?"))return;
+    S=null;
+    ag.innerText="Submit Request";
+    document.getElementById('cancelEditBtn').style.display='none';
+    af.reset();
+    ad=!1;
+    ae=!1;
+    w();
+  } else if (editingRecurringId) {
+    if(!confirm("Cancel editing recurring schedule?"))return;
+    editingRecurringId = null;
+    ag.innerText="Submit Request";
+    document.getElementById('cancelEditBtn').style.display='none';
+    af.reset();
+    ad=!1;
+    ae=!1;
+    w();
+  }
+}
 // Date range event listeners
 document.getElementById('datePreset').addEventListener('change', function(e) {
   let preset = e.target.value;
@@ -932,6 +1260,47 @@ function toggleFilters() {
 document.addEventListener('DOMContentLoaded', function() {
   let controls = document.querySelector('.filter-controls');
   if (controls) controls.style.display = 'none';
+  // Scheduling UI event listeners
+  let scheduleRadios = document.querySelectorAll('input[name="schedule_type"]');
+  let scheduledContainer = document.getElementById('scheduled-datetime-container');
+  scheduleRadios.forEach(r => r.addEventListener('change', function() {
+    if (this.value === 'scheduled') scheduledContainer.style.display = 'block';
+    else scheduledContainer.style.display = 'none';
+  }));
+  let recurringCheck = document.getElementById('recurring_checkbox');
+  let recurrencePanel = document.getElementById('recurrence-panel');
+  recurringCheck.addEventListener('change', function() {
+    recurrencePanel.style.display = this.checked ? 'block' : 'none';
+  });
+  let freqSelect = document.getElementById('recur_freq');
+  let weeklyDays = document.getElementById('weekly-days');
+  let monthlyDay = document.getElementById('monthly-day');
+  freqSelect.addEventListener('change', function() {
+    if (this.value === 'weekly') {
+      weeklyDays.style.display = 'block';
+      monthlyDay.style.display = 'none';
+    } else if (this.value === 'monthly') {
+      weeklyDays.style.display = 'none';
+      monthlyDay.style.display = 'block';
+    } else {
+      weeklyDays.style.display = 'none';
+      monthlyDay.style.display = 'none';
+    }
+  });
+  let noEndCheck = document.getElementById('recur_no_end');
+  let endContainer = document.getElementById('recur_end_container');
+  noEndCheck.addEventListener('change', function() {
+    endContainer.style.display = this.checked ? 'none' : 'block';
+  });
+  // Set default start date to today
+  let today = new Date();
+  let yyyy = today.getFullYear();
+  let mm = String(today.getMonth()+1).padStart(2,'0');
+  let dd = String(today.getDate()).padStart(2,'0');
+  let hh = String(today.getHours()).padStart(2,'0');
+  let min = String(today.getMinutes()).padStart(2,'0');
+  let defaultDateTime = `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+  document.getElementById('recur_start_date').value = defaultDateTime;
 });
 </script>
 <link href=https://cdn.quilljs.com/1.3.6/quill.snow.css rel=stylesheet>
