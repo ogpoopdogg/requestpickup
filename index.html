@@ -836,7 +836,7 @@ function A(){
         if (bF) adjustedStatus = 'in_transit';
         else adjustedStatus = 'pending_pickup';
     }
-    badgeHtml = getStatusBadge(adjustedStatus),
+    badgeHtml = getStatusBadge(adjustedStatus);
     // Add scheduled badge if scheduled_time exists and is in future
     let scheduledBadge = '';
     if (bz.scheduled_time && bz.scheduled_time > Date.now()) {
