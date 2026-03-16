@@ -269,6 +269,32 @@ body:not(.light-mode) #addressbook-list-view .btn-primary {
 body.light-mode button[type=submit] {
     border: 2px solid black !important;
 }
+/* ----- Additional fixes for issues 1,2,3,5,6 ----- */
+/* 1) Light mode order card pickup/delivery labels black */
+body.light-mode .order-card span[style*="color:var(--accent)"] {
+    color: #000 !important;
+}
+/* 2) Light mode settings titles black */
+body.light-mode #settings-modal .modal-content h2[style*="color:var(--accent)"] {
+    color: #000 !important;
+}
+/* 3) Dark mode address book primary buttons blue */
+body:not(.light-mode) #addressbook-list-view .btn-primary,
+body:not(.light-mode) #addressbook-create-view .btn-primary {
+    background: #007bff;
+    border-color: #007bff;
+    color: #fff;
+}
+/* 5) Dark mode set location button blue */
+body:not(.light-mode) #location-picker-modal .btn-primary {
+    background: #007bff;
+    border-color: #007bff;
+    color: #fff;
+}
+/* 6) Ensure location picker modal appears above settings modal */
+#location-picker-modal {
+    z-index: 3000;
+}
 </style>
 </head>
 <body>
