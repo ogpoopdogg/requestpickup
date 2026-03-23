@@ -1199,7 +1199,28 @@ let cf = (cg,ch='Unassigned',scheduledTime=null) => {
   if (scheduledTime) ci.scheduled_time = scheduledTime;
   if(S){db.ref("jobs/"+S).update(ci).then(()=>{localStorage.setItem('lastOrderTime',Date.now());S=null;af.style.display="none";document.getElementById("thanksMessage").style.display="block";window.scrollTo({top:0,behavior:'smooth'});document.getElementById('cancelEditBtn').style.display='none';}).catch(cj=>{ag.innerText="Update Request";ag.disabled=!1;ag.style.opacity="1"})}else{db.ref("jobs").push(ci).then(ck=>{localStorage.setItem('lastOrderTime',Date.now());let cl=ck.key;if(!N)N={};N[cl]={...ci,id:cl};if(document.getElementById('orders-history-container').style.display==='block')A();af.style.display="none";document.getElementById("thanksMessage").style.display="block";window.scrollTo({top:0,behavior:'smooth'})}).catch(cm=>{ag.innerText="Submit Request";ag.disabled=!1;ag.style.opacity="1"})}};
 let cn=new google.maps.Geocoder(),co=af.pickup_location.value.trim()+", "+af.city.value.trim(),cp=!1,cq=setTimeout(()=>{if(!cp){cp=!0;cf({},'Unassigned',scheduledTime)}},3000);
-cn.geocode({address:co},(cr,cs)=>{if(cp)return;cp=!0;clearTimeout(cq);if(cs==="OK"&&cr[0]){let ct=cr[0].geometry.location,cu={lat:ct.lat(),lng:ct.lng()},cv='Unassigned';for(let cw in Q){let cx=Q[cw];if(cx.polygon){let cy=new google.maps.Polygon({paths:cx.polygon});if(google.maps.geometry.poly.containsLocation(ct,cy)){cv=cw;break}}}cf(cu,cv,scheduledTime)}else cf({},'Unassigned',scheduledTime)})});
+cn.geocode({address:co},(cr,cs)=>{if(cp)return;cp=!0;clearTimeout(cq);if(cs==="OK"&&cr[0]){let ct=cr[0].geometry.location,cu={lat:ct.lat(),lng:ct.lng()},cv='Unassigned';
+  // --- FIXED ZONE CHECKING: iterate over drivers, zones, paths ---
+  for (let driverName in Q) {
+    let zones = Q[driverName];
+    if (!zones) continue;
+    for (let zoneId in zones) {
+      let zone = zones[zoneId];
+      if (!zone.paths) continue;
+      for (let path of zone.paths) {
+        if (!path || !path.length) continue;
+        let poly = new google.maps.Polygon({ paths: path });
+        if (google.maps.geometry.poly.containsLocation(ct, poly)) {
+          cv = driverName;
+          break;
+        }
+      }
+      if (cv !== 'Unassigned') break;
+    }
+    if (cv !== 'Unassigned') break;
+  }
+  // --- END FIX ---
+  cf(cu,cv,scheduledTime)}else cf({},'Unassigned',scheduledTime)})});
 var Y;window.addEventListener('beforeinstallprompt',cz=>{cz.preventDefault();Y=cz;document.getElementById('installAppBtn').style.display='block'});document.getElementById('installAppBtn').addEventListener('click',async()=>{if(Y){Y.prompt();let cA=await Y.userChoice;if(cA.outcome==='accepted')document.getElementById('installAppBtn').style.display='none';Y=null}});
 var Z,aa,ab='';function E(cB){ab=cB;let cC=document.getElementById('location-picker-modal');cC.style.display='block';document.body.style.overflow='hidden';if(!Z){Z=new google.maps.Map(document.getElementById('picker-map'),{center:{lat:49.8951,lng:-97.1384},zoom:12,gestureHandling:'greedy',disableDefaultUI:!0,zoomControl:!0,scrollwheel:!0,styles:[{"featureType":"all","elementType":"labels.text.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"all","elementType":"labels.text.stroke","stylers":[{"color":"#000000"},{"lightness":13}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":21}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":17}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":29},{"weight":0.2}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":18}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":16}]},{"featureType":"transit","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":19}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":17}]}]});let cD=document.getElementById('loc-search-bar'),cE=new google.maps.places.Autocomplete(cD);cE.bindTo('bounds',Z);cE.addListener('place_changed',()=>{let cF=cE.getPlace();if(cF.geometry){Z.setCenter(cF.geometry.location);Z.setZoom(17)}});cD.addEventListener('keydown',cG=>{if(cG.key==='Enter'){let cH=cD.value,cI=cH.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);if(cI){let cJ={lat:+cI[1],lng:+cI[2]};Z.setCenter(cJ);Z.setZoom(17)}else{let cK=new google.maps.Geocoder();cK.geocode({address:cH},(cL,cM)=>{if(cM==='OK'&&cL[0]){Z.setCenter(cL[0].geometry.location);Z.setZoom(17)}})}}})}}
 function C(){let cN=document.getElementById('loc-search-bar'),cO=cN.value;if(!cO)return;let cP=cO.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);if(cP){let cQ={lat:+cP[1],lng:+cP[2]};Z.setCenter(cQ);Z.setZoom(17)}else{let cR=new google.maps.Geocoder();cR.geocode({address:cO},(cS,cT)=>{if(cT==='OK'&&cS[0]){Z.setCenter(cS[0].geometry.location);Z.setZoom(17)}else alert('Location not found')})}}
