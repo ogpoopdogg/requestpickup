@@ -640,8 +640,46 @@ if(M.payment){
 }
 ad=!0;ae=!0}
 function l(){let a0=JSON.parse(localStorage.getItem('autofillDefaults')||'{}');if(a0.name)af.name.value=a0.name;if(a0.pickup_location)af.pickup_location.value=a0.pickup_location;if(a0.city)af.city.value=a0.city;if(a0.p_email)af.p_email.value=a0.p_email;if(a0.p_phone)af.p_phone.value=a0.p_phone;if(a0.delivery_name)af.delivery_name.value=a0.delivery_name;if(a0.destination)af.destination.value=a0.destination;if(a0.drop_city)af.drop_city.value=a0.drop_city;if(a0.d_email)af.d_email.value=a0.d_email;if(a0.d_phone)af.d_phone.value=a0.d_phone;if(a0.package_details)af.package_details.value=a0.package_details;if(a0.po_number)af.po_number.value=a0.po_number;if(a0.other_info)af.other_info.value=a0.other_info;if(a0.pickup_location&&a0.city)ad=!0;if(a0.destination&&a0.drop_city)ae=!0}
-function m(){let a1={name:document.getElementById('default-name').value,pickup_location:document.getElementById('default-pickup').value,city:document.getElementById('default-city').value,p_email:document.getElementById('default-p_email').value,p_phone:document.getElementById('default-p_phone').value,delivery_name:document.getElementById('default-delivery_name').value,destination:document.getElementById('default-destination').value,drop_city:document.getElementById('default-drop_city').value,d_email:document.getElementById('default-d_email').value,d_phone:document.getElementById('default-d_phone').value,package_details:document.getElementById('default-package_details').value,po_number:document.getElementById('default-po_number').value,other_info:document.getElementById('default-other_info').value};
-localStorage.setItem('autofillDefaults',JSON.stringify(a1));let a2=firebase.auth().currentUser;if(a2)firebase.database().ref('users/'+a2.uid+'/autofillDefaults').set(a1).catch(a3=>console.error('Error saving autofill defaults',a3));alert('Defaults saved!');}
+async function m() {
+  const defaults = {
+    name: document.getElementById('default-name').value,
+    pickup_location: document.getElementById('default-pickup').value,
+    city: document.getElementById('default-city').value,
+    p_email: document.getElementById('default-p_email').value,
+    p_phone: document.getElementById('default-p_phone').value,
+    delivery_name: document.getElementById('default-delivery_name').value,
+    destination: document.getElementById('default-destination').value,
+    drop_city: document.getElementById('default-drop_city').value,
+    d_email: document.getElementById('default-d_email').value,
+    d_phone: document.getElementById('default-d_phone').value,
+    package_details: document.getElementById('default-package_details').value,
+    po_number: document.getElementById('default-po_number').value,
+    other_info: document.getElementById('default-other_info').value
+  };
+
+  const user = firebase.auth().currentUser;
+  if (!user) {
+    alert('You must be logged in to save defaults.');
+    return;
+  }
+
+  const saveBtn = document.getElementById('save-defaults-btn');
+  const originalText = saveBtn.innerText;
+  saveBtn.disabled = true;
+  saveBtn.innerText = 'Saving...';
+
+  try {
+    await firebase.database().ref('users/' + user.uid + '/autofillDefaults').set(defaults);
+    localStorage.setItem('autofillDefaults', JSON.stringify(defaults));
+    alert('Defaults saved successfully!');
+  } catch (error) {
+    console.error('Error saving autofill defaults', error);
+    alert('Error saving defaults: ' + error.message);
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.innerText = originalText;
+  }
+}
 function n(){let a4=JSON.parse(localStorage.getItem('autofillDefaults')||'{}');document.getElementById('default-name').value=a4.name||'';document.getElementById('default-pickup').value=a4.pickup_location||'';document.getElementById('default-city').value=a4.city||'';document.getElementById('default-p_email').value=a4.p_email||'';document.getElementById('default-p_phone').value=a4.p_phone||'';document.getElementById('default-delivery_name').value=a4.delivery_name||'';document.getElementById('default-destination').value=a4.destination||'';document.getElementById('default-drop_city').value=a4.drop_city||'';document.getElementById('default-d_email').value=a4.d_email||'';document.getElementById('default-d_phone').value=a4.d_phone||'';document.getElementById('default-package_details').value=a4.package_details||'';document.getElementById('default-po_number').value=a4.po_number||'';document.getElementById('default-other_info').value=a4.other_info||''}
 function o(){n();c();G();document.getElementById('settings-main').style.display='block';document.getElementById('settings-autofill').style.display='none';document.getElementById('settings-addressbook').style.display='none';document.getElementById('settings-modal').style.display='block'}
 function p(){document.getElementById('settings-main').style.display='block';document.getElementById('settings-autofill').style.display='none';document.getElementById('settings-addressbook').style.display='none';editingContactIndex=null;document.getElementById('delete-contact-btn').style.display='none';document.getElementById('save-contact-btn').innerText='Save to Address Book';document.getElementById('addressbook-form-title').innerText='Create Contact';}
