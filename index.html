@@ -180,7 +180,7 @@ button, .btn, [role=button]{min-height:44px; min-width:44px;}
 /* Specific adjustments for pickup/delivery rows */
 #f-pickup, #f-drop-address { padding-right: 80px; }
 /* Address book button separate but inline */
-.flex-row .input-group:last-child .btn-icon { border: none; background: transparent; }
+.flex-row .input-group .btn-icon { border: none; background: transparent; }
 /* Ensure buttons are aligned */
 .flex-row .input-group .btn-icon { margin-left: 4px; }
 /* Status badges */
@@ -749,18 +749,21 @@ function getStatusBadge(status) {
 }
 // Helper to format recurrence pattern
 function formatPattern(pattern) {
-  let freq = pattern.frequency;
+  let freq = pattern.type;
   let interval = pattern.interval || 1;
   let str = `Every ${interval} `;
   if (freq === 'daily') str += 'day';
   else if (freq === 'weekly') {
     str += 'week on ';
-    let days = pattern.days_of_week.map(d => ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][d-1]).join(', ');
-    str += days;
+    let days = pattern.days || [];
+    let dayNames = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    let mappedDays = days.map(d => dayNames[d-1] || d).join(', ');
+    str += mappedDays;
   } else if (freq === 'monthly') {
     str += `month on day ${pattern.day_of_month}`;
   }
   if (interval > 1) str += 's';
+  if (pattern.time) str += ` at ${pattern.time}`;
   return str;
 }
 function A(){
@@ -946,7 +949,7 @@ function A(){
     card.className = 'order-card';
     card.innerHTML = `
       <div style="display:flex; justify-content:space-between; align-items:center;">
-        <div><strong>${sched.name || 'Unnamed'}</strong></div>
+        <div><strong>${sched.details.name || 'Unnamed'}</strong></div>
         <div><span class="status-badge" style="background:#4CAF50; color:#fff;">Active</span></div>
       </div>
       <div style="margin-top:8px;"><span class="category-title">Pattern</span><div class="category-value">${patternStr}</div></div>
@@ -987,10 +990,10 @@ function editRecurringSchedule(id) {
   ad = true; ae = true; // addresses verified from original schedule
 
   // Set scheduling UI
-  let startDate = new Date(sched.pattern.start_date);
+  let startDate = new Date(sched.start_date);
   let now = Date.now();
   // Set schedule_type to scheduled if start_date is in future? We'll just set to scheduled and fill datetime
-  if (sched.pattern.start_date) {
+  if (sched.start_date) {
     document.querySelector('input[name="schedule_type"][value="scheduled"]').checked = true;
     document.getElementById('scheduled_datetime').value = startDate.toISOString().slice(0,16);
     document.getElementById('scheduled-datetime-container').style.display = 'block';
@@ -1001,32 +1004,39 @@ function editRecurringSchedule(id) {
   document.getElementById('recurring_checkbox').checked = true;
   document.getElementById('recurrence-panel').style.display = 'block';
   // Fill recurrence fields
-  document.getElementById('recur_freq').value = sched.pattern.frequency;
+  document.getElementById('recur_freq').value = sched.pattern.type;
   document.getElementById('recur_interval').value = sched.pattern.interval || 1;
   // Days of week
-  if (sched.pattern.frequency === 'weekly' && sched.pattern.days_of_week) {
+  if (sched.pattern.type === 'weekly' && sched.pattern.days) {
     document.getElementById('weekly-days').style.display = 'block';
     let checkboxes = document.querySelectorAll('#weekly-days input[type="checkbox"]');
+    let dayNumMap = {'Mon':1,'Tue':2,'Wed':3,'Thu':4,'Fri':5,'Sat':6,'Sun':7};
     checkboxes.forEach(cb => {
-      cb.checked = sched.pattern.days_of_week.includes(parseInt(cb.value));
+      let dayStr = cb.parentElement.innerText.trim().slice(0,3);
+      cb.checked = sched.pattern.days.includes(dayStr);
     });
   } else {
     document.getElementById('weekly-days').style.display = 'none';
   }
   // Monthly day
-  if (sched.pattern.frequency === 'monthly') {
+  if (sched.pattern.type === 'monthly') {
     document.getElementById('monthly-day').style.display = 'block';
     document.getElementById('recur_day_of_month').value = sched.pattern.day_of_month || 1;
   } else {
     document.getElementById('monthly-day').style.display = 'none';
   }
-  // Start date
-  document.getElementById('recur_start_date').value = startDate.toISOString().slice(0,16);
+  // Start date & time (combine start_date and pattern.time)
+  let startDateTime = new Date(sched.start_date);
+  if (sched.pattern.time) {
+    let [hour, minute] = sched.pattern.time.split(':').map(Number);
+    if (!isNaN(hour) && !isNaN(minute)) startDateTime.setHours(hour, minute, 0, 0);
+  }
+  document.getElementById('recur_start_date').value = startDateTime.toISOString().slice(0,16);
   // End date
-  if (sched.pattern.end_date) {
+  if (sched.end_date) {
     document.getElementById('recur_no_end').checked = false;
     document.getElementById('recur_end_container').style.display = 'block';
-    document.getElementById('recur_end_date').value = new Date(sched.pattern.end_date).toISOString().slice(0,16);
+    document.getElementById('recur_end_date').value = new Date(sched.end_date).toISOString().slice(0,16);
   } else {
     document.getElementById('recur_no_end').checked = true;
     document.getElementById('recur_end_container').style.display = 'none';
@@ -1065,25 +1075,36 @@ if (isRecurring || editingRecurringId) {
   // Build pattern object
   let freq = document.getElementById('recur_freq').value;
   let interval = parseInt(document.getElementById('recur_interval').value) || 1;
-  let pattern = { frequency: freq, interval: interval };
+  let pattern = { type: freq, interval: interval };
   if (freq === 'weekly') {
     let days = [];
-    document.querySelectorAll('#weekly-days input[type="checkbox"]:checked').forEach(cb => days.push(parseInt(cb.value)));
-    pattern.days_of_week = days;
+    document.querySelectorAll('#weekly-days input[type="checkbox"]:checked').forEach(cb => {
+      let dayNum = parseInt(cb.value);
+      let dayStr = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][dayNum-1];
+      if (dayStr) days.push(dayStr);
+    });
+    pattern.days = days;
   } else if (freq === 'monthly') {
     pattern.day_of_month = parseInt(document.getElementById('recur_day_of_month').value) || 1;
   }
-  let startDate = document.getElementById('recur_start_date').value;
-  if (!startDate) {
+  let startDateTimeRaw = document.getElementById('recur_start_date').value;
+  if (!startDateTimeRaw) {
     alert("Please set a start date for the recurring schedule.");
     ag.innerText = editingRecurringId ? "Update Recurring Schedule" : "Submit Request";
     ag.disabled = false; ag.style.opacity = "1"; return;
   }
-  pattern.start_date = new Date(startDate).getTime();
+  let startDateObj = new Date(startDateTimeRaw);
+  let startDateTimestamp = startDateObj.getTime();
+  // Extract time part
+  let hours = startDateObj.getHours().toString().padStart(2,'0');
+  let minutes = startDateObj.getMinutes().toString().padStart(2,'0');
+  pattern.time = `${hours}:${minutes}`;
+  
   let noEnd = document.getElementById('recur_no_end').checked;
+  let endDateTimestamp = null;
   if (!noEnd) {
-    let endDate = document.getElementById('recur_end_date').value;
-    if (endDate) pattern.end_date = new Date(endDate).getTime();
+    let endDateRaw = document.getElementById('recur_end_date').value;
+    if (endDateRaw) endDateTimestamp = new Date(endDateRaw).getTime();
   }
   // Build details object from form fields
   let details = {
@@ -1109,10 +1130,12 @@ if (isRecurring || editingRecurringId) {
     name: "Recurring order", // Could add a name field, but for simplicity use default
     details: details,
     pattern: pattern,
+    start_date: startDateTimestamp,
+    end_date: endDateTimestamp,
     active: true,
     created_at: Date.now(),
     last_edited_by: user.email,
-    next_generation: pattern.start_date // initially next generation = start date
+    next_generation: startDateTimestamp // initially next generation = start date
   };
   if (editingRecurringId) {
     // Update existing schedule
