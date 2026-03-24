@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang=en>
+<!DOCTYPE html>
+<html lang=en>
 <head>
 <meta charset=UTF-8>
 <meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
@@ -396,18 +397,18 @@ body.light-mode .status-cancelled {
 <div class="input-group">
   <div style="display:flex; gap:20px; align-items:center; margin-bottom:10px;">
     <label style="display:flex; align-items:center; gap:5px; cursor:pointer;">
-      <input type="radio" name="schedule_type" value="immediate" checked> Immediate
+      <input type="radio" name="schedule_type" value="immediate" checked> Next Run
     </label>
     <label style="display:flex; align-items:center; gap:5px; cursor:pointer;">
-      <input type="radio" name="schedule_type" value="scheduled"> Schedule for later
+      <input type="radio" name="schedule_type" value="scheduled"> Schedule
     </label>
   </div>
   <div id="scheduled-datetime-container" style="display:none; margin-bottom:10px;">
-    <input type="datetime-local" id="scheduled_datetime" style="width:100%;">
+    <input type="date" id="scheduled_date" style="width:100%;">
   </div>
   <div style="margin-bottom:10px;">
-    <label style="display:flex; align-items:center; gap:5px; cursor:pointer;">
-      <input type="checkbox" id="recurring_checkbox"> Make this a recurring order
+    <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+      <input type="checkbox" id="recurring_checkbox" style="width:20px; height:20px; cursor:pointer;"> Make this a recurring order
     </label>
   </div>
   <div id="recurrence-panel" style="display:none; border:1px solid var(--border); padding:15px; border-radius:var(--radius-md); margin-top:10px;">
@@ -440,15 +441,15 @@ body.light-mode .status-cancelled {
       <input type="number" id="recur_day_of_month" min="1" max="31" value="1">
     </div>
     <div class="input-group">
-      <label>Start date & time</label>
-      <input type="datetime-local" id="recur_start_date">
+      <label>Start date</label>
+      <input type="date" id="recur_start_date">
     </div>
     <div class="input-group">
       <label style="display:flex; align-items:center; gap:5px;">
         <input type="checkbox" id="recur_no_end" checked> No end date
       </label>
       <div id="recur_end_container" style="display:none; margin-top:5px;">
-        <input type="datetime-local" id="recur_end_date">
+        <input type="date" id="recur_end_date">
       </div>
     </div>
   </div>
@@ -801,7 +802,6 @@ function formatPattern(pattern) {
     str += `month on day ${pattern.day_of_month}`;
   }
   if (interval > 1) str += 's';
-  if (pattern.time) str += ` at ${pattern.time}`;
   return str;
 }
 function A(){
@@ -878,10 +878,10 @@ function A(){
         else adjustedStatus = 'pending_pickup';
     }
     badgeHtml = getStatusBadge(adjustedStatus);
-    // Add scheduled badge if scheduled_time exists and is in future
+    // Add scheduled badge if scheduled_date exists and is in future
     let scheduledBadge = '';
-    if (bz.scheduled_time && bz.scheduled_time > Date.now()) {
-      scheduledBadge = `<span class="status-badge" style="background:#9C27B0; color:#fff; margin-left:5px;"><i class="fas fa-calendar-alt"></i> Scheduled: ${new Date(bz.scheduled_time).toLocaleString()}</span>`;
+    if (bz.scheduled_date && bz.scheduled_date > Date.now()) {
+      scheduledBadge = `<span class="status-badge" style="background:#9C27B0; color:#fff; margin-left:5px;"><i class="fas fa-calendar-alt"></i> Scheduled: ${new Date(bz.scheduled_date).toLocaleDateString()}</span>`;
     }
         bT = bJ ? '' : `<div class="ocean-timeline"><div class="ocean-track"><div class="ocean-fill" style="width:${bL};"></div></div><div class="ocean-node ${bK[0]}"><div class="ocean-label">Ordered</div></div><div class="ocean-node ${bK[1]}"><div class="ocean-label">Assigned</div></div><div class="ocean-node ${bK[2]}"><div class="ocean-label">Picked‑Up</div></div><div class="ocean-node ${bK[3]}"><div class="ocean-label">Out for Delivery</div></div><div class="ocean-node ${bK[4]}"><div class="ocean-label">Delivered</div></div></div>`,
         // New stacked pickup/delivery
@@ -1033,7 +1033,8 @@ function editRecurringSchedule(id) {
   // Set schedule_type to scheduled if start_date is in future? We'll just set to scheduled and fill datetime
   if (sched.start_date) {
     document.querySelector('input[name="schedule_type"][value="scheduled"]').checked = true;
-    document.getElementById('scheduled_datetime').value = startDate.toISOString().slice(0,16);
+    let formattedDate = startDate.toISOString().slice(0,10);
+    document.getElementById('scheduled_date').value = formattedDate;
     document.getElementById('scheduled-datetime-container').style.display = 'block';
   } else {
     document.querySelector('input[name="schedule_type"][value="immediate"]').checked = true;
@@ -1063,18 +1064,14 @@ function editRecurringSchedule(id) {
   } else {
     document.getElementById('monthly-day').style.display = 'none';
   }
-  // Start date & time (combine start_date and pattern.time)
-  let startDateTime = new Date(sched.start_date);
-  if (sched.pattern.time) {
-    let [hour, minute] = sched.pattern.time.split(':').map(Number);
-    if (!isNaN(hour) && !isNaN(minute)) startDateTime.setHours(hour, minute, 0, 0);
-  }
-  document.getElementById('recur_start_date').value = startDateTime.toISOString().slice(0,16);
+  // Start date
+  let startDateOnly = new Date(sched.start_date).toISOString().slice(0,10);
+  document.getElementById('recur_start_date').value = startDateOnly;
   // End date
   if (sched.end_date) {
     document.getElementById('recur_no_end').checked = false;
     document.getElementById('recur_end_container').style.display = 'block';
-    document.getElementById('recur_end_date').value = new Date(sched.end_date).toISOString().slice(0,16);
+    document.getElementById('recur_end_date').value = new Date(sched.end_date).toISOString().slice(0,10);
   } else {
     document.getElementById('recur_no_end').checked = true;
     document.getElementById('recur_end_container').style.display = 'none';
@@ -1101,11 +1098,11 @@ ag.innerText=S?"Updating...":"Transmitting...";ag.style.opacity="0.7";ag.disable
 
 // Read scheduling & recurring values
 let scheduleType = document.querySelector('input[name="schedule_type"]:checked').value;
-let scheduledDateTime = document.getElementById('scheduled_datetime').value;
+let scheduledDate = document.getElementById('scheduled_date').value;
 let isRecurring = document.getElementById('recurring_checkbox').checked;
-let scheduledTime = null;
-if (scheduleType === 'scheduled' && scheduledDateTime) {
-  scheduledTime = new Date(scheduledDateTime).getTime();
+let scheduledTimestamp = null;
+if (scheduleType === 'scheduled' && scheduledDate) {
+  scheduledTimestamp = new Date(scheduledDate).setHours(0,0,0,0);
 }
 
 // Handle recurring schedule creation/update
@@ -1125,24 +1122,20 @@ if (isRecurring || editingRecurringId) {
   } else if (freq === 'monthly') {
     pattern.day_of_month = parseInt(document.getElementById('recur_day_of_month').value) || 1;
   }
-  let startDateTimeRaw = document.getElementById('recur_start_date').value;
-  if (!startDateTimeRaw) {
+  let startDateRaw = document.getElementById('recur_start_date').value;
+  if (!startDateRaw) {
     alert("Please set a start date for the recurring schedule.");
     ag.innerText = editingRecurringId ? "Update Recurring Schedule" : "Submit Request";
     ag.disabled = false; ag.style.opacity = "1"; return;
   }
-  let startDateObj = new Date(startDateTimeRaw);
-  let startDateTimestamp = startDateObj.getTime();
-  // Extract time part
-  let hours = startDateObj.getHours().toString().padStart(2,'0');
-  let minutes = startDateObj.getMinutes().toString().padStart(2,'0');
-  pattern.time = `${hours}:${minutes}`;
+  let startDateObj = new Date(startDateRaw);
+  let startDateTimestamp = startDateObj.setHours(0,0,0,0);
   
   let noEnd = document.getElementById('recur_no_end').checked;
   let endDateTimestamp = null;
   if (!noEnd) {
     let endDateRaw = document.getElementById('recur_end_date').value;
-    if (endDateRaw) endDateTimestamp = new Date(endDateRaw).getTime();
+    if (endDateRaw) endDateTimestamp = new Date(endDateRaw).setHours(23,59,59,999);
   }
   // Build details object from form fields
   let details = {
@@ -1193,12 +1186,12 @@ if (isRecurring || editingRecurringId) {
 }
 
 // Otherwise proceed with job creation (immediate or scheduled)
-let cf = (cg,ch='Unassigned',scheduledTime=null) => {
+let cf = (cg,ch='Unassigned',scheduledTimestamp=null) => {
   let ci={name:af.name.value.trim(),pickup_location:af.pickup_location.value.trim(),pickup_city:af.city.value.trim(),city:af.city.value.trim(),p_email:af.p_email.value.trim(),p_phone:af.p_phone.value.trim(),delivery_name:af.delivery_name.value.trim(),destination:af.destination.value.trim(),delivery_city:af.drop_city.value.trim(),d_email:af.d_email.value.trim(),d_phone:af.d_phone.value.trim(),package_details:af.package_details.value.trim(),po_number:af.po_number.value.trim()||"",other_info:af.other_info.value.trim(),payment: document.querySelector('input[name="payment"]:checked')?.value || '',job_history:"[Client Request]",status:"pending_pickup",type:"pickup",assigned_to:ch,timestamp:S?N[S]?.timestamp||Date.now():Date.now(),created_by:firebase.auth().currentUser?firebase.auth().currentUser.email:"Web Portal",...cg};
-  // Add scheduled_time if provided
-  if (scheduledTime) ci.scheduled_time = scheduledTime;
+  // Add scheduled_date if provided
+  if (scheduledTimestamp) ci.scheduled_date = scheduledTimestamp;
   if(S){db.ref("jobs/"+S).update(ci).then(()=>{localStorage.setItem('lastOrderTime',Date.now());S=null;af.style.display="none";document.getElementById("thanksMessage").style.display="block";window.scrollTo({top:0,behavior:'smooth'});document.getElementById('cancelEditBtn').style.display='none';}).catch(cj=>{ag.innerText="Update Request";ag.disabled=!1;ag.style.opacity="1"})}else{db.ref("jobs").push(ci).then(ck=>{localStorage.setItem('lastOrderTime',Date.now());let cl=ck.key;if(!N)N={};N[cl]={...ci,id:cl};if(document.getElementById('orders-history-container').style.display==='block')A();af.style.display="none";document.getElementById("thanksMessage").style.display="block";window.scrollTo({top:0,behavior:'smooth'})}).catch(cm=>{ag.innerText="Submit Request";ag.disabled=!1;ag.style.opacity="1"})}};
-let cn=new google.maps.Geocoder(),co=af.pickup_location.value.trim()+", "+af.city.value.trim(),cp=!1,cq=setTimeout(()=>{if(!cp){cp=!0;cf({},'Unassigned',scheduledTime)}},3000);
+let cn=new google.maps.Geocoder(),co=af.pickup_location.value.trim()+", "+af.city.value.trim(),cp=!1,cq=setTimeout(()=>{if(!cp){cp=!0;cf({},'Unassigned',scheduledTimestamp)}},3000);
 cn.geocode({address:co},(cr,cs)=>{if(cp)return;cp=!0;clearTimeout(cq);if(cs==="OK"&&cr[0]){let ct=cr[0].geometry.location,cu={lat:ct.lat(),lng:ct.lng()},cv='Unassigned';
   // --- FIXED ZONE CHECKING: iterate over drivers, zones, paths ---
   for (let driverName in Q) {
@@ -1220,7 +1213,7 @@ cn.geocode({address:co},(cr,cs)=>{if(cp)return;cp=!0;clearTimeout(cq);if(cs==="O
     if (cv !== 'Unassigned') break;
   }
   // --- END FIX ---
-  cf(cu,cv,scheduledTime)}else cf({},'Unassigned',scheduledTime)})});
+  cf(cu,cv,scheduledTimestamp)}else cf({},'Unassigned',scheduledTimestamp)})});
 var Y;window.addEventListener('beforeinstallprompt',cz=>{cz.preventDefault();Y=cz;document.getElementById('installAppBtn').style.display='block'});document.getElementById('installAppBtn').addEventListener('click',async()=>{if(Y){Y.prompt();let cA=await Y.userChoice;if(cA.outcome==='accepted')document.getElementById('installAppBtn').style.display='none';Y=null}});
 var Z,aa,ab='';function E(cB){ab=cB;let cC=document.getElementById('location-picker-modal');cC.style.display='block';document.body.style.overflow='hidden';if(!Z){Z=new google.maps.Map(document.getElementById('picker-map'),{center:{lat:49.8951,lng:-97.1384},zoom:12,gestureHandling:'greedy',disableDefaultUI:!0,zoomControl:!0,scrollwheel:!0,styles:[{"featureType":"all","elementType":"labels.text.fill","stylers":[{"color":"#ffffff"}]},{"featureType":"all","elementType":"labels.text.stroke","stylers":[{"color":"#000000"},{"lightness":13}]},{"featureType":"administrative","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"landscape","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":20}]},{"featureType":"poi","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":21}]},{"featureType":"road.highway","elementType":"geometry.fill","stylers":[{"color":"#000000"},{"lightness":17}]},{"featureType":"road.highway","elementType":"geometry.stroke","stylers":[{"color":"#000000"},{"lightness":29},{"weight":0.2}]},{"featureType":"road.arterial","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":18}]},{"featureType":"road.local","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":16}]},{"featureType":"transit","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":19}]},{"featureType":"water","elementType":"geometry","stylers":[{"color":"#000000"},{"lightness":17}]}]});let cD=document.getElementById('loc-search-bar'),cE=new google.maps.places.Autocomplete(cD);cE.bindTo('bounds',Z);cE.addListener('place_changed',()=>{let cF=cE.getPlace();if(cF.geometry){Z.setCenter(cF.geometry.location);Z.setZoom(17)}});cD.addEventListener('keydown',cG=>{if(cG.key==='Enter'){let cH=cD.value,cI=cH.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);if(cI){let cJ={lat:+cI[1],lng:+cI[2]};Z.setCenter(cJ);Z.setZoom(17)}else{let cK=new google.maps.Geocoder();cK.geocode({address:cH},(cL,cM)=>{if(cM==='OK'&&cL[0]){Z.setCenter(cL[0].geometry.location);Z.setZoom(17)}})}}})}}
 function C(){let cN=document.getElementById('loc-search-bar'),cO=cN.value;if(!cO)return;let cP=cO.match(/(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)/);if(cP){let cQ={lat:+cP[1],lng:+cP[2]};Z.setCenter(cQ);Z.setZoom(17)}else{let cR=new google.maps.Geocoder();cR.geocode({address:cO},(cS,cT)=>{if(cT==='OK'&&cS[0]){Z.setCenter(cS[0].geometry.location);Z.setZoom(17)}else alert('Location not found')})}}
@@ -1379,10 +1372,8 @@ document.addEventListener('DOMContentLoaded', function() {
   let yyyy = today.getFullYear();
   let mm = String(today.getMonth()+1).padStart(2,'0');
   let dd = String(today.getDate()).padStart(2,'0');
-  let hh = String(today.getHours()).padStart(2,'0');
-  let min = String(today.getMinutes()).padStart(2,'0');
-  let defaultDateTime = `${yyyy}-${mm}-${dd}T${hh}:${min}`;
-  document.getElementById('recur_start_date').value = defaultDateTime;
+  let defaultDate = `${yyyy}-${mm}-${dd}`;
+  document.getElementById('recur_start_date').value = defaultDate;
 });
 </script>
 <link href=https://cdn.quilljs.com/1.3.6/quill.snow.css rel=stylesheet>
