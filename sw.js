@@ -1,11 +1,12 @@
 // Updated cache name to force the browser to recognize a change
-const cacheName = 'eandc-pickup-cache-v4';
+const cacheName = 'eandc-pickup-cache-v5';
 
 // Files to cache
 const assetsToCache = [
   './',
   './customer.html',   // Ensures your form is cached
   './manifest.json',
+  './icon-192.png',
   './icon-512.png',
   './icon2.png'        // Caches the logo if you have it
 ];
