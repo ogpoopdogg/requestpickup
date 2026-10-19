@@ -773,6 +773,8 @@ function formatPhone(v) {
 }
 const phoneDigits = (v) => String(v || '').replace(/\D/g, '');
 const validEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+// @ec.com is the E&C staff sign-in domain; staff logins are made by an admin, never through customer sign-up.
+const isStaffDomain = (v) => /@ec\.com$/i.test(String(v || '').trim());
 
 function randomCode(len = 8) {
   const bytes = new Uint8Array(len);
@@ -1024,6 +1026,7 @@ $('#auth-form').addEventListener('submit', async (e) => {
   if (!validEmail(email)) { toast('Enter a valid email address.', 'error'); $('#auth-email').focus(); return; }
   if (!password) { toast('Enter your password.', 'error'); $('#auth-password').focus(); return; }
   if (S.authMode === 'create') {
+    if (isStaffDomain(email)) { toast('@ec.com addresses can\u2019t be used to create an account here. Use your own email address.', 'error', 5000); $('#auth-email').focus(); return; }
     if (password.length < 8) { toast('Use a password with at least 8 characters.', 'error'); return; }
     if (password !== $('#auth-confirm').value) { toast('The passwords don\u2019t match.', 'error'); return; }
   }
