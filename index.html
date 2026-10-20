@@ -921,6 +921,37 @@ function itemLabel(it) {
 }
 function itemsText(items) { return (items || []).filter((it) => Number(it.qty) > 0).map(itemLabel).join(', '); }
 
+/* ---------------- Security log ----------------
+   Failed and refused sign-ins are reported to the E&C security log (the Security section of the
+   usage page). Firebase runs no server code when a password is wrong, so the page has to say so.
+   The server adds the real IP address and checks the sign-in token sent with a signed-in report.
+   Only error codes are sent, never a password or a code. A report never blocks anything, and is
+   dropped if it can't be sent. */
+const SECURITY_REPORT_URL = 'https://us-central1-eandccourier-36fcc.cloudfunctions.net/auditSignInReport';
+const REPORT_QUIET = ['auth/network-request-failed', 'auth/popup-closed-by-user', 'auth/cancelled-popup-request'];
+function sendSecurityReport(report) {
+  try {
+    const body = JSON.stringify(Object.assign({ app: 'requestpickup', at: Date.now(), page: location.pathname }, report));
+    // text/plain needs no CORS preflight, and a beacon is still sent when the page closes
+    if (navigator.sendBeacon && navigator.sendBeacon(SECURITY_REPORT_URL, new Blob([body], { type: 'text/plain' }))) return;
+    fetch(SECURITY_REPORT_URL, { method: 'POST', mode: 'no-cors', keepalive: true, body }).catch(() => {});
+  } catch (e) { /* never get in the way */ }
+}
+/** Something Firebase or this page refused before anyone was signed in.
+    action: signin | signup | reset; method: password | google */
+function reportFailedSignIn(email, err, action, method) {
+  const code = String((err && err.code) || 'unknown');
+  if (REPORT_QUIET.includes(code)) return;
+  sendSecurityReport({ kind: 'failed', action: action || 'signin', method: method || 'password', email: String(email || '').trim().toLowerCase().slice(0, 200), code });
+}
+/** Something refused for a signed-in account (a wrong text code, a wrong join code…).
+    Sent with the account's sign-in token so the server can check who it was. */
+async function reportRefused(user, action, reason) {
+  if (!user) return;
+  let idToken = null;
+  try { idToken = await user.getIdToken(); } catch (e) { /* sent without it; the server marks it unverified */ }
+  sendSecurityReport({ kind: 'refused', action, email: String(user.email || '').toLowerCase().slice(0, 200), reason: String(reason || '').slice(0, 200), idToken });
+}
 function friendlyError(err) {
   const code = (err && (err.code || '')).toString();
   const msg = (err && err.message || '').toLowerCase();
@@ -1153,7 +1184,7 @@ $('#auth-form').addEventListener('submit', async (e) => {
   if (!validEmail(email)) { toast('Enter a valid email address.', 'error'); $('#auth-email').focus(); return; }
   if (!password) { toast('Enter your password.', 'error'); $('#auth-password').focus(); return; }
   if (S.authMode === 'create') {
-    if (isStaffDomain(email)) { toast('@ec.com addresses can\u2019t be used to create an account here. Use your own email address.', 'error', 5000); $('#auth-email').focus(); return; }
+    if (isStaffDomain(email)) { reportFailedSignIn(email, { code: 'app/staff-email-signup' }, 'signup'); toast('@ec.com addresses can\u2019t be used to create an account here. Use your own email address.', 'error', 5000); $('#auth-email').focus(); return; }
     if (password.length < 8) { toast('Use a password with at least 8 characters.', 'error'); return; }
     if (password !== $('#auth-confirm').value) { toast('The passwords don\u2019t match.', 'error'); return; }
   }
@@ -1165,6 +1196,7 @@ $('#auth-form').addEventListener('submit', async (e) => {
       await auth.signInWithEmailAndPassword(email, password);
     }
   } catch (err) {
+    reportFailedSignIn(email, err, S.authMode === 'create' ? 'signup' : 'signin');
     toast(friendlyError(err), 'error', 5000);
   } finally { btn.disabled = false; }
 });
@@ -1175,6 +1207,7 @@ async function googleSignIn() {
   try {
     await auth.signInWithPopup(provider);
   } catch (err) {
+    reportFailedSignIn(err && err.customData && err.customData.email, err, 'signin', 'google');
     if (['auth/popup-blocked', 'auth/operation-not-supported-in-this-environment', 'auth/web-storage-unsupported'].includes(err.code)) {
       try { try { sessionStorage.setItem('ec_redirect', '1'); } catch (e3) { /* ignore */ } await auth.signInWithRedirect(provider); } catch (e2) { toast(friendlyError(e2), 'error'); }
     } else if (!['auth/popup-closed-by-user', 'auth/cancelled-popup-request'].includes(err.code)) {
@@ -1186,13 +1219,13 @@ async function googleSignIn() {
 (function () {
   let pending = false;
   try { pending = sessionStorage.getItem('ec_redirect') === '1'; sessionStorage.removeItem('ec_redirect'); } catch (e) { pending = true; }
-  if (pending) auth.getRedirectResult().catch((err) => { if (err && err.code) toast(friendlyError(err), 'error'); });
+  if (pending) auth.getRedirectResult().catch((err) => { reportFailedSignIn(err && err.customData && err.customData.email, err, 'signin', 'google'); if (err && err.code) toast(friendlyError(err), 'error'); });
 })();
 
 async function forgotPassword() {
   const email = $('#auth-email').value.trim();
   if (!validEmail(email)) { toast('Type your email above first, then tap Forgot password.', 'error', 4500); $('#auth-email').focus(); return; }
-  try { await auth.sendPasswordResetEmail(email); } catch (err) { if (err.code === 'auth/too-many-requests' || err.code === 'auth/network-request-failed') { toast(friendlyError(err), 'error'); return; } }
+  try { await auth.sendPasswordResetEmail(email); } catch (err) { reportFailedSignIn(email, err, 'reset'); if (err.code === 'auth/too-many-requests' || err.code === 'auth/network-request-failed') { toast(friendlyError(err), 'error'); return; } }
   toast(`If an account exists for ${email}, a reset link is on its way.`, 'ok', 5000);
 }
 
@@ -1260,6 +1293,7 @@ async function sendSmsCode(phoneInput) {
     setTimeout(() => $('#sms-code').focus(), 60);
   } catch (err) {
     console.error(err);
+    reportRefused(user, 'sms_send', String((err && err.code) || 'unknown') + ' for ' + phone);
     toast(friendlyError(err), 'error', 6000);
   } finally { btn.disabled = false; }
 }
@@ -1280,6 +1314,7 @@ async function verifySmsCode() {
     handleUser(auth.currentUser); // linking doesn't fire onAuthStateChanged
   } catch (err) {
     console.error(err);
+    reportRefused(auth.currentUser, 'sms_verify', String((err && err.code) || 'unknown') + ' for ' + sms.phone);
     toast(friendlyError(err), 'error', 6000);
   } finally { btn.disabled = false; sms.verifying = false; }
 }
@@ -1415,11 +1450,11 @@ $('#onboard-form').addEventListener('submit', async (e) => {
       const code = normalizeCode($('#ob-code').value);
       if (code.length !== 8) { toast('Join codes are 8 characters, like ABCD-2345.', 'error'); $('#ob-code').focus(); return; }
       cid = (await db.ref(`join_codes/${code}`).once('value')).val();
-      if (!cid) { toast('That join code wasn\u2019t found. Check it with your company admin.', 'error', 5000); return; }
+      if (!cid) { reportRefused(S.user, 'join', 'Join code not found'); toast('That join code wasn\u2019t found. Check it with your company admin.', 'error', 5000); return; }
       try {
         await db.ref(`companies/${cid}/members/${uid}`).set({ name, email, phone: phone || null, role: 'member', code, joined_at: TS });
       } catch (err) {
-        if (isPermissionError(err)) { toast('That join code is no longer valid. Ask your company admin for the current one.', 'error', 5000); return; }
+        if (isPermissionError(err)) { reportRefused(S.user, 'join', 'Join code no longer valid'); toast('That join code is no longer valid. Ask your company admin for the current one.', 'error', 5000); return; }
         throw err;
       }
     }
