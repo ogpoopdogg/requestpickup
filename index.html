@@ -937,6 +937,21 @@ function sendSecurityReport(report) {
     fetch(SECURITY_REPORT_URL, { method: 'POST', mode: 'no-cors', keepalive: true, body }).catch(() => {});
   } catch (e) { /* never get in the way */ }
 }
+// A sign-in that worked, so the security log can show which app it was (Firebase can't tell the
+// server). Sent once per sign-in: reopening a page that is already signed in doesn't count.
+function ecReportSignedIn(user) {
+    const t = Date.parse(user && user.metadata && user.metadata.lastSignInTime);
+    if (!t || Math.abs(Date.now() - t) > 10 * 60 * 1000) return;
+    try {
+        const key = 'ecSignInReported:' + user.uid;
+        if (localStorage.getItem(key) === String(t)) return;
+        localStorage.setItem(key, String(t));
+    } catch (e) { /* no storage: report anyway, the server only names the app once */ }
+    user.getIdToken().then(function (idToken) {
+        sendSecurityReport({ kind: 'signedin', email: String(user.email || '').toLowerCase().slice(0, 200), idToken: idToken });
+    }).catch(function () {});
+}
+firebase.auth().onAuthStateChanged(function (user) { if (user) ecReportSignedIn(user); });
 /** Something Firebase or this page refused before anyone was signed in.
     action: signin | signup | reset; method: password | google */
 function reportFailedSignIn(email, err, action, method) {
