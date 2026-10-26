@@ -181,7 +181,6 @@ p{margin:0}
 .home-pitch{display:grid;gap:12px;min-width:0}
 .hero{position:relative;overflow:hidden;background:#0e0e0d;color:#f3f2ec;border:1px solid rgba(255,209,0,.28);border-radius:16px;padding:20px 18px 18px;box-shadow:var(--shadow);isolation:isolate}
 .hero::after{content:'';position:absolute;z-index:-1;right:-90px;top:-110px;width:300px;height:300px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,209,0,.3),rgba(255,209,0,0));pointer-events:none}
-.eyebrow{display:inline-flex;align-items:center;gap:6px;margin:0 0 12px;padding:4px 10px 4px 8px;border-radius:999px;background:rgba(255,209,0,.12);border:1px solid rgba(255,209,0,.32);color:var(--yellow);font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
 .auth .hero-title{margin:0 0 10px;color:#fff;font-size:clamp(32px,9.4vw,54px);line-height:.98;letter-spacing:-.02em}
 .hero-title mark{background:none;color:var(--yellow)}
 .hero-sub{margin:0 0 16px;max-width:40ch;color:#c9c7bf;font-size:15px;line-height:1.45}
@@ -638,30 +637,29 @@ body.kb-open .grab{display:none}
     </div>
     <div class="home-grid">
       <div class="home-pitch">
+        <div class="once"><span class="once-mark">1&times;</span><p><b>Set up once.</b> Then every pickup is a few taps.</p></div>
         <div class="hero">
-          <p class="eyebrow"><svg class="i sm"><use href="#i-clock"/></svg>Faster than calling</p>
-          <h1 class="hero-title">Skip the call.<br><mark>Send a pickup in seconds.</mark></h1>
-          <p class="hero-sub">No busy lines, no hold, no reading out addresses. Your request goes straight to dispatch.</p>
+          <h1 class="hero-title">Send a pickup <mark>in seconds.</mark></h1>
+          <p class="hero-sub">No busy lines. No hold. Straight to dispatch.</p>
           <div class="hero-cta">
             <button class="btn btn-primary" type="button" data-act="jump-auth" data-mode="create">Create your account</button>
             <button class="btn btn-ondark" type="button" data-act="jump-auth" data-mode="signin">I have an account</button>
           </div>
         </div>
         <div class="why">
-          <h2>Why book here instead of calling</h2>
+          <h2>Why use the app</h2>
           <ul>
-            <li><span class="ic"><svg class="i"><use href="#i-clock"/></svg></span><div><b>Never wait on hold</b><span>Send anytime, even when our lines are busy.</span><em><svg class="i sm"><use href="#i-phone"/></svg>Calling: busy at peak times</em></div></li>
-            <li><span class="ic"><svg class="i"><use href="#i-contacts"/></svg></span><div><b>Addresses fill themselves</b><span>Save contacts once, then pick them with a tap.</span><em><svg class="i sm"><use href="#i-phone"/></svg>Calling: spell it out every time</em></div></li>
-            <li><span class="ic"><svg class="i"><use href="#i-repeat"/></svg></span><div><b>Repeat in one tap</b><span>Send any past pickup again, already filled in.</span><em><svg class="i sm"><use href="#i-phone"/></svg>Calling: start from scratch</em></div></li>
-            <li><span class="ic"><svg class="i"><use href="#i-list"/></svg></span><div><b>Every pickup on record</b><span>Full history you can export for your books.</span><em><svg class="i sm"><use href="#i-phone"/></svg>Calling: no paper trail</em></div></li>
+            <li><span class="ic"><svg class="i"><use href="#i-clock"/></svg></span><div><b>Never wait on hold</b><span>Send anytime.</span><em><svg class="i sm"><use href="#i-phone"/></svg>Calling: busy lines</em></div></li>
+            <li><span class="ic"><svg class="i"><use href="#i-contacts"/></svg></span><div><b>Addresses fill themselves</b><span>Save contacts once.</span><em><svg class="i sm"><use href="#i-phone"/></svg>Calling: spell it out</em></div></li>
+            <li><span class="ic"><svg class="i"><use href="#i-repeat"/></svg></span><div><b>Repeat in one tap</b><span>Resend any past pickup.</span><em><svg class="i sm"><use href="#i-phone"/></svg>Calling: start over</em></div></li>
+            <li><span class="ic"><svg class="i"><use href="#i-list"/></svg></span><div><b>Every pickup on record</b><span>Export your history anytime.</span><em><svg class="i sm"><use href="#i-phone"/></svg>Calling: no record</em></div></li>
           </ul>
         </div>
-        <div class="once"><span class="once-mark">1&times;</span><p><b>Set up once.</b> After that, every pickup takes a few taps.</p></div>
       </div>
       <div class="home-form" id="auth-panel">
         <div class="auth-card">
           <h2 id="auth-title">Sign in.</h2>
-          <p class="lead" id="auth-lead">Welcome back. Use your email or Google account.</p>
+          <p class="lead" id="auth-lead">Use your email or Google.</p>
           <form id="auth-form" novalidate>
             <div class="field"><label for="auth-email">Email</label><input id="auth-email" type="email" autocomplete="email" inputmode="email" required></div>
             <div class="field"><label for="auth-password">Password</label><div class="with-btn"><input id="auth-password" type="password" autocomplete="current-password" required><button class="icon-btn" type="button" data-act="toggle-pw" data-for="auth-password" aria-label="Show password" aria-pressed="false"><svg class="i"><use href="#i-eye"/></svg></button></div></div>
@@ -1295,7 +1293,7 @@ function setAuthMode(mode) {
   $('#auth-title').textContent = create ? 'Create your account.' : 'Sign in.';
   $('#auth-lead').textContent = create
     ? 'Enter your email and create your password. Next we’ll text a code to your mobile number, then you can set up your individual or company profile.'
-    : 'Welcome back. Use your email or Google account.';
+    : 'Use your email or Google.';
   $('#auth-submit').textContent = create ? 'Create account' : 'Sign in';
   $('#auth-confirm-wrap').hidden = !create;
   $('#auth-password').setAttribute('autocomplete', create ? 'new-password' : 'current-password');
