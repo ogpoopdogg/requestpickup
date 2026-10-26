@@ -195,8 +195,10 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 .page-head>div:first-child{flex:1 1 auto;min-width:0}
 .page-head h1{font-size:26px;letter-spacing:-.02em}
 .page-head p{margin-top:2px}
-.btn.btn-copy{font-size:12.5px;line-height:1.2;padding:4px 10px;max-width:200px;gap:5px}
-@media (max-width:480px){.page-head{flex-wrap:nowrap}.page-head h1{font-size:22px}.btn.btn-copy{max-width:172px;text-align:left}}
+.btn.btn-copy{font-size:13px;line-height:1.15;padding:5px 14px;gap:7px;white-space:nowrap;text-align:center}
+.btn.btn-copy .i{flex:none}
+@media (max-width:480px){.page-head{flex-wrap:nowrap}.page-head h1{font-size:22px}.btn.btn-copy{padding:5px 11px;gap:6px;font-size:12.5px}}
+@media (max-width:389px){.page-head h1{white-space:nowrap}.btn.btn-copy{white-space:normal;max-width:118px;padding:4px 10px}.btn.btn-copy .i{display:none}}
 #tab-new .page-head{margin-bottom:8px}
 
 /* Bottom navigation */
@@ -304,18 +306,18 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 .submit-bar .btn::after{content:'';width:18px;height:18px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E") center/contain no-repeat;transition:transform var(--t) var(--out)}
 .submit-bar .btn:not(:disabled):hover::after{transform:translateX(3px)}
 
-/* Required fields: a slow, faint glow marks the minimum needed to send a pickup.
+/* Required fields: a slow glow marks the minimum needed to send a pickup.
    Pickup name, address and payment glow until filled; the prefilled piece count,
-   item type and pickup date keep a fainter glow. Focus, errors and the paste flash take over. */
+   item type and pickup date keep a slightly softer glow. Focus, errors and the paste flash take over. */
 #pickup-name:placeholder-shown:not(:focus),#pickup-address:placeholder-shown:not(:focus),#pay-field .seg:not(:has(input:checked)){animation:reqPulse 2.6s ease-in-out infinite}
 #item-rows .stepper:not(:focus-within):not(.paste-flash),#item-rows select:not(:focus):not(.paste-flash),#sched-field:not([hidden]) #sched-date:not(:focus):not(.paste-flash){animation:reqPulseSoft 3.2s ease-in-out infinite}
 .field.invalid input,#pay-field.invalid .seg{animation:none!important}
-@keyframes reqPulse{0%,100%{box-shadow:0 0 0 0 var(--pulse-0)}50%{box-shadow:0 0 0 4px var(--pulse)}}
-@keyframes reqPulseSoft{0%,100%{box-shadow:0 0 0 0 var(--pulse-0)}50%{box-shadow:0 0 0 3px var(--pulse-soft)}}
-:root{--pulse:rgba(255,209,0,.32);--pulse-soft:rgba(255,209,0,.16);--pulse-0:rgba(255,209,0,0)}
-[data-theme=light]{--pulse:rgba(230,180,0,.42);--pulse-soft:rgba(230,180,0,.22);--pulse-0:rgba(230,180,0,0)}
+@keyframes reqPulse{0%,100%{border-color:var(--pulse-edge-lo);box-shadow:0 0 0 1px var(--pulse-lo),0 0 0 0 var(--pulse-0)}50%{border-color:var(--pulse-edge);box-shadow:0 0 0 3px var(--pulse),0 0 16px 3px var(--pulse-glow)}}
+@keyframes reqPulseSoft{0%,100%{border-color:var(--pulse-edge-lo);box-shadow:0 0 0 0 var(--pulse-0)}50%{border-color:var(--pulse-edge);box-shadow:0 0 0 3px var(--pulse-soft),0 0 12px 2px var(--pulse-glow)}}
+:root{--pulse:rgba(255,209,0,.62);--pulse-soft:rgba(255,209,0,.45);--pulse-lo:rgba(255,209,0,.22);--pulse-glow:rgba(255,209,0,.32);--pulse-0:rgba(255,209,0,0);--pulse-edge:#ffd100;--pulse-edge-lo:rgba(255,209,0,.45)}
+[data-theme=light]{--pulse:rgba(240,170,0,.7);--pulse-soft:rgba(240,170,0,.5);--pulse-lo:rgba(240,170,0,.25);--pulse-glow:rgba(255,185,0,.45);--pulse-0:rgba(240,170,0,0);--pulse-edge:#d99a00;--pulse-edge-lo:rgba(217,154,0,.55)}
 @media (prefers-reduced-motion:reduce){
-  #pickup-name:placeholder-shown:not(:focus),#pickup-address:placeholder-shown:not(:focus),#pay-field .seg:not(:has(input:checked)){animation:none!important;box-shadow:0 0 0 3px var(--pulse)}
+  #pickup-name:placeholder-shown:not(:focus),#pickup-address:placeholder-shown:not(:focus),#pay-field .seg:not(:has(input:checked)){animation:none!important;border-color:var(--pulse-edge);box-shadow:0 0 0 3px var(--pulse)}
 }
 
 /* ---------- Ticket (sent confirmation) ---------- */
@@ -687,7 +689,7 @@ body.kb-open .grab{display:none}
       <div id="new-form-wrap">
         <div class="page-head">
           <div><h1 id="form-title">New pickup</h1></div>
-          <button class="btn btn-secondary sm btn-copy" type="button" data-act="repeat" id="new-repeat-latest" disabled title="Pastes your most recent request into this form"><svg class="i sm"><use href="#i-repeat"/></svg>Paste Previous Request</button>
+          <button class="btn btn-secondary sm btn-copy" type="button" data-act="repeat" id="new-repeat-latest" disabled title="Pastes your most recent request into this form"><svg class="i sm"><use href="#i-repeat"/></svg><span class="lbl">Paste Previous Request</span></button>
           <button class="btn btn-ghost sm" type="button" data-act="clear-form">Clear</button>
         </div>
         <div class="edit-banner" id="edit-banner" hidden><span id="edit-banner-text"></span><button class="btn btn-secondary sm" type="button" data-act="stop-edit">Stop editing</button></div>
@@ -766,7 +768,7 @@ body.kb-open .grab{display:none}
     <section id="tab-history" data-tab="history" hidden>
       <div class="page-head">
         <div><h1>History</h1></div>
-        <button class="btn btn-secondary sm btn-copy" type="button" data-act="repeat" id="hist-repeat-latest" hidden><svg class="i sm"><use href="#i-repeat"/></svg>Paste Previous Request</button>
+        <button class="btn btn-secondary sm btn-copy" type="button" data-act="repeat" id="hist-repeat-latest" hidden><svg class="i sm"><use href="#i-repeat"/></svg><span class="lbl">Paste Previous Request</span></button>
         <button class="btn btn-secondary sm" type="button" data-act="export"><svg class="i sm"><use href="#i-download"/></svg>Export</button>
       </div>
       <div class="searchbox field" style="margin-bottom:10px"><svg class="i"><use href="#i-search"/></svg><input id="hist-q" type="search" placeholder="Search names, addresses, PO or request #" aria-label="Search history"></div>
