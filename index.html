@@ -250,11 +250,11 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 .leg-foot .link-btn{min-height:26px;font-size:12px;color:var(--ink-2)}
 .leg-foot .link-btn:hover{color:var(--ink)}
 .route-mid{position:relative;height:0;border-top:1px dashed var(--line-strong)}
-.swap{position:absolute;right:12px;top:-15px;z-index:2;width:30px;height:30px;border-radius:50%;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);display:grid;place-items:center;cursor:pointer;box-shadow:var(--sh-1);transition:transform var(--t-slow) var(--out),border-color var(--t-fast) ease,background-color var(--t-fast) ease;-webkit-tap-highlight-color:transparent}
+.swap{position:absolute;left:50%;margin-left:-15px;top:-15px;z-index:2;width:30px;height:30px;border-radius:50%;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);display:grid;place-items:center;cursor:pointer;box-shadow:var(--sh-1);transition:transform var(--t-slow) var(--out),border-color var(--t-fast) ease,background-color var(--t-fast) ease;-webkit-tap-highlight-color:transparent}
 .swap .i{width:15px;height:15px}
 .swap:hover{border-color:var(--yellow);background:var(--yellow);color:#000}
 .swap:active{transform:rotate(180deg)}
-@media (pointer:coarse){.swap{width:36px;height:36px;top:-18px}}
+@media (pointer:coarse){.swap{width:36px;height:36px;top:-18px;margin-left:-18px}}
 
 /* Section cards */
 .block:not(.btn){position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:10px 12px 2px;margin-bottom:10px;box-shadow:var(--sh-2)}
@@ -263,6 +263,7 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 .block>h2 .sec-ic .i{width:13px;height:13px}
 #tab-new .block .field{margin-bottom:8px}
 .items{margin-bottom:6px}
+.item-row .dims{grid-column:2/4}
 .item-row{display:grid;grid-template-columns:118px minmax(0,1fr) 100px var(--ctl);gap:6px;align-items:center;margin-bottom:6px;animation:riseIn var(--t) var(--out) both}
 .item-row.single{grid-template-columns:118px minmax(0,1fr) 100px}
 .item-row .other-input{grid-column:1/-1;width:100%;min-height:var(--ctl);padding:7px 11px;border:1px solid var(--line-strong);border-radius:var(--r-sm);background:var(--field);font-size:16px;outline:none;transition:border-color var(--t-fast) ease,box-shadow var(--t-fast) ease}
@@ -274,22 +275,24 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 .stepper input{flex:1;width:40px;min-width:0;height:100%;border:0;background:none;text-align:center;font-weight:800;font-size:16px;-moz-appearance:textfield;padding:0;outline:none}
 .stepper input::-webkit-outer-spin-button,.stepper input::-webkit-inner-spin-button,.weight input::-webkit-outer-spin-button,.weight input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .item-row select{min-height:var(--ctl);padding:0 28px 0 10px;border:1px solid var(--line-strong);border-radius:var(--r-sm);background:var(--field) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center;font-size:16px;font-weight:600;width:100%;-webkit-appearance:none;appearance:none;transition:border-color var(--t-fast) ease,box-shadow var(--t-fast) ease}
-.weight{position:relative}
-.weight input{width:100%;min-height:var(--ctl);padding:0 32px 0 10px;border:1px solid var(--line-strong);border-radius:var(--r-sm);background:var(--field);font-size:16px;-moz-appearance:textfield;transition:border-color var(--t-fast) ease,box-shadow var(--t-fast) ease}
-.weight span{position:absolute;right:9px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:700;color:var(--ink-3);pointer-events:none}
+.weight,.dims{position:relative}
+.weight input,.dims input{width:100%;min-height:var(--ctl);padding:0 32px 0 10px;border:1px solid var(--line-strong);border-radius:var(--r-sm);background:var(--field);font-size:16px;-moz-appearance:textfield;transition:border-color var(--t-fast) ease,box-shadow var(--t-fast) ease}
+.dims input{padding-right:42px}
+.weight span,.dims span{position:absolute;right:9px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:700;color:var(--ink-3);pointer-events:none}
 .item-row input:hover,.item-row select:hover,.stepper:hover{border-color:var(--ink-3)}
 .item-row input:focus,.item-row select:focus{border-color:var(--focus);box-shadow:0 0 0 3px var(--yellow-ring);outline:none}
 .stepper input:focus{box-shadow:none}
 .stepper:focus-within{border-color:var(--focus);box-shadow:0 0 0 3px var(--yellow-ring)}
 .item-row .icon-btn:hover{color:var(--danger);background:var(--danger-bg)}
 @media (min-width:760px){
-  .item-row{grid-template-columns:118px minmax(150px,260px) 140px var(--ctl);justify-content:start}
-  .item-row.single{grid-template-columns:118px minmax(150px,260px) 140px}
+  .item-row{grid-template-columns:118px minmax(150px,260px) 170px var(--ctl);justify-content:start}
+  .item-row.single{grid-template-columns:118px minmax(150px,260px) 170px}
+  .item-row .dims{grid-column:3}
 }
 @media (max-width:420px){
-  .item-row,.item-row.single{grid-template-columns:112px minmax(0,1fr) var(--ctl);grid-template-areas:"q t r" "w w w"}
-  .item-row.single{grid-template-areas:"q t t" "w w w"}
-  .item-row .stepper{grid-area:q}.item-row select{grid-area:t}.item-row .weight{grid-area:w}.item-row .icon-btn{grid-area:r}
+  .item-row,.item-row.single{grid-template-columns:112px minmax(0,1fr) var(--ctl);grid-template-areas:"q t r" "w w w" "d d d"}
+  .item-row.single{grid-template-areas:"q t t" "w w w" "d d d"}
+  .item-row .stepper{grid-area:q}.item-row select{grid-area:t}.item-row .weight{grid-area:w}.item-row .dims{grid-area:d}.item-row .icon-btn{grid-area:r}
 }
 .items-preview{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 6px;font-size:12px;color:var(--ink-2);margin:0 0 8px;padding:5px 9px;border-radius:var(--r-sm);background:var(--surface-2);border-left:3px solid var(--yellow)}
 .items-preview:empty{display:none}
@@ -300,6 +303,20 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 .submit-bar .btn{min-height:calc(var(--ctl) + 8px);font-size:16px;border-radius:var(--r-lg);box-shadow:0 1px 0 rgba(255,255,255,.45) inset,0 -2px 0 rgba(0,0,0,.14) inset,0 8px 20px -8px rgba(0,0,0,.45)}
 .submit-bar .btn::after{content:'';width:18px;height:18px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E") center/contain no-repeat;transition:transform var(--t) var(--out)}
 .submit-bar .btn:not(:disabled):hover::after{transform:translateX(3px)}
+
+/* Required fields: a slow, faint glow marks the minimum needed to send a pickup.
+   Pickup name, address and payment glow until filled; the prefilled piece count,
+   item type and pickup date keep a fainter glow. Focus, errors and the paste flash take over. */
+#pickup-name:placeholder-shown:not(:focus),#pickup-address:placeholder-shown:not(:focus),#pay-field .seg:not(:has(input:checked)){animation:reqPulse 2.6s ease-in-out infinite}
+#item-rows .stepper:not(:focus-within):not(.paste-flash),#item-rows select:not(:focus):not(.paste-flash),#sched-field:not([hidden]) #sched-date:not(:focus):not(.paste-flash){animation:reqPulseSoft 3.2s ease-in-out infinite}
+.field.invalid input,#pay-field.invalid .seg{animation:none!important}
+@keyframes reqPulse{0%,100%{box-shadow:0 0 0 0 var(--pulse-0)}50%{box-shadow:0 0 0 4px var(--pulse)}}
+@keyframes reqPulseSoft{0%,100%{box-shadow:0 0 0 0 var(--pulse-0)}50%{box-shadow:0 0 0 3px var(--pulse-soft)}}
+:root{--pulse:rgba(255,209,0,.32);--pulse-soft:rgba(255,209,0,.16);--pulse-0:rgba(255,209,0,0)}
+[data-theme=light]{--pulse:rgba(230,180,0,.42);--pulse-soft:rgba(230,180,0,.22);--pulse-0:rgba(230,180,0,0)}
+@media (prefers-reduced-motion:reduce){
+  #pickup-name:placeholder-shown:not(:focus),#pickup-address:placeholder-shown:not(:focus),#pay-field .seg:not(:has(input:checked)){animation:none!important;box-shadow:0 0 0 3px var(--pulse)}
+}
 
 /* ---------- Ticket (sent confirmation) ---------- */
 .ticket{position:relative;background:var(--yellow);color:#000;border-radius:16px;overflow:hidden;margin:0 0 12px;box-shadow:var(--shadow);animation:ticketIn .38s var(--out) both}
@@ -706,7 +723,7 @@ body.kb-open .grab{display:none}
             <div class="items" id="item-rows"></div>
             <p class="items-preview" id="items-preview"></p>
             <button class="btn btn-secondary sm" type="button" data-act="add-item" style="margin-bottom:12px"><svg class="i sm"><use href="#i-plus"/></svg>Add another line</button>
-            <div class="field"><label for="item-details">Description or dimensions</label><textarea id="item-details" maxlength="500" rows="2" placeholder="Optional. For example: 48×40×60 skid, fragile, keep upright"></textarea></div>
+            <div class="field"><label for="item-details">Description</label><textarea id="item-details" maxlength="500" rows="2" placeholder="Optional. For example: fragile, keep upright"></textarea></div>
             <p class="err" id="items-err" hidden></p>
           </section>
 
@@ -938,6 +955,8 @@ function itemLabel(it) {
   let s = it.type === 'other' && String(it.other || '').trim() ? `${qty} ${String(it.other).trim()}` : `${qty} ${qty === 1 ? t.one : t.many}`;
   const w = Number(it.weight);
   if (it.weight !== '' && it.weight != null && w > 0) s += ` ${+w.toFixed(1)} ${w === 1 ? 'lb' : 'lbs'}`;
+  const dims = String(it.dims || '').trim();
+  if (dims) s += ` (${dims})`;
   return s;
 }
 function itemsText(items) { return (items || []).filter((it) => Number(it.qty) > 0).map(itemLabel).join(', '); }
@@ -1592,6 +1611,7 @@ function renderItems() {
       <select data-field="type" aria-label="Item type">${ITEM_TYPES.map((t) => `<option value="${t.id}"${t.id === it.type ? ' selected' : ''}>${t.label}</option>`).join('')}</select>
       <div class="weight"><input type="number" inputmode="decimal" min="0" step="any" value="${esc(it.weight)}" data-field="weight" placeholder="Weight" aria-label="Total weight in pounds"><span>lbs</span></div>
       ${single ? '' : `<button class="icon-btn" type="button" data-act="item-remove" aria-label="Remove this line">${icon('x')}</button>`}
+      <div class="dims"><input type="text" maxlength="40" value="${esc(it.dims || '')}" data-field="dims" placeholder="feet or inches" aria-label="Dimensions, in feet or inches"><span>dims</span></div>
       ${it.type === 'other' ? `<input class="other-input" type="text" maxlength="60" value="${esc(it.other || '')}" data-field="other" placeholder="What is it? For example: tires, rolls of carpet" aria-label="Describe the item">` : ''}
     </div>`).join('');
   updateItemsPreview();
@@ -1615,6 +1635,7 @@ $('#item-rows').addEventListener('input', (e) => {
   }
   if (f === 'other') { it.other = e.target.value; e.target.classList.remove('invalid'); }
   if (f === 'weight') it.weight = e.target.value;
+  if (f === 'dims') it.dims = e.target.value;
   updateItemsPreview();
   clearError('items');
 });
@@ -1801,6 +1822,8 @@ function readForm() {
       if (it.type === 'other') o.other = String(it.other || '').trim();
       const w = parseFloat(it.weight);
       if (w > 0) o.weight = +w.toFixed(1);
+      const dims = String(it.dims || '').trim();
+      if (dims) o.dims = dims.slice(0, 40);
       return o;
     }),
     item_details: $('#item-details').value.trim(),
@@ -1879,7 +1902,7 @@ function fillForm(r, { keepSchedule }) {
   fillLeg('pickup', r.pickup || {});
   fillLeg('delivery', r.delivery || {});
   const items = r.items ? (Array.isArray(r.items) ? r.items : Object.values(r.items)) : [];
-  S.items = items.length ? items.map((it) => ({ qty: it.qty || 1, type: it.type || 'box', weight: it.weight != null ? String(it.weight) : '', other: it.other || '' })) : [{ qty: 1, type: 'box', weight: '' }];
+  S.items = items.length ? items.map((it) => ({ qty: it.qty || 1, type: it.type || 'box', weight: it.weight != null ? String(it.weight) : '', dims: it.dims || '', other: it.other || '' })) : [{ qty: 1, type: 'box', weight: '' }];
   renderItems();
   $('#item-details').value = r.item_details || '';
   $$('input[name=payment]').forEach((x) => { x.checked = x.value === r.payment; });
