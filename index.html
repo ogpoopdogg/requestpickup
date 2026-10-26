@@ -200,10 +200,24 @@ p{margin:0}
 .why li span:not(.ic){display:block;color:var(--ink-2);font-size:13.5px;line-height:1.4;margin-top:1px}
 .why em{display:inline-flex;align-items:center;gap:5px;margin-top:5px;color:var(--ink-3);font-size:12px;font-style:normal;font-weight:600}
 .why em .i{width:12px;height:12px;color:var(--danger)}
-.once{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;background:var(--yellow);color:#000}
-.once p{margin:0;font-size:14.5px;line-height:1.35}
-.once b{font-weight:800}
-.once-mark{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:#000;color:var(--yellow);font-stretch:75%;font-weight:800;font-size:17px}
+.once{position:relative;overflow:hidden;isolation:isolate;display:grid;grid-template-columns:minmax(0,1fr) 22px minmax(0,1fr);align-items:stretch;gap:6px;padding:7px;border-radius:16px;background:linear-gradient(135deg,#FFD100 0%,#FFE04D 100%);color:#000;box-shadow:0 1px 0 rgba(255,255,255,.55) inset,0 -1px 0 rgba(0,0,0,.08) inset,0 12px 28px -14px rgba(150,110,0,.7)}
+.once::after{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.6) 50%,transparent 62%);transform:translateX(-110%);animation:onceSheen 1.5s .5s var(--ease) both;pointer-events:none}
+@keyframes onceSheen{to{transform:translateX(110%)}}
+.once-step{display:flex;align-items:center;gap:10px;min-width:0;padding:10px 12px;border-radius:11px;background:rgba(255,255,255,.6)}
+.once-step.after{background:#0e0e0d;color:#fff;box-shadow:0 6px 16px -8px rgba(0,0,0,.6)}
+.once-ic{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#000;color:var(--yellow)}
+.once-ic .i{width:17px;height:17px;stroke-width:2.3}
+.once-step.after .once-ic{background:var(--yellow);color:#000}
+.once-k{display:block;margin-bottom:2px;font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(0,0,0,.62)}
+.once-step.after .once-k{color:var(--yellow)}
+.once-step b{display:block;font-size:15px;font-weight:750;line-height:1.2}
+.once-arrow{align-self:center;justify-self:center;width:20px;height:20px;stroke-width:2.6;color:#000}
+@media (max-width:519px){
+  .once{grid-template-columns:1fr;gap:0;padding:6px}
+  .once-arrow{transform:rotate(90deg);width:16px;height:16px;margin:-3px auto}
+  .once-step{padding:9px 11px}
+}
+@media (prefers-reduced-motion:reduce){.once::after{display:none}}
 .home-form{min-width:0;scroll-margin-top:16px}
 .auth-card #auth-title{font-size:26px;line-height:1.05;letter-spacing:-.02em;margin:2px 0 4px}
 .auth-card #auth-lead{margin-bottom:12px}
@@ -637,7 +651,11 @@ body.kb-open .grab{display:none}
     </div>
     <div class="home-grid">
       <div class="home-pitch">
-        <div class="once"><span class="once-mark">1&times;</span><p><b>Set up once.</b> Then every pickup is a few taps.</p></div>
+        <div class="once" role="note" aria-label="Set up once, then every pickup is a few taps">
+          <div class="once-step"><span class="once-ic"><svg class="i"><use href="#i-user"/></svg></span><div><span class="once-k">One time</span><b>Create your account</b></div></div>
+          <svg class="i once-arrow" aria-hidden="true"><use href="#i-chevron"/></svg>
+          <div class="once-step after"><span class="once-ic"><svg class="i"><use href="#i-repeat"/></svg></span><div><span class="once-k">Every pickup after</span><b>Sent in a few taps</b></div></div>
+        </div>
         <div class="hero">
           <h1 class="hero-title">Send a pickup <mark>in seconds.</mark></h1>
           <p class="hero-sub">No busy lines. No hold. Straight to dispatch.</p>
