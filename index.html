@@ -120,7 +120,7 @@ p{margin:0}
 .field textarea{min-height:60px;resize:vertical;line-height:1.4}
 .input:hover,.field input:not([type=radio]):not([type=checkbox]):hover,.field select:hover,.field textarea:hover{border-color:var(--ink-3)}
 .field input:focus,.field select:focus,.field textarea:focus,.input:focus{border-color:var(--focus);box-shadow:0 0 0 3px var(--yellow-ring)}
-::placeholder{color:var(--ink-3);opacity:1}
+::placeholder{color:var(--ink-3);opacity:1;font-size:14px}
 .field.invalid input,.field.invalid textarea,.field.invalid select,.field.invalid .seg{border-color:var(--danger)!important;box-shadow:0 0 0 3px var(--danger-bg)}
 .err{display:flex;align-items:flex-start;gap:5px;color:var(--danger);font-size:12px;font-weight:650;margin-top:4px;animation:errIn var(--t) var(--out)}
 .err::before{content:'';flex:none;width:13px;height:13px;margin-top:1px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 0a8 8 0 100 16A8 8 0 008 0zm-.9 4h1.8v5H7.1zm0 6.2h1.8V12H7.1z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 0a8 8 0 100 16A8 8 0 008 0zm-.9 4h1.8v5H7.1zm0 6.2h1.8V12H7.1z'/%3E%3C/svg%3E") center/contain no-repeat}
@@ -129,7 +129,7 @@ p{margin:0}
 .hint.ok{color:var(--ok);font-weight:650}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
 .two .field{margin-bottom:10px}
-@media (max-width:359px){.two{grid-template-columns:1fr;gap:0}}
+@media (max-width:374px){.two{grid-template-columns:1fr;gap:0}}
 .with-btn{position:relative}
 .with-btn input{padding-right:calc(var(--ctl) + 2px)!important}
 .with-btn .icon-btn{position:absolute;right:3px;top:3px;width:calc(var(--ctl) - 6px);height:calc(var(--ctl) - 6px);border-radius:var(--r-xs)}
@@ -280,18 +280,14 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
   #req-form>.route,#req-form>#items-block,#req-form>.submit-bar{grid-column:1/-1}
 }
 .route{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);margin-bottom:10px;overflow:hidden;box-shadow:var(--sh-2)}
-.leg{position:relative;padding:10px 12px 2px 44px}
+.leg{position:relative;padding:10px 12px 2px}
 .leg[data-leg=delivery]{background:var(--surface-2)}
-/* Journey rail: a dashed line runs from the pickup marker down to the delivery marker */
-.leg::before{content:'';position:absolute;left:21px;width:2px;background:repeating-linear-gradient(to bottom,var(--rail) 0 4px,transparent 4px 8px)}
-.leg[data-leg=pickup]::before{top:34px;bottom:0}
-.leg[data-leg=delivery]::before{top:0;height:10px}
-.node{position:absolute;left:10px;top:10px;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;z-index:1}
+.node{flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:50%}
 .node .i{width:13px;height:13px;stroke-width:2.4}
-.leg[data-leg=pickup] .node{background:var(--yellow);color:#000;box-shadow:0 0 0 3px var(--yellow-soft)}
-.leg[data-leg=delivery] .node{background:var(--ink);color:var(--bg);box-shadow:0 0 0 3px var(--surface-2)}
+.leg[data-leg=pickup] .node{background:var(--yellow);color:#000}
+.leg[data-leg=delivery] .node{background:var(--ink);color:var(--bg)}
 .leg-head{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:24px;margin-bottom:4px}
-.leg-head h2{font-size:12px;font-stretch:100%;font-weight:800;text-transform:uppercase;letter-spacing:.12em}
+.leg-head h2{display:flex;align-items:center;gap:8px;font-size:12px;font-stretch:100%;font-weight:800;text-transform:uppercase;letter-spacing:.12em}
 .leg-head .link-btn{min-height:28px;font-size:12.5px}
 .route .field{margin-bottom:8px}
 .route .two{gap:var(--gap)}
@@ -309,7 +305,7 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 .leg-foot{display:flex;justify-content:flex-end;margin:-6px 0 2px}
 .leg-foot .link-btn{min-height:26px;font-size:12px;color:var(--ink-2)}
 .leg-foot .link-btn:hover{color:var(--ink)}
-.route-mid{position:relative;height:0;border-top:1px dashed var(--line-strong)}
+.route-mid{position:relative;height:0;border-top:1px solid var(--line)}
 .swap{position:absolute;left:50%;margin-left:-15px;top:-15px;z-index:2;width:30px;height:30px;border-radius:50%;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);display:grid;place-items:center;cursor:pointer;box-shadow:var(--sh-1);transition:transform var(--t-slow) var(--out),border-color var(--t-fast) ease,background-color var(--t-fast) ease;-webkit-tap-highlight-color:transparent}
 .swap .i{width:15px;height:15px}
 .swap:hover{border-color:var(--yellow);background:var(--yellow);color:#000}
@@ -345,9 +341,9 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 .stepper:focus-within{border-color:var(--focus);box-shadow:0 0 0 3px var(--yellow-ring)}
 .item-row .icon-btn:hover{color:var(--danger);background:var(--danger-bg)}
 @media (min-width:760px){
-  .item-row{grid-template-columns:118px minmax(150px,260px) 170px var(--ctl);justify-content:start}
-  .item-row.single{grid-template-columns:118px minmax(150px,260px) 170px}
-  .item-row .dims{grid-column:3}
+  .item-row{grid-template-columns:118px minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr) var(--ctl);grid-template-areas:"q t w d r"}
+  .item-row.single{grid-template-columns:118px minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr);grid-template-areas:"q t w d"}
+  .item-row .stepper{grid-area:q}.item-row select{grid-area:t}.item-row .weight{grid-area:w}.item-row .dims{grid-area:d}.item-row .icon-btn{grid-area:r}
 }
 @media (max-width:420px){
   .item-row,.item-row.single{grid-template-columns:112px minmax(0,1fr) var(--ctl);grid-template-areas:"q t r" "w w w" "d d d"}
@@ -357,7 +353,7 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 .items-preview{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 6px;font-size:12px;color:var(--ink-2);margin:0 0 8px;padding:5px 9px;border-radius:var(--r-sm);background:var(--surface-2);border-left:3px solid var(--yellow)}
 .items-preview:empty{display:none}
 .items-preview b{color:var(--ink);font-weight:700;font-size:13px}
-#items-block [data-act=add-item]{margin-bottom:8px!important;border-style:dashed}
+#items-block [data-act=add-item]{margin-bottom:8px!important}
 .submit-bar{position:sticky;bottom:calc(var(--nav-h) + var(--safe-b) + 8px);z-index:5;padding-top:6px}
 .submit-bar::before{content:'';position:absolute;left:-12px;right:-12px;top:-14px;bottom:-10px;background:linear-gradient(to bottom,transparent,var(--bg) 50%);z-index:-1;pointer-events:none}
 .submit-bar .btn{min-height:calc(var(--ctl) + 8px);font-size:16px;border-radius:var(--r-lg);box-shadow:0 1px 0 rgba(255,255,255,.45) inset,0 -2px 0 rgba(0,0,0,.14) inset,0 8px 20px -8px rgba(0,0,0,.45)}
@@ -780,25 +776,23 @@ body.kb-open .grab{display:none}
         <form id="req-form" novalidate autocomplete="off">
           <section class="route" aria-label="Pickup and delivery">
             <div class="leg" data-leg="pickup">
-              <span class="node" aria-hidden="true"><svg class="i"><use href="#i-box"/></svg></span>
-              <div class="leg-head"><h2>Pickup</h2><button class="link-btn" type="button" data-act="pick-contact" data-leg="pickup"><svg class="i sm"><use href="#i-contacts"/></svg>Contacts</button></div>
+              <div class="leg-head"><h2><span class="node" aria-hidden="true"><svg class="i"><use href="#i-box"/></svg></span>Pickup</h2><button class="link-btn" type="button" data-act="pick-contact" data-leg="pickup"><svg class="i sm"><use href="#i-contacts"/></svg>Contacts</button></div>
               <div class="field"><label for="pickup-name">Business or contact name <span class="req">*</span></label><input id="pickup-name" maxlength="120" placeholder="Who are we picking up from?"></div>
-              <div class="field"><label for="pickup-address">Address <span class="req">*</span></label><div class="with-btn"><input id="pickup-address" maxlength="250" placeholder="Start typing an address or business"><button class="icon-btn" type="button" data-act="map" data-leg="pickup" aria-label="Pick pickup location on map"><svg class="i"><use href="#i-pin"/></svg></button></div><p class="hint" id="pickup-address-hint"></p></div>
+              <div class="field"><label for="pickup-address">Address <span class="req">*</span></label><div class="with-btn"><input id="pickup-address" maxlength="250" placeholder="Search address or business"><button class="icon-btn" type="button" data-act="map" data-leg="pickup" aria-label="Pick pickup location on map"><svg class="i"><use href="#i-pin"/></svg></button></div><p class="hint" id="pickup-address-hint"></p></div>
               <div class="two">
                 <div class="field"><label for="pickup-phone">Phone</label><input id="pickup-phone" type="tel" inputmode="tel" data-phone placeholder="(204) 555-0123"></div>
-                <div class="field"><label for="pickup-email">Email</label><input id="pickup-email" type="email" inputmode="email" maxlength="120" placeholder="name@company.com"></div>
+                <div class="field"><label for="pickup-email">Email</label><input id="pickup-email" type="email" inputmode="email" maxlength="120" placeholder="name@company.ca"></div>
               </div>
               <div class="leg-foot"><button class="link-btn" type="button" data-act="save-leg" data-leg="pickup"><svg class="i sm"><use href="#i-bookmark"/></svg>Save to contacts</button></div>
             </div>
             <div class="route-mid"><button class="swap" type="button" data-act="swap" aria-label="Swap pickup and delivery" title="Swap pickup and delivery"><svg class="i"><use href="#i-swap"/></svg></button></div>
             <div class="leg" data-leg="delivery">
-              <span class="node" aria-hidden="true"><svg class="i"><use href="#i-pin"/></svg></span>
-              <div class="leg-head"><h2>Delivery</h2><button class="link-btn" type="button" data-act="pick-contact" data-leg="delivery"><svg class="i sm"><use href="#i-contacts"/></svg>Contacts</button></div>
+              <div class="leg-head"><h2><span class="node" aria-hidden="true"><svg class="i"><use href="#i-pin"/></svg></span>Delivery</h2><button class="link-btn" type="button" data-act="pick-contact" data-leg="delivery"><svg class="i sm"><use href="#i-contacts"/></svg>Contacts</button></div>
               <div class="field"><label for="delivery-name">Business or contact name <span class="muted">(optional)</span></label><input id="delivery-name" maxlength="120" placeholder="Who is it going to?"></div>
-              <div class="field"><label for="delivery-address">Address <span class="muted">(optional)</span></label><div class="with-btn"><input id="delivery-address" maxlength="250" placeholder="Start typing an address or business"><button class="icon-btn" type="button" data-act="map" data-leg="delivery" aria-label="Pick delivery location on map"><svg class="i"><use href="#i-pin"/></svg></button></div><p class="hint" id="delivery-address-hint"></p></div>
+              <div class="field"><label for="delivery-address">Address <span class="muted">(optional)</span></label><div class="with-btn"><input id="delivery-address" maxlength="250" placeholder="Search address or business"><button class="icon-btn" type="button" data-act="map" data-leg="delivery" aria-label="Pick delivery location on map"><svg class="i"><use href="#i-pin"/></svg></button></div><p class="hint" id="delivery-address-hint"></p></div>
               <div class="two">
                 <div class="field"><label for="delivery-phone">Phone</label><input id="delivery-phone" type="tel" inputmode="tel" data-phone placeholder="(204) 555-0123"></div>
-                <div class="field"><label for="delivery-email">Email</label><input id="delivery-email" type="email" inputmode="email" maxlength="120" placeholder="name@company.com"></div>
+                <div class="field"><label for="delivery-email">Email</label><input id="delivery-email" type="email" inputmode="email" maxlength="120" placeholder="name@company.ca"></div>
               </div>
               <div class="leg-foot"><button class="link-btn" type="button" data-act="save-leg" data-leg="delivery"><svg class="i sm"><use href="#i-bookmark"/></svg>Save to contacts</button></div>
             </div>
@@ -809,7 +803,7 @@ body.kb-open .grab{display:none}
             <div class="items" id="item-rows"></div>
             <p class="items-preview" id="items-preview"></p>
             <button class="btn btn-secondary sm" type="button" data-act="add-item" style="margin-bottom:12px"><svg class="i sm"><use href="#i-plus"/></svg>Add another line</button>
-            <div class="field"><label for="item-details">Description</label><textarea id="item-details" maxlength="500" rows="2" placeholder="Optional. For example: fragile, keep upright"></textarea></div>
+            <div class="field"><label for="item-details">Description</label><textarea id="item-details" maxlength="500" rows="2" placeholder="Optional, e.g. fragile, keep upright"></textarea></div>
             <p class="err" id="items-err" hidden></p>
           </section>
 
@@ -838,7 +832,7 @@ body.kb-open .grab{display:none}
               </div>
             </div>
             <div class="field"><label for="po">PO number or reference</label><input id="po" maxlength="100" placeholder="Optional"></div>
-            <div class="field"><label for="notes">Notes for the driver</label><textarea id="notes" maxlength="1000" rows="3" placeholder="Optional. Door numbers, hours, gate codes"></textarea></div>
+            <div class="field"><label for="notes">Notes for the driver</label><textarea id="notes" maxlength="1000" rows="3" placeholder="Optional: door #, hours, gate code"></textarea></div>
           </section>
 
           <div class="submit-bar"><button class="btn btn-primary block" type="submit" id="btn-review">Review request</button></div>
@@ -855,7 +849,7 @@ body.kb-open .grab{display:none}
         <button class="btn btn-secondary sm btn-copy" type="button" data-act="repeat" id="hist-repeat-latest" hidden><svg class="i sm"><use href="#i-repeat"/></svg><span class="lbl">Paste Previous Request</span></button>
         <button class="btn btn-secondary sm" type="button" data-act="export"><svg class="i sm"><use href="#i-download"/></svg>Export</button>
       </div>
-      <div class="searchbox field" style="margin-bottom:10px"><svg class="i"><use href="#i-search"/></svg><input id="hist-q" type="search" placeholder="Search names, addresses, PO or request #" aria-label="Search history"></div>
+      <div class="searchbox field" style="margin-bottom:10px"><svg class="i"><use href="#i-search"/></svg><input id="hist-q" type="search" placeholder="Search name, address, PO or #" aria-label="Search history"></div>
       <div class="filter-row">
         <select id="hist-period" aria-label="Date range">
           <option value="30">Last 30 days</option>
@@ -1700,7 +1694,7 @@ function renderItems() {
       <div class="weight"><input type="number" inputmode="decimal" min="0" step="any" value="${esc(it.weight)}" data-field="weight" placeholder="Weight" aria-label="Total weight in pounds"><span>lbs</span></div>
       ${single ? '' : `<button class="icon-btn" type="button" data-act="item-remove" aria-label="Remove this line">${icon('x')}</button>`}
       <div class="dims"><input type="text" maxlength="40" value="${esc(it.dims || '')}" data-field="dims" placeholder="feet or inches" aria-label="Dimensions, in feet or inches"><span>dims</span></div>
-      ${it.type === 'other' ? `<input class="other-input" type="text" maxlength="60" value="${esc(it.other || '')}" data-field="other" placeholder="What is it? For example: tires, rolls of carpet" aria-label="Describe the item">` : ''}
+      ${it.type === 'other' ? `<input class="other-input" type="text" maxlength="60" value="${esc(it.other || '')}" data-field="other" placeholder="What is it? e.g. tires, carpet" aria-label="Describe the item">` : ''}
     </div>`).join('');
   updateItemsPreview();
 }
