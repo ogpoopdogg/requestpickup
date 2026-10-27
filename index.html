@@ -104,6 +104,8 @@ p{margin:0}
 .btn.is-loading:disabled{opacity:1}
 .btn.is-loading::before{content:'';flex:none;width:18px;height:18px;border-radius:50%;border:2.5px solid currentColor;border-right-color:transparent;animation:spin .7s linear infinite}
 .btn-google.is-loading>svg,.btn-google.is-loading .btn-label{display:none}
+/* Google's four logo colours, matching the G on this button */
+.btn-google.is-loading::before{border-color:#1976D2 #FF3D00 #FFC107 #4CAF50}
 .btn-google.is-loading::after{content:'Signing in with Google\2026'}
 .icon-btn{display:inline-flex;align-items:center;justify-content:center;width:var(--ctl);height:var(--ctl);border-radius:var(--r-sm);border:0;background:transparent;color:var(--ink-2);cursor:pointer;transition:background-color var(--t-fast) ease,color var(--t-fast) ease;-webkit-tap-highlight-color:transparent}
 .icon-btn:hover{background:var(--surface-3);color:var(--ink)}
