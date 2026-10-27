@@ -208,30 +208,19 @@ p{margin:0}
 .why li span:not(.ic){display:block;color:var(--ink-2);font-size:13.5px;line-height:1.4;margin-top:1px}
 .why em{display:inline-flex;align-items:center;gap:5px;margin-top:5px;color:var(--ink-3);font-size:12px;font-style:normal;font-weight:600}
 .why em .i{width:12px;height:12px;color:var(--danger)}
-.once{padding:16px 16px 14px;border-radius:16px;background:var(--surface);border:1px solid var(--line);box-shadow:0 14px 34px -22px rgba(0,0,0,.55)}
-.once ol{list-style:none;margin:0;padding:0}
-.once li{position:relative;display:grid;grid-template-columns:40px minmax(0,1fr);gap:12px}
-.once li+li{margin-top:14px}
-.once li:first-child::after{content:'';position:absolute;left:19px;top:42px;bottom:-14px;width:2px;background:linear-gradient(var(--ink-3),var(--yellow))}
-.once-node{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--surface-2);border:1.5px solid var(--ink);color:var(--ink)}
-.once-node .i{width:19px;height:19px}
-.once li.after .once-node{background:var(--yellow);border-color:var(--yellow);color:#000;box-shadow:0 8px 18px -8px rgba(150,110,0,.8)}
-.once-k{display:block;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
-.once li.after .once-k{color:#9a7600}
-[data-theme=dark] .once li.after .once-k{color:var(--yellow)}
-.once b{display:block;margin-top:1px;font-stretch:75%;font-size:21px;font-weight:800;line-height:1.05}
-.once small{display:block;margin-top:2px;font-size:12.5px;color:var(--ink-2)}
-.once-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.once-chips span{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:999px;background:#0e0e0d;color:#fff;font-size:11.5px;font-weight:750}
-[data-theme=dark] .once-chips span{background:var(--surface-2);border:1px solid var(--line)}
-.once-chips span:last-child{background:var(--yellow);border-color:var(--yellow);color:#000}
-.once-chips .i{width:12px;height:12px}
-@media (max-width:389px){.once-chips{gap:4px}.once-chips span{padding:0 8px;font-size:11px;gap:4px}.once b{font-size:19px}}
-@media (max-width:359px){.once{padding:14px 12px 12px}.once li{gap:10px}.once-chips .i{display:none}}
+.hero-steps{display:grid;grid-template-columns:1fr 1fr;margin:-20px -18px 18px;border-bottom:1px solid rgba(255,255,255,.12)}
+.hero-step{display:flex;align-items:center;gap:10px;min-width:0;padding:13px 16px}
+.hero-step+.hero-step{border-left:1px solid rgba(255,255,255,.12);background:linear-gradient(90deg,rgba(255,209,0,.14),rgba(255,209,0,.04))}
+.hero-step-n{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;border:1.5px solid rgba(255,255,255,.5);color:#fff;font-size:12px;font-weight:800}
+.hero-step.after .hero-step-n{background:var(--yellow);border-color:var(--yellow);color:#000}
+.hero-step b{display:block;font-size:13.5px;font-weight:750;color:#fff;line-height:1.2}
+.hero-step small{display:block;font-size:11.5px;color:rgba(255,255,255,.6);line-height:1.2}
+.hero-step.after small{color:var(--yellow)}
+@media (max-width:389px){.hero-step{padding:11px 10px;gap:8px}.hero-step-n{width:24px;height:24px;font-size:11px}.hero-step b{font-size:12px}.hero-step small{font-size:10.5px}}
 .home-form{min-width:0;scroll-margin-top:16px}
 .auth-card #auth-title{font-size:26px;line-height:1.05;letter-spacing:-.02em;margin:2px 0 4px}
 .auth-card #auth-lead{margin-bottom:12px}
-@media (min-width:600px){.hero{padding:28px 28px 26px}}
+@media (min-width:600px){.hero{padding:28px 28px 26px}.hero-steps{margin:-28px -28px 22px}.hero-step{padding:14px 28px}}
 @media (min-width:900px){
   .home-grid{grid-template-columns:minmax(0,1fr) 380px;gap:36px;align-items:start}
   .home-form{position:sticky;top:24px}
@@ -657,13 +646,11 @@ body.kb-open .grab{display:none}
     </div>
     <div class="home-grid">
       <div class="home-pitch">
-        <div class="once" role="note" aria-label="Create your account once. Every pickup after is a few taps.">
-          <ol>
-            <li><span class="once-node"><svg class="i" aria-hidden="true"><use href="#i-user"/></svg></span><div><span class="once-k">Today &middot; once</span><b>Create your account</b><small>Your login and profile. That&rsquo;s it.</small></div></li>
-            <li class="after"><span class="once-node"><svg class="i" aria-hidden="true"><use href="#i-repeat"/></svg></span><div><span class="once-k">Every pickup after</span><b>A few taps and it&rsquo;s sent</b><div class="once-chips" aria-hidden="true"><span><svg class="i"><use href="#i-repeat"/></svg>Paste</span><span><svg class="i"><use href="#i-eye"/></svg>Review</span><span><svg class="i"><use href="#i-check"/></svg>Send</span></div></div></li>
-          </ol>
-        </div>
         <div class="hero">
+          <div class="hero-steps" role="note" aria-label="Create your account once. Every pickup after is a few taps.">
+            <div class="hero-step"><span class="hero-step-n" aria-hidden="true">1</span><div><b>Create your account</b><small>One time only</small></div></div>
+            <div class="hero-step after"><span class="hero-step-n" aria-hidden="true">2</span><div><b>Send pickups</b><small>A few taps, every time</small></div></div>
+          </div>
           <h1 class="hero-title">Send a pickup <mark>in seconds.</mark></h1>
           <p class="hero-sub">No busy lines. No hold. Straight to dispatch.</p>
           <div class="hero-cta">
