@@ -239,14 +239,14 @@ p{margin:0}
 /* ---------- App shell ---------- */
 .topbar{position:sticky;top:0;z-index:30;background:rgba(8,8,8,.92);-webkit-backdrop-filter:saturate(160%) blur(14px);backdrop-filter:saturate(160%) blur(14px);padding:calc(6px + var(--safe-t)) 16px 8px;color:#f4f4f1}
 .topbar::after{content:'';position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--yellow)}
-.topbar-in{max-width:880px;margin:0 auto;display:flex;align-items:center;gap:10px}
+.topbar-in{max-width:1080px;margin:0 auto;display:flex;align-items:center;gap:10px}
 .topbar img{height:28px;width:auto;border-radius:6px}
 .topbar .wordmark{font-size:18px;line-height:1}
 .topbar .company{font-size:11.5px;font-weight:600;color:#a7a59e;line-height:1.2;margin-top:2px;max-width:56vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .topbar .spacer{flex:1}
 .offline-pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:750;color:#000;background:var(--yellow);border-radius:99px;padding:3px 9px 3px 7px;animation:pillIn var(--t) var(--out) both}
 @keyframes pillIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
-main.app-main{max-width:880px;margin:0 auto;padding:12px 12px calc(var(--nav-h) + var(--safe-b) + 16px)}
+main.app-main{max-width:1080px;margin:0 auto;padding:12px 12px calc(var(--nav-h) + var(--safe-b) + 16px)}
 main.app-main>section{animation:tabIn var(--t) var(--out) both}
 @keyframes tabIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
 .page-head{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:10px;flex-wrap:wrap;min-height:var(--ctl-sm)}
@@ -261,7 +261,7 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 
 /* Bottom navigation */
 .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--glass);-webkit-backdrop-filter:saturate(170%) blur(16px);backdrop-filter:saturate(170%) blur(16px);border-top:1px solid var(--glass-line);padding-bottom:var(--safe-b)}
-.tabbar-in{max-width:880px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);height:var(--nav-h);padding:0 4px}
+.tabbar-in{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);height:var(--nav-h);padding:0 4px}
 .tab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:0;background:none;color:var(--ink-3);font-size:11px;font-weight:700;letter-spacing:.02em;cursor:pointer;transition:color var(--t-fast) ease;-webkit-tap-highlight-color:transparent}
 .tab .i{width:44px;height:26px;padding:4px 12px;border-radius:99px;transition:background-color var(--t) var(--ease),color var(--t-fast) ease}
 .tab:hover{color:var(--ink-2)}
