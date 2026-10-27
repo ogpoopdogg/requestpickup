@@ -120,7 +120,7 @@ p{margin:0}
 .field textarea{min-height:60px;resize:vertical;line-height:1.4}
 .input:hover,.field input:not([type=radio]):not([type=checkbox]):hover,.field select:hover,.field textarea:hover{border-color:var(--ink-3)}
 .field input:focus,.field select:focus,.field textarea:focus,.input:focus{border-color:var(--focus);box-shadow:0 0 0 3px var(--yellow-ring)}
-::placeholder{color:var(--ink-3);opacity:1}
+::placeholder{color:var(--ink-3);opacity:1;font-size:14px}
 .field.invalid input,.field.invalid textarea,.field.invalid select,.field.invalid .seg{border-color:var(--danger)!important;box-shadow:0 0 0 3px var(--danger-bg)}
 .err{display:flex;align-items:flex-start;gap:5px;color:var(--danger);font-size:12px;font-weight:650;margin-top:4px;animation:errIn var(--t) var(--out)}
 .err::before{content:'';flex:none;width:13px;height:13px;margin-top:1px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 0a8 8 0 100 16A8 8 0 008 0zm-.9 4h1.8v5H7.1zm0 6.2h1.8V12H7.1z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 0a8 8 0 100 16A8 8 0 008 0zm-.9 4h1.8v5H7.1zm0 6.2h1.8V12H7.1z'/%3E%3C/svg%3E") center/contain no-repeat}
@@ -129,7 +129,7 @@ p{margin:0}
 .hint.ok{color:var(--ok);font-weight:650}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
 .two .field{margin-bottom:10px}
-@media (max-width:359px){.two{grid-template-columns:1fr;gap:0}}
+@media (max-width:374px){.two{grid-template-columns:1fr;gap:0}}
 .with-btn{position:relative}
 .with-btn input{padding-right:calc(var(--ctl) + 2px)!important}
 .with-btn .icon-btn{position:absolute;right:3px;top:3px;width:calc(var(--ctl) - 6px);height:calc(var(--ctl) - 6px);border-radius:var(--r-xs)}
@@ -166,29 +166,87 @@ p{margin:0}
 .auth h1{font-size:34px;line-height:1;letter-spacing:-.02em;margin-bottom:8px}
 .auth .lead{color:var(--ink-2);margin-bottom:14px;max-width:44ch;font-size:14px;line-height:1.45}
 .auth-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 16px 12px;box-shadow:var(--sh-2);position:relative;overflow:hidden}
-.auth-card::before{content:'';position:absolute;left:0;right:0;top:0;height:3px;background:repeating-linear-gradient(-45deg,var(--yellow) 0 10px,#111 10px 20px)}
 .auth-card form>.btn-primary{margin-top:4px}
-.auth-points{display:flex;flex-wrap:wrap;gap:4px 12px;margin:12px 2px 0;padding:0;list-style:none;font-size:12px;font-weight:650;color:var(--ink-2)}
-.auth-points li{display:inline-flex;align-items:center;gap:5px}
-.auth-points .i{width:13px;height:13px;color:var(--ok);stroke-width:2.8}
 .divider{display:flex;align-items:center;gap:10px;color:var(--ink-3);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin:10px 0}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--line)}
 .auth-links{display:flex;justify-content:space-between;gap:8px;margin-top:8px;flex-wrap:wrap}
 .fine{font-size:12px;color:var(--ink-3);margin-top:16px;line-height:1.5;text-align:center}
+
+/* Sign-in home: pitch the app over phoning, then the sign-in card.
+   One column on phones; pitch and card side by side from 900px. */
+.auth-home{max-width:1040px}
+.home-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.home-top .brand{margin-bottom:0}
+.home-grid{display:grid;gap:14px}
+.home-pitch{display:grid;gap:12px;min-width:0}
+.hero{position:relative;overflow:hidden;background:#0e0e0d;color:#f3f2ec;border:1px solid rgba(255,209,0,.28);border-radius:16px;padding:20px 18px 18px;box-shadow:var(--shadow);isolation:isolate}
+.hero::after{content:'';position:absolute;z-index:-1;right:-90px;top:-110px;width:300px;height:300px;border-radius:50%;background:radial-gradient(closest-side,rgba(255,209,0,.3),rgba(255,209,0,0));pointer-events:none}
+.auth .hero-title{margin:0 0 10px;color:#fff;font-size:clamp(32px,9.4vw,54px);line-height:.98;letter-spacing:-.02em}
+.hero-title mark{background:none;color:var(--yellow)}
+.hero-sub{margin:0 0 16px;max-width:40ch;color:#c9c7bf;font-size:15px;line-height:1.45}
+.hero-cta{display:flex;flex-wrap:wrap;gap:8px}
+.hero-cta .btn{flex:1 1 150px}
+.btn-ondark{background:transparent;color:#fff;border-color:rgba(255,255,255,.3)}
+.btn-ondark:hover{border-color:#fff;background:rgba(255,255,255,.06)}
+.btn-ondark:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
+.why{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:4px 16px 2px;box-shadow:var(--sh-2)}
+.why h2{margin:10px 0 2px;color:var(--ink-2);font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-stretch:100%}
+.why ul{margin:0;padding:0;list-style:none}
+.why li{display:grid;grid-template-columns:38px minmax(0,1fr);gap:12px;align-items:start;padding:12px 0}
+.why li+li{border-top:1px solid var(--line)}
+.why .ic{width:38px;height:38px;border-radius:10px;background:var(--yellow);color:#000;display:grid;place-items:center}
+.why .ic .i{width:20px;height:20px;stroke-width:2.2}
+.why b{display:block;font-size:15.5px;font-weight:750;line-height:1.25}
+.why li span:not(.ic){display:block;color:var(--ink-2);font-size:13.5px;line-height:1.4;margin-top:1px}
+.why em{display:inline-flex;align-items:center;gap:5px;margin-top:5px;color:var(--ink-3);font-size:12px;font-style:normal;font-weight:600}
+.why em .i{width:12px;height:12px;color:var(--danger)}
+.once{position:relative;overflow:hidden;isolation:isolate;display:grid;grid-template-columns:minmax(0,1fr) 22px minmax(0,1fr);align-items:stretch;gap:6px;padding:7px;border-radius:16px;background:linear-gradient(135deg,#FFD100 0%,#FFE04D 100%);color:#000;box-shadow:0 1px 0 rgba(255,255,255,.55) inset,0 -1px 0 rgba(0,0,0,.08) inset,0 12px 28px -14px rgba(150,110,0,.7)}
+.once::after{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.6) 50%,transparent 62%);transform:translateX(-110%);animation:onceSheen 1.5s .5s var(--ease) both;pointer-events:none}
+@keyframes onceSheen{to{transform:translateX(110%)}}
+.once-step{display:flex;align-items:center;gap:10px;min-width:0;padding:10px 12px;border-radius:11px;background:rgba(255,255,255,.6)}
+.once-step.after{background:#0e0e0d;color:#fff;box-shadow:0 6px 16px -8px rgba(0,0,0,.6)}
+.once-ic{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#000;color:var(--yellow)}
+.once-ic .i{width:17px;height:17px;stroke-width:2.3}
+.once-step.after .once-ic{background:var(--yellow);color:#000}
+.once-k{display:block;margin-bottom:2px;font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(0,0,0,.62)}
+.once-step.after .once-k{color:var(--yellow)}
+.once-step b{display:block;font-size:15px;font-weight:750;line-height:1.2}
+.once-arrow{align-self:center;justify-self:center;width:20px;height:20px;stroke-width:2.6;color:#000}
+@media (max-width:519px){
+  .once{grid-template-columns:1fr;gap:0;padding:6px}
+  .once-arrow{transform:rotate(90deg);width:16px;height:16px;margin:-3px auto}
+  .once-step{padding:9px 11px}
+}
+@media (prefers-reduced-motion:reduce){.once::after{display:none}}
+.home-form{min-width:0;scroll-margin-top:16px}
+.auth-card #auth-title{font-size:26px;line-height:1.05;letter-spacing:-.02em;margin:2px 0 4px}
+.auth-card #auth-lead{margin-bottom:12px}
+@media (min-width:600px){.hero{padding:28px 28px 26px}}
+@media (min-width:900px){
+  .home-grid{grid-template-columns:minmax(0,1fr) 380px;gap:36px;align-items:start}
+  .home-form{position:sticky;top:24px}
+  .home-signin,.hero-cta{display:none}
+  .hero-sub{margin-bottom:0}
+}
+@media (min-width:1100px){
+  .why ul{display:grid;grid-template-columns:1fr 1fr;column-gap:28px}
+  .why li+li{border-top:0}
+  .why li:nth-child(n+3){border-top:1px solid var(--line)}
+}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px}
 #recaptcha-host:empty{display:none}
 
 /* ---------- App shell ---------- */
 .topbar{position:sticky;top:0;z-index:30;background:rgba(8,8,8,.92);-webkit-backdrop-filter:saturate(160%) blur(14px);backdrop-filter:saturate(160%) blur(14px);padding:calc(6px + var(--safe-t)) 16px 8px;color:#f4f4f1}
 .topbar::after{content:'';position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--yellow)}
-.topbar-in{max-width:880px;margin:0 auto;display:flex;align-items:center;gap:10px}
+.topbar-in{max-width:1080px;margin:0 auto;display:flex;align-items:center;gap:10px}
 .topbar img{height:28px;width:auto;border-radius:6px}
 .topbar .wordmark{font-size:18px;line-height:1}
 .topbar .company{font-size:11.5px;font-weight:600;color:#a7a59e;line-height:1.2;margin-top:2px;max-width:56vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .topbar .spacer{flex:1}
 .offline-pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:750;color:#000;background:var(--yellow);border-radius:99px;padding:3px 9px 3px 7px;animation:pillIn var(--t) var(--out) both}
 @keyframes pillIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
-main.app-main{max-width:880px;margin:0 auto;padding:12px 12px calc(var(--nav-h) + var(--safe-b) + 16px)}
+main.app-main{max-width:1080px;margin:0 auto;padding:12px 12px calc(var(--nav-h) + var(--safe-b) + 16px)}
 main.app-main>section{animation:tabIn var(--t) var(--out) both}
 @keyframes tabIn{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
 .page-head{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:10px;flex-wrap:wrap;min-height:var(--ctl-sm)}
@@ -203,7 +261,7 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 
 /* Bottom navigation */
 .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--glass);-webkit-backdrop-filter:saturate(170%) blur(16px);backdrop-filter:saturate(170%) blur(16px);border-top:1px solid var(--glass-line);padding-bottom:var(--safe-b)}
-.tabbar-in{max-width:880px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);height:var(--nav-h);padding:0 4px}
+.tabbar-in{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);height:var(--nav-h);padding:0 4px}
 .tab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:0;background:none;color:var(--ink-3);font-size:11px;font-weight:700;letter-spacing:.02em;cursor:pointer;transition:color var(--t-fast) ease;-webkit-tap-highlight-color:transparent}
 .tab .i{width:44px;height:26px;padding:4px 12px;border-radius:99px;transition:background-color var(--t) var(--ease),color var(--t-fast) ease}
 .tab:hover{color:var(--ink-2)}
@@ -222,18 +280,14 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
   #req-form>.route,#req-form>#items-block,#req-form>.submit-bar{grid-column:1/-1}
 }
 .route{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);margin-bottom:10px;overflow:hidden;box-shadow:var(--sh-2)}
-.leg{position:relative;padding:10px 12px 2px 44px}
+.leg{position:relative;padding:10px 12px 2px}
 .leg[data-leg=delivery]{background:var(--surface-2)}
-/* Journey rail: a dashed line runs from the pickup marker down to the delivery marker */
-.leg::before{content:'';position:absolute;left:21px;width:2px;background:repeating-linear-gradient(to bottom,var(--rail) 0 4px,transparent 4px 8px)}
-.leg[data-leg=pickup]::before{top:34px;bottom:0}
-.leg[data-leg=delivery]::before{top:0;height:10px}
-.node{position:absolute;left:10px;top:10px;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;z-index:1}
+.node{flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:50%}
 .node .i{width:13px;height:13px;stroke-width:2.4}
-.leg[data-leg=pickup] .node{background:var(--yellow);color:#000;box-shadow:0 0 0 3px var(--yellow-soft)}
-.leg[data-leg=delivery] .node{background:var(--ink);color:var(--bg);box-shadow:0 0 0 3px var(--surface-2)}
+.leg[data-leg=pickup] .node{background:var(--yellow);color:#000}
+.leg[data-leg=delivery] .node{background:var(--ink);color:var(--bg)}
 .leg-head{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:24px;margin-bottom:4px}
-.leg-head h2{font-size:12px;font-stretch:100%;font-weight:800;text-transform:uppercase;letter-spacing:.12em}
+.leg-head h2{display:flex;align-items:center;gap:8px;font-size:12px;font-stretch:100%;font-weight:800;text-transform:uppercase;letter-spacing:.12em}
 .leg-head .link-btn{min-height:28px;font-size:12.5px}
 .route .field{margin-bottom:8px}
 .route .two{gap:var(--gap)}
@@ -251,7 +305,7 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 .leg-foot{display:flex;justify-content:flex-end;margin:-6px 0 2px}
 .leg-foot .link-btn{min-height:26px;font-size:12px;color:var(--ink-2)}
 .leg-foot .link-btn:hover{color:var(--ink)}
-.route-mid{position:relative;height:0;border-top:1px dashed var(--line-strong)}
+.route-mid{position:relative;height:0;border-top:1px solid var(--line)}
 .swap{position:absolute;left:50%;margin-left:-15px;top:-15px;z-index:2;width:30px;height:30px;border-radius:50%;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);display:grid;place-items:center;cursor:pointer;box-shadow:var(--sh-1);transition:transform var(--t-slow) var(--out),border-color var(--t-fast) ease,background-color var(--t-fast) ease;-webkit-tap-highlight-color:transparent}
 .swap .i{width:15px;height:15px}
 .swap:hover{border-color:var(--yellow);background:var(--yellow);color:#000}
@@ -287,9 +341,9 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 .stepper:focus-within{border-color:var(--focus);box-shadow:0 0 0 3px var(--yellow-ring)}
 .item-row .icon-btn:hover{color:var(--danger);background:var(--danger-bg)}
 @media (min-width:760px){
-  .item-row{grid-template-columns:118px minmax(150px,260px) 170px var(--ctl);justify-content:start}
-  .item-row.single{grid-template-columns:118px minmax(150px,260px) 170px}
-  .item-row .dims{grid-column:3}
+  .item-row{grid-template-columns:118px minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr) var(--ctl);grid-template-areas:"q t w d r"}
+  .item-row.single{grid-template-columns:118px minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr);grid-template-areas:"q t w d"}
+  .item-row .stepper{grid-area:q}.item-row select{grid-area:t}.item-row .weight{grid-area:w}.item-row .dims{grid-area:d}.item-row .icon-btn{grid-area:r}
 }
 @media (max-width:420px){
   .item-row,.item-row.single{grid-template-columns:112px minmax(0,1fr) var(--ctl);grid-template-areas:"q t r" "w w w" "d d d"}
@@ -299,7 +353,7 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 .items-preview{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 6px;font-size:12px;color:var(--ink-2);margin:0 0 8px;padding:5px 9px;border-radius:var(--r-sm);background:var(--surface-2);border-left:3px solid var(--yellow)}
 .items-preview:empty{display:none}
 .items-preview b{color:var(--ink);font-weight:700;font-size:13px}
-#items-block [data-act=add-item]{margin-bottom:8px!important;border-style:dashed}
+#items-block [data-act=add-item]{margin-bottom:8px!important}
 .submit-bar{position:sticky;bottom:calc(var(--nav-h) + var(--safe-b) + 8px);z-index:5;padding-top:6px}
 .submit-bar::before{content:'';position:absolute;left:-12px;right:-12px;top:-14px;bottom:-10px;background:linear-gradient(to bottom,transparent,var(--bg) 50%);z-index:-1;pointer-events:none}
 .submit-bar .btn{min-height:calc(var(--ctl) + 8px);font-size:16px;border-radius:var(--r-lg);box-shadow:0 1px 0 rgba(255,255,255,.45) inset,0 -2px 0 rgba(0,0,0,.14) inset,0 8px 20px -8px rgba(0,0,0,.45)}
@@ -586,33 +640,59 @@ body.kb-open .grab{display:none}
 
 <!-- Sign in / create account -->
 <section id="view-auth" class="screen center-screen" hidden>
-  <div class="auth">
-    <div class="brand"><img src="icon2.png" alt="" onerror="this.remove()"><div class="wordmark">E&amp;C <b>Courier</b></div></div>
-    <h1 id="auth-title">Request a Pickup.</h1>
-    <p class="lead" id="auth-lead">Sign in to instantly request pickups from E&amp;C Courier and keep a record of every shipment for your books. Save your addresses, autofill from past requests, and send a pickup in seconds.</p>
-    <div class="auth-card">
-    <form id="auth-form" novalidate>
-      <div class="field"><label for="auth-email">Email</label><input id="auth-email" type="email" autocomplete="email" inputmode="email" required></div>
-      <div class="field"><label for="auth-password">Password</label><div class="with-btn"><input id="auth-password" type="password" autocomplete="current-password" required><button class="icon-btn" type="button" data-act="toggle-pw" data-for="auth-password" aria-label="Show password" aria-pressed="false"><svg class="i"><use href="#i-eye"/></svg></button></div></div>
-      <div class="field" id="auth-confirm-wrap" hidden><label for="auth-confirm">Confirm password</label><div class="with-btn"><input id="auth-confirm" type="password" autocomplete="new-password"><button class="icon-btn" type="button" data-act="toggle-pw" data-for="auth-confirm" aria-label="Show password" aria-pressed="false"><svg class="i"><use href="#i-eye"/></svg></button></div></div>
-      <button class="btn btn-primary block" type="submit" id="auth-submit">Sign in</button>
-    </form>
-    <div class="divider">or</div>
-    <button class="btn btn-google block" type="button" data-act="google">
-      <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>
-      Continue with Google
-    </button>
-    <div class="auth-links">
-      <button class="link-btn" type="button" data-act="auth-mode" id="auth-mode-btn">New here? Create an account</button>
-      <button class="link-btn" type="button" data-act="forgot" id="forgot-btn">Forgot password?</button>
+  <div class="auth auth-home">
+    <div class="home-top">
+      <div class="brand"><img src="icon2.png" alt="" onerror="this.remove()"><div class="wordmark">E&amp;C <b>Courier</b></div></div>
+      <button class="btn btn-ghost sm home-signin" type="button" data-act="jump-auth" data-mode="signin">Sign in</button>
     </div>
+    <div class="home-grid">
+      <div class="home-pitch">
+        <div class="once" role="note" aria-label="Set up once, then every pickup is a few taps">
+          <div class="once-step"><span class="once-ic"><svg class="i"><use href="#i-user"/></svg></span><div><span class="once-k">One time</span><b>Create your account</b></div></div>
+          <svg class="i once-arrow" aria-hidden="true"><use href="#i-chevron"/></svg>
+          <div class="once-step after"><span class="once-ic"><svg class="i"><use href="#i-repeat"/></svg></span><div><span class="once-k">Every pickup after</span><b>Sent in a few taps</b></div></div>
+        </div>
+        <div class="hero">
+          <h1 class="hero-title">Send a pickup <mark>in seconds.</mark></h1>
+          <p class="hero-sub">No busy lines. No hold. Straight to dispatch.</p>
+          <div class="hero-cta">
+            <button class="btn btn-primary" type="button" data-act="jump-auth" data-mode="create">Create your account</button>
+            <button class="btn btn-ondark" type="button" data-act="jump-auth" data-mode="signin">I have an account</button>
+          </div>
+        </div>
+        <div class="why">
+          <h2>Why use the app</h2>
+          <ul>
+            <li><span class="ic"><svg class="i"><use href="#i-clock"/></svg></span><div><b>Never wait on hold</b><span>Send anytime.</span><em><svg class="i sm"><use href="#i-phone"/></svg>Calling: busy lines</em></div></li>
+            <li><span class="ic"><svg class="i"><use href="#i-contacts"/></svg></span><div><b>Addresses fill themselves</b><span>Save contacts once.</span><em><svg class="i sm"><use href="#i-phone"/></svg>Calling: spell it out</em></div></li>
+            <li><span class="ic"><svg class="i"><use href="#i-repeat"/></svg></span><div><b>Repeat in one tap</b><span>Resend any past pickup.</span><em><svg class="i sm"><use href="#i-phone"/></svg>Calling: start over</em></div></li>
+            <li><span class="ic"><svg class="i"><use href="#i-list"/></svg></span><div><b>Every pickup on record</b><span>Export your history anytime.</span><em><svg class="i sm"><use href="#i-phone"/></svg>Calling: no record</em></div></li>
+          </ul>
+        </div>
+      </div>
+      <div class="home-form" id="auth-panel">
+        <div class="auth-card">
+          <h2 id="auth-title">Sign in.</h2>
+          <p class="lead" id="auth-lead">Use your email or Google.</p>
+          <form id="auth-form" novalidate>
+            <div class="field"><label for="auth-email">Email</label><input id="auth-email" type="email" autocomplete="email" inputmode="email" required></div>
+            <div class="field"><label for="auth-password">Password</label><div class="with-btn"><input id="auth-password" type="password" autocomplete="current-password" required><button class="icon-btn" type="button" data-act="toggle-pw" data-for="auth-password" aria-label="Show password" aria-pressed="false"><svg class="i"><use href="#i-eye"/></svg></button></div></div>
+            <div class="field" id="auth-confirm-wrap" hidden><label for="auth-confirm">Confirm password</label><div class="with-btn"><input id="auth-confirm" type="password" autocomplete="new-password"><button class="icon-btn" type="button" data-act="toggle-pw" data-for="auth-confirm" aria-label="Show password" aria-pressed="false"><svg class="i"><use href="#i-eye"/></svg></button></div></div>
+            <button class="btn btn-primary block" type="submit" id="auth-submit">Sign in</button>
+          </form>
+          <div class="divider">or</div>
+          <button class="btn btn-google block" type="button" data-act="google">
+            <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>
+            Continue with Google
+          </button>
+          <div class="auth-links">
+            <button class="link-btn" type="button" data-act="auth-mode" id="auth-mode-btn">New here? Create an account</button>
+            <button class="link-btn" type="button" data-act="forgot" id="forgot-btn">Forgot password?</button>
+          </div>
+        </div>
+        <p class="fine">We use your email, phone numbers and addresses only to handle the deliveries you request. <a href="https://app.eandccourier.ca/privacy" target="_blank" rel="noopener">Privacy policy and terms</a></p>
+      </div>
     </div>
-    <ul class="auth-points">
-      <li><svg class="i"><use href="#i-check"/></svg>Sent straight to dispatch</li>
-      <li><svg class="i"><use href="#i-check"/></svg>Every shipment on record</li>
-      <li><svg class="i"><use href="#i-check"/></svg>Saved contacts</li>
-    </ul>
-    <p class="fine">We use your email, phone numbers and addresses only to handle the deliveries you request. <a href="https://app.eandccourier.ca/privacy" target="_blank" rel="noopener">Privacy policy and terms</a></p>
   </div>
 </section>
 
@@ -696,25 +776,23 @@ body.kb-open .grab{display:none}
         <form id="req-form" novalidate autocomplete="off">
           <section class="route" aria-label="Pickup and delivery">
             <div class="leg" data-leg="pickup">
-              <span class="node" aria-hidden="true"><svg class="i"><use href="#i-box"/></svg></span>
-              <div class="leg-head"><h2>Pickup</h2><button class="link-btn" type="button" data-act="pick-contact" data-leg="pickup"><svg class="i sm"><use href="#i-contacts"/></svg>Contacts</button></div>
+              <div class="leg-head"><h2><span class="node" aria-hidden="true"><svg class="i"><use href="#i-box"/></svg></span>Pickup</h2><button class="link-btn" type="button" data-act="pick-contact" data-leg="pickup"><svg class="i sm"><use href="#i-contacts"/></svg>Contacts</button></div>
               <div class="field"><label for="pickup-name">Business or contact name <span class="req">*</span></label><input id="pickup-name" maxlength="120" placeholder="Who are we picking up from?"></div>
-              <div class="field"><label for="pickup-address">Address <span class="req">*</span></label><div class="with-btn"><input id="pickup-address" maxlength="250" placeholder="Start typing an address or business"><button class="icon-btn" type="button" data-act="map" data-leg="pickup" aria-label="Pick pickup location on map"><svg class="i"><use href="#i-pin"/></svg></button></div><p class="hint" id="pickup-address-hint"></p></div>
+              <div class="field"><label for="pickup-address">Address <span class="req">*</span></label><div class="with-btn"><input id="pickup-address" maxlength="250" placeholder="Search address or business"><button class="icon-btn" type="button" data-act="map" data-leg="pickup" aria-label="Pick pickup location on map"><svg class="i"><use href="#i-pin"/></svg></button></div><p class="hint" id="pickup-address-hint"></p></div>
               <div class="two">
                 <div class="field"><label for="pickup-phone">Phone</label><input id="pickup-phone" type="tel" inputmode="tel" data-phone placeholder="(204) 555-0123"></div>
-                <div class="field"><label for="pickup-email">Email</label><input id="pickup-email" type="email" inputmode="email" maxlength="120" placeholder="name@company.com"></div>
+                <div class="field"><label for="pickup-email">Email</label><input id="pickup-email" type="email" inputmode="email" maxlength="120" placeholder="name@company.ca"></div>
               </div>
               <div class="leg-foot"><button class="link-btn" type="button" data-act="save-leg" data-leg="pickup"><svg class="i sm"><use href="#i-bookmark"/></svg>Save to contacts</button></div>
             </div>
             <div class="route-mid"><button class="swap" type="button" data-act="swap" aria-label="Swap pickup and delivery" title="Swap pickup and delivery"><svg class="i"><use href="#i-swap"/></svg></button></div>
             <div class="leg" data-leg="delivery">
-              <span class="node" aria-hidden="true"><svg class="i"><use href="#i-pin"/></svg></span>
-              <div class="leg-head"><h2>Delivery</h2><button class="link-btn" type="button" data-act="pick-contact" data-leg="delivery"><svg class="i sm"><use href="#i-contacts"/></svg>Contacts</button></div>
+              <div class="leg-head"><h2><span class="node" aria-hidden="true"><svg class="i"><use href="#i-pin"/></svg></span>Delivery</h2><button class="link-btn" type="button" data-act="pick-contact" data-leg="delivery"><svg class="i sm"><use href="#i-contacts"/></svg>Contacts</button></div>
               <div class="field"><label for="delivery-name">Business or contact name <span class="muted">(optional)</span></label><input id="delivery-name" maxlength="120" placeholder="Who is it going to?"></div>
-              <div class="field"><label for="delivery-address">Address <span class="muted">(optional)</span></label><div class="with-btn"><input id="delivery-address" maxlength="250" placeholder="Start typing an address or business"><button class="icon-btn" type="button" data-act="map" data-leg="delivery" aria-label="Pick delivery location on map"><svg class="i"><use href="#i-pin"/></svg></button></div><p class="hint" id="delivery-address-hint"></p></div>
+              <div class="field"><label for="delivery-address">Address <span class="muted">(optional)</span></label><div class="with-btn"><input id="delivery-address" maxlength="250" placeholder="Search address or business"><button class="icon-btn" type="button" data-act="map" data-leg="delivery" aria-label="Pick delivery location on map"><svg class="i"><use href="#i-pin"/></svg></button></div><p class="hint" id="delivery-address-hint"></p></div>
               <div class="two">
                 <div class="field"><label for="delivery-phone">Phone</label><input id="delivery-phone" type="tel" inputmode="tel" data-phone placeholder="(204) 555-0123"></div>
-                <div class="field"><label for="delivery-email">Email</label><input id="delivery-email" type="email" inputmode="email" maxlength="120" placeholder="name@company.com"></div>
+                <div class="field"><label for="delivery-email">Email</label><input id="delivery-email" type="email" inputmode="email" maxlength="120" placeholder="name@company.ca"></div>
               </div>
               <div class="leg-foot"><button class="link-btn" type="button" data-act="save-leg" data-leg="delivery"><svg class="i sm"><use href="#i-bookmark"/></svg>Save to contacts</button></div>
             </div>
@@ -725,7 +803,7 @@ body.kb-open .grab{display:none}
             <div class="items" id="item-rows"></div>
             <p class="items-preview" id="items-preview"></p>
             <button class="btn btn-secondary sm" type="button" data-act="add-item" style="margin-bottom:12px"><svg class="i sm"><use href="#i-plus"/></svg>Add another line</button>
-            <div class="field"><label for="item-details">Description</label><textarea id="item-details" maxlength="500" rows="2" placeholder="Optional. For example: fragile, keep upright"></textarea></div>
+            <div class="field"><label for="item-details">Description</label><textarea id="item-details" maxlength="500" rows="2" placeholder="Optional, e.g. fragile, keep upright"></textarea></div>
             <p class="err" id="items-err" hidden></p>
           </section>
 
@@ -754,7 +832,7 @@ body.kb-open .grab{display:none}
               </div>
             </div>
             <div class="field"><label for="po">PO number or reference</label><input id="po" maxlength="100" placeholder="Optional"></div>
-            <div class="field"><label for="notes">Notes for the driver</label><textarea id="notes" maxlength="1000" rows="3" placeholder="Optional. Door numbers, hours, gate codes"></textarea></div>
+            <div class="field"><label for="notes">Notes for the driver</label><textarea id="notes" maxlength="1000" rows="3" placeholder="Optional: door #, hours, gate code"></textarea></div>
           </section>
 
           <div class="submit-bar"><button class="btn btn-primary block" type="submit" id="btn-review">Review request</button></div>
@@ -771,7 +849,7 @@ body.kb-open .grab{display:none}
         <button class="btn btn-secondary sm btn-copy" type="button" data-act="repeat" id="hist-repeat-latest" hidden><svg class="i sm"><use href="#i-repeat"/></svg><span class="lbl">Paste Previous Request</span></button>
         <button class="btn btn-secondary sm" type="button" data-act="export"><svg class="i sm"><use href="#i-download"/></svg>Export</button>
       </div>
-      <div class="searchbox field" style="margin-bottom:10px"><svg class="i"><use href="#i-search"/></svg><input id="hist-q" type="search" placeholder="Search names, addresses, PO or request #" aria-label="Search history"></div>
+      <div class="searchbox field" style="margin-bottom:10px"><svg class="i"><use href="#i-search"/></svg><input id="hist-q" type="search" placeholder="Search name, address, PO or #" aria-label="Search history"></div>
       <div class="filter-row">
         <select id="hist-period" aria-label="Date range">
           <option value="30">Last 30 days</option>
@@ -1224,10 +1302,10 @@ document.addEventListener('input', (e) => {
 function setAuthMode(mode) {
   S.authMode = mode;
   const create = mode === 'create';
-  $('#auth-title').textContent = create ? 'Create your account.' : 'Request a Pickup.';
+  $('#auth-title').textContent = create ? 'Create your account.' : 'Sign in.';
   $('#auth-lead').textContent = create
     ? 'Enter your email and create your password. Next we’ll text a code to your mobile number, then you can set up your individual or company profile.'
-    : 'Sign in to instantly request pickups from E&C Courier and keep a record of every shipment for your books. Save your addresses, autofill from past requests, and send a pickup in seconds.';
+    : 'Use your email or Google.';
   $('#auth-submit').textContent = create ? 'Create account' : 'Sign in';
   $('#auth-confirm-wrap').hidden = !create;
   $('#auth-password').setAttribute('autocomplete', create ? 'new-password' : 'current-password');
@@ -1616,7 +1694,7 @@ function renderItems() {
       <div class="weight"><input type="number" inputmode="decimal" min="0" step="any" value="${esc(it.weight)}" data-field="weight" placeholder="Weight" aria-label="Total weight in pounds"><span>lbs</span></div>
       ${single ? '' : `<button class="icon-btn" type="button" data-act="item-remove" aria-label="Remove this line">${icon('x')}</button>`}
       <div class="dims"><input type="text" maxlength="40" value="${esc(it.dims || '')}" data-field="dims" placeholder="feet or inches" aria-label="Dimensions, in feet or inches"><span>dims</span></div>
-      ${it.type === 'other' ? `<input class="other-input" type="text" maxlength="60" value="${esc(it.other || '')}" data-field="other" placeholder="What is it? For example: tires, rolls of carpet" aria-label="Describe the item">` : ''}
+      ${it.type === 'other' ? `<input class="other-input" type="text" maxlength="60" value="${esc(it.other || '')}" data-field="other" placeholder="What is it? e.g. tires, carpet" aria-label="Describe the item">` : ''}
     </div>`).join('');
   updateItemsPreview();
 }
@@ -2872,6 +2950,11 @@ document.addEventListener('click', async (e) => {
   switch (act) {
     case 'google': googleSignIn(); break;
     case 'auth-mode': setAuthMode(S.authMode === 'create' ? 'signin' : 'create'); break;
+    case 'jump-auth':
+      setAuthMode(el.dataset.mode === 'create' ? 'create' : 'signin');
+      $('#auth-panel').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+      $('#auth-email').focus({ preventScroll: true });
+      break;
     case 'forgot': forgotPassword(); break;
     case 'sms-resend': sendSmsCode(sms.phone); break;
     case 'sms-change': resetSmsUi(); setTimeout(() => $('#sms-phone').focus(), 60); break;
