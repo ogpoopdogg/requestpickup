@@ -688,7 +688,7 @@ body.kb-open .grab{display:none}
           </div>
           <div class="hero-info">
             <span><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg>Dispatch hours: 6:30 am to 5:00 pm</span>
-            <a id="hero-call" href="#" hidden><svg class="i" aria-hidden="true"><use href="#i-phone"/></svg>Need it now? Call <b></b></a>
+            <a id="hero-call" href="#" hidden><svg class="i" aria-hidden="true"><use href="#i-phone"/></svg><b></b></a>
           </div>
         </div>
         <div class="why">
@@ -1328,12 +1328,13 @@ document.addEventListener('input', (e) => {
 /* =========================================================
    Authentication
    ========================================================= */
-// Sign-in home: "Need it now? Call" link, shown only when a dispatch number is configured.
+// Sign-in home: tap-to-call dispatch number, shown only when one is configured.
 (() => {
   const a = $('#hero-call');
   if (!a || !DISPATCH_PHONE) return;
   a.href = `tel:${phoneDigits(DISPATCH_PHONE)}`;
   a.querySelector('b').textContent = formatPhone(DISPATCH_PHONE);
+  a.setAttribute('aria-label', `Call dispatch at ${formatPhone(DISPATCH_PHONE)}`);
   a.hidden = false;
 })();
 
