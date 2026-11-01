@@ -237,7 +237,19 @@ p{margin:0}
 #view-auth .divider{font-size:12px;color:var(--ink-2)}
 #view-auth .auth-links .link-btn{font-size:14.5px}
 #view-auth .fine{font-size:13.5px;color:var(--ink-2)}
-@media (min-width:600px){.hero{padding:28px 28px 26px}.hero-steps{margin:-28px -28px 22px}.hero-step{padding:14px 28px}}
+#view-auth .auth-links{justify-content:flex-end;margin-top:4px}
+.auth-switch{margin-top:12px;font-size:15px}
+.auth-switch::before{content:'';position:absolute;left:0;right:0;top:-13px;height:1px;background:var(--line)}
+.hero-info{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 16px;margin:18px -18px -18px;padding:12px 18px;border-top:1px solid rgba(255,255,255,.12);font-size:14px;font-weight:600;color:rgba(255,255,255,.85)}
+.hero-info span,.hero-info a{display:inline-flex;align-items:center;gap:7px}
+.hero-info .i{flex:none;width:16px;height:16px;color:var(--yellow)}
+.hero-info a{color:#fff;text-decoration:none;white-space:nowrap}
+.hero-info a b{color:var(--yellow);font-weight:750}
+.hero-info a:hover b{text-decoration:underline}
+.hero-info a:focus-visible{outline:2px solid var(--yellow);outline-offset:3px;border-radius:4px}
+@media (max-width:389px){.hero-info{font-size:13px;gap:6px 12px}.hero-info span{white-space:nowrap}}
+@media (max-width:359px){.hero-info{font-size:12.5px;padding:11px 14px;margin-left:-18px;margin-right:-18px}.hero-info .i{width:14px;height:14px}}
+@media (min-width:600px){.hero{padding:28px 28px 26px}.hero-steps{margin:-28px -28px 22px}.hero-step{padding:14px 28px}.hero-info{margin:22px -28px -26px;padding:13px 28px}}
 @media (min-width:900px){
   .home-grid{grid-template-columns:minmax(0,1fr) 380px;gap:36px;align-items:start}
   .home-form{position:sticky;top:24px}
@@ -674,6 +686,10 @@ body.kb-open .grab{display:none}
             <button class="btn btn-primary" type="button" data-act="jump-auth" data-mode="create">Create your account</button>
             <button class="btn btn-ondark" type="button" data-act="jump-auth" data-mode="signin">I have an account</button>
           </div>
+          <div class="hero-info">
+            <span><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg>Dispatch hours: 6:30 am to 5:00 pm</span>
+            <a id="hero-call" href="#" hidden><svg class="i" aria-hidden="true"><use href="#i-phone"/></svg>Need it now? Call <b></b></a>
+          </div>
         </div>
         <div class="why">
           <h2>Why use the app</h2>
@@ -688,22 +704,20 @@ body.kb-open .grab{display:none}
       <div class="home-form" id="auth-panel">
         <div class="auth-card">
           <h2 id="auth-title">Sign in.</h2>
-          <p class="lead" id="auth-lead">Use your email or Google.</p>
+          <p class="lead" id="auth-lead">Use Google or your email.</p>
+          <button class="btn btn-google block" type="button" data-act="google">
+            <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>
+            <span class="btn-label">Continue with Google</span>
+          </button>
+          <div class="divider">or use email</div>
           <form id="auth-form" novalidate>
             <div class="field"><label for="auth-email">Email</label><input id="auth-email" type="email" autocomplete="email" inputmode="email" required></div>
             <div class="field"><label for="auth-password">Password</label><div class="with-btn"><input id="auth-password" type="password" autocomplete="current-password" required><button class="icon-btn" type="button" data-act="toggle-pw" data-for="auth-password" aria-label="Show password" aria-pressed="false"><svg class="i"><use href="#i-eye"/></svg></button></div></div>
             <div class="field" id="auth-confirm-wrap" hidden><label for="auth-confirm">Confirm password</label><div class="with-btn"><input id="auth-confirm" type="password" autocomplete="new-password"><button class="icon-btn" type="button" data-act="toggle-pw" data-for="auth-confirm" aria-label="Show password" aria-pressed="false"><svg class="i"><use href="#i-eye"/></svg></button></div></div>
             <button class="btn btn-primary block" type="submit" id="auth-submit">Sign in</button>
           </form>
-          <div class="divider">or</div>
-          <button class="btn btn-google block" type="button" data-act="google">
-            <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>
-            <span class="btn-label">Continue with Google</span>
-          </button>
-          <div class="auth-links">
-            <button class="link-btn" type="button" data-act="auth-mode" id="auth-mode-btn">New here? Create an account</button>
-            <button class="link-btn" type="button" data-act="forgot" id="forgot-btn">Forgot password?</button>
-          </div>
+          <div class="auth-links"><button class="link-btn" type="button" data-act="forgot" id="forgot-btn">Forgot password?</button></div>
+          <button class="btn btn-secondary block auth-switch" type="button" data-act="auth-mode" id="auth-mode-btn">New here? Create an account</button>
         </div>
         <p class="fine">We use your email, phone numbers and addresses only to handle the deliveries you request. <a href="https://app.eandccourier.ca/privacy" target="_blank" rel="noopener">Privacy policy and terms</a></p>
       </div>
@@ -1314,13 +1328,22 @@ document.addEventListener('input', (e) => {
 /* =========================================================
    Authentication
    ========================================================= */
+// Sign-in home: "Need it now? Call" link, shown only when a dispatch number is configured.
+(() => {
+  const a = $('#hero-call');
+  if (!a || !DISPATCH_PHONE) return;
+  a.href = `tel:${phoneDigits(DISPATCH_PHONE)}`;
+  a.querySelector('b').textContent = formatPhone(DISPATCH_PHONE);
+  a.hidden = false;
+})();
+
 function setAuthMode(mode) {
   S.authMode = mode;
   const create = mode === 'create';
   $('#auth-title').textContent = create ? 'Create your account.' : 'Sign in.';
   $('#auth-lead').textContent = create
-    ? 'Enter your email and create your password. Next we’ll text a code to your mobile number, then you can set up your individual or company profile.'
-    : 'Use your email or Google.';
+    ? 'Use Google, or your email and a new password. With email, we’ll text a code to your mobile number next. Then you set up your individual or company profile.'
+    : 'Use Google or your email.';
   $('#auth-submit').textContent = create ? 'Create account' : 'Sign in';
   $('#auth-confirm-wrap').hidden = !create;
   $('#auth-password').setAttribute('autocomplete', create ? 'new-password' : 'current-password');
