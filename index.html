@@ -211,15 +211,32 @@ p{margin:0}
 .hero-steps{display:grid;grid-template-columns:1fr 1fr;margin:-20px -18px 18px;border-bottom:1px solid rgba(255,255,255,.12)}
 .hero-step{display:flex;align-items:center;gap:10px;min-width:0;padding:13px 16px}
 .hero-step+.hero-step{border-left:1px solid rgba(255,255,255,.12);background:linear-gradient(90deg,rgba(255,209,0,.14),rgba(255,209,0,.04))}
-.hero-step-n{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;border:1.5px solid rgba(255,255,255,.5);color:#fff;font-size:12px;font-weight:800}
+.hero-step-n{flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(255,255,255,.6);color:#fff;font-size:14px;font-weight:800}
 .hero-step.after .hero-step-n{background:var(--yellow);border-color:var(--yellow);color:#000}
-.hero-step b{display:block;font-size:13.5px;font-weight:750;color:#fff;line-height:1.2}
-.hero-step small{display:block;font-size:11.5px;color:rgba(255,255,255,.6);line-height:1.2}
+.hero-step b{display:block;font-size:15px;font-weight:750;color:#fff;line-height:1.2}
+.hero-step small{display:block;margin-top:1px;font-size:13px;font-weight:600;color:rgba(255,255,255,.78);line-height:1.25}
 .hero-step.after small{color:var(--yellow)}
-@media (max-width:389px){.hero-step{padding:11px 10px;gap:8px}.hero-step-n{width:24px;height:24px;font-size:11px}.hero-step b{font-size:12px}.hero-step small{font-size:10.5px}}
+@media (max-width:519px){.hero-step{padding:12px;gap:8px;align-items:flex-start}.hero-step-n{width:28px;height:28px;font-size:13px}}
+@media (max-width:389px){.hero-step{padding:12px 10px;gap:8px}.hero-step-n{width:26px;height:26px;font-size:12.5px}.hero-step b{font-size:14px}.hero-step small{font-size:12px}}
 .home-form{min-width:0;scroll-margin-top:16px}
 .auth-card #auth-title{font-size:26px;line-height:1.05;letter-spacing:-.02em;margin:2px 0 4px}
 .auth-card #auth-lead{margin-bottom:12px}
+/* Sign-in home: larger, higher-contrast small print so it reads easily before sign-in. */
+#view-auth .hero-sub{font-size:17px;color:#e2e0d8}
+#view-auth .home-signin{font-size:15px}
+#view-auth .why h2{font-size:13px}
+#view-auth .why li{grid-template-columns:42px minmax(0,1fr)}
+#view-auth .why .ic{width:42px;height:42px}
+#view-auth .why .ic .i{width:22px;height:22px}
+#view-auth .why b{font-size:17px}
+#view-auth .why li span:not(.ic){font-size:15px}
+#view-auth .why em{font-size:13.5px;color:var(--ink-2)}
+#view-auth .why em .i{width:14px;height:14px}
+#view-auth .field>label{font-size:14px}
+#view-auth .auth-card #auth-lead{font-size:15.5px}
+#view-auth .divider{font-size:12px;color:var(--ink-2)}
+#view-auth .auth-links .link-btn{font-size:14.5px}
+#view-auth .fine{font-size:13.5px;color:var(--ink-2)}
 @media (min-width:600px){.hero{padding:28px 28px 26px}.hero-steps{margin:-28px -28px 22px}.hero-step{padding:14px 28px}}
 @media (min-width:900px){
   .home-grid{grid-template-columns:minmax(0,1fr) 380px;gap:36px;align-items:start}
