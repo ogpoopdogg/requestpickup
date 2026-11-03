@@ -46,7 +46,9 @@
       if (q.last) rows = rows.slice(-q.last);
       return rows.length ? Object.fromEntries(rows) : null;
     }
-    on(ev, cb) {
+    // __FAKE.denyBy: queries ordered by these children fail as the database rules would refuse them
+    on(ev, cb, err) {
+      if (this.q.by && (F.denyBy || []).includes(this.q.by)) { setTimeout(() => err && err(Object.assign(new Error('permission_denied at /requests'), { code: 'PERMISSION_DENIED' })), 0); return cb; }
       const l = { cb, ref: this, fire: () => cb(snap(this.key, this.value())) };
       listeners.add(l); setTimeout(l.fire, 0); return cb;
     }

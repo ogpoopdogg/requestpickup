@@ -168,6 +168,50 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
       assert.deepStrictEqual(e2, [], 'no script errors from the shortcut');
       await c2.close();
     }
+    // 1.5 History loads one period at a time once dispatch has filled in the history keys
+    const key = (cid, ms) => `${cid}~${String(ms).padStart(13, '0')}`;
+    const keyed = JSON.parse(JSON.stringify(DATA));
+    keyed.config = { history_keys_ready: true };
+    Object.values(keyed.requests).forEach((r) => { r.company_created = key(r.company_id, r.created_at); });
+    const oldAt = now - 400 * 86400000;
+    keyed.requests.r9 = { ref_no: 1001, status: 'dispatched', company_id: 'c1', company_name: 'Acme Supply', customer_uid: 'u1', pickup: { name: 'Acme Supply', address: '12 Main St' }, delivery: { name: 'Old Co' }, items_text: '1 box', payment: 'prepaid', created_at: oldAt, dispatched_at: oldAt + 3600000, company_created: key('c1', oldAt) };
+    keyed.requests.x1 = { ref_no: 1300, status: 'new', company_id: 'c1_x', company_name: 'Other', customer_uid: 'u9', pickup: { name: 'Other', address: '1 Elm' }, delivery: { name: 'Elsewhere' }, items_text: '1 box', payment: 'prepaid', created_at: now - 86400000, company_created: key('c1_x', now - 86400000) };
+    {
+      const { page: p3, errors: e3, ctx: c3 } = await open(browser, base, { user: USER, data: keyed });
+      await p3.waitForSelector('#view-app:not([hidden])');
+      await p3.waitForFunction(() => S.reqLoaded);
+      assert.deepStrictEqual(await p3.evaluate(() => Object.keys(S.requests).sort()), ['r0', 'r1'], 'only recent requests of this company are loaded');
+      await p3.click('.tab[data-nav=history]');
+      await p3.selectOption('#hist-period', 'all');
+      await p3.waitForSelector('#hist-list .req-no:has-text("#1001")');
+      assert.deepStrictEqual(await p3.evaluate(() => Object.keys(S.requests).sort()), ['r0', 'r1', 'r9'], 'All time loads the older ones too');
+      assert.doesNotMatch(await p3.textContent('#hist-summary'), /Loading/);
+      // A new request carries its history key, so it shows up straight away
+      await p3.click('.tab[data-nav=new]');
+      await p3.fill('#pickup-name', 'Acme Supply');
+      await p3.fill('#pickup-address', '12 Main St');
+      await p3.fill('#delivery-name', 'Lake Clinic');
+      await p3.check('input[name=payment][value=prepaid]', { force: true });
+      await p3.click('#btn-review');
+      await p3.waitForSelector('#sheet:not([hidden]) #btn-send');
+      await p3.click('#btn-send');
+      await p3.waitForSelector('#sent-wrap:not([hidden]) .ticket');
+      const mine = await p3.evaluate(() => Object.values(window.__fakeDb.get('requests')).find((r) => r.ref_no === 1204));
+      assert.match(mine.company_created, /^c1~\d{13}$/);
+      await p3.waitForFunction(() => Object.values(S.requests).some((r) => r.ref_no === 1204));
+      assert.deepStrictEqual(e3, [], 'no script errors in period-at-a-time History');
+      await c3.close();
+    }
+    // Rules not updated yet: the new query is refused, so everything loads the old way
+    {
+      const { page: p4, errors: e4, ctx: c4 } = await open(browser, base, { user: USER, data: keyed, denyBy: ['company_created'] });
+      await p4.waitForSelector('#view-app:not([hidden])');
+      await p4.waitForFunction(() => S.reqLoaded);
+      assert.deepStrictEqual(await p4.evaluate(() => Object.keys(S.requests).sort()), ['r0', 'r1', 'r9'], 'falls back to loading every request');
+      assert.strictEqual(await p4.locator('.toast').count(), 0, 'no error shown for the fallback');
+      assert.deepStrictEqual(e4, [], 'no script errors in the fallback');
+      await c4.close();
+    }
     console.log('pickup smoke test passed');
   } finally {
     await browser.close();

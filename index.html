@@ -1042,9 +1042,12 @@ const S = {
   installPrompt: null,
   authMode: 'signin',
   sessionToken: 0,
+  reqWidening: false, // History is loading requests from further back
   online: null,
   themePref: (() => { try { const v = localStorage.getItem('ec_theme_pref'); return v === 'dark' || v === 'light' ? v : 'system'; } catch (e) { return 'system'; } })()
 };
+// Which requests are being listened to: mode 'all' (every one), 'key' (created since from), '' (none yet)
+const reqFeed = { mode: '', from: Infinity, off: null };
 
 /* =========================================================
    Utilities
@@ -1575,7 +1578,9 @@ async function signOut(ask = true) {
    ========================================================= */
 function listen(ref, event, cb, errCb) {
   ref.on(event, cb, errCb);
-  S.listeners.push(() => ref.off(event, cb));
+  const off = () => ref.off(event, cb);
+  S.listeners.push(off);
+  return off;
 }
 function detachAll() { S.listeners.forEach((off) => { try { off(); } catch (e) { /* ignore */ } }); S.listeners = []; }
 
@@ -1583,6 +1588,8 @@ function resetSession() {
   detachAll();
   Object.assign(S, { userDoc: {}, cid: null, company: null, members: {}, contacts: {}, requests: {}, reqLoaded: false, editingId: null, lastSent: null });
   S.sessionToken++;
+  Object.assign(reqFeed, { mode: '', from: Infinity, off: null });
+  S.reqWidening = false;
   while (layers.length) { const top = layers.pop(); if (top === 'map') hideOverlay($('#map-overlay')); else hideOverlay($('#sheet')); }
   syncLayers();
   resetForm(true);
@@ -1750,10 +1757,7 @@ function enterApp(cid, company) {
     if (sheetIsOpen() && $('#sheet-body [data-contact-picker]')) renderPickerList();
   }, () => removedFromCompany());
 
-  listen(db.ref('requests').orderByChild('company_id').equalTo(cid), 'value', onRequests, (err) => {
-    console.error(err);
-    toast('Couldn\u2019t load request history. ' + friendlyError(err), 'error', 6000);
-  });
+  startRequests(cid, S.sessionToken);
 
   let offlineTimer = null;
   listen(db.ref('.info/connected'), 'value', (snap) => {
@@ -1770,6 +1774,61 @@ function enterApp(cid, company) {
   renderAccount();
   renderContacts();
   offerDraft();
+}
+
+/* Request history feed.
+   Each request carries company_created = "<company_id>~<created_at, 13 digits>" (written here when
+   it's sent, corrected and filled in on old requests by dispatch's stampHistoryKey/fillHistoryKeys).
+   Once config/history_keys_ready is set, the app loads only the last RECENT_DAYS days (or the
+   History period, if that reaches further back) instead of every request the company ever sent.
+   Until then, or if the database rules don't allow the new query yet, it loads them all as before. */
+const RECENT_DAYS = 60;
+const pad13 = (ms) => String(Math.max(0, Math.floor(ms))).padStart(13, '0');
+const historyKey = (cid, ms) => `${cid}~${pad13(ms)}`;
+function requestsError(err) {
+  console.error(err);
+  toast('Couldn\u2019t load request history. ' + friendlyError(err), 'error', 6000);
+}
+async function startRequests(cid, token) {
+  let ready = false;
+  try { ready = (await withTimeout(db.ref('config/history_keys_ready').once('value'), LOAD_TIMEOUT_MS)).val() === true; } catch (e) { ready = false; }
+  if (token !== S.sessionToken || S.cid !== cid) return;
+  if (ready) feedFrom(cid, Math.min(Date.now() - RECENT_DAYS * 86400000, periodRange().from));
+  else feedAll(cid);
+}
+function swapFeed(off) {
+  const old = reqFeed.off;
+  reqFeed.off = off;
+  if (old) old(); // detach the old listener only after the new one is attached
+}
+function feedAll(cid) {
+  reqFeed.mode = 'all';
+  reqFeed.from = -Infinity;
+  S.reqWidening = false;
+  swapFeed(listen(db.ref('requests').orderByChild('company_id').equalTo(cid), 'value', onRequests, requestsError));
+}
+function feedFrom(cid, from) {
+  const token = S.sessionToken;
+  reqFeed.mode = 'key';
+  reqFeed.from = from;
+  S.reqWidening = S.reqLoaded;
+  const start = Number.isFinite(from) ? historyKey(cid, from) : `${cid}~`;
+  const q = db.ref('requests').orderByChild('company_created').startAt(start).endAt(`${cid}~9999999999999`);
+  swapFeed(listen(q, 'value', (snap) => {
+    if (token !== S.sessionToken) return;
+    S.reqWidening = false;
+    onRequests(snap);
+  }, (err) => {
+    if (token !== S.sessionToken) return;
+    if (isPermissionError(err)) feedAll(cid); // rules not updated yet: load everything the old way
+    else requestsError(err);
+  }));
+}
+// History period now reaches further back than what's loaded: load from there
+function widenRequests() {
+  if (reqFeed.mode !== 'key' || !S.cid) return;
+  const { from } = periodRange();
+  if (from < reqFeed.from) feedFrom(S.cid, from);
 }
 
 async function removedFromCompany() {
@@ -2352,6 +2411,7 @@ async function sendRequest(d, btn) {
         company_id: S.cid,
         company_name: (S.company && S.company.name) || '',
         customer_uid: S.user.uid,
+        company_created: historyKey(S.cid, Date.now()), // set to the server's time by dispatch's stampHistoryKey
         requested_by: { name: prof.name || me.name || '', email: S.user.email || '', phone: prof.phone || me.phone || null },
         status: 'new',
         created_at: TS
@@ -2915,7 +2975,13 @@ function renderHistory() {
   updateCopyButtons();
   const list = filteredRequests();
   const { phrase } = periodRange();
-  $('#hist-summary').textContent = total ? `${list.length} ${list.length === 1 ? 'request' : 'requests'} ${phrase}` : '';
+  $('#hist-summary').textContent = (total ? `${list.length} ${list.length === 1 ? 'request' : 'requests'} ${phrase}` : '') + (S.reqWidening ? `${total ? '. ' : ''}Loading older requests\u2026` : '');
+  if (!list.length && S.reqWidening) { box.innerHTML = '<p class="muted">Loading older requests\u2026</p>'; $('#hist-more').hidden = true; return; }
+  if (!total && reqFeed.mode === 'key' && Number.isFinite(reqFeed.from)) {
+    box.innerHTML = `<div class="empty">${icon('box')}<h3>No recent requests</h3><p>Nothing sent since ${esc(new Date(reqFeed.from).toLocaleDateString('en-CA', { month: 'long', day: 'numeric', year: 'numeric' }))}. Choose All time above to see older requests.</p><button class="btn btn-primary" type="button" data-nav="new">New request</button></div>`;
+    $('#hist-more').hidden = true;
+    return;
+  }
   if (!total) {
     box.innerHTML = `<div class="empty">${icon('box')}<h3>No requests yet</h3><p>Every pickup you send is kept here, ready to export for your books.</p><button class="btn btn-primary" type="button" data-nav="new">New request</button></div>`;
     $('#hist-more').hidden = true;
@@ -3372,6 +3438,7 @@ document.addEventListener('click', async (e) => {
       $('#hist-period').value = 'all';
       $('#hist-custom').hidden = true;
       $$('#hist-status [data-status]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.status === 'all')));
+      widenRequests();
       renderHistory();
       break;
     case 'export': openExport(); break;
@@ -3415,6 +3482,7 @@ $('#hist-period').addEventListener('change', (e) => {
   $('#hist-custom').hidden = S.hist.period !== 'custom';
   if (S.hist.period === 'custom' && !S.hist.from) { S.hist.from = localDateStr(new Date(new Date().getFullYear(), new Date().getMonth(), 1)); S.hist.to = todayStr(); $('#hist-from').value = S.hist.from; $('#hist-to').value = S.hist.to; }
   if (S.hist.period === 'custom') syncRange();
+  widenRequests();
   renderHistory();
 });
 // From can't be after To, and neither can be after today; picking them the wrong way round swaps them
@@ -3431,8 +3499,8 @@ function syncRange() {
   t.min = S.hist.from || '';
   t.max = today;
 }
-$('#hist-from').addEventListener('change', (e) => { S.hist.from = e.target.value; syncRange(); renderHistory(); });
-$('#hist-to').addEventListener('change', (e) => { S.hist.to = e.target.value; syncRange(); renderHistory(); });
+$('#hist-from').addEventListener('change', (e) => { S.hist.from = e.target.value; syncRange(); widenRequests(); renderHistory(); });
+$('#hist-to').addEventListener('change', (e) => { S.hist.to = e.target.value; syncRange(); widenRequests(); renderHistory(); });
 $('#hist-user').addEventListener('change', (e) => { S.hist.user = e.target.value; S.hist.limit = 50; renderHistory(); });
 $('#hist-status').addEventListener('click', (e) => {
   const b = e.target.closest('[data-status]');
