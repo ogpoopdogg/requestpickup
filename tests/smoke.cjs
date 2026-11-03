@@ -88,9 +88,19 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     const { page, errors, ctx } = await open(browser, base, { user: USER, data: DATA });
     await page.waitForSelector('#view-app:not([hidden])');
     assert.strictEqual((await page.textContent('#new-repeat-latest')).trim(), 'Repeat last');
+    // A contact that isn't saved yet makes Save to contacts light up on the form
+    await page.fill('#pickup-name', 'New Place');
+    await page.fill('#pickup-address', '1 New Rd');
+    await page.waitForSelector('[data-act=save-leg][data-leg=pickup].is-new');
+    await page.waitForTimeout(400);
+    await shot(page, 'save-contact-new');
+    await page.fill('#pickup-name', 'Acme Supply');
+    await page.fill('#pickup-address', '12 Main St');
+    assert.strictEqual(await page.locator('[data-act=save-leg][data-leg=pickup].is-new').count(), 0, 'a saved contact does not glow');
+    await page.fill('#pickup-address', '');
     // 2.1 an unsent request comes back after the app is closed
     await page.fill('#pickup-name', 'Acme Supply');
-    await page.waitForFunction(() => localStorage.getItem('ec_draft_u1_c1'));
+    await page.waitForFunction(() => /"name":"Acme Supply"/.test(localStorage.getItem('ec_draft_u1_c1') || ''));
     await page.reload();
     await page.waitForSelector('#draft-banner:not([hidden])');
     await shot(page, 'draft');
@@ -127,6 +137,19 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     await page.fill('#hist-to', '2026-02-01');
     assert.deepStrictEqual([await page.inputValue('#hist-from'), await page.inputValue('#hist-to')], ['2026-02-01', '2026-03-01'], 'backwards range swapped');
     assert.strictEqual(await page.evaluate(() => getComputedStyle(document.getElementById('hist-period')).fontSize), '16px', '3.6 no zoom on iPhone');
+    // History: Save to contacts beside a pickup or delivery that isn't saved yet
+    await page.selectOption('#hist-period', 'all');
+    await page.click('#hist-list .row:has(.req-no:text-is("#1201"))');
+    await page.waitForSelector('#sheet:not([hidden]) [data-detail]');
+    assert.strictEqual(await page.locator('[data-act=save-req-leg][data-leg=pickup]').count(), 0, 'pickup is already a contact');
+    assert.strictEqual(await page.locator('[data-act=save-req-leg][data-leg=delivery]').count(), 1, 'delivery can be saved');
+    await page.waitForTimeout(400);
+    await shot(page, 'save-contact-history');
+    await page.click('[data-act=save-req-leg][data-leg=delivery]');
+    await page.waitForFunction(() => Object.values(window.__fakeDb.get('companies/c1/address_book')).some((c) => c.name === 'Smith Co' && c.address === '40 Park Ave'));
+    await page.waitForFunction(() => !document.querySelector('[data-act=save-req-leg]'));
+    await page.click('[data-act=sheet-close]');
+    await page.waitForSelector('#sheet[hidden]', { state: 'attached' });
     // 2.9 import contacts from a CSV
     await page.click('.tab[data-nav=contacts]');
     await page.setInputFiles('#contacts-file', { name: 'customers.csv', mimeType: 'text/csv', buffer: Buffer.from('Name,Address,City,Phone\r\nWestman Tire,200 18th St,Brandon,204-555-0199\r\nAcme Supply,12 Main St,,\r\n,No Name Rd,,\r\n"Lake Clinic, East",5 Lake Rd,Brandon,\r\n') });
@@ -134,7 +157,7 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     assert.match(await page.textContent('#sheet-body'), /2 new contacts to add[\s\S]*1 row already in your contacts[\s\S]*1 row without a name or address/);
     await shot(page, 'import');
     await page.click('#imp-go');
-    await page.waitForFunction(() => Object.values(window.__fakeDb.get('companies/c1/address_book')).length === 3);
+    await page.waitForFunction(() => Object.values(window.__fakeDb.get('companies/c1/address_book')).length === 4);
     const book = await page.evaluate(() => Object.values(window.__fakeDb.get('companies/c1/address_book')));
     const westman = book.find((c) => c.name === 'Westman Tire');
     assert.strictEqual(westman.address, '200 18th St, Brandon');
