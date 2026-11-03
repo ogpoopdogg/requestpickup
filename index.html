@@ -11,8 +11,11 @@
 <link rel="apple-touch-icon" href="icon-512.png">
 <script>
   // Apply the saved theme before first paint to avoid a flash.
-  // Light by default; dark only if this person picked it. (ec_theme_pref is only written when they choose.)
-  try { document.documentElement.dataset.theme = localStorage.getItem('ec_theme_pref') === 'dark' ? 'dark' : 'light'; } catch (e) {}
+  // Follows the phone's light or dark setting unless this person picked Light or Dark (ec_theme_pref).
+  try {
+    var tp = localStorage.getItem('ec_theme_pref');
+    document.documentElement.dataset.theme = tp === 'dark' || tp === 'light' ? tp : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  } catch (e) {}
   // Google Maps calls this when it finishes loading (it loads async and is optional).
   window.onMapsReady = function () { window.__mapsReady = true; document.dispatchEvent(new Event('maps-ready')); };
 </script>
@@ -118,7 +121,7 @@ p{margin:0}
 
 /* ---------- Fields ---------- */
 .field{margin-bottom:10px}
-.field>label,.label{display:block;font-size:12px;font-weight:650;letter-spacing:.01em;color:var(--ink-2);margin:0 0 3px}
+.field>label,.label{display:block;font-size:13px;font-weight:650;letter-spacing:.01em;color:var(--ink-2);margin:0 0 3px}
 .req{color:var(--danger);font-weight:700}
 [data-theme=dark] .req{color:var(--yellow)}
 /* Inputs stay at 16px so phones don't zoom in on focus */
@@ -130,10 +133,10 @@ p{margin:0}
 .field input:focus,.field select:focus,.field textarea:focus,.input:focus{border-color:var(--focus);box-shadow:0 0 0 3px var(--yellow-ring)}
 ::placeholder{color:var(--ink-3);opacity:1;font-size:14px}
 .field.invalid input,.field.invalid textarea,.field.invalid select,.field.invalid .seg{border-color:var(--danger)!important;box-shadow:0 0 0 3px var(--danger-bg)}
-.err{display:flex;align-items:flex-start;gap:5px;color:var(--danger);font-size:12px;font-weight:650;margin-top:4px;animation:errIn var(--t) var(--out)}
+.err{display:flex;align-items:flex-start;gap:5px;color:var(--danger);font-size:13px;font-weight:650;margin-top:4px;animation:errIn var(--t) var(--out)}
 .err::before{content:'';flex:none;width:13px;height:13px;margin-top:1px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 0a8 8 0 100 16A8 8 0 008 0zm-.9 4h1.8v5H7.1zm0 6.2h1.8V12H7.1z'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 0a8 8 0 100 16A8 8 0 008 0zm-.9 4h1.8v5H7.1zm0 6.2h1.8V12H7.1z'/%3E%3C/svg%3E") center/contain no-repeat}
 @keyframes errIn{from{opacity:0;transform:translateY(-2px)}to{opacity:1;transform:none}}
-.hint{font-size:12px;color:var(--ink-2);margin-top:4px}
+.hint{font-size:13px;color:var(--ink-2);margin-top:4px}
 .hint.ok{color:var(--ok);font-weight:650}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
 .two .field{margin-bottom:10px}
@@ -154,7 +157,7 @@ p{margin:0}
 /* ---------- Screens ---------- */
 .screen{min-height:100vh}
 .center-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:calc(24px + var(--safe-t)) 16px calc(24px + var(--safe-b))}
-#view-auth,#view-verify,#view-onboard{background:
+#view-auth,#view-verify,#view-onboard,#view-offline{background:
   radial-gradient(900px 420px at 50% -10%,var(--yellow-soft),transparent 60%),
   radial-gradient(circle at 1px 1px,var(--line) 1px,transparent 1.2px) 0 0/20px 20px,
   var(--bg)}
@@ -175,10 +178,10 @@ p{margin:0}
 .auth .lead{color:var(--ink-2);margin-bottom:14px;max-width:44ch;font-size:14px;line-height:1.45}
 .auth-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px 16px 12px;box-shadow:var(--sh-2);position:relative;overflow:hidden}
 .auth-card form>.btn-primary{margin-top:4px}
-.divider{display:flex;align-items:center;gap:10px;color:var(--ink-3);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin:10px 0}
+.divider{display:flex;align-items:center;gap:10px;color:var(--ink-3);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin:10px 0}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--line)}
 .auth-links{display:flex;justify-content:space-between;gap:8px;margin-top:8px;flex-wrap:wrap}
-.fine{font-size:12px;color:var(--ink-3);margin-top:16px;line-height:1.5;text-align:center}
+.fine{font-size:13px;color:var(--ink-3);margin-top:16px;line-height:1.5;text-align:center}
 
 /* Sign-in home: pitch the app over phoning, then the sign-in card.
    One column on phones; pitch and card side by side from 900px. */
@@ -270,7 +273,7 @@ p{margin:0}
 .topbar-in{max-width:1080px;margin:0 auto;display:flex;align-items:center;gap:10px}
 .topbar img{height:28px;width:auto;border-radius:6px}
 .topbar .wordmark{font-size:18px;line-height:1}
-.topbar .company{font-size:11.5px;font-weight:600;color:#a7a59e;line-height:1.2;margin-top:2px;max-width:56vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.topbar .company{font-size:12.5px;font-weight:600;color:#a7a59e;line-height:1.2;margin-top:2px;max-width:56vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .topbar .spacer{flex:1}
 .offline-pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:750;color:#000;background:var(--yellow);border-radius:99px;padding:3px 9px 3px 7px;animation:pillIn var(--t) var(--out) both}
 @keyframes pillIn{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
@@ -290,7 +293,7 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 /* Bottom navigation */
 .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--glass);-webkit-backdrop-filter:saturate(170%) blur(16px);backdrop-filter:saturate(170%) blur(16px);border-top:1px solid var(--glass-line);padding-bottom:var(--safe-b)}
 .tabbar-in{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);height:var(--nav-h);padding:0 4px}
-.tab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:0;background:none;color:var(--ink-3);font-size:11px;font-weight:700;letter-spacing:.02em;cursor:pointer;transition:color var(--t-fast) ease;-webkit-tap-highlight-color:transparent}
+.tab{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:0;background:none;color:var(--ink-3);font-size:12px;font-weight:700;letter-spacing:.02em;cursor:pointer;transition:color var(--t-fast) ease;-webkit-tap-highlight-color:transparent}
 .tab .i{width:44px;height:26px;padding:4px 12px;border-radius:99px;transition:background-color var(--t) var(--ease),color var(--t-fast) ease}
 .tab:hover{color:var(--ink-2)}
 .tab:hover .i{background:var(--surface-3)}
@@ -299,6 +302,7 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 .tab .dot{position:absolute;top:4px;left:calc(50% + 10px);min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:var(--danger);color:#fff;font-size:10px;font-weight:800;display:grid;place-items:center;box-shadow:0 0 0 2px var(--surface);animation:pillIn var(--t) var(--out) both}
 
 /* ---------- Request form ---------- */
+.draft-banner .pair{display:flex;gap:4px;flex:none}
 .edit-banner{display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--warn-bg);border:1px solid var(--yellow);border-left-width:4px;border-radius:var(--r-md);padding:6px 6px 6px 12px;margin-bottom:8px;font-weight:700;font-size:14px}
 /* Wide screens: When and Payment sit side by side under the route and the items */
 #req-form{display:grid;grid-template-columns:minmax(0,1fr);column-gap:10px}
@@ -315,12 +319,12 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 .leg[data-leg=pickup] .node{background:var(--yellow);color:#000}
 .leg[data-leg=delivery] .node{background:var(--ink);color:var(--bg)}
 .leg-head{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:24px;margin-bottom:4px}
-.leg-head h2{display:flex;align-items:center;gap:8px;font-size:12px;font-stretch:100%;font-weight:800;text-transform:uppercase;letter-spacing:.12em}
-.leg-head .link-btn{min-height:28px;font-size:12.5px}
+.leg-head h2{display:flex;align-items:center;gap:8px;font-size:13px;font-stretch:100%;font-weight:800;text-transform:uppercase;letter-spacing:.12em}
+.leg-head .link-btn{min-height:28px;font-size:13px}
 .route .field{margin-bottom:8px}
 .route .two{gap:var(--gap)}
 .route .two .field{margin-bottom:8px}
-.route .field>label{font-size:11.5px}
+.route .field>label{font-size:12.5px}
 .route .hint:empty{display:none}
 .with-btn .icon-btn[data-act=map],#ct-map{color:var(--accent-ink);background:var(--yellow-soft)}
 .with-btn .icon-btn[data-act=map]:hover,#ct-map:hover{background:var(--yellow);color:#000}
@@ -331,7 +335,7 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
   .leg>.two{display:contents}
 }
 .leg-foot{display:flex;justify-content:flex-end;margin:-6px 0 2px}
-.leg-foot .link-btn{min-height:26px;font-size:12px;color:var(--ink-2)}
+.leg-foot .link-btn{min-height:26px;font-size:13px;color:var(--ink-2)}
 .leg-foot .link-btn:hover{color:var(--ink)}
 .route-mid{position:relative;height:0;border-top:1px solid var(--line)}
 .swap{position:absolute;left:50%;margin-left:-15px;top:-15px;z-index:2;width:30px;height:30px;border-radius:50%;border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);display:grid;place-items:center;cursor:pointer;box-shadow:var(--sh-1);transition:transform var(--t-slow) var(--out),border-color var(--t-fast) ease,background-color var(--t-fast) ease;-webkit-tap-highlight-color:transparent}
@@ -342,7 +346,7 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 
 /* Section cards */
 .block:not(.btn){position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:10px 12px 2px;margin-bottom:10px;box-shadow:var(--sh-2)}
-.block>h2{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px;font-stretch:100%;text-transform:uppercase;letter-spacing:.12em}
+.block>h2{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px;font-stretch:100%;text-transform:uppercase;letter-spacing:.12em}
 .block>h2 .sec-ic{display:grid;place-items:center;width:22px;height:22px;border-radius:var(--r-xs);background:var(--surface-3);color:var(--ink)}
 .block>h2 .sec-ic .i{width:13px;height:13px}
 #tab-new .block .field{margin-bottom:8px}
@@ -362,7 +366,7 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 .weight,.dims{position:relative}
 .weight input,.dims input{width:100%;min-height:var(--ctl);padding:0 32px 0 10px;border:1px solid var(--line-strong);border-radius:var(--r-sm);background:var(--field);font-size:16px;-moz-appearance:textfield;transition:border-color var(--t-fast) ease,box-shadow var(--t-fast) ease}
 .dims input{padding-right:42px}
-.weight span,.dims span{position:absolute;right:9px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:700;color:var(--ink-3);pointer-events:none}
+.weight span,.dims span{position:absolute;right:9px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:700;color:var(--ink-3);pointer-events:none}
 .item-row input:hover,.item-row select:hover,.stepper:hover{border-color:var(--ink-3)}
 .item-row input:focus,.item-row select:focus{border-color:var(--focus);box-shadow:0 0 0 3px var(--yellow-ring);outline:none}
 .stepper input:focus{box-shadow:none}
@@ -378,7 +382,7 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
   .item-row.single{grid-template-areas:"q t t" "w w w" "d d d"}
   .item-row .stepper{grid-area:q}.item-row select{grid-area:t}.item-row .weight{grid-area:w}.item-row .dims{grid-area:d}.item-row .icon-btn{grid-area:r}
 }
-.items-preview{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 6px;font-size:12px;color:var(--ink-2);margin:0 0 8px;padding:5px 9px;border-radius:var(--r-sm);background:var(--surface-2);border-left:3px solid var(--yellow)}
+.items-preview{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 6px;font-size:13px;color:var(--ink-2);margin:0 0 8px;padding:5px 9px;border-radius:var(--r-sm);background:var(--surface-2);border-left:3px solid var(--yellow)}
 .items-preview:empty{display:none}
 .items-preview b{color:var(--ink);font-weight:700;font-size:13px}
 #items-block [data-act=add-item]{margin-bottom:8px!important}
@@ -388,19 +392,15 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 .submit-bar .btn::after{content:'';width:18px;height:18px;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14M13 6l6 6-6 6'/%3E%3C/svg%3E") center/contain no-repeat;transition:transform var(--t) var(--out)}
 .submit-bar .btn:not(:disabled):hover::after{transform:translateX(3px)}
 
-/* Required fields: a slow glow marks the minimum needed to send a pickup.
-   Pickup name, address and payment glow until filled; the prefilled piece count,
-   item type and pickup date keep a slightly softer glow. Focus, errors and the paste flash take over. */
-#pickup-name:placeholder-shown:not(:focus),#pickup-address:placeholder-shown:not(:focus),#pay-field .seg:not(:has(input:checked)){animation:reqPulse 2.6s ease-in-out infinite}
-#item-rows .stepper:not(:focus-within):not(.paste-flash),#item-rows select:not(:focus):not(.paste-flash),#sched-field:not([hidden]) #sched-date:not(:focus):not(.paste-flash){animation:reqPulseSoft 3.2s ease-in-out infinite}
-.field.invalid input,#pay-field.invalid .seg{animation:none!important}
-@keyframes reqPulse{0%,100%{border-color:var(--pulse-edge-lo);box-shadow:0 0 0 1px var(--pulse-lo),0 0 0 0 var(--pulse-0)}50%{border-color:var(--pulse-edge);box-shadow:0 0 0 3px var(--pulse),0 0 16px 3px var(--pulse-glow)}}
-@keyframes reqPulseSoft{0%,100%{border-color:var(--pulse-edge-lo);box-shadow:0 0 0 0 var(--pulse-0)}50%{border-color:var(--pulse-edge);box-shadow:0 0 0 3px var(--pulse-soft),0 0 12px 2px var(--pulse-glow)}}
+/* Required fields: a steady yellow edge marks the minimum needed to send a pickup
+   (pickup name, address and payment) until it's filled. Focus, errors and the paste flash take over. */
+#pickup-name:placeholder-shown:not(:focus),#pickup-address:placeholder-shown:not(:focus),#pay-field .seg:not(:has(input:checked)){border-color:var(--pulse-edge);box-shadow:0 0 0 2px var(--pulse-lo)}
+.field.invalid input,.field.invalid .seg{box-shadow:0 0 0 3px var(--danger-bg)!important}
+/* Review found a problem: the first field to fix pulses twice */
+.nudge input,.nudge textarea,.nudge select,.nudge .seg,.nudge .stepper{animation:nudge .55s ease-in-out 2}
+@keyframes nudge{0%,100%{box-shadow:0 0 0 3px var(--danger-bg)}50%{box-shadow:0 0 0 7px var(--danger-bg)}}
 :root{--pulse:rgba(255,209,0,.62);--pulse-soft:rgba(255,209,0,.45);--pulse-lo:rgba(255,209,0,.22);--pulse-glow:rgba(255,209,0,.32);--pulse-0:rgba(255,209,0,0);--pulse-edge:#ffd100;--pulse-edge-lo:rgba(255,209,0,.45)}
 [data-theme=light]{--pulse:rgba(240,170,0,.7);--pulse-soft:rgba(240,170,0,.5);--pulse-lo:rgba(240,170,0,.25);--pulse-glow:rgba(255,185,0,.45);--pulse-0:rgba(240,170,0,0);--pulse-edge:#d99a00;--pulse-edge-lo:rgba(217,154,0,.55)}
-@media (prefers-reduced-motion:reduce){
-  #pickup-name:placeholder-shown:not(:focus),#pickup-address:placeholder-shown:not(:focus),#pay-field .seg:not(:has(input:checked)){animation:none!important;border-color:var(--pulse-edge);box-shadow:0 0 0 3px var(--pulse)}
-}
 
 /* ---------- Ticket (sent confirmation) ---------- */
 .ticket{position:relative;background:var(--yellow);color:#000;border-radius:16px;overflow:hidden;margin:0 0 12px;box-shadow:var(--shadow);animation:ticketIn .38s var(--out) both}
@@ -414,7 +414,7 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 .tick-path{fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:20;stroke-dashoffset:20;animation:tickDraw .28s ease-out .35s forwards}
 .kicker-text{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:8px;row-gap:0;line-height:1.2;animation:kickIn .26s var(--out) .2s both}
 .kicker-title{font-size:15px;font-weight:800}
-.kicker-time{font-size:12px;font-weight:600;opacity:.7}
+.kicker-time{font-size:12.5px;font-weight:600;opacity:.7}
 .ticket-no{font-stretch:75%;font-weight:800;font-size:56px;line-height:.92;letter-spacing:-.03em;margin-top:8px;animation:numIn .3s var(--out) .28s both}
 @keyframes ticketIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @keyframes ticketSheen{from{left:-60%}to{left:130%}}
@@ -446,7 +446,7 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 .install-cta .cta-ic .i{width:16px;height:16px;stroke-width:2.4}
 .install-cta .cta-txt{display:flex;flex-direction:column;line-height:1.1}
 .install-cta .cta-title{font-weight:800;font-size:14px}
-.install-cta .cta-sub{font-size:11px;font-weight:600;color:#FFD100}
+.install-cta .cta-sub{font-size:12px;font-weight:600;color:#FFD100}
 .install-cta::after{content:'';position:absolute;inset:-3px;border-radius:99px;border:2px solid var(--yellow);opacity:0;pointer-events:none;animation:ctaPulse 1.6s ease-out 1.1s 2}
 @keyframes ctaIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 @keyframes ctaPulse{0%{opacity:.85;transform:scale(1)}100%{opacity:0;transform:scale(1.14)}}
@@ -458,9 +458,12 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 .perf::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 0 50%,var(--bg) 9px,transparent 10px),radial-gradient(circle at 100% 50%,var(--bg) 9px,transparent 10px)}
 .ticket-body{padding:8px 16px 14px}
 .ticket-route{display:grid;grid-template-columns:auto 1fr;gap:5px 12px;margin:0 0 10px}
-.ticket-route dt{font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;opacity:.6;padding-top:3px}
+.ticket-route dt{font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;opacity:.6;padding-top:3px}
 .ticket-route dd{margin:0;font-weight:750;line-height:1.25;overflow-wrap:anywhere}
 .ticket-route dd small{display:block;font-weight:500;opacity:.75;font-size:13px}
+.ticket-share{display:inline-flex;align-items:center;gap:6px;margin-top:10px;min-height:38px;padding:0 12px;border:1.5px solid rgba(0,0,0,.55);border-radius:var(--r-sm);background:transparent;color:#000;font-weight:750;font-size:14px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ticket-share:hover{background:rgba(0,0,0,.08)}
+.ticket-share:focus-visible{outline:2px solid #000}
 .ticket-note{font-size:13px;font-weight:500;opacity:.85;padding:7px 10px;border-radius:var(--r-sm);background:rgba(0,0,0,.07)}
 
 /* ---------- History ---------- */
@@ -469,7 +472,7 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 .searchbox input{padding-left:34px!important}
 .searchbox:focus-within .i{color:var(--ink)}
 .filter-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:6px}
-.filter-row select{min-height:var(--ctl-sm);padding:0 28px 0 10px;border:1px solid var(--line-strong);border-radius:var(--r-sm);background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center;font-size:13px;font-weight:650;-webkit-appearance:none;appearance:none;cursor:pointer;outline:none;transition:border-color var(--t-fast) ease}
+.filter-row select{min-height:var(--ctl-sm);padding:0 28px 0 10px;border:1px solid var(--line-strong);border-radius:var(--r-sm);background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center;font-size:16px;font-weight:650;-webkit-appearance:none;appearance:none;cursor:pointer;outline:none;transition:border-color var(--t-fast) ease}
 .filter-row select:hover{border-color:var(--ink-3)}
 .filter-row select:focus-visible{border-color:var(--focus);box-shadow:0 0 0 3px var(--yellow-ring)}
 .chips{display:flex;gap:4px;flex-wrap:wrap}
@@ -479,8 +482,8 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 #hist-status .chip-btn{min-height:calc(var(--ctl-sm) - 6px);padding:0 9px;font-size:12.5px;white-space:nowrap;flex:0 1 auto;border:0;border-radius:var(--r-xs);background:transparent}
 .chip-btn[aria-pressed=true],#hist-status .chip-btn[aria-pressed=true]{background:var(--ink);color:var(--bg)}
 .custom-range{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
-.hist-summary{font-size:12px;font-weight:650;color:var(--ink-2);margin:4px 2px 6px}
-.month{position:sticky;top:calc(var(--safe-t) + 48px);z-index:2;display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-stretch:100%;color:var(--ink-2);margin:10px 0 0;padding:6px 2px;background:var(--bg)}
+.hist-summary{font-size:13px;font-weight:650;color:var(--ink-2);margin:4px 2px 6px}
+.month{position:sticky;top:calc(var(--safe-t) + 48px);z-index:2;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-stretch:100%;color:var(--ink-2);margin:10px 0 0;padding:6px 2px;background:var(--bg)}
 .month::after{content:'';flex:1;height:1px;background:var(--line)}
 .list{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh-2)}
 .row{position:relative;display:block;width:100%;text-align:left;border:0;border-top:1px solid var(--line);background:none;padding:8px 12px 8px 14px;cursor:pointer;color:var(--ink);font-size:14px;line-height:1.3;transition:background-color var(--t-fast) ease;-webkit-tap-highlight-color:transparent}
@@ -492,7 +495,7 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 .row:focus-visible{outline-offset:-2px;border-radius:0}
 .row-top{display:flex;align-items:center;gap:8px;margin-bottom:2px;flex-wrap:wrap}
 .req-no{font-weight:800;font-stretch:75%;font-size:17px;letter-spacing:-.01em}
-.row-date{font-size:12px;color:var(--ink-2);flex:1;white-space:nowrap}
+.row-date{font-size:12.5px;color:var(--ink-2);flex:1;white-space:nowrap}
 .row-route{font-weight:650;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .row-route .arrow{color:var(--ink-3);margin:0 5px;font-weight:800}
 /* The two detail lines of a history row share one line, separated by a dot */
@@ -500,12 +503,11 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 .row-sub+.row-sub::before{content:'\00b7';margin:0 6px;color:var(--ink-3)}
 .row-sub b{color:var(--ink);font-weight:650}
 .badges{display:flex;gap:4px;flex-wrap:wrap}
-.chip{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 7px;border-radius:var(--r-xs);font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;border:1px solid var(--line-strong);color:var(--ink-2);background:var(--surface-2)}
-.chip:not(.dispatched):not(.cancelled):not(.scheduled)::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--yellow-lo);animation:livePulse 2s ease-out infinite}
-@keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(230,188,0,.55)}70%,100%{box-shadow:0 0 0 5px rgba(230,188,0,0)}}
+.chip{display:inline-flex;align-items:center;gap:4px;height:20px;padding:0 7px;border-radius:var(--r-xs);font-size:11.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;border:1px solid var(--line-strong);color:var(--ink-2);background:var(--surface-2)}
+.chip:not(.dispatched):not(.cancelled):not(.scheduled)::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--yellow-lo)}
 .chip.dispatched{background:var(--ok-bg);border-color:transparent;color:var(--ok)}
 .chip.cancelled{background:var(--danger-bg);border-color:transparent;color:var(--danger)}
-.chip.scheduled{background:var(--warn-bg);border-color:var(--yellow-lo);color:var(--accent-ink);text-transform:none;letter-spacing:0;font-weight:700;font-size:11.5px}
+.chip.scheduled{background:var(--warn-bg);border-color:var(--yellow-lo);color:var(--accent-ink);text-transform:none;letter-spacing:0;font-weight:700;font-size:12px}
 .chip .i{width:11px;height:11px;stroke-width:2.8}
 .empty{text-align:center;padding:24px 16px;background:var(--surface);border:1px dashed var(--line-strong);border-radius:var(--r-lg)}
 .empty>.i{width:40px;height:40px;padding:9px;border-radius:var(--r-md);background:var(--yellow-soft);color:var(--accent-ink);margin-bottom:8px}
@@ -517,7 +519,7 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 .dl{display:grid;grid-template-columns:96px 1fr;gap:0;margin:0;border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;background:var(--surface);font-size:14px}
 .dl dt,.dl dd{padding:6px 10px;border-top:1px solid var(--line)}
 .dl dt:first-of-type,.dl dt:first-of-type+dd{border-top:0}
-.dl dt{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:var(--surface-2);padding-top:9px}
+.dl dt{font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-2);background:var(--surface-2);padding-top:9px}
 .dl dd{margin:0;overflow-wrap:anywhere;line-height:1.35}
 .dl dd small{display:block;color:var(--ink-2);font-size:13px}
 .section-sep{height:1px;background:var(--line);margin:12px 0}
@@ -528,6 +530,9 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 .notice a{font-weight:700}
 
 /* ---------- Contacts ---------- */
+.page-head .pair{display:flex;gap:6px;flex:none}
+.import-sum{margin:0 0 12px;padding-left:18px;font-size:14px;line-height:1.5}
+.import-sum b{font-weight:800}
 .contact-row{display:flex;align-items:center;gap:10px}
 .contact-row .grow{flex:1;min-width:0}
 .contact-row .name{font-weight:700}
@@ -554,11 +559,11 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 .member{display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid var(--line);font-size:14px}
 .member .grow{flex:1;min-width:0}
 .member .who{font-weight:700}
-.member .em{font-size:12px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis}
-.card h3{font-size:11px;font-stretch:100%;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-2);margin:12px 0 2px!important}
+.member .em{font-size:13px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis}
+.card h3{font-size:12px;font-stretch:100%;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-2);margin:12px 0 2px!important}
 .card .btn-secondary.block,.card .btn-danger.block{min-height:var(--ctl)}
 .card>div[style*=grid]{gap:6px!important}
-.footer-links{text-align:center;font-size:12px;color:var(--ink-3);margin-top:8px;line-height:1.6}
+.footer-links{text-align:center;font-size:13px;color:var(--ink-3);margin-top:8px;line-height:1.6}
 
 /* ---------- Sheets ---------- */
 .overlay{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,0);transition:background-color var(--t-slow) ease}
@@ -610,6 +615,9 @@ body.kb-open .grab{display:none}
 .toast.error{background:#3a1110;border-color:rgba(255,100,97,.25);border-left-color:#ff6461;color:#fff0ef}
 .toast.error .i{color:#ff8a87}
 .toast .i{margin-top:1px;width:16px;height:16px}
+.toast>span{flex:1;min-width:0}
+.toast-act{flex:none;align-self:center;min-height:32px;margin:-4px -4px -4px 4px;padding:0 12px;border:1px solid currentColor;border-radius:var(--r-sm);background:transparent;color:inherit;font-weight:800;font-size:14px;cursor:pointer}
+.toast-act:hover{background:rgba(255,255,255,.1)}
 @keyframes toastIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
 
 /* ---------- Print statement ---------- */
@@ -753,6 +761,20 @@ body.kb-open .grab{display:none}
   </div>
 </section>
 
+<!-- Can't reach the database (no signal, or it timed out) -->
+<section id="view-offline" class="screen center-screen" hidden>
+  <div class="auth">
+    <div class="brand"><img src="icon2.png" alt="" onerror="this.remove()"><div class="wordmark">E&amp;C <b>Courier</b></div></div>
+    <h1>Can&rsquo;t reach E&amp;C right now.</h1>
+    <p class="lead" id="offline-lead">Check your signal or Wi-Fi, then try again. You&rsquo;re still signed in.</p>
+    <div class="auth-card">
+      <button class="btn btn-primary block" type="button" data-act="retry-load">Try again</button>
+      <a class="btn btn-secondary block" id="offline-call" href="#" style="margin-top:10px" hidden><svg class="i sm"><use href="#i-phone"/></svg><span></span></a>
+    </div>
+    <div class="auth-links"><button class="link-btn" type="button" data-act="signout">Sign out</button></div>
+  </div>
+</section>
+
 <!-- Company setup -->
 <section id="view-onboard" class="screen center-screen" hidden>
   <div class="auth">
@@ -798,10 +820,11 @@ body.kb-open .grab{display:none}
       <div id="new-form-wrap">
         <div class="page-head">
           <div><h1 id="form-title">New pickup</h1></div>
-          <button class="btn btn-secondary sm btn-copy" type="button" data-act="repeat" id="new-repeat-latest" disabled title="Pastes your most recent request into this form"><svg class="i sm"><use href="#i-repeat"/></svg><span class="lbl">Paste Previous Request</span></button>
+          <button class="btn btn-secondary sm btn-copy" type="button" data-act="repeat" id="new-repeat-latest" disabled title="Fills in your most recent request again"><svg class="i sm"><use href="#i-repeat"/></svg><span class="lbl">Repeat last</span></button>
           <button class="btn btn-ghost sm" type="button" data-act="clear-form">Clear</button>
         </div>
         <div class="edit-banner" id="edit-banner" hidden><span id="edit-banner-text"></span><button class="btn btn-secondary sm" type="button" data-act="stop-edit">Stop editing</button></div>
+        <div class="edit-banner draft-banner" id="draft-banner" role="status" hidden><span id="draft-text"></span><span class="pair"><button class="btn btn-ghost sm" type="button" data-act="draft-discard">Discard</button><button class="btn btn-primary sm" type="button" data-act="draft-continue">Continue</button></span></div>
         <form id="req-form" novalidate autocomplete="off">
           <section class="route" aria-label="Pickup and delivery">
             <div class="leg" data-leg="pickup">
@@ -875,7 +898,7 @@ body.kb-open .grab{display:none}
     <section id="tab-history" data-tab="history" hidden>
       <div class="page-head">
         <div><h1>History</h1></div>
-        <button class="btn btn-secondary sm btn-copy" type="button" data-act="repeat" id="hist-repeat-latest" hidden><svg class="i sm"><use href="#i-repeat"/></svg><span class="lbl">Paste Previous Request</span></button>
+        <button class="btn btn-secondary sm btn-copy" type="button" data-act="repeat" id="hist-repeat-latest" title="Fills in your most recent request again" hidden><svg class="i sm"><use href="#i-repeat"/></svg><span class="lbl">Repeat last</span></button>
         <button class="btn btn-secondary sm" type="button" data-act="export"><svg class="i sm"><use href="#i-download"/></svg>Export</button>
       </div>
       <div class="searchbox field" style="margin-bottom:10px"><svg class="i"><use href="#i-search"/></svg><input id="hist-q" type="search" placeholder="Search name, address, PO or #" aria-label="Search history"></div>
@@ -909,7 +932,9 @@ body.kb-open .grab{display:none}
     <section id="tab-contacts" data-tab="contacts" hidden>
       <div class="page-head">
         <div><h1>Contacts</h1><p class="muted small">Shared with everyone in your profile.</p></div>
-        <button class="btn btn-primary sm" type="button" data-act="contact-new"><svg class="i sm"><use href="#i-plus"/></svg>Add</button>
+        <span class="pair"><button class="btn btn-secondary sm" type="button" data-act="contact-import"><svg class="i sm"><use href="#i-download"/></svg>Import</button>
+        <button class="btn btn-primary sm" type="button" data-act="contact-new"><svg class="i sm"><use href="#i-plus"/></svg>Add</button></span>
+        <input type="file" id="contacts-file" accept=".csv,text/csv" hidden>
       </div>
       <div class="searchbox field" style="margin-bottom:14px"><svg class="i"><use href="#i-search"/></svg><input id="contacts-q" type="search" placeholder="Search contacts" aria-label="Search contacts"></div>
       <div id="contacts-list"></div>
@@ -988,6 +1013,9 @@ const ITEM_TYPES = [
   { id: 'bundle', label: 'Bundles', one: 'bundle', many: 'bundles' },
   { id: 'other', label: 'Other', one: 'other', many: 'other' }
 ];
+// Home-screen shortcuts (manifest.json) open index.html?go=new or ?go=repeat
+const START_GO = (() => { try { return new URLSearchParams(location.search).get('go') || ''; } catch (e) { return ''; } })();
+let pendingGo = START_GO;
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
 /* =========================================================
@@ -1013,7 +1041,9 @@ const S = {
   contactsQ: '',
   installPrompt: null,
   authMode: 'signin',
-  sessionToken: 0
+  sessionToken: 0,
+  online: null,
+  themePref: (() => { try { const v = localStorage.getItem('ec_theme_pref'); return v === 'dark' || v === 'light' ? v : 'system'; } catch (e) { return 'system'; } })()
 };
 
 /* =========================================================
@@ -1151,20 +1181,29 @@ function friendlyError(err) {
 }
 const isPermissionError = (err) => /permission[_ ]denied/i.test(((err && (err.code || '')) + ' ' + (err && err.message || '')));
 
+// Rejects with code app/timeout if the promise hasn't settled in ms (the database waits forever with no signal)
+function withTimeout(p, ms) {
+  let t;
+  return Promise.race([p, new Promise((_, no) => { t = setTimeout(() => no(Object.assign(new Error('timeout'), { code: 'app/timeout' })), ms); })]).finally(() => clearTimeout(t));
+}
+const LOAD_TIMEOUT_MS = 10000;
+const SEND_TIMEOUT_MS = 20000;
 function debounce(fn, ms) { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
 
 /* =========================================================
    Toasts
    ========================================================= */
-function toast(message, type = 'info', ms = 3800) {
+// action: { label, run } adds a button (e.g. Undo) to the toast
+function toast(message, type = 'info', ms = 3800, action) {
   const el = document.createElement('div');
   el.className = `toast ${type}`;
   el.setAttribute('role', type === 'error' ? 'alert' : 'status');
-  el.innerHTML = `${icon(type === 'error' ? 'alert' : 'check')}<span>${esc(message)}</span>`;
+  el.innerHTML = `${icon(type === 'error' ? 'alert' : 'check')}<span>${esc(message)}</span>${action ? `<button class="toast-act" type="button">${esc(action.label)}</button>` : ''}`;
   $('#toasts').appendChild(el);
   const remove = () => { el.style.opacity = '0'; el.style.transition = 'opacity .2s'; setTimeout(() => el.remove(), 220); };
   const t = setTimeout(remove, ms);
   el.addEventListener('click', () => { clearTimeout(t); remove(); });
+  if (action) $('.toast-act', el).addEventListener('click', (e) => { e.stopPropagation(); clearTimeout(t); remove(); action.run(); });
 }
 
 /* =========================================================
@@ -1176,7 +1215,13 @@ const layers = []; // stack of open overlay ids
 let sheetResolver = null;
 let lastFocus = null;
 
-function pushLayer(id) { layers.push(id); history.pushState({ layer: id, depth: layers.length }, ''); }
+function pushLayer(id) { layers.push(id); history.pushState({ layer: id, depth: layers.length }, ''); syncLayers(); }
+// Whatever is on top (map or sheet) is the only part Tab and screen readers can reach; toasts stay reachable for Undo
+function syncLayers() {
+  const top = layers[layers.length - 1];
+  const topEl = top === 'map' ? $('#map-overlay') : top === 'sheet' ? $('#sheet') : null;
+  $$('body > .screen, #view-app, #sheet, #map-overlay').forEach((el) => { el.inert = !!topEl && el !== topEl; });
+}
 function showOverlay(el) {
   el.hidden = false;
   document.body.classList.add('no-scroll');
@@ -1202,6 +1247,7 @@ function _closeSheetNow() {
   const i = layers.lastIndexOf('sheet');
   if (i === -1) return;
   layers.splice(i, 1);
+  syncLayers();
   if (sheetResolver) { const r = sheetResolver; sheetResolver = null; r(false); }
   hideOverlay($('#sheet'), () => { if (!layers.includes('sheet')) $('#sheet-body').innerHTML = ''; });
   if (lastFocus && document.contains(lastFocus)) lastFocus.focus({ preventScroll: true });
@@ -1301,21 +1347,28 @@ function confirmSheet({ title, body, ok = 'Confirm', cancel = 'Cancel', danger =
    Views
    ========================================================= */
 function show(view) {
-  ['loading', 'auth', 'verify', 'onboard', 'app'].forEach((v) => { $('#view-' + v).hidden = v !== view; });
+  ['loading', 'auth', 'verify', 'onboard', 'offline', 'app'].forEach((v) => { $('#view-' + v).hidden = v !== view; });
   window.scrollTo(0, 0);
 }
 
 /* =========================================================
    Theme
    ========================================================= */
-function applyTheme(theme, save) {
-  const t = theme === 'dark' ? 'dark' : 'light';
-  document.documentElement.dataset.theme = t;
+// pref is 'system' (match the phone), 'light' or 'dark'
+const darkMq = (() => { try { return matchMedia('(prefers-color-scheme: dark)'); } catch (e) { return null; } })();
+function applyTheme(pref, save) {
+  const p = pref === 'dark' || pref === 'light' ? pref : 'system';
+  S.themePref = p;
+  document.documentElement.dataset.theme = p === 'system' ? (darkMq && darkMq.matches ? 'dark' : 'light') : p;
   const meta = document.querySelector('meta[name=theme-color]');
   if (meta) meta.setAttribute('content', '#000000');
-  if (save) { try { localStorage.setItem('ec_theme_pref', t); } catch (e) { /* storage unavailable */ } }
-  if (save && S.user) db.ref(`users/${S.user.uid}/theme`).set(t).catch(() => {});
-  $$('input[name=theme]').forEach((r) => { r.checked = r.value === t; });
+  if (save) { try { if (p === 'system') localStorage.removeItem('ec_theme_pref'); else localStorage.setItem('ec_theme_pref', p); } catch (e) { /* storage unavailable */ } }
+  if (save && S.user) db.ref(`users/${S.user.uid}/theme`).set(p === 'system' ? null : p).catch(() => {});
+  $$('input[name=theme]').forEach((r) => { r.checked = r.value === p; });
+}
+if (darkMq) {
+  const follow = () => { if (S.themePref === 'system') applyTheme('system', false); };
+  if (darkMq.addEventListener) darkMq.addEventListener('change', follow); else if (darkMq.addListener) darkMq.addListener(follow);
 }
 
 /* =========================================================
@@ -1350,6 +1403,7 @@ function setAuthMode(mode) {
   $('#auth-password').setAttribute('autocomplete', create ? 'new-password' : 'current-password');
   $('#auth-mode-btn').textContent = create ? 'Have an account? Sign in' : 'New here? Create an account';
   $('#forgot-btn').hidden = create;
+  clearErrorsIn($('#auth-form'));
 }
 
 $('#auth-form').addEventListener('submit', async (e) => {
@@ -1357,12 +1411,13 @@ $('#auth-form').addEventListener('submit', async (e) => {
   const email = $('#auth-email').value.trim();
   const password = $('#auth-password').value; // never trimmed
   const btn = $('#auth-submit');
-  if (!validEmail(email)) { toast('Enter a valid email address.', 'error'); $('#auth-email').focus(); return; }
-  if (!password) { toast('Enter your password.', 'error'); $('#auth-password').focus(); return; }
+  clearErrorsIn($('#auth-form'));
+  if (!validEmail(email)) { fieldProblem('auth-email', 'Enter a valid email address.'); return; }
+  if (!password) { fieldProblem('auth-password', 'Enter your password.'); return; }
   if (S.authMode === 'create') {
-    if (isStaffDomain(email)) { reportFailedSignIn(email, { code: 'app/staff-email-signup' }, 'signup'); toast('@ec.com addresses can\u2019t be used to create an account here. Use your own email address.', 'error', 5000); $('#auth-email').focus(); return; }
-    if (password.length < 8) { toast('Use a password with at least 8 characters.', 'error'); return; }
-    if (password !== $('#auth-confirm').value) { toast('The passwords don\u2019t match.', 'error'); return; }
+    if (isStaffDomain(email)) { reportFailedSignIn(email, { code: 'app/staff-email-signup' }, 'signup'); fieldProblem('auth-email', '@ec.com addresses can\u2019t be used to create an account here. Use your own email address.'); return; }
+    if (password.length < 8) { fieldProblem('auth-password', 'Use a password with at least 8 characters.'); return; }
+    if (password !== $('#auth-confirm').value) { fieldProblem('auth-confirm', 'The passwords don\u2019t match.'); return; }
   }
   btn.disabled = true;
   btn.classList.add('is-loading');
@@ -1409,7 +1464,7 @@ async function googleSignIn() {
 
 async function forgotPassword() {
   const email = $('#auth-email').value.trim();
-  if (!validEmail(email)) { toast('Type your email above first, then tap Forgot password.', 'error', 4500); $('#auth-email').focus(); return; }
+  if (!validEmail(email)) { fieldProblem('auth-email', 'Type your email here first, then tap Forgot password.'); return; }
   try { await auth.sendPasswordResetEmail(email); } catch (err) { reportFailedSignIn(email, err, 'reset'); if (err.code === 'auth/too-many-requests' || err.code === 'auth/network-request-failed') { toast(friendlyError(err), 'error'); return; } }
   toast(`If an account exists for ${email}, a reset link is on its way.`, 'ok', 5000);
 }
@@ -1460,7 +1515,7 @@ function resetSmsUi() {
 }
 async function sendSmsCode(phoneInput) {
   const phone = toE164(phoneInput);
-  if (!phone) { toast('Enter a 10-digit mobile number.', 'error'); return; }
+  if (!phone) { fieldProblem('sms-phone', 'Enter a 10-digit mobile number.'); return; }
   const wait = SMS_COOLDOWN - (Date.now() - sms.lastSent);
   if (phone === sms.phone && wait > 0) { toast(`A code was just sent. You can resend in ${Math.ceil(wait / 1000)} seconds.`); return; }
   const user = auth.currentUser;
@@ -1484,7 +1539,7 @@ async function sendSmsCode(phoneInput) {
 }
 async function verifySmsCode() {
   const code = $('#sms-code').value.replace(/\D/g, '');
-  if (code.length !== 6) { toast('Enter the 6-digit code from the text.', 'error'); $('#sms-code').focus(); return; }
+  if (code.length !== 6) { fieldProblem('sms-code', 'Enter the 6-digit code from the text.'); return; }
   if (!sms.confirm) { toast('Send a new code first.', 'error'); smsShowStep('phone'); return; }
   if (sms.verifying) return; // typing the 6th digit and tapping Verify can both fire
   sms.verifying = true;
@@ -1529,6 +1584,7 @@ function resetSession() {
   Object.assign(S, { userDoc: {}, cid: null, company: null, members: {}, contacts: {}, requests: {}, reqLoaded: false, editingId: null, lastSent: null });
   S.sessionToken++;
   while (layers.length) { const top = layers.pop(); if (top === 'map') hideOverlay($('#map-overlay')); else hideOverlay($('#sheet')); }
+  syncLayers();
   resetForm(true);
   updateCopyButtons();
 }
@@ -1554,17 +1610,18 @@ async function handleUser(user) {
   show('loading');
   const token = S.sessionToken;
   try {
-    const snap = await db.ref(`users/${user.uid}`).once('value');
+    const snap = await withTimeout(db.ref(`users/${user.uid}`).once('value'), LOAD_TIMEOUT_MS);
     if (token !== S.sessionToken) return;
     S.userDoc = snap.val() || {};
     let savedTheme = null;
     try { savedTheme = localStorage.getItem('ec_theme_pref'); } catch (e) { /* ignore */ }
-    applyTheme(S.userDoc.theme || savedTheme || 'light', false);
+    applyTheme(S.userDoc.theme || savedTheme || 'system', false);
     if (S.userDoc.theme) { try { localStorage.setItem('ec_theme_pref', S.userDoc.theme); } catch (e) { /* ignore */ } }
     const cid = S.userDoc.company_id;
     if (!cid) { showOnboarding(); return; }
     let company = null;
-    try { company = (await db.ref(`companies/${cid}`).once('value')).val(); } catch (e) { company = null; }
+    // Only "no permission" means they were taken off the company; a slow or missing connection is just retried
+    try { company = (await withTimeout(db.ref(`companies/${cid}`).once('value'), LOAD_TIMEOUT_MS)).val(); } catch (e) { if (!isPermissionError(e)) throw e; company = null; }
     if (token !== S.sessionToken) return;
     if (!company || !company.members || !company.members[user.uid]) {
       await db.ref(`users/${user.uid}/company_id`).remove().catch(() => {});
@@ -1574,10 +1631,21 @@ async function handleUser(user) {
     enterApp(cid, company);
   } catch (err) {
     console.error(err);
-    show('auth');
-    toast('Couldn\u2019t load your account. ' + friendlyError(err), 'error', 6000);
+    if (token !== S.sessionToken) return;
+    showOffline(err);
   }
 }
+// Signed in, but the account couldn't be loaded: say so, instead of showing the sign-in page
+function showOffline(err) {
+  const slow = err && (err.code === 'app/timeout' || err.code === 'auth/network-request-failed' || !navigator.onLine);
+  $('#offline-lead').textContent = slow
+    ? 'Check your signal or Wi-Fi, then try again. You\u2019re still signed in.'
+    : `Something went wrong loading your account (${friendlyError(err)}). Try again, or call dispatch.`;
+  const a = $('#offline-call');
+  if (DISPATCH_PHONE) { a.href = `tel:${phoneDigits(DISPATCH_PHONE)}`; $('span', a).textContent = `Call dispatch ${formatPhone(DISPATCH_PHONE)}`; a.hidden = false; }
+  show('offline');
+}
+window.addEventListener('online', () => { if (!$('#view-offline').hidden && auth.currentUser) handleUser(auth.currentUser); });
 
 /* =========================================================
    Company onboarding
@@ -1605,7 +1673,8 @@ $('#onboard-form').addEventListener('submit', async (e) => {
   const name = $('#ob-name').value.trim();
   // The only phone asked for now is the profile's Phone Number; it is also kept as this person's contact phone.
   const phone = mode === 'create' ? $('#ob-company-phone').value.trim() : '';
-  if (!name) { toast('Enter your name.', 'error'); $('#ob-name').focus(); return; }
+  clearErrorsIn($('#onboard-form'));
+  if (!name) { fieldProblem('ob-name', 'Enter your name.'); return; }
   const btn = $('#onboard-submit');
   btn.disabled = true;
   const uid = S.user.uid;
@@ -1633,9 +1702,9 @@ $('#onboard-form').addEventListener('submit', async (e) => {
       }
     } else {
       const code = normalizeCode($('#ob-code').value);
-      if (code.length !== 8) { toast('Join codes are 8 characters, like ABCD-2345.', 'error'); $('#ob-code').focus(); return; }
+      if (code.length !== 8) { fieldProblem('ob-code', 'Join codes are 8 characters, like ABCD-2345.'); return; }
       cid = (await db.ref(`join_codes/${code}`).once('value')).val();
-      if (!cid) { reportRefused(S.user, 'join', 'Join code not found'); toast('That join code wasn\u2019t found. Check it with your company admin.', 'error', 5000); return; }
+      if (!cid) { reportRefused(S.user, 'join', 'Join code not found'); fieldProblem('ob-code', 'That join code wasn\u2019t found. Check it with your company admin.'); return; }
       try {
         await db.ref(`companies/${cid}/members/${uid}`).set({ name, email, phone: phone || null, role: 'member', code, joined_at: TS });
       } catch (err) {
@@ -1689,6 +1758,7 @@ function enterApp(cid, company) {
   let offlineTimer = null;
   listen(db.ref('.info/connected'), 'value', (snap) => {
     clearTimeout(offlineTimer);
+    S.online = snap.val() === true;
     if (snap.val() === true) $('#offline-pill').hidden = true;
     else offlineTimer = setTimeout(() => { $('#offline-pill').hidden = false; }, 2500);
   });
@@ -1699,6 +1769,7 @@ function enterApp(cid, company) {
 
   renderAccount();
   renderContacts();
+  offerDraft();
 }
 
 async function removedFromCompany() {
@@ -1778,6 +1849,7 @@ function stepQty(btn, delta) {
   it.qty = Math.max(1, Math.min(999, (Number(it.qty) || 0) + delta));
   $('[data-field=qty]', row).value = it.qty;
   updateItemsPreview();
+  saveDraftSoon();
 }
 
 /* =========================================================
@@ -1787,6 +1859,7 @@ function stepQty(btn, delta) {
 function setLegGeo(leg, geo) {
   S.legGeo[leg] = geo;
   refreshAddressHint(leg);
+  saveDraftSoon();
 }
 function legGeo(leg) {
   const g = S.legGeo[leg];
@@ -1863,12 +1936,15 @@ function applyPlaceToLeg(leg, place) {
 /* ---------- Map picker ---------- */
 let pickerMap = null;
 let mapOnPick = null;
+let mapReturn = null;
 function openMap(onPick) {
   if (!mapsReady || mapsFailed) { toast('The map isn\u2019t available right now. Type the address instead.', 'error'); return; }
   mapOnPick = onPick;
+  mapReturn = document.activeElement;
   const el = $('#map-overlay');
   pushLayer('map');
   showOverlay(el);
+  setTimeout(() => { const b = $('#map-overlay [data-act=map-close]'); if (b && !el.contains(document.activeElement)) b.focus({ preventScroll: true }); }, 60);
   setTimeout(() => {
     if (!pickerMap) {
       pickerMap = new google.maps.Map($('#map'), {
@@ -1889,8 +1965,12 @@ function _closeMapNow() {
   const i = layers.lastIndexOf('map');
   if (i === -1) return;
   layers.splice(i, 1);
+  syncLayers();
   hideOverlay($('#map-overlay'));
   mapOnPick = null;
+  const back = mapReturn;
+  mapReturn = null;
+  if (back && document.contains(back) && back.focus) back.focus({ preventScroll: true });
 }
 function closeMap() {
   if (!layers.includes('map')) return;
@@ -1972,28 +2052,52 @@ function fieldWrap(key) {
   const input = $('#' + key);
   return input ? input.closest('.field') : null;
 }
+// aria-invalid plus aria-describedby pointing at the error text, so screen readers read the error with the field
+function markInvalid(el, errId, on) {
+  if (!el) return;
+  const ids = (el.getAttribute('aria-describedby') || '').split(/\s+/).filter((x) => x && x !== errId);
+  if (on) { ids.push(errId); el.setAttribute('aria-invalid', 'true'); } else el.removeAttribute('aria-invalid');
+  if (ids.length) el.setAttribute('aria-describedby', ids.join(' ')); else el.removeAttribute('aria-describedby');
+}
+function errControl(key, wrap) { return $('#' + key) || $('[role=radiogroup]', wrap) || $('input,select,textarea', wrap); }
 function setError(key, msg) {
   const wrap = fieldWrap(key);
   if (!wrap) return null;
-  if (key === 'items') { const e = $('#items-err'); e.textContent = msg; e.hidden = false; return wrap; }
+  if (key === 'items') { const e = $('#items-err'); e.textContent = msg; e.hidden = false; markInvalid($('#item-details'), 'items-err', true); return wrap; }
   wrap.classList.add('invalid');
   let p = $('.err', wrap);
   if (!p) { p = document.createElement('p'); p.className = 'err'; wrap.appendChild(p); }
+  p.id = `${key}-err`;
   p.textContent = msg;
+  markInvalid(errControl(key, wrap), p.id, true);
   return wrap;
 }
 function clearError(key) {
-  if (key === 'items') { $('#items-err').hidden = true; return; }
+  if (key === 'items') { $('#items-err').hidden = true; markInvalid($('#item-details'), 'items-err', false); return; }
   const wrap = fieldWrap(key);
-  if (!wrap) return;
+  if (!wrap || !wrap.classList.contains('invalid')) return;
   wrap.classList.remove('invalid');
   const p = $('.err', wrap);
-  if (p) p.remove();
+  if (p) { $$('[aria-invalid]', wrap).forEach((el) => markInvalid(el, p.id, false)); p.remove(); }
+}
+function clearErrorsIn(root) {
+  $$('.field.invalid', root).forEach((f) => {
+    f.classList.remove('invalid');
+    const p = $('.err', f);
+    if (p) { $$('[aria-invalid]', f).forEach((el) => markInvalid(el, p.id, false)); p.remove(); }
+  });
 }
 function clearAllErrors() {
-  $$('#req-form .field.invalid').forEach((f) => { f.classList.remove('invalid'); const p = $('.err', f); if (p) p.remove(); });
-  $('#items-err').hidden = true;
+  clearErrorsIn($('#req-form'));
+  clearError('items');
 }
+// Shows the problem under the field and puts the cursor there
+function fieldProblem(id, msg) { setError(id, msg); const el = $('#' + id); if (el) el.focus(); }
+// Typing in a field that shows an error clears it
+document.addEventListener('input', (e) => {
+  const t = e.target;
+  if (t && t.id && t.closest && t.closest('.field.invalid') && !t.closest('.item-row')) clearError(t.id);
+});
 
 function validateForm(d) {
   clearAllErrors();
@@ -2063,6 +2167,44 @@ function resetForm(silent) {
   clearAllErrors();
   if (!silent) { $('#sent-wrap').hidden = true; $('#new-form-wrap').hidden = false; }
 }
+/* Unsent request: saved on this phone while it's typed, offered back next time the app opens */
+const DRAFT_DAYS = 7;
+const draftKey = () => (S.user && S.cid ? `ec_draft_${S.user.uid}_${S.cid}` : '');
+function readDraft() {
+  try {
+    const k = draftKey();
+    const v = k && JSON.parse(localStorage.getItem(k) || 'null');
+    return v && v.d && Date.now() - (v.at || 0) < DRAFT_DAYS * 86400000 ? v : null;
+  } catch (e) { return null; }
+}
+function clearDraft() { try { const k = draftKey(); if (k) localStorage.removeItem(k); } catch (e) { /* ignore */ } $('#draft-banner').hidden = true; }
+function saveDraftNow() {
+  // Not while editing a sent request, and not on the "sent" screen
+  if (!draftKey() || S.editingId || !$('#sent-wrap').hidden) return;
+  if (!formIsDirty()) { clearDraft(); return; }
+  $('#draft-banner').hidden = true; // anything typed now replaces the older draft
+  try { localStorage.setItem(draftKey(), JSON.stringify({ at: Date.now(), d: readForm(), items: S.items })); } catch (e) { /* storage full or blocked */ }
+}
+const saveDraftSoon = debounce(saveDraftNow, 500);
+function offerDraft() {
+  const v = readDraft();
+  if (!v) return;
+  const when = fmtShort(v.at);
+  $('#draft-text').textContent = `You have an unsent pickup from ${when}${when.endsWith('.') ? '' : '.'}`;
+  $('#draft-banner').hidden = false;
+}
+function restoreDraft() {
+  const v = readDraft();
+  $('#draft-banner').hidden = true;
+  if (!v) return;
+  fillForm({ ...v.d, items: v.items }, { keepSchedule: true });
+  refreshAddressHint('pickup');
+  refreshAddressHint('delivery');
+  flashPastedFields();
+}
+$('#req-form').addEventListener('input', saveDraftSoon);
+$('#req-form').addEventListener('change', saveDraftSoon);
+
 function updateSchedMin() { $('#sched-date').min = localDateStr(addDays(new Date(), 1)); }
 
 $$('input[name=when]').forEach((r) => r.addEventListener('change', () => {
@@ -2096,7 +2238,11 @@ $('#req-form').addEventListener('submit', (e) => {
   const d = readForm();
   const bad = validateForm(d);
   if (bad) {
-    bad.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    bad.classList.remove('nudge');
+    void bad.offsetWidth; // restart the pulse if it's the same field again
+    bad.classList.add('nudge');
+    setTimeout(() => bad.classList.remove('nudge'), 1400);
+    bad.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
     const f = $('input,textarea,select', bad);
     if (f) setTimeout(() => f.focus({ preventScroll: true }), 300);
     return;
@@ -2109,8 +2255,19 @@ function legBlock(label, L) {
   if (!L.name && !L.address && !contact) return `<dt>${label}</dt><dd><span class="muted">Not specified</span></dd>`;
   return `<dt>${label}</dt><dd><b>${esc(L.name)}</b><small>${esc(L.address)}</small>${contact ? `<small>${contact}</small>` : ''}</dd>`;
 }
+// A request from the same pickup place in the last hour that dispatch hasn't sent out yet
+function recentDuplicate(d) {
+  const norm = (v) => String(v || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+  const since = Date.now() - 60 * 60000;
+  return Object.values(S.requests || {})
+    .filter((r) => r.status === 'new' && (r.created_at || 0) >= since && r.pickup
+      && norm(r.pickup.name) === norm(d.pickup.name) && norm(r.pickup.address) === norm(d.pickup.address))
+    .sort((a, b) => (b.created_at || 0) - (a.created_at || 0))[0] || null;
+}
 function openReview(d) {
-  const warn = ['pickup', 'delivery'].filter((leg) => d[leg].address && !d[leg].verified)
+  const dup = S.editingId ? null : recentDuplicate(d);
+  const dupNote = dup ? `<div class="notice warn">${icon('alert')}<span>You already sent a pickup from <b>${esc(dup.pickup.name)}</b> ${Math.max(1, Math.round((Date.now() - dup.created_at) / 60000))} min ago (#${esc(dup.ref_no)}), and it hasn\u2019t gone to a driver yet. Only send this if it\u2019s a second pickup.</span></div>` : '';
+  const warn = dupNote + ['pickup', 'delivery'].filter((leg) => d[leg].address && !d[leg].verified)
     .map((leg) => `<div class="notice warn">${icon('alert')}<span>The ${leg} address wasn\u2019t matched on Google Maps. Make sure it\u2019s complete enough for a driver to find.</span></div>`).join('');
   const items = [itemsText(d.items), d.item_details].filter(Boolean).map(esc).join('<br>');
   const editing = !!S.editingId;
@@ -2164,11 +2321,15 @@ async function nextRefNo() {
 
 async function sendRequest(d, btn) {
   if (S.sending) return;
+  if (S.online === false) {
+    toast('You\u2019re offline, so it wasn\u2019t sent. Your request is still here: send it when you have signal.', 'error', 7000);
+    return;
+  }
   S.sending = true;
   const editing = S.editingId;
   btn.disabled = true;
   btn.textContent = editing ? 'Saving\u2026' : 'Sending\u2026';
-  const slow = setTimeout(() => { btn.textContent = 'Still sending. Check your connection\u2026'; }, 8000);
+  const slow = setTimeout(() => { btn.textContent = 'Still sending. Check your signal\u2026'; }, 8000);
   try {
     const payload = buildPayload(d);
     let refNo;
@@ -2178,7 +2339,11 @@ async function sendRequest(d, btn) {
       refNo = current.ref_no;
       await db.ref(`requests/${editing}`).update({ ...payload, updated_at: TS, updated_by: S.user.uid });
     } else {
-      refNo = await nextRefNo();
+      // Nothing is sent until the number is reserved, so giving up here is safe
+      try { refNo = await withTimeout(nextRefNo(), SEND_TIMEOUT_MS); } catch (e) {
+        if (e.code === 'app/timeout') throw Object.assign(new Error('Dispatch didn\u2019t answer. Check your signal and try again. Nothing was sent.'), { code: 'app/timeout' });
+        throw e;
+      }
       const me = S.members[S.user.uid] || {};
       const prof = S.userDoc.profile || {};
       await db.ref('requests').push().set({
@@ -2193,6 +2358,7 @@ async function sendRequest(d, btn) {
       });
     }
     S.lastSent = { ...d, refNo, edited: !!editing, sentAt: Date.now() };
+    if (!editing) clearDraft();
     closeSheet();
     resetForm(true);
     showSent();
@@ -2203,7 +2369,7 @@ async function sendRequest(d, btn) {
       resetForm();
       toast('That request was already dispatched, so it can\u2019t be changed here. Call dispatch to make changes.', 'error', 7000);
     } else {
-      toast('Your request wasn\u2019t sent. ' + friendlyError(err), 'error', 6000);
+      toast(err.code === 'app/timeout' ? err.message : 'Your request wasn\u2019t sent. ' + friendlyError(err), 'error', 7000);
       btn.disabled = false;
       btn.textContent = editing ? 'Save changes' : 'Send request';
     }
@@ -2240,6 +2406,7 @@ function showSent() {
           <dt>When</dt><dd>${d.when === 'scheduled' ? esc(fmtDay(d.scheduled_for)) : 'As soon as possible'}</dd>
         </dl>
         <p class="ticket-note">You\u2019ll see it marked dispatched in History once it\u2019s sent to a driver.</p>
+        <button class="ticket-share" type="button" data-act="share-ticket">${icon(navigator.share ? 'share' : 'copy', 'sm')}${navigator.share ? 'Share' : 'Copy'} these details</button>
       </div>
     </div>
     <div style="display:grid;gap:10px">
@@ -2254,6 +2421,26 @@ function showSent() {
   setTimeout(() => { if (!$('#sent-wrap').hidden) window.scrollTo(0, 0); }, 360);
 }
 
+// Plain text of the sent request, for a text or email to whoever is waiting on it
+function ticketText(d) {
+  const leg = (L) => [L.name, L.address].filter(Boolean).join(', ');
+  const items = [itemsText(d.items), d.item_details].filter(Boolean).join(', ');
+  return [
+    `E&C Courier pickup #${d.refNo}`,
+    `From: ${leg(d.pickup)}`,
+    d.delivery.name || d.delivery.address ? `To: ${leg(d.delivery)}` : '',
+    items ? `Items: ${items}` : '',
+    `When: ${d.when === 'scheduled' ? fmtDay(d.scheduled_for) : 'As soon as possible'}`,
+    d.po ? `PO / ref: ${d.po}` : ''
+  ].filter(Boolean).join('\n');
+}
+function shareTicket() {
+  const d = S.lastSent;
+  if (!d) return;
+  const text = ticketText(d);
+  if (navigator.share) navigator.share({ title: `Pickup #${d.refNo}`, text }).catch(() => {});
+  else copyText(text, 'Pickup details copied.');
+}
 function repeatRequest(r) {
   resetForm();
   fillForm(r, { keepSchedule: false });
@@ -2339,7 +2526,7 @@ function renderContacts() {
   const all = Object.keys(S.contacts || {}).length;
   const list = contactList(S.contactsQ);
   if (!all) {
-    box.innerHTML = `<div class="empty">${icon('contacts')}<h3>No contacts yet</h3><p>Save the places you ship from and to, and fill them into a request with one tap.</p><button class="btn btn-primary" type="button" data-act="contact-new">${icon('plus', 'sm')}Add a contact</button></div>`;
+    box.innerHTML = `<div class="empty">${icon('contacts')}<h3>No contacts yet</h3><p>Save the places you ship from and to, and fill them into a request with one tap.</p><div class="btn-row" style="justify-content:center"><button class="btn btn-primary" type="button" data-act="contact-new">${icon('plus', 'sm')}Add a contact</button><button class="btn btn-secondary" type="button" data-act="contact-import">${icon('download', 'sm')}Import a spreadsheet</button></div></div>`;
     return;
   }
   box.innerHTML = list.length ? `<div class="list">${list.map((c) => contactRowHtml(c, 'contact-edit')).join('')}</div>`
@@ -2397,6 +2584,114 @@ async function saveLegToContacts(leg) {
   } catch (err) { toast(friendlyError(err), 'error'); }
 }
 
+/* ---------- Import contacts from a CSV file (Excel: File > Save As > CSV) ---------- */
+const IMPORT_MAX = 500;
+function parseCsv(text) {
+  text = String(text || '').replace(/^\ufeff/, '');
+  const first = text.split(/\r?\n/, 1)[0] || '';
+  const sep = (first.match(/;/g) || []).length > (first.match(/,/g) || []).length ? ';' : first.includes('\t') && !first.includes(',') ? '\t' : ',';
+  const rows = [];
+  let row = [];
+  let cell = '';
+  let quoted = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (quoted) {
+      if (ch === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else quoted = false; } else cell += ch;
+    } else if (ch === '"') quoted = true;
+    else if (ch === sep) { row.push(cell); cell = ''; }
+    else if (ch === '\n' || ch === '\r') { if (ch === '\r' && text[i + 1] === '\n') i++; row.push(cell); rows.push(row); row = []; cell = ''; }
+    else cell += ch;
+  }
+  if (cell || row.length) { row.push(cell); rows.push(row); }
+  return rows.map((r) => r.map((c) => c.trim())).filter((r) => r.some(Boolean));
+}
+// Which column holds what, from the header row. Without a recognisable header: name, address, phone, email.
+function csvColumns(head) {
+  const tests = [['email', /e-?mail/], ['phone', /phone|tel|mobile|cell/], ['city', /city|town/], ['province', /prov|state/], ['postal', /postal|zip/],
+    ['address', /address|street|addr/], ['name', /name|business|company|customer|contact|shipper|consignee/]];
+  const cols = {};
+  head.forEach((h, i) => {
+    const t = h.toLowerCase();
+    const hit = tests.find(([k, re]) => cols[k] == null && re.test(t));
+    if (hit) cols[hit[0]] = i;
+  });
+  return cols;
+}
+function contactsFromCsv(text) {
+  const rows = parseCsv(text);
+  if (!rows.length) return { error: 'That file is empty.' };
+  let cols = csvColumns(rows[0]);
+  let data = rows.slice(1);
+  if (cols.name == null && cols.address == null) { cols = { name: 0, address: 1, phone: 2, email: 3 }; data = rows; }
+  else if (cols.name == null || cols.address == null) return { error: 'The file needs a Name column and an Address column.' };
+  const seen = new Set(Object.values(S.contacts || {}).map(contactKey));
+  const out = { add: [], dupes: 0, missing: 0, total: data.length };
+  data.forEach((r) => {
+    const get = (k) => (cols[k] != null ? String(r[cols[k]] || '').trim() : '');
+    const name = get('name').slice(0, 120);
+    let address = get('address');
+    const extra = ['city', 'province', 'postal'].map(get).filter((x) => x && !address.toLowerCase().includes(x.toLowerCase()));
+    if (address && extra.length) address = `${address}, ${extra.join(' ')}`;
+    address = address.slice(0, 250);
+    if (!name || !address) { out.missing++; return; }
+    const c = { name, address, verified: false };
+    const d = phoneDigits(get('phone'));
+    if (d.length === 10 || (d.length === 11 && d[0] === '1')) c.phone = formatPhone(d.slice(-10));
+    const em = get('email');
+    if (em && validEmail(em)) c.email = em.slice(0, 120);
+    const k = contactKey(c);
+    if (seen.has(k)) { out.dupes++; return; }
+    seen.add(k);
+    out.add.push(c);
+  });
+  return out;
+}
+async function importContactsFile(file) {
+  if (!file) return;
+  let text;
+  try { text = await file.text(); } catch (e) { toast('That file couldn\u2019t be read.', 'error'); return; }
+  const res = contactsFromCsv(text);
+  const help = '<p class="hint" style="margin-top:12px">Use a spreadsheet with columns like <b>Name</b>, <b>Address</b>, <b>City</b>, <b>Phone</b>, <b>Email</b>. In Excel, choose File, Save As, CSV.</p>';
+  if (res.error) { openSheet('Import contacts', `<p class="muted">${esc(res.error)}</p>${help}<button class="btn btn-secondary block" type="button" data-act="sheet-close" style="margin-top:14px">Close</button>`); return; }
+  const list = res.add.slice(0, IMPORT_MAX);
+  const n = list.length;
+  const plural = (k, w) => `${k} ${w}${k === 1 ? '' : 's'}`;
+  openSheet('Import contacts', `
+    <p class="muted">${esc(file.name)}: ${plural(res.total, 'row')}.</p>
+    <ul class="import-sum">
+      <li><b>${n}</b> new ${n === 1 ? 'contact' : 'contacts'} to add</li>
+      ${res.dupes ? `<li>${plural(res.dupes, 'row')} already in your contacts (skipped)</li>` : ''}
+      ${res.missing ? `<li>${plural(res.missing, 'row')} without a name or address (skipped)</li>` : ''}
+      ${res.add.length > IMPORT_MAX ? `<li>Only the first ${IMPORT_MAX} are added. Import the rest in a second file.</li>` : ''}
+    </ul>
+    ${n ? `<div class="list">${list.slice(0, 6).map((c) => `<div class="row contact-row" style="cursor:default"><span class="avatar" aria-hidden="true">${esc(initials(c.name))}</span><span class="grow"><span class="name">${esc(c.name)}</span><span class="addr" style="display:block">${esc(c.address)}</span></span></div>`).join('')}</div>
+      ${n > 6 ? `<p class="hint" style="margin-top:6px">and ${n - 6} more</p>` : ''}
+      <button class="btn btn-primary block" type="button" id="imp-go" style="margin-top:14px">Add ${plural(n, 'contact')}</button>` : `${help}<button class="btn btn-secondary block" type="button" data-act="sheet-close" style="margin-top:14px">Close</button>`}`, (body) => {
+    const go = $('#imp-go', body);
+    if (!go) return;
+    go.addEventListener('click', async () => {
+      go.disabled = true;
+      go.textContent = 'Adding\u2026';
+      try {
+        const ref = db.ref(`companies/${S.cid}/address_book`);
+        for (let i = 0; i < n; i += 100) {
+          const up = {};
+          list.slice(i, i + 100).forEach((c) => { up[ref.push().key] = { ...c, updated_at: TS }; });
+          await withTimeout(ref.update(up), SEND_TIMEOUT_MS);
+        }
+        closeSheet();
+        toast(`Added ${plural(n, 'contact')}.`, 'ok');
+      } catch (err) {
+        toast(err.code === 'app/timeout' ? 'The import timed out. Check your signal; contacts already added are kept.' : friendlyError(err), 'error', 6000);
+        go.disabled = false;
+        go.textContent = `Add ${plural(n, 'contact')}`;
+      }
+    });
+  });
+}
+$('#contacts-file').addEventListener('change', (e) => { const f = e.target.files && e.target.files[0]; e.target.value = ''; importContactsFile(f); });
+
 let contactDraftGeo = null;
 function openContactEditor(id) {
   const c = id ? S.contacts[id] : {};
@@ -2444,9 +2739,11 @@ function openContactEditor(id) {
     $('#contact-form', body).addEventListener('submit', async (e) => {
       e.preventDefault();
       const d = read();
-      if (!d.name || !d.address) { toast('A contact needs a name and an address.', 'error'); return; }
-      if (d.phone && phoneDigits(d.phone).length < 10) { toast('Enter a full 10-digit phone number.', 'error'); return; }
-      if (d.email && !validEmail(d.email)) { toast('Enter a valid email address.', 'error'); return; }
+      clearErrorsIn(body);
+      if (!d.name) { fieldProblem('ct-name', 'Enter the business or contact name.'); return; }
+      if (!d.address) { fieldProblem('ct-address', 'Enter the address.'); return; }
+      if (d.phone && phoneDigits(d.phone).length < 10) { fieldProblem('ct-phone', 'Enter a full 10-digit phone number.'); return; }
+      if (d.email && !validEmail(d.email)) { fieldProblem('ct-email', 'Enter a valid email address.'); return; }
       const btn = e.submitter || $('button[type=submit]', body);
       btn.disabled = true;
       try { await saveContactData(d, id); closeSheet(); toast(id ? 'Contact saved.' : 'Contact added.', 'ok'); }
@@ -2462,9 +2759,14 @@ function openContactEditor(id) {
     const del = $('#ct-delete', body);
     if (del) del.addEventListener('click', async () => {
       const name = c.name;
-      if (!(await confirmSheet({ title: `Delete ${name}?`, body: 'It will be removed for everyone in your company.', ok: 'Delete', danger: true }))) return;
-      try { await db.ref(`companies/${S.cid}/address_book/${id}`).remove(); toast('Contact deleted.', 'ok'); }
-      catch (err) { toast(friendlyError(err), 'error'); }
+      if (!(await confirmSheet({ title: `Delete ${esc(name)}?`, body: 'It will be removed for everyone in your company.', ok: 'Delete', danger: true }))) return;
+      const saved = { ...c };
+      try {
+        await db.ref(`companies/${S.cid}/address_book/${id}`).remove();
+        toast(`${name} deleted.`, 'ok', 7000, { label: 'Undo', run: async () => {
+          try { await saveContactData(saved, id); toast(`${name} is back in your contacts.`, 'ok'); } catch (err) { toast(friendlyError(err), 'error'); }
+        } });
+      } catch (err) { toast(friendlyError(err), 'error'); }
     });
   });
 }
@@ -2473,7 +2775,7 @@ function openContactEditor(id) {
    History (ledger)
    ========================================================= */
 const seenKey = () => `ec_seen_${S.user ? S.user.uid : ''}`;
-function getSeen() { return Number(localStorage.getItem(seenKey()) || 0); }
+function getSeen() { try { return Number(localStorage.getItem(seenKey()) || 0); } catch (e) { return 0; } }
 function setSeen(ts) { try { localStorage.setItem(seenKey(), String(ts)); } catch (e) { /* ignore */ } }
 
 function onRequests(snap) {
@@ -2497,6 +2799,16 @@ function onRequests(snap) {
   }
   S.requests = data;
   updateCopyButtons();
+  if (firstLoad && pendingGo) {
+    const go = pendingGo;
+    pendingGo = '';
+    try { history.replaceState(history.state, '', location.pathname); } catch (e) { /* ignore */ }
+    if (go === 'repeat') {
+      const id = latestRequestId();
+      if (id) { $('#draft-banner').hidden = true; repeatRequest(data[id]); toast(`Request #${data[id].ref_no} is filled in. Check it, then tap Review request.`, 'ok', 5000); }
+      else toast('There\u2019s no past request to repeat yet.', 'info');
+    }
+  }
   if (S.editingId && (!data[S.editingId] || data[S.editingId].status !== 'new')) {
     const r = data[S.editingId];
     resetForm();
@@ -2504,7 +2816,7 @@ function onRequests(snap) {
   }
   if (S.tab === 'history') setSeen(Date.now());
   updateHistoryDot();
-  renderHistory();
+  if (S.tab === 'history') renderHistory(); // switchTab draws it when it's opened
   if (sheetIsOpen() && currentDetailId && $('#sheet-body [data-detail]')) openDetail(currentDetailId, true);
 }
 function updateHistoryDot() {
@@ -2629,7 +2941,7 @@ function renderHistory() {
     const sub = [r.items_text || r.item_details, r.payment === 'collect' ? 'Collect' : 'Prepaid', r.po ? `PO ${r.po}` : ''].filter(Boolean).join(', ');
     html += `<button class="row" type="button" data-act="detail" data-id="${esc(r.id)}">
       <span class="row-top"><span class="req-no">#${esc(r.ref_no)}</span><span class="row-date">${esc(fmtShort(r.created_at))}</span>${statusChips(r)}</span>
-      <span class="row-route" style="display:block">${esc(r.pickup && r.pickup.name)}<span class="arrow" aria-label="to">\u2192</span>${r.delivery && (r.delivery.name || r.delivery.address) ? esc(r.delivery.name || r.delivery.address) : '<span class="muted">No delivery listed</span>'}</span>
+      <span class="row-route" style="display:block">${esc(r.pickup && r.pickup.name)}<span class="arrow" aria-hidden="true">\u2192</span><span class="sr-only"> to </span>${r.delivery && (r.delivery.name || r.delivery.address) ? esc(r.delivery.name || r.delivery.address) : '<span class="muted">No delivery listed</span>'}</span>
       <span class="row-sub" style="display:block">${esc(sub)}</span>
       <span class="row-sub" style="display:block">Submitted by <b>${esc(submitterName(r))}</b></span></button>`;
   });
@@ -2765,7 +3077,7 @@ function renderAccount() {
   const me = S.members[S.user.uid] || {};
   const owner = isOwner();
   const usesPassword = S.user.providerData.some((p) => p.providerId === 'password');
-  const theme = document.documentElement.dataset.theme || 'light';
+  const theme = S.themePref || 'system';
   const members = Object.entries(S.members).sort((a, b) => (a[1].role === 'owner' ? -1 : b[1].role === 'owner' ? 1 : (a[1].name || '').localeCompare(b[1].name || '')));
   box.innerHTML = `
     <div class="card">
@@ -2793,8 +3105,9 @@ function renderAccount() {
     <div class="card">
       <div class="card-head"><h2>Display</h2></div>
       <div class="seg" role="radiogroup" aria-label="Theme">
-        <label><input type="radio" name="theme" value="dark"${theme === 'dark' ? ' checked' : ''}><span>Dark</span></label>
+        <label><input type="radio" name="theme" value="system"${theme === 'system' ? ' checked' : ''}><span>Match phone</span></label>
         <label><input type="radio" name="theme" value="light"${theme === 'light' ? ' checked' : ''}><span>Light</span></label>
+        <label><input type="radio" name="theme" value="dark"${theme === 'dark' ? ' checked' : ''}><span>Dark</span></label>
       </div>
       ${S.installPrompt ? `<button class="btn btn-secondary block" type="button" data-act="install" style="margin-top:14px">${icon('download', 'sm')}Install the app on this device</button>` : ''}
     </div>
@@ -2825,12 +3138,17 @@ function openProfileEditor() {
       e.preventDefault();
       const name = $('#pf-name', body).value.trim();
       const phone = $('#pf-phone', body).value.trim() || null;
-      if (!name) { toast('Enter your name.', 'error'); return; }
+      if (!name) { fieldProblem('pf-name', 'Enter your name.'); return; }
       try {
         const followName = isOwner() && isIndividual(); // individual profile: keep the profile name in step with the person's name
-        await db.ref(`users/${S.user.uid}/profile`).set({ name, phone });
-        await db.ref(`companies/${S.cid}/members/${S.user.uid}`).update({ name, phone });
-        if (followName && name !== S.company.name) await db.ref(`companies/${S.cid}/name`).set(name.slice(0, 100));
+        // One update for every path, so a dropped connection can't leave them disagreeing
+        const up = {
+          [`users/${S.user.uid}/profile`]: { name, phone },
+          [`companies/${S.cid}/members/${S.user.uid}/name`]: name,
+          [`companies/${S.cid}/members/${S.user.uid}/phone`]: phone
+        };
+        if (followName && name !== S.company.name) up[`companies/${S.cid}/name`] = name.slice(0, 100);
+        await db.ref().update(up);
         S.userDoc.profile = { name, phone };
         closeSheet();
         renderAccount();
@@ -2868,10 +3186,9 @@ function openCompanyEditor(adding) {
     $('#company-form', body).addEventListener('submit', async (e) => {
       e.preventDefault();
       const name = $('#co-name', body).value.trim();
-      if (!name) { toast('Enter the company name.', 'error'); return; }
+      if (!name) { fieldProblem('co-name', 'Enter the company name.'); return; }
       try {
-        await db.ref(`companies/${S.cid}/name`).set(name);
-        await db.ref(`companies/${S.cid}/phone`).set($('#co-phone', body).value.trim() || null);
+        await db.ref(`companies/${S.cid}`).update({ name, phone: $('#co-phone', body).value.trim() || null });
         closeSheet();
         toast('Company details saved.', 'ok');
       } catch (err) { toast(friendlyError(err), 'error'); }
@@ -2882,8 +3199,7 @@ function openCompanyEditor(adding) {
       if (!own) { toast('Add your name under You first.', 'error'); return; }
       if (!(await confirmSheet({ title: 'Remove the company name?', body: `Your profile will show as <b>${esc(own)}</b> and the company phone will be removed. You can add a company name again any time.`, ok: 'Remove', danger: true }))) return;
       try {
-        await db.ref(`companies/${S.cid}/name`).set(own.slice(0, 100));
-        await db.ref(`companies/${S.cid}/phone`).set(null);
+        await db.ref(`companies/${S.cid}`).update({ name: own.slice(0, 100), phone: null });
         toast('Company name removed. Your profile now uses your name.', 'ok', 4500);
       } catch (err) { toast(friendlyError(err), 'error'); }
     });
@@ -2891,17 +3207,19 @@ function openCompanyEditor(adding) {
 }
 async function newJoinCode() {
   if (!(await confirmSheet({ title: 'Make a new join code?', body: 'The current code stops working right away. People already in your company stay in.', ok: 'Make new code' }))) return;
+  try { const code = await rotateJoinCode(); toast(`New code: ${prettyCode(code)}`, 'ok', 5000); } catch (err) { toast(friendlyError(err), 'error'); }
+}
+// A fresh join code; the old one stops working
+async function rotateJoinCode() {
   const old = S.company.join_code;
-  try {
-    let code;
-    for (let i = 0; i < 4; i++) {
-      code = randomCode();
-      try { await db.ref(`join_codes/${code}`).set(S.cid); break; } catch (err) { if (i === 3) throw err; }
-    }
-    await db.ref(`companies/${S.cid}/join_code`).set(code);
-    if (old) await db.ref(`join_codes/${old}`).remove().catch(() => {});
-    toast(`New code: ${prettyCode(code)}`, 'ok', 5000);
-  } catch (err) { toast(friendlyError(err), 'error'); }
+  let code;
+  for (let i = 0; i < 4; i++) {
+    code = randomCode();
+    try { await db.ref(`join_codes/${code}`).set(S.cid); break; } catch (err) { if (i === 3) throw err; }
+  }
+  await db.ref(`companies/${S.cid}/join_code`).set(code);
+  if (old) await db.ref(`join_codes/${old}`).remove().catch(() => {});
+  return code;
 }
 async function copyText(text, msg) {
   try { await navigator.clipboard.writeText(text); toast(msg, 'ok', 2500); }
@@ -2909,9 +3227,11 @@ async function copyText(text, msg) {
 }
 async function removeMember(uid) {
   const m = S.members[uid] || {};
-  if (!(await confirmSheet({ title: `Remove ${m.name || m.email}?`, body: 'They lose access to your company\u2019s requests and contacts. Make a new join code too if they still have the old one.', ok: 'Remove', danger: true }))) return;
-  try { await db.ref(`companies/${S.cid}/members/${uid}`).remove(); toast('Removed.', 'ok'); }
-  catch (err) { toast(friendlyError(err), 'error'); }
+  if (!(await confirmSheet({ title: `Remove ${esc(m.name || m.email)}?`, body: 'They lose access to your company\u2019s requests and contacts. Your join code changes too, so the old one can\u2019t be used to rejoin. Give the new code to anyone still joining.', ok: 'Remove', danger: true }))) return;
+  try { await db.ref(`companies/${S.cid}/members/${uid}`).remove(); }
+  catch (err) { toast(friendlyError(err), 'error'); return; }
+  try { const code = await rotateJoinCode(); toast(`Removed. New join code: ${prettyCode(code)}`, 'ok', 6000); }
+  catch (err) { toast('Removed, but the join code couldn\u2019t be changed. Tap \u201cMake a new code\u201d to do it now.', 'error', 8000); }
 }
 async function leaveCompany() {
   if (!(await confirmSheet({ title: `Leave ${S.company.name}?`, body: 'You\u2019ll lose access to its requests and contacts. You can rejoin later with a join code.', ok: 'Leave', danger: true }))) return;
@@ -2936,7 +3256,7 @@ function openChangeEmail() {
     $('#email-form', body).addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = $('#new-email', body).value.trim();
-      if (!validEmail(email)) { toast('Enter a valid email address.', 'error'); return; }
+      if (!validEmail(email)) { fieldProblem('new-email', 'Enter a valid email address.'); return; }
       try { await S.user.verifyBeforeUpdateEmail(email); closeSheet(); toast(`Link sent to ${email}. Open it to finish the change.`, 'ok', 6000); }
       catch (err) { toast(friendlyError(err), 'error', 6000); }
     });
@@ -3006,6 +3326,7 @@ document.addEventListener('click', async (e) => {
     case 'forgot': forgotPassword(); break;
     case 'sms-resend': sendSmsCode(sms.phone); break;
     case 'sms-change': resetSmsUi(); setTimeout(() => $('#sms-phone').focus(), 60); break;
+    case 'retry-load': if (auth.currentUser) handleUser(auth.currentUser); break;
     case 'signout': signOut(false); break;
     case 'signout-ask': signOut(true); break;
     case 'sheet-close': closeSheet(); break;
@@ -3020,20 +3341,24 @@ document.addEventListener('click', async (e) => {
     case 'qty-inc': stepQty(el, 1); break;
     case 'qty-dec': stepQty(el, -1); break;
     case 'add-item': S.items.push({ qty: 1, type: 'box', weight: '' }); renderItems(); $$('#item-rows .item-row').pop().querySelector('select').focus(); break;
-    case 'item-remove': S.items.splice(+el.closest('.item-row').dataset.i, 1); renderItems(); break;
+    case 'item-remove': S.items.splice(+el.closest('.item-row').dataset.i, 1); renderItems(); saveDraftSoon(); break;
+    case 'draft-continue': restoreDraft(); break;
+    case 'draft-discard': clearDraft(); toast('Unsent pickup discarded.', 'info', 2500); break;
     case 'clear-form':
       if (S.editingId) { stopEdit(); break; }
       if (formIsDirty() && !(await confirmSheet({ title: 'Clear the form?', body: 'Everything you\u2019ve entered will be removed.', ok: 'Clear' }))) break;
       resetForm();
+      clearDraft();
       break;
     case 'stop-edit': stopEdit(); break;
     case 'new-request': resetForm(); window.scrollTo(0, 0); break;
     case 'send-again': if (S.lastSent) repeatRequest(S.lastSent); break;
+    case 'share-ticket': shareTicket(); break;
     case 'detail': openDetail(id); break;
     case 'repeat': {
       const r = S.requests[id];
       if (!r) break;
-      if (el.id === 'new-repeat-latest' && formIsDirty() && !(await confirmSheet({ title: 'Replace what you\u2019ve entered?', body: 'Your previous request will be pasted into the form, replacing what\u2019s there now.', ok: 'Paste it' }))) break;
+      if (el.id === 'new-repeat-latest' && formIsDirty() && !(await confirmSheet({ title: 'Replace what you\u2019ve entered?', body: 'Your most recent request will be filled in, replacing what\u2019s there now.', ok: 'Fill it in' }))) break;
       closeSheet();
       repeatRequest(r);
       break;
@@ -3053,6 +3378,7 @@ document.addEventListener('click', async (e) => {
     case 'export-csv': exportCsv(); break;
     case 'export-pdf': exportPdf(); break;
     case 'contact-new': openContactEditor(null); break;
+    case 'contact-import': $('#contacts-file').click(); break;
     case 'contact-edit': openContactEditor(id); break;
     case 'edit-profile': openProfileEditor(); break;
     case 'edit-company': openCompanyEditor(); break;
@@ -3088,10 +3414,25 @@ $('#hist-period').addEventListener('change', (e) => {
   S.hist.limit = 50;
   $('#hist-custom').hidden = S.hist.period !== 'custom';
   if (S.hist.period === 'custom' && !S.hist.from) { S.hist.from = localDateStr(new Date(new Date().getFullYear(), new Date().getMonth(), 1)); S.hist.to = todayStr(); $('#hist-from').value = S.hist.from; $('#hist-to').value = S.hist.to; }
+  if (S.hist.period === 'custom') syncRange();
   renderHistory();
 });
-$('#hist-from').addEventListener('change', (e) => { S.hist.from = e.target.value; renderHistory(); });
-$('#hist-to').addEventListener('change', (e) => { S.hist.to = e.target.value; renderHistory(); });
+// From can't be after To, and neither can be after today; picking them the wrong way round swaps them
+function syncRange() {
+  const f = $('#hist-from');
+  const t = $('#hist-to');
+  const today = todayStr();
+  if (S.hist.from && S.hist.to && S.hist.from > S.hist.to) {
+    [S.hist.from, S.hist.to] = [S.hist.to, S.hist.from];
+    f.value = S.hist.from;
+    t.value = S.hist.to;
+  }
+  f.max = S.hist.to || today;
+  t.min = S.hist.from || '';
+  t.max = today;
+}
+$('#hist-from').addEventListener('change', (e) => { S.hist.from = e.target.value; syncRange(); renderHistory(); });
+$('#hist-to').addEventListener('change', (e) => { S.hist.to = e.target.value; syncRange(); renderHistory(); });
 $('#hist-user').addEventListener('change', (e) => { S.hist.user = e.target.value; S.hist.limit = 50; renderHistory(); });
 $('#hist-status').addEventListener('click', (e) => {
   const b = e.target.closest('[data-status]');

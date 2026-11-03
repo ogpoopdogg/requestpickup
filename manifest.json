@@ -16,5 +16,33 @@
       "sizes": "512x512",
       "type": "image/png"
     }
+  ],
+  "shortcuts": [
+    {
+      "name": "New pickup",
+      "short_name": "New pickup",
+      "description": "Start a new pickup request",
+      "url": "./index.html?go=new",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Repeat my last pickup",
+      "short_name": "Repeat last",
+      "description": "Fill in your most recent request again",
+      "url": "./index.html?go=repeat",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
   ]
 }
