@@ -99,8 +99,22 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     await page.fill('#ready-after', '14:00');
     await page.fill('#closes-at', '16:00');
     assert.ok((await page.locator('.tabbar').evaluate((el) => getComputedStyle(el).backgroundColor)) !== 'rgba(0, 0, 0, 0)', 'solid bottom bar');
+    // Typing a name suggests this account's own contacts; a tap fills in the whole stop
+    await page.fill('#delivery-name', 'acm');
+    await page.waitForSelector('#delivery-name-ac:not([hidden]) .ac-item');
+    assert.match(await page.textContent('#delivery-name-ac'), /Acme Supply[\s\S]*12 Main St/);
+    await shot(page, 'contact-suggest');
+    await page.click('#delivery-name-ac .ac-item');
+    assert.strictEqual(await page.inputValue('#delivery-name'), 'Acme Supply');
+    assert.strictEqual(await page.inputValue('#delivery-address'), '12 Main St');
+    assert.ok(await page.isHidden('#delivery-name-ac'), 'list closes once picked');
+    await page.fill('#delivery-name', 'zzz');
+    assert.ok(await page.isHidden('#delivery-name-ac'), 'no list when nothing matches');
+    await page.fill('#delivery-name', '');
+    await page.fill('#delivery-address', '');
     // 2.1 an unsent request comes back after the app is closed
     await page.fill('#pickup-name', 'Acme Supply');
+    await page.waitForTimeout(700); // the draft is saved half a second after typing stops
     await page.waitForFunction(() => localStorage.getItem('ec_draft_u1_c1'));
     await page.reload();
     await page.waitForSelector('#draft-banner:not([hidden])');
@@ -163,6 +177,34 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     await page.keyboard.press('Escape');
     await page.waitForSelector('#sheet[hidden]', { state: 'attached' });
     assert.strictEqual(await page.locator('#hist-list .chip.msg').count(), 0, 'read once opened');
+    // Messages tab: one conversation for the account, each message with its pickup number
+    await page.evaluate(() => window.__fakeDb.put('messages/m2', { rid: 'r0', company_id: 'c1', ref_no: 1190, from: 'dispatch', text: 'Driver is 10 min out.', at: Date.now(), by_uid: 'staff1', by_name: 'dana' }));
+    await page.waitForSelector('#msg-dot:not([hidden])');
+    await page.click('.tab[data-nav=messages]');
+    await page.waitForSelector('#msgs-body .msg.them');
+    assert.ok(await page.isHidden('#msg-dot'), 'dot clears once the conversation is open');
+    assert.match(await page.textContent('#msgs-body .msg-list'), /#1201[\s\S]*#1190/);
+    assert.strictEqual(await page.inputValue('#msg-about'), 'r0', 'starts on the pickup dispatch last wrote about');
+    await page.selectOption('#msg-about', 'r1');
+    await page.fill('#msgs-body .msg-form input', 'Is the 1201 driver coming?');
+    await page.press('#msgs-body .msg-form input', 'Enter');
+    await page.waitForFunction(() => Object.values(window.__fakeDb.get('messages')).some((m) => m.text === 'Is the 1201 driver coming?' && m.rid === 'r1' && m.company_id === 'c1'));
+    // A message that couldn't go out stays on screen with Try again, it doesn't vanish
+    await page.evaluate(() => { Object.defineProperty(S, 'online', { get: () => false, set: () => {}, configurable: true }); });
+    await page.fill('#msgs-body .msg-form input', 'Hello?');
+    await page.press('#msgs-body .msg-form input', 'Enter');
+    await page.waitForSelector('#msgs-body .msg.failed');
+    await page.evaluate(() => { delete S.online; S.online = true; });
+    await page.click('#msgs-body .msg.failed [data-act=msg-retry]');
+    await page.waitForFunction(() => Object.values(window.__fakeDb.get('messages')).some((m) => m.text === 'Hello?'));
+    await page.waitForFunction(() => !document.querySelector('#msgs-body .msg.failed'));
+    await page.waitForTimeout(300);
+    await shot(page, 'messages-tab');
+    await page.click('#msgs-body .msg-ref >> nth=0');
+    await page.waitForSelector('#sheet:not([hidden]) [data-detail]');
+    await page.keyboard.press('Escape');
+    await page.waitForSelector('#sheet[hidden]', { state: 'attached' });
+    await page.click('.tab[data-nav=history]');
     await page.evaluate(() => { document.getElementById('toasts').innerHTML = ''; }); // so later steps find their own toast
     await page.selectOption('#hist-period', 'custom');
     await page.fill('#hist-from', '2026-03-01');
