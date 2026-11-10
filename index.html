@@ -636,6 +636,85 @@ body.kb-open .grab{display:none}
   #print-area .ptotals{margin-top:12px;font-size:11px}
 }
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+/* ---------- Same logo tile as the Dispatch app ---------- */
+.logo-tile{display:grid;place-items:center;width:30px;height:30px;flex:none;border-radius:var(--r-sm);background:linear-gradient(160deg,var(--yellow-hi),var(--yellow) 60%,var(--yellow-lo));box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 4px 12px -6px rgba(255,209,0,.7)}
+.topbar .logo-tile img,.brand .logo-tile img{width:22px;height:auto;border-radius:0;display:block}
+.brand .logo-tile{width:40px;height:40px;border-radius:10px}
+.brand .logo-tile img{width:29px}
+/* ---------- Optional boxes behind "+" ---------- */
+.opt-btn{display:inline-flex;align-items:center;min-height:36px;padding:0 12px;border:1px dashed var(--line-strong);border-radius:99px;background:none;color:var(--ink-2);font:inherit;font-size:13.5px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.opt-btn:hover{color:var(--ink);border-color:var(--ink-3)}
+.opt-btn:active{transform:scale(.97)}
+.opt-btns{display:flex;flex-wrap:wrap;gap:6px}
+.leg-foot{justify-content:space-between;align-items:center;gap:6px;margin:-2px 0 8px}
+.opt-line{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:10px}
+.opt-line:has(> .opt-btn[hidden]:only-child){display:none}
+[data-opt]:not(button):not([hidden]){animation:optIn var(--t-slow) var(--out)}
+@keyframes optIn{from{opacity:0;transform:translateY(-4px)}}
+/* ---------- Solid bottom bar; the Review button never covers a box ---------- */
+.tabbar{background:var(--surface);-webkit-backdrop-filter:none;backdrop-filter:none}
+html{scroll-padding-bottom:calc(var(--nav-h) + var(--safe-b) + 84px)}
+#req-form{padding-bottom:8px}
+/* ---------- Status steps ---------- */
+.steps{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:0}
+.steps li{position:relative;display:flex;align-items:flex-start;gap:10px;padding:0 0 12px}
+.steps li:last-child{padding-bottom:0}
+.steps li:not(:last-child)::after{content:'';position:absolute;left:11px;top:24px;bottom:2px;width:2px;background:var(--line-strong)}
+.steps li.done:not(:last-child)::after{background:var(--ok)}
+.step-dot{flex:none;display:grid;place-items:center;width:24px;height:24px;border-radius:50%;border:2px solid var(--line-strong);background:var(--surface)}
+.step-dot .i{width:13px;height:13px;stroke-width:3;color:#fff}
+.steps li.done .step-dot{background:var(--ok);border-color:var(--ok)}
+.steps li.next .step-dot{border-color:var(--yellow-lo);box-shadow:0 0 0 4px var(--yellow-soft);animation:stepPulse 1.6s ease-in-out infinite}
+@keyframes stepPulse{50%{box-shadow:0 0 0 7px transparent}}
+@media (prefers-reduced-motion:reduce){.steps li.next .step-dot{animation:none}}
+.step-txt{padding-top:2px;line-height:1.25}
+.step-txt b{display:block;font-size:14.5px}
+.steps li:not(.done) .step-txt b{color:var(--ink-2);font-weight:650}
+.step-txt small{display:block;font-size:12.5px;color:var(--ink-2)}
+.next-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:12px 14px;margin-bottom:12px;box-shadow:var(--sh-2)}
+.next-card h2{font-size:16px;margin-bottom:10px}
+.next-card .small{margin:2px 0 0}
+.call-row{display:inline-flex;gap:6px;margin-top:6px}
+.call-row .btn{min-height:34px}
+.chip.seen::before{background:var(--ok)!important}
+.chip.msg{background:#e8f1ff;border-color:#9cc0ff;color:#0b4fb3;text-transform:none;letter-spacing:0;font-size:12px}
+[data-theme=dark] .chip.msg{background:rgba(80,140,255,.16);border-color:rgba(120,170,255,.4);color:#9cc0ff}
+/* ---------- Home-screen tip after a send ---------- */
+.home-tip{display:flex;align-items:center;flex-wrap:wrap;gap:10px;background:var(--yellow-soft);border:1px solid var(--yellow-lo);border-radius:var(--r-lg);padding:10px 12px;margin-bottom:12px}
+.home-tip .cta-ic{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--yellow);color:#000}
+.home-tip .grow{flex:1 1 180px;min-width:0;line-height:1.3}
+.home-tip b{display:block;font-size:14.5px}
+.home-tip small{display:block;font-size:12.5px;color:var(--ink-2)}
+.home-tip-btns{display:flex;gap:6px;margin-left:auto}
+/* ---------- Repeat on every History row ---------- */
+.row-wrap{position:relative;border-top:1px solid var(--line)}
+.row-wrap:first-child{border-top:0}
+.row-wrap>.row{border-top:0}
+.row-foot{display:block;padding-right:92px}
+.row-repeat{position:absolute;right:8px;bottom:8px;display:inline-flex;align-items:center;gap:5px;min-height:34px;padding:0 11px;border:1px solid var(--line-strong);border-radius:99px;background:var(--surface);color:var(--ink);font:inherit;font-size:13px;font-weight:750;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.row-repeat:hover{border-color:var(--ink-3)}
+.row-repeat:active{transform:scale(.96);background:var(--yellow-soft)}
+/* ---------- A to Z in Contacts ---------- */
+.az-head{position:sticky;top:calc(var(--safe-t) + 48px);z-index:2;font-size:13px;font-weight:800;color:var(--ink-2);margin:10px 0 0;padding:4px 2px;background:var(--bg);scroll-margin-top:calc(var(--safe-t) + 52px)}
+.az-head:first-child{margin-top:0}
+#contacts-list{padding-right:26px}
+.az-index{position:fixed;right:2px;top:50%;transform:translateY(-50%);z-index:20;display:flex;flex-direction:column;align-items:center;max-height:calc(100vh - 230px);overflow-y:auto;padding:4px 0;border-radius:99px;background:var(--surface);box-shadow:var(--sh-2)}
+.az-index button{min-width:26px;min-height:22px;border:0;background:none;color:var(--accent-ink);font:inherit;font-size:12px;font-weight:800;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.az-index button:active{background:var(--yellow);color:#000;border-radius:99px}
+@media (min-width:760px){#contacts-list>.list{display:grid;grid-template-columns:1fr 1fr}}
+/* ---------- Messages with dispatch ---------- */
+.msgs{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.msgs h3{display:flex;align-items:center;gap:6px;font-size:15px;margin-bottom:8px}
+.msgs-empty{font-size:13px;color:var(--ink-2);margin-bottom:8px}
+.msg{max-width:85%;margin:0 0 6px;padding:7px 10px;border-radius:14px;font-size:14.5px;line-height:1.35;overflow-wrap:anywhere}
+.msg p{margin:0}
+.msg small{display:block;font-size:11.5px;opacity:.7;margin-top:2px}
+.msg.them{background:var(--surface-3);border-bottom-left-radius:4px}
+.msg.me{margin-left:auto;background:var(--yellow);color:#000;border-bottom-right-radius:4px}
+.msg-form{display:grid;grid-template-columns:minmax(0,1fr) 52px;gap:6px;margin-top:8px}
+.msg-form input{width:100%;min-height:var(--ctl);padding:7px 11px;border:1px solid var(--line-strong);border-radius:var(--r-sm);background:var(--field);color:var(--ink);font:inherit;font-size:16px;outline:none}
+.msg-form input:focus{border-color:var(--focus);box-shadow:0 0 0 3px var(--yellow-ring)}
+.msg-form .btn{min-height:var(--ctl);padding:0}
 </style>
 </head>
 <body>
@@ -665,6 +744,8 @@ body.kb-open .grab{display:none}
   <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M3 3l18 18M10.6 5.1A10.6 10.6 0 0 1 12 5c6.4 0 10 7 10 7a17.6 17.6 0 0 1-3.2 4.1M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7a9.7 9.7 0 0 0 5.4-1.6M9.9 9.9a3 3 0 0 0 4.2 4.2"/></symbol>
   <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
   <symbol id="i-card" viewBox="0 0 24 24"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 10h19M6.5 15h4"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></symbol>
   <symbol id="i-wifi-off" viewBox="0 0 24 24"><path d="M2 2l20 20M8.5 16.5a5 5 0 0 1 7 0M5 13a10 10 0 0 1 5.2-2.8M19 13a10 10 0 0 0-2.1-1.6M2 8.8a15 15 0 0 1 4.2-2.7M22 8.8A15 15 0 0 0 11 5M12 20h.01"/></symbol>
 </svg>
 
@@ -678,7 +759,7 @@ body.kb-open .grab{display:none}
 <section id="view-auth" class="screen center-screen" hidden>
   <div class="auth auth-home">
     <div class="home-top">
-      <div class="brand"><img src="icon2.png" alt="" onerror="this.remove()"><div class="wordmark">E&amp;C <b>Courier</b></div></div>
+      <div class="brand"><span class="logo-tile"><img src="icon2.png" alt="" onerror="this.remove()"></span><div class="wordmark">E&amp;C <b>Courier</b></div></div>
       <button class="btn btn-ghost sm home-signin" type="button" data-act="jump-auth" data-mode="signin">Sign in</button>
     </div>
     <div class="home-grid">
@@ -736,7 +817,7 @@ body.kb-open .grab{display:none}
 <!-- Verify phone by SMS (new email/password accounts) -->
 <section id="view-verify" class="screen center-screen" hidden>
   <div class="auth">
-    <div class="brand"><img src="icon2.png" alt="" onerror="this.remove()"><div class="wordmark">E&amp;C <b>Courier</b></div></div>
+    <div class="brand"><span class="logo-tile"><img src="icon2.png" alt="" onerror="this.remove()"></span><div class="wordmark">E&amp;C <b>Courier</b></div></div>
     <h1>Verify your phone.</h1>
     <div class="auth-card">
     <form id="sms-phone-form" novalidate>
@@ -764,7 +845,7 @@ body.kb-open .grab{display:none}
 <!-- Can't reach the database (no signal, or it timed out) -->
 <section id="view-offline" class="screen center-screen" hidden>
   <div class="auth">
-    <div class="brand"><img src="icon2.png" alt="" onerror="this.remove()"><div class="wordmark">E&amp;C <b>Courier</b></div></div>
+    <div class="brand"><span class="logo-tile"><img src="icon2.png" alt="" onerror="this.remove()"></span><div class="wordmark">E&amp;C <b>Courier</b></div></div>
     <h1>Can&rsquo;t reach E&amp;C right now.</h1>
     <p class="lead" id="offline-lead">Check your signal or Wi-Fi, then try again. You&rsquo;re still signed in.</p>
     <div class="auth-card">
@@ -778,7 +859,7 @@ body.kb-open .grab{display:none}
 <!-- Company setup -->
 <section id="view-onboard" class="screen center-screen" hidden>
   <div class="auth">
-    <div class="brand"><img src="icon2.png" alt="" onerror="this.remove()"><div class="wordmark">E&amp;C <b>Courier</b></div></div>
+    <div class="brand"><span class="logo-tile"><img src="icon2.png" alt="" onerror="this.remove()"></span><div class="wordmark">E&amp;C <b>Courier</b></div></div>
     <h1>Set up your individual or company profile.</h1>
     <p class="lead">Everyone that is logged into the same profile shares the same request history and contacts, create an individual or company profile.</p>
     <div class="notice warn" id="onboard-notice" hidden></div>
@@ -807,7 +888,7 @@ body.kb-open .grab{display:none}
 <div id="view-app" hidden>
   <header class="topbar">
     <div class="topbar-in">
-      <img src="icon2.png" alt="" onerror="this.remove()">
+      <span class="logo-tile"><img src="icon2.png" alt="" onerror="this.remove()"></span>
       <div><div class="wordmark">E&amp;C <b>Courier</b></div><div class="company" id="hdr-company"></div></div>
       <div class="spacer"></div>
       <span class="offline-pill" id="offline-pill" hidden><svg class="i sm"><use href="#i-wifi-off"/></svg>Offline</span>
@@ -832,10 +913,10 @@ body.kb-open .grab{display:none}
               <div class="field"><label for="pickup-name">Business or contact name <span class="req">*</span></label><input id="pickup-name" maxlength="120" placeholder="Who are we picking up from?"></div>
               <div class="field"><label for="pickup-address">Address <span class="req">*</span></label><div class="with-btn"><input id="pickup-address" maxlength="250" placeholder="Search address or business"><button class="icon-btn" type="button" data-act="map" data-leg="pickup" aria-label="Pick pickup location on map"><svg class="i"><use href="#i-pin"/></svg></button></div><p class="hint" id="pickup-address-hint"></p></div>
               <div class="two">
-                <div class="field"><label for="pickup-phone">Phone</label><input id="pickup-phone" type="tel" inputmode="tel" data-phone placeholder="(204) 555-0123"></div>
-                <div class="field"><label for="pickup-email">Email</label><input id="pickup-email" type="email" inputmode="email" maxlength="120" placeholder="name@company.ca"></div>
+                <div class="field" data-opt="pickup-phone" hidden><label for="pickup-phone">Phone</label><input id="pickup-phone" type="tel" inputmode="tel" data-phone placeholder="(204) 555-0123"></div>
+                <div class="field" data-opt="pickup-email" hidden><label for="pickup-email">Email</label><input id="pickup-email" type="email" inputmode="email" maxlength="120" placeholder="name@company.ca"></div>
               </div>
-              <div class="leg-foot"><button class="link-btn" type="button" data-act="save-leg" data-leg="pickup"><svg class="i sm"><use href="#i-bookmark"/></svg>Save to contacts</button></div>
+              <div class="leg-foot"><span class="opt-btns"><button class="opt-btn" type="button" data-act="show-opt" data-opt="pickup-phone">+ Phone</button><button class="opt-btn" type="button" data-act="show-opt" data-opt="pickup-email">+ Email</button></span><button class="link-btn" type="button" data-act="save-leg" data-leg="pickup"><svg class="i sm"><use href="#i-bookmark"/></svg>Save to contacts</button></div>
             </div>
             <div class="route-mid"><button class="swap" type="button" data-act="swap" aria-label="Swap pickup and delivery" title="Swap pickup and delivery"><svg class="i"><use href="#i-swap"/></svg></button></div>
             <div class="leg" data-leg="delivery">
@@ -843,10 +924,10 @@ body.kb-open .grab{display:none}
               <div class="field"><label for="delivery-name">Business or contact name <span class="muted">(optional)</span></label><input id="delivery-name" maxlength="120" placeholder="Who is it going to?"></div>
               <div class="field"><label for="delivery-address">Address <span class="muted">(optional)</span></label><div class="with-btn"><input id="delivery-address" maxlength="250" placeholder="Search address or business"><button class="icon-btn" type="button" data-act="map" data-leg="delivery" aria-label="Pick delivery location on map"><svg class="i"><use href="#i-pin"/></svg></button></div><p class="hint" id="delivery-address-hint"></p></div>
               <div class="two">
-                <div class="field"><label for="delivery-phone">Phone</label><input id="delivery-phone" type="tel" inputmode="tel" data-phone placeholder="(204) 555-0123"></div>
-                <div class="field"><label for="delivery-email">Email</label><input id="delivery-email" type="email" inputmode="email" maxlength="120" placeholder="name@company.ca"></div>
+                <div class="field" data-opt="delivery-phone" hidden><label for="delivery-phone">Phone</label><input id="delivery-phone" type="tel" inputmode="tel" data-phone placeholder="(204) 555-0123"></div>
+                <div class="field" data-opt="delivery-email" hidden><label for="delivery-email">Email</label><input id="delivery-email" type="email" inputmode="email" maxlength="120" placeholder="name@company.ca"></div>
               </div>
-              <div class="leg-foot"><button class="link-btn" type="button" data-act="save-leg" data-leg="delivery"><svg class="i sm"><use href="#i-bookmark"/></svg>Save to contacts</button></div>
+              <div class="leg-foot"><span class="opt-btns"><button class="opt-btn" type="button" data-act="show-opt" data-opt="delivery-phone">+ Phone</button><button class="opt-btn" type="button" data-act="show-opt" data-opt="delivery-email">+ Email</button></span><button class="link-btn" type="button" data-act="save-leg" data-leg="delivery"><svg class="i sm"><use href="#i-bookmark"/></svg>Save to contacts</button></div>
             </div>
           </section>
 
@@ -854,8 +935,8 @@ body.kb-open .grab{display:none}
             <h2><span class="sec-ic" aria-hidden="true"><svg class="i"><use href="#i-box"/></svg></span>What are we moving?</h2>
             <div class="items" id="item-rows"></div>
             <p class="items-preview" id="items-preview"></p>
-            <button class="btn btn-secondary sm" type="button" data-act="add-item" style="margin-bottom:12px"><svg class="i sm"><use href="#i-plus"/></svg>Add another line</button>
-            <div class="field"><label for="item-details">Description</label><textarea id="item-details" maxlength="500" rows="2" placeholder="Optional, e.g. fragile, keep upright"></textarea></div>
+            <div class="opt-line"><button class="btn btn-secondary sm" type="button" data-act="add-item"><svg class="i sm"><use href="#i-plus"/></svg>Add another line</button><button class="opt-btn" type="button" data-act="show-opt" data-opt="item-details">+ Description</button></div>
+            <div class="field" data-opt="item-details" hidden><label for="item-details">Description</label><textarea id="item-details" maxlength="500" rows="2" placeholder="Optional, e.g. fragile, keep upright"></textarea></div>
             <p class="err" id="items-err" hidden></p>
           </section>
 
@@ -872,6 +953,11 @@ body.kb-open .grab{display:none}
               <input id="sched-date" type="date">
               <p class="hint">Dispatch holds scheduled requests and sends them out on that day.</p>
             </div>
+            <div class="opt-line"><button class="opt-btn" type="button" data-act="show-opt" data-opt="hours">+ Pickup hours</button></div>
+            <div class="two" data-opt="hours" hidden>
+              <div class="field"><label for="ready-after">Ready after</label><input id="ready-after" type="time" step="900"></div>
+              <div class="field"><label for="closes-at">Closes at</label><input id="closes-at" type="time" step="900"></div>
+            </div>
           </section>
 
           <section class="block">
@@ -883,8 +969,9 @@ body.kb-open .grab{display:none}
                 <label><input type="radio" name="payment" value="collect"><span>Collect</span></label>
               </div>
             </div>
-            <div class="field"><label for="po">PO number or reference</label><input id="po" maxlength="100" placeholder="Optional"></div>
             <div class="field"><label for="notes">Notes for the driver</label><textarea id="notes" maxlength="1000" rows="3" placeholder="Optional: door #, hours, gate code"></textarea></div>
+            <div class="opt-line"><button class="opt-btn" type="button" data-act="show-opt" data-opt="po">+ PO number</button></div>
+            <div class="field" data-opt="po" hidden><label for="po">PO number or reference</label><input id="po" maxlength="100" placeholder="Optional"></div>
           </section>
 
           <div class="submit-bar"><button class="btn btn-primary block" type="submit" id="btn-review">Review request</button></div>
@@ -914,7 +1001,7 @@ body.kb-open .grab{display:none}
         <select id="hist-user" aria-label="Submitted by" hidden><option value="all">All users</option></select>
         <div class="chips" id="hist-status" role="group" aria-label="Status">
           <button class="chip-btn" type="button" data-status="all" aria-pressed="true">All</button>
-          <button class="chip-btn" type="button" data-status="new" aria-pressed="false">Submitted</button>
+          <button class="chip-btn" type="button" data-status="new" aria-pressed="false">Waiting</button>
           <button class="chip-btn" type="button" data-status="dispatched" aria-pressed="false">Dispatched</button>
           <button class="chip-btn" type="button" data-status="cancelled" aria-pressed="false">Cancelled</button>
         </div>
@@ -1029,6 +1116,7 @@ const S = {
   members: {},
   contacts: {},
   requests: {},
+  msgs: {},
   reqLoaded: false,
   listeners: [],
   items: [{ qty: 1, type: 'box', weight: '' }],
@@ -1104,6 +1192,152 @@ function itemLabel(it) {
 function itemsText(items) { return (items || []).filter((it) => Number(it.qty) > 0).map(itemLabel).join(', '); }
 // The database rules cap items_text at 500 characters; the full lines still go in items.
 function clampText(s, max) { return s.length > max ? s.slice(0, max - 1) + '…' : s; }
+
+/* =========================================================
+   Status words
+   The same list is in the Dispatch app (dispatch/index.html), so both apps always say the same thing.
+   "seen" is a request dispatch has opened (dispatch saves seen_at), still waiting for a driver.
+   ========================================================= */
+const STATUS_WORDS = { new: 'Waiting for dispatch', seen: 'Seen by dispatch', dispatched: 'Dispatched to a driver', cancelled: 'Cancelled', removed: 'Removed by dispatch' };
+const STATUS_SHORT = { new: 'Waiting', seen: 'Seen', dispatched: 'Dispatched', cancelled: 'Cancelled', removed: 'Removed' };
+const statusKey = (r) => (!r ? 'new' : ['dispatched', 'cancelled', 'removed'].includes(r.status) ? r.status : r.seen_at ? 'seen' : 'new');
+// Sent, then Seen by dispatch, then Dispatched to a driver
+function statusSteps(r) {
+  const k = statusKey(r);
+  if (k === 'cancelled' || k === 'removed') return '';
+  const done = { new: 1, seen: 2, dispatched: 3 }[k];
+  const steps = [['Sent to dispatch', r.created_at], ['Seen by dispatch', r.seen_at], ['Dispatched to a driver', r.dispatched_at]];
+  return `<ol class="steps" aria-label="Where it is">${steps.map(([label, at], i) => `<li class="${i < done ? 'done' : i === done ? 'next' : ''}"${i === done - 1 ? ' aria-current="step"' : ''}><span class="step-dot">${i < done ? icon('check') : ''}</span><span class="step-txt"><b>${label}</b>${i < done && at ? `<small>${esc(fmtShort(at))}</small>` : i === done ? '<small>Next</small>' : ''}</span></li>`).join('')}</ol>`;
+}
+// "14:00" -> "2:00 pm"
+function fmtHM(hm) {
+  const m = /^(\d{1,2}):(\d{2})$/.exec(String(hm || ''));
+  if (!m) return '';
+  const h = +m[1];
+  return `${h % 12 || 12}:${m[2]} ${h < 12 ? 'am' : 'pm'}`;
+}
+// Pickup hours: "Ready after 2:00 pm, closes at 4:00 pm"
+function hoursText(r) {
+  const a = r.ready_after ? `Ready after ${fmtHM(r.ready_after)}` : '';
+  const b = r.closes_at ? `${a ? 'closes' : 'Closes'} at ${fmtHM(r.closes_at)}` : '';
+  return [a, b].filter(Boolean).join(', ');
+}
+const dispatchCall = () => (DISPATCH_PHONE ? `<span class="call-row"><a class="btn btn-secondary sm" href="tel:${esc(phoneDigits(DISPATCH_PHONE))}">${icon('phone', 'sm')}Call</a><a class="btn btn-secondary sm" href="sms:${esc(phoneDigits(DISPATCH_PHONE))}">${icon('chat', 'sm')}Text</a></span>` : '');
+
+/* =========================================================
+   Optional boxes behind small "+" buttons (phone, email, description, pickup hours, PO)
+   A box shows once it's tapped or has something in it.
+   ========================================================= */
+const optOpen = new Set();
+function syncOpts() {
+  $$('#req-form [data-opt]:not(button)').forEach((box) => {
+    const k = box.dataset.opt;
+    const filled = $$('input,textarea', box).some((x) => x.value.trim());
+    const show = filled || optOpen.has(k);
+    box.hidden = !show;
+    const btn = $(`#req-form button[data-opt="${k}"]`);
+    if (btn) btn.hidden = show;
+  });
+}
+function showOpt(k) {
+  optOpen.add(k);
+  syncOpts();
+  const box = $(`#req-form [data-opt="${k}"]:not(button)`);
+  const f = box && $('input,textarea', box);
+  if (f) f.focus();
+}
+
+/* =========================================================
+   Payment starts on what this person chose last time
+   ========================================================= */
+const payKey = () => `ec_lastpay_${S.user ? S.user.uid : ''}`;
+function lastPayment() {
+  try { const v = localStorage.getItem(payKey()); if (v === 'prepaid' || v === 'collect') return v; } catch (e) { /* ignore */ }
+  const mine = Object.values(S.requests || {}).filter((r) => S.user && r.customer_uid === S.user.uid && (r.payment === 'prepaid' || r.payment === 'collect'))
+    .sort((a, b) => (b.created_at || 0) - (a.created_at || 0))[0];
+  return mine ? mine.payment : '';
+}
+function applyLastPayment() {
+  if (S.editingId || $('input[name=payment]:checked')) return;
+  const v = lastPayment();
+  if (v) $$('input[name=payment]').forEach((x) => { x.checked = x.value === v; });
+}
+
+/* =========================================================
+   Messages with dispatch (messages/, read for this company only)
+   Unread replies are counted on this phone.
+   ========================================================= */
+const msgSeenKey = () => `ec_msgseen_${S.user ? S.user.uid : ''}`;
+let msgSeen = {};
+function loadMsgSeen() { try { msgSeen = JSON.parse(localStorage.getItem(msgSeenKey()) || '{}') || {}; } catch (e) { msgSeen = {}; } }
+const msgsFor = (rid) => Object.entries(S.msgs || {}).filter(([, m]) => m && m.rid === rid).sort((a, b) => (a[1].at || 0) - (b[1].at || 0));
+const unreadFor = (rid) => msgsFor(rid).filter(([, m]) => m.from === 'dispatch' && (m.at || 0) > (msgSeen[rid] || 0)).length;
+const unreadReqs = () => Object.keys(S.requests || {}).filter((rid) => unreadFor(rid) > 0).length;
+function markMsgsSeen(rid) {
+  if (!unreadFor(rid)) return;
+  msgSeen[rid] = Date.now();
+  const cutoff = Date.now() - 30 * 86400000;
+  Object.keys(msgSeen).forEach((k) => { if (msgSeen[k] < cutoff) delete msgSeen[k]; });
+  try { localStorage.setItem(msgSeenKey(), JSON.stringify(msgSeen)); } catch (e) { /* ignore */ }
+  updateHistoryDot();
+  if (S.tab === 'history') renderHistory();
+}
+let msgsLoaded = false;
+function onMsgs(snap) {
+  const before = S.msgs || {};
+  S.msgs = snap.val() || {};
+  if (msgsLoaded) {
+    Object.entries(S.msgs).forEach(([mid, m]) => {
+      if (before[mid] || !m || m.from !== 'dispatch') return;
+      if (sheetIsOpen() && currentDetailId === m.rid) return;
+      const r = S.requests[m.rid];
+      toast(`Dispatch${r ? ` about #${r.ref_no}` : ''}: ${m.text}`, 'info', 10000, { label: 'Open', run: () => { switchTab('history'); openDetail(m.rid); } });
+    });
+  }
+  msgsLoaded = true;
+  updateHistoryDot();
+  if (S.tab === 'history') renderHistory();
+  if (sheetIsOpen() && currentDetailId && $('#sheet-body [data-detail]')) { openDetail(currentDetailId, true); markMsgsSeen(currentDetailId); }
+}
+function msgSection(id, r) {
+  const list = msgsFor(id);
+  const can = r.status !== 'cancelled';
+  if (!list.length && !can) return '';
+  const bubbles = list.map(([, m]) => `<div class="msg ${m.from === 'customer' ? 'me' : 'them'}"><p>${esc(m.text)}</p><small>${m.from === 'customer' ? esc(m.by_name || 'You') : 'Dispatch'} · ${esc(fmtShort(m.at))}</small></div>`).join('');
+  return `<section class="msgs">
+      <h3>${icon('chat', 'sm')}Messages with dispatch</h3>
+      ${bubbles || '<p class="msgs-empty">Need to tell dispatch something about this pickup? Write it here.</p>'}
+      ${can ? `<form class="msg-form" data-msg-form="${esc(id)}"><input name="text" maxlength="500" placeholder="Write to dispatch" aria-label="Message to dispatch" autocomplete="off" enterkeyhint="send"><button class="btn btn-primary" type="submit" aria-label="Send message">${icon('send', 'sm')}</button></form>` : ''}
+    </section>`;
+}
+let msgSending = false;
+document.addEventListener('submit', async (e) => {
+  const form = e.target.closest && e.target.closest('form[data-msg-form]');
+  if (!form) return;
+  e.preventDefault();
+  const id = form.dataset.msgForm;
+  const r = S.requests[id];
+  const input = form.elements.text;
+  const text = input.value.trim().slice(0, 500);
+  if (!r || !text || msgSending) return;
+  if (S.online === false) { toast('You’re offline, so it wasn’t sent. Try again when you have signal.', 'error', 6000); return; }
+  msgSending = true;
+  const btn = $('button', form);
+  btn.disabled = true;
+  try {
+    await db.ref('messages').push({ rid: id, company_id: S.cid, ref_no: r.ref_no || null, from: 'customer', text, at: TS, by_uid: S.user.uid, by_name: (myName() || '').slice(0, 80) });
+    const live = $(`#sheet-body form[data-msg-form="${id}"] input`);
+    if (live) live.value = '';
+    toast('Sent to dispatch.', 'ok', 2500);
+  } catch (err) {
+    toast('Your message wasn’t sent. ' + friendlyError(err), 'error', 7000);
+  } finally {
+    msgSending = false;
+    const b = $(`#sheet-body form[data-msg-form="${id}"] button`);
+    if (b) b.disabled = false;
+  }
+});
+
 
 /* ---------------- Security log ----------------
    Failed and refused sign-ins are reported to the E&C security log (the Security section of the
@@ -1758,6 +1992,10 @@ function enterApp(cid, company) {
   }, () => removedFromCompany());
 
   startRequests(cid, S.sessionToken);
+  loadMsgSeen();
+  msgsLoaded = false;
+  // Fine if the database rules don't allow it yet: messages just stay empty
+  listen(db.ref('messages').orderByChild('company_id').equalTo(cid), 'value', onMsgs, () => {});
 
   let offlineTimer = null;
   listen(db.ref('.info/connected'), 'value', (snap) => {
@@ -2100,7 +2338,9 @@ function readForm() {
     scheduled_for: when === 'scheduled' ? $('#sched-date').value : '',
     payment: pay ? pay.value : '',
     po: $('#po').value.trim(),
-    notes: $('#notes').value.trim()
+    notes: $('#notes').value.trim(),
+    ready_after: $('#ready-after').value,
+    closes_at: $('#closes-at').value
   };
 }
 
@@ -2180,6 +2420,7 @@ function validateForm(d) {
     else if (d.scheduled_for <= todayStr()) add('sched', 'Choose a date after today, or pick As soon as possible.');
   }
   if (!d.payment) add('pay', 'Choose prepaid or collect.');
+  if (d.ready_after && d.closes_at && d.closes_at <= d.ready_after) add('closes-at', 'The closing time must be after the ready time.');
   return errs[0] || null;
 }
 
@@ -2190,6 +2431,7 @@ function fillLeg(leg, src) {
   $(`#${leg}-email`).value = src.email || '';
   setLegGeo(leg, src.address && src.verified ? { address: src.address, city: src.city || '', lat: src.lat, lng: src.lng, verified: true } : null);
   ['name', 'address', 'phone', 'email'].forEach((f) => clearError(`${leg}-${f}`));
+  syncOpts();
 }
 function fillForm(r, { keepSchedule }) {
   fillLeg('pickup', r.pickup || {});
@@ -2205,11 +2447,14 @@ function fillForm(r, { keepSchedule }) {
   $$('input[name=when]').forEach((x) => { x.checked = x.value === (sched ? 'scheduled' : 'asap'); });
   $('#sched-date').value = sched ? r.scheduled_for : '';
   $('#sched-field').hidden = !sched;
+  $('#ready-after').value = /^\d{2}:\d{2}$/.test(r.ready_after || '') ? r.ready_after : '';
+  $('#closes-at').value = /^\d{2}:\d{2}$/.test(r.closes_at || '') ? r.closes_at : '';
+  syncOpts();
   clearAllErrors();
 }
 function formIsDirty() {
   const d = readForm();
-  return !!(d.pickup.name || d.pickup.address || d.delivery.name || d.delivery.address || d.item_details || d.po || d.notes || d.payment);
+  return !!(d.pickup.name || d.pickup.address || d.delivery.name || d.delivery.address || d.item_details || d.po || d.notes || d.ready_after || d.closes_at);
 }
 function resetForm(silent) {
   $('#req-form').reset();
@@ -2223,6 +2468,9 @@ function resetForm(silent) {
   $('#edit-banner').hidden = true;
   $('#form-title').textContent = 'New pickup';
   $('#btn-review').textContent = 'Review request';
+  optOpen.clear();
+  syncOpts();
+  applyLastPayment();
   clearAllErrors();
   if (!silent) { $('#sent-wrap').hidden = true; $('#new-form-wrap').hidden = false; }
 }
@@ -2273,6 +2521,7 @@ $$('input[name=when]').forEach((r) => r.addEventListener('change', () => {
   if (sched) { updateSchedMin(); if (!$('#sched-date').value) $('#sched-date').value = localDateStr(addDays(new Date(), 1)); }
 }));
 $('#sched-date').addEventListener('change', () => clearError('sched'));
+['ready-after', 'closes-at'].forEach((id) => $('#' + id).addEventListener('input', () => clearError('closes-at')));
 $$('input[name=payment]').forEach((r) => r.addEventListener('change', () => clearError('pay')));
 ['pickup-phone', 'pickup-email', 'delivery-phone', 'delivery-email'].forEach((id) => $('#' + id).addEventListener('input', () => clearError(id)));
 $('#item-details').addEventListener('input', () => clearError('items'));
@@ -2336,7 +2585,7 @@ function openReview(d) {
       ${legBlock('Pickup', d.pickup)}
       ${legBlock('Delivery', d.delivery)}
       <dt>Items</dt><dd>${items}</dd>
-      <dt>When</dt><dd>${d.when === 'scheduled' ? esc(fmtDay(d.scheduled_for)) : 'As soon as possible'}</dd>
+      <dt>When</dt><dd>${d.when === 'scheduled' ? esc(fmtDay(d.scheduled_for)) : 'As soon as possible'}${hoursText(d) ? `<small>${esc(hoursText(d))}</small>` : ''}</dd>
       <dt>Payment</dt><dd>${d.payment === 'collect' ? 'Collect' : 'Prepaid'}</dd>
       ${d.po ? `<dt>PO / ref</dt><dd>${esc(d.po)}</dd>` : ''}
       ${d.notes ? `<dt>Driver notes</dt><dd>${esc(d.notes)}</dd>` : ''}
@@ -2368,7 +2617,9 @@ function buildPayload(d) {
     scheduled_for: d.when === 'scheduled' ? d.scheduled_for : null,
     payment: d.payment,
     po: d.po || null,
-    notes: d.notes || null
+    notes: d.notes || null,
+    ready_after: d.ready_after || null,
+    closes_at: d.closes_at || null
   };
 }
 
@@ -2418,6 +2669,7 @@ async function sendRequest(d, btn) {
       });
     }
     S.lastSent = { ...d, refNo, edited: !!editing, sentAt: Date.now() };
+    try { localStorage.setItem(payKey(), d.payment); } catch (e) { /* ignore */ }
     if (!editing) clearDraft();
     closeSheet();
     resetForm(true);
@@ -2443,12 +2695,6 @@ function showSent() {
   const d = S.lastSent;
   const items = [itemsText(d.items), d.item_details].filter(Boolean).join(', ');
   $('#sent-wrap').innerHTML = `
-    <div class="sent-top" id="install-cta-row"${canOfferInstall() ? '' : ' hidden'}>
-      <button class="install-cta" type="button" data-act="install-cta">
-        <span class="cta-ic">${icon('download')}</span>
-        <span class="cta-txt"><span class="cta-title">Install the app</span><span class="cta-sub">Faster pickups next time</span></span>
-      </button>
-    </div>
     <div class="ticket" role="status">
       <div class="ticket-top">
         <div class="ticket-kicker">
@@ -2463,12 +2709,17 @@ function showSent() {
           <dt>From</dt><dd>${esc(d.pickup.name)}<small>${esc(d.pickup.address)}</small></dd>
           <dt>To</dt><dd>${d.delivery.name || d.delivery.address ? `${esc(d.delivery.name)}<small>${esc(d.delivery.address)}</small>` : 'Not specified'}</dd>
           <dt>Items</dt><dd>${esc(items)}</dd>
-          <dt>When</dt><dd>${d.when === 'scheduled' ? esc(fmtDay(d.scheduled_for)) : 'As soon as possible'}</dd>
+          <dt>When</dt><dd>${d.when === 'scheduled' ? esc(fmtDay(d.scheduled_for)) : 'As soon as possible'}${hoursText(d) ? `<small>${esc(hoursText(d))}</small>` : ''}</dd>
         </dl>
-        <p class="ticket-note">You\u2019ll see it marked dispatched in History once it\u2019s sent to a driver.</p>
         <button class="ticket-share" type="button" data-act="share-ticket">${icon(navigator.share ? 'share' : 'copy', 'sm')}${navigator.share ? 'Share' : 'Copy'} these details</button>
       </div>
     </div>
+    <section class="next-card">
+      <h2>What happens next</h2>
+      <div id="sent-steps">${sentSteps()}</div>
+      <p class="small muted">It updates here and in History. Questions? Open it in History to message dispatch.</p>
+    </section>
+    ${homeTip()}
     <div style="display:grid;gap:10px">
       <button class="btn btn-primary btn-outlined block" type="button" data-act="new-request">New request</button>
       <button class="btn btn-secondary block" type="button" data-act="send-again">${icon('repeat')}Send the same again</button>
@@ -2481,6 +2732,34 @@ function showSent() {
   setTimeout(() => { if (!$('#sent-wrap').hidden) window.scrollTo(0, 0); }, 360);
 }
 
+// The request just sent, as it is now (live from History once it's there)
+function sentRequest() {
+  const d = S.lastSent;
+  if (!d) return null;
+  const hit = Object.values(S.requests || {}).find((r) => r.ref_no === d.refNo);
+  return hit || { status: 'new', created_at: d.sentAt };
+}
+function sentSteps() {
+  const r = sentRequest();
+  if (!r) return '';
+  const k = statusKey(r);
+  if (k === 'removed') return `<div class="notice warn">${icon('alert')}<span><b>Removed by dispatch.</b> Call or text dispatch if you have questions. ${dispatchCall()}</span></div>`;
+  if (k === 'cancelled') return `<div class="notice">${icon('x')}<span>Cancelled.</span></div>`;
+  return statusSteps(r);
+}
+function refreshSentSteps() { const box = $('#sent-steps'); if (box && !$('#sent-wrap').hidden) box.innerHTML = sentSteps(); }
+// After a send: put it on the home screen (until it's installed, or Not now)
+const tipKey = () => `ec_hs_tip_${S.user ? S.user.uid : ''}`;
+function homeTip() {
+  let off = false;
+  try { off = !!localStorage.getItem(tipKey()); } catch (e) { off = false; }
+  if (off || !canOfferInstall()) return '';
+  return `<div class="home-tip" id="install-cta-row">
+      <span class="cta-ic">${icon('download')}</span>
+      <span class="grow"><b>Tip: put it on your home screen</b><small>It opens like an app, so your next pickup is one tap away.</small></span>
+      <span class="home-tip-btns"><button class="btn btn-primary sm" type="button" data-act="install-cta">Add it</button><button class="btn btn-ghost sm" type="button" data-act="tip-off">Not now</button></span>
+    </div>`;
+}
 // Plain text of the sent request, for a text or email to whoever is waiting on it
 function ticketText(d) {
   const leg = (L) => [L.name, L.address].filter(Boolean).join(', ');
@@ -2491,6 +2770,7 @@ function ticketText(d) {
     d.delivery.name || d.delivery.address ? `To: ${leg(d.delivery)}` : '',
     items ? `Items: ${items}` : '',
     `When: ${d.when === 'scheduled' ? fmtDay(d.scheduled_for) : 'As soon as possible'}`,
+    hoursText(d),
     d.po ? `PO / ref: ${d.po}` : ''
   ].filter(Boolean).join('\n');
 }
@@ -2589,8 +2869,14 @@ function renderContacts() {
     box.innerHTML = `<div class="empty">${icon('contacts')}<h3>No contacts yet</h3><p>Save the places you ship from and to, and fill them into a request with one tap.</p><div class="btn-row" style="justify-content:center"><button class="btn btn-primary" type="button" data-act="contact-new">${icon('plus', 'sm')}Add a contact</button><button class="btn btn-secondary" type="button" data-act="contact-import">${icon('download', 'sm')}Import a spreadsheet</button></div></div>`;
     return;
   }
-  box.innerHTML = list.length ? `<div class="list">${list.map((c) => contactRowHtml(c, 'contact-edit')).join('')}</div>`
-    : `<div class="empty"><h3>No matches</h3><p>No contacts match \u201c${esc(S.contactsQ)}\u201d.</p></div>`;
+  if (!list.length) { box.innerHTML = `<div class="empty"><h3>No matches</h3><p>No contacts match \u201c${esc(S.contactsQ)}\u201d.</p></div>`; return; }
+  // A long list gets letter headings and an A to Z strip down the side to jump with
+  if (list.length < 12 || S.contactsQ.trim()) { box.innerHTML = `<div class="list">${list.map((c) => contactRowHtml(c, 'contact-edit')).join('')}</div>`; return; }
+  const letterOf = (c) => { const ch = String(c.name || '').trim().charAt(0).toUpperCase(); return /[A-Z]/.test(ch) ? ch : '#'; };
+  const groups = [];
+  list.forEach((c) => { const l = letterOf(c); const g = groups[groups.length - 1]; if (g && g.l === l) g.items.push(c); else groups.push({ l, items: [c] }); });
+  box.innerHTML = groups.map((g) => `<h3 class="az-head" id="az-${g.l === '#' ? 'num' : g.l}">${g.l}</h3><div class="list">${g.items.map((c) => contactRowHtml(c, 'contact-edit')).join('')}</div>`).join('')
+    + `<nav class="az-index" aria-label="Jump to a letter">${groups.map((g) => `<button type="button" data-act="az" data-l="${g.l === '#' ? 'num' : g.l}">${g.l}</button>`).join('')}</nav>`;
 }
 
 let pickerLeg = null;
@@ -2854,11 +3140,14 @@ function onRequests(snap) {
   } else {
     Object.entries(data).forEach(([id, r]) => {
       const p = prev[id];
-      if (p && p.status === 'new' && r.status === 'dispatched') toast(`Request #${r.ref_no} was dispatched.`, 'ok', 7000);
+      if (p && p.status === 'new' && r.status === 'dispatched') toast(`Request #${r.ref_no} was dispatched to a driver.`, 'ok', 7000);
+      if (p && p.status === 'new' && r.status === 'removed') toast(`Request #${r.ref_no} was removed by dispatch. Call or text dispatch if you have questions.`, 'error', 9000);
     });
   }
   S.requests = data;
   updateCopyButtons();
+  refreshSentSteps();
+  if (firstLoad) applyLastPayment();
   if (firstLoad && pendingGo) {
     const go = pendingGo;
     pendingGo = '';
@@ -2881,9 +3170,9 @@ function onRequests(snap) {
 }
 function updateHistoryDot() {
   const seen = getSeen();
-  const n = Object.values(S.requests).filter((r) => r.status === 'dispatched' && (r.dispatched_at || 0) > seen).length;
+  const n = Object.values(S.requests).filter((r) => r.status === 'dispatched' && (r.dispatched_at || 0) > seen).length + unreadReqs();
   const dot = $('#hist-dot');
-  dot.hidden = !n || S.tab === 'history';
+  dot.hidden = !n || (S.tab === 'history' && !unreadReqs());
   dot.textContent = n > 9 ? '9+' : String(n);
 }
 function markHistorySeen() { setSeen(Date.now()); updateHistoryDot(); }
@@ -2932,11 +3221,13 @@ function filteredRequests() {
     })
     .sort((a, b) => (b.created_at || 0) - (a.created_at || 0));
 }
-function statusChips(r) {
+function statusChips(r, id) {
   const out = [];
-  if (r.status === 'dispatched') out.push(`<span class="chip dispatched">${icon('check')}Dispatched</span>`);
-  else if (r.status === 'cancelled') out.push('<span class="chip cancelled">Cancelled</span>');
-  else out.push('<span class="chip">Submitted</span>');
+  const k = statusKey(r);
+  if (k === 'dispatched') out.push(`<span class="chip dispatched">${icon('check')}${STATUS_SHORT.dispatched}</span>`);
+  else if (k === 'cancelled' || k === 'removed') out.push(`<span class="chip cancelled">${STATUS_SHORT[k]}</span>`);
+  else out.push(`<span class="chip${k === 'seen' ? ' seen' : ''}">${STATUS_SHORT[k]}</span>`);
+  if (id && unreadFor(id)) out.push(`<span class="chip msg">${icon('chat')}New message</span>`);
   if (r.when === 'scheduled' && r.scheduled_for && r.status !== 'cancelled') out.push(`<span class="chip scheduled">${icon('calendar')}${esc(fmtDay(r.scheduled_for))}</span>`);
   return `<span class="badges">${out.join('')}</span>`;
 }
@@ -3005,11 +3296,12 @@ function renderHistory() {
       open = true;
     }
     const sub = [r.items_text || r.item_details, r.payment === 'collect' ? 'Collect' : 'Prepaid', r.po ? `PO ${r.po}` : ''].filter(Boolean).join(', ');
-    html += `<button class="row" type="button" data-act="detail" data-id="${esc(r.id)}">
-      <span class="row-top"><span class="req-no">#${esc(r.ref_no)}</span><span class="row-date">${esc(fmtShort(r.created_at))}</span>${statusChips(r)}</span>
+    html += `<div class="row-wrap"><button class="row" type="button" data-act="detail" data-id="${esc(r.id)}">
+      <span class="row-top"><span class="req-no">#${esc(r.ref_no)}</span><span class="row-date">${esc(fmtShort(r.created_at))}</span>${statusChips(r, r.id)}</span>
       <span class="row-route" style="display:block">${esc(r.pickup && r.pickup.name)}<span class="arrow" aria-hidden="true">\u2192</span><span class="sr-only"> to </span>${r.delivery && (r.delivery.name || r.delivery.address) ? esc(r.delivery.name || r.delivery.address) : '<span class="muted">No delivery listed</span>'}</span>
-      <span class="row-sub" style="display:block">${esc(sub)}</span>
-      <span class="row-sub" style="display:block">Submitted by <b>${esc(submitterName(r))}</b></span></button>`;
+      <span class="row-foot"><span class="row-sub" style="display:block">${esc(sub)}</span>
+      <span class="row-sub" style="display:block">Submitted by <b>${esc(submitterName(r))}</b></span></span></button>
+      <button class="row-repeat" type="button" data-act="repeat" data-id="${esc(r.id)}" aria-label="Send #${esc(r.ref_no)} again">${icon('repeat', 'sm')}Repeat</button></div>`;
   });
   if (open) html += '</div>';
   box.innerHTML = html;
@@ -3029,24 +3321,26 @@ function openDetail(id, refresh) {
     if (!L.name && !L.address && !extra) return '<span class="muted">Not specified</span>';
     return `<b>${esc(L.name)}</b><small>${esc(L.address)}</small>${extra ? `<small>${extra}</small>` : ''}`;
   };
-  let status;
-  if (r.status === 'dispatched') status = `Dispatched ${esc(fmtDateTime(r.dispatched_at))}`;
-  else if (r.status === 'cancelled') status = `Cancelled ${esc(fmtDateTime(r.cancelled_at))}`;
-  else status = 'Submitted, waiting for dispatch';
+  const k = statusKey(r);
+  const at = { dispatched: r.dispatched_at, cancelled: r.cancelled_at, removed: r.removed_at, seen: r.seen_at }[k];
+  const status = `${STATUS_WORDS[k]}${at ? `<small>${esc(fmtDateTime(at))}</small>` : ''}`;
   const items = [r.items_text, r.item_details].filter(Boolean).map(esc).join('<br>');
   let actions = `<button class="btn btn-secondary" type="button" data-act="repeat" data-id="${esc(id)}">${icon('repeat', 'sm')}Send again</button>`;
   if (r.status === 'new') {
     actions += `<button class="btn btn-secondary" type="button" data-act="edit" data-id="${esc(id)}">${icon('edit', 'sm')}Edit</button>`;
   }
-  const lockNote = r.status === 'dispatched'
+  const lockNote = k === 'removed'
+    ? `<div class="notice warn">${icon('alert')}<span><b>Removed by dispatch.</b> It won\u2019t be picked up. Call or text dispatch if you have questions. ${dispatchCall()}</span></div>`
+    : r.status === 'dispatched'
     ? `<div class="notice">${icon('phone')}<span>This request has gone to a driver, so it can\u2019t be changed here. To change or cancel it, call dispatch${DISPATCH_PHONE ? ` at <a href="tel:${esc(phoneDigits(DISPATCH_PHONE))}">${esc(formatPhone(DISPATCH_PHONE))}</a>` : ''}.</span></div>` : '';
   const html = `<div data-detail>
-    <div style="margin-bottom:14px">${statusChips(r)}</div>
+    <div style="margin-bottom:10px">${statusChips(r)}</div>
+    ${statusSteps(r)}
     ${lockNote}
     <dl class="dl">
       <dt>Status</dt><dd>${status}</dd>
       <dt>Submitted</dt><dd>${esc(fmtDateTime(r.created_at))}${r.requested_by && r.requested_by.name ? `<small>by ${esc(r.requested_by.name)}</small>` : ''}</dd>
-      <dt>When</dt><dd>${r.when === 'scheduled' && r.scheduled_for ? esc(fmtDay(r.scheduled_for)) : 'As soon as possible'}</dd>
+      <dt>When</dt><dd>${r.when === 'scheduled' && r.scheduled_for ? esc(fmtDay(r.scheduled_for)) : 'As soon as possible'}${hoursText(r) ? `<small>${esc(hoursText(r))}</small>` : ''}</dd>
       <dt>Pickup</dt><dd>${legDd(r.pickup)}</dd>
       <dt>Delivery</dt><dd>${legDd(r.delivery)}</dd>
       <dt>Items</dt><dd>${items}</dd>
@@ -3056,9 +3350,20 @@ function openDetail(id, refresh) {
     </dl>
     <div class="btn-row" style="margin-top:22px">${actions}</div>
     ${r.status === 'new' ? `<button class="btn btn-ghost block" type="button" data-act="cancel-req" data-id="${esc(id)}" style="margin-top:10px;color:var(--danger)">Cancel this request</button>` : ''}
+    ${msgSection(id, r)}
   </div>`;
-  if (refresh) { $('#sheet-title').textContent = `Request #${r.ref_no}`; $('#sheet-body').innerHTML = html; }
-  else openSheet(`Request #${r.ref_no}`, html);
+  if (refresh) {
+    // Keep a half-typed message (and the cursor) when the request or its messages change
+    const was = $('#sheet-body form[data-msg-form] input');
+    const typed = was ? was.value : '';
+    const focused = !!was && document.activeElement === was;
+    $('#sheet-title').textContent = `Request #${r.ref_no}`;
+    $('#sheet-body').innerHTML = html;
+    const now = $('#sheet-body form[data-msg-form] input');
+    if (now && typed) now.value = typed;
+    if (now && focused) now.focus({ preventScroll: true });
+  } else openSheet(`Request #${r.ref_no}`, html);
+  markMsgsSeen(id);
 }
 
 /* ---------- Exports ---------- */
@@ -3086,7 +3391,7 @@ function csvCell(v) {
   if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`; // stop spreadsheet formula injection
   return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
-const statusWord = (r) => (r.status === 'dispatched' ? 'Dispatched' : r.status === 'cancelled' ? 'Cancelled' : 'Submitted');
+const statusWord = (r) => STATUS_SHORT[statusKey(r)];
 function exportCsv() {
   const list = filteredRequests();
   const head = ['Request #', 'Submitted', 'Scheduled for', 'Status', 'Requested by', 'Pickup', 'Pickup address', 'Pickup city', 'Pickup phone', 'Pickup email',
@@ -3149,13 +3454,13 @@ function renderAccount() {
     <div class="card">
       <div class="card-head"><h2>You</h2><button class="btn btn-secondary sm" type="button" data-act="edit-profile">${icon('edit', 'sm')}Edit</button></div>
       <div class="kv"><span>Name</span><span>${esc(prof.name || me.name || 'Not set')}</span></div>
-      <div class="kv"><span>Phone</span><span>${esc(prof.phone || me.phone || 'Not set')}</span></div>
+      <div class="kv"><span>Phone</span><span>${esc(prof.phone || me.phone ? formatPhone(prof.phone || me.phone) : 'Not set')}</span></div>
       <div class="kv"><span>Email</span><span>${esc(S.user.email)}</span></div>
     </div>
 
     <div class="card">
       <div class="card-head"><h2>${esc(S.company.name)}</h2>${owner ? `<button class="btn btn-secondary sm" type="button" data-act="edit-company">${icon('edit', 'sm')}Edit</button>` : ''}</div>
-      ${S.company.phone ? `<div class="kv"><span>Phone</span><span>${esc(S.company.phone)}</span></div>` : ''}
+      ${S.company.phone ? `<div class="kv"><span>Phone</span><span>${esc(formatPhone(S.company.phone))}</span></div>` : ''}
       <p class="small muted" style="margin-top:6px">Coworkers join your company with this code after creating their own login.</p>
       <div class="code-box"><span class="code">${esc(prettyCode(S.company.join_code))}</span>
         <span style="display:flex;gap:4px"><button class="icon-btn" type="button" data-act="copy-code" aria-label="Copy join code">${icon('copy')}</button>
@@ -3171,7 +3476,7 @@ function renderAccount() {
     <div class="card">
       <div class="card-head"><h2>Display</h2></div>
       <div class="seg" role="radiogroup" aria-label="Theme">
-        <label><input type="radio" name="theme" value="system"${theme === 'system' ? ' checked' : ''}><span>Match phone</span></label>
+        <label><input type="radio" name="theme" value="system"${theme === 'system' ? ' checked' : ''}><span>Auto</span></label>
         <label><input type="radio" name="theme" value="light"${theme === 'light' ? ' checked' : ''}><span>Light</span></label>
         <label><input type="radio" name="theme" value="dark"${theme === 'dark' ? ' checked' : ''}><span>Dark</span></label>
       </div>
@@ -3406,7 +3711,7 @@ document.addEventListener('click', async (e) => {
     case 'swap': swapLegs(); break;
     case 'qty-inc': stepQty(el, 1); break;
     case 'qty-dec': stepQty(el, -1); break;
-    case 'add-item': S.items.push({ qty: 1, type: 'box', weight: '' }); renderItems(); $$('#item-rows .item-row').pop().querySelector('select').focus(); break;
+    case 'add-item': S.items.push({ qty: 1, type: 'box', weight: '' }); renderItems(); $$('#item-rows .item-row').pop().querySelector('select').focus(); saveDraftSoon(); break;
     case 'item-remove': S.items.splice(+el.closest('.item-row').dataset.i, 1); renderItems(); saveDraftSoon(); break;
     case 'draft-continue': restoreDraft(); break;
     case 'draft-discard': clearDraft(); toast('Unsent pickup discarded.', 'info', 2500); break;
@@ -3470,6 +3775,9 @@ document.addEventListener('click', async (e) => {
       break;
     }
     case 'install-cta': installFromCta(); break;
+    case 'tip-off': try { localStorage.setItem(tipKey(), '1'); } catch (err) { /* ignore */ } { const t = $('#install-cta-row'); if (t) t.remove(); } break;
+    case 'show-opt': showOpt(el.dataset.opt); break;
+    case 'az': { const h = document.getElementById(`az-${el.dataset.l}`); if (h) h.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' }); break; }
     default: break;
   }
 });

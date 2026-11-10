@@ -88,6 +88,17 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     const { page, errors, ctx } = await open(browser, base, { user: USER, data: DATA });
     await page.waitForSelector('#view-app:not([hidden])');
     assert.strictEqual((await page.textContent('#new-repeat-latest')).trim(), 'Repeat last');
+    // Payment starts on this person's last choice; phone, email, description, hours and PO wait behind "+"
+    await page.waitForFunction(() => S.reqLoaded);
+    assert.ok(await page.isChecked('input[name=payment][value=prepaid]'), 'payment starts on the last choice');
+    assert.ok(await page.isHidden('#pickup-phone') && await page.isHidden('#po') && await page.isHidden('#item-details'), 'extras are tucked away');
+    await page.click('[data-act=show-opt][data-opt=pickup-phone]');
+    assert.ok(await page.isVisible('#pickup-phone'), '+ Phone opens the phone box');
+    assert.ok(await page.isHidden('[data-act=show-opt][data-opt=pickup-phone]'), 'and its + button goes away');
+    await page.click('[data-act=show-opt][data-opt=hours]');
+    await page.fill('#ready-after', '14:00');
+    await page.fill('#closes-at', '16:00');
+    assert.ok((await page.locator('.tabbar').evaluate((el) => getComputedStyle(el).backgroundColor)) !== 'rgba(0, 0, 0, 0)', 'solid bottom bar');
     // 2.1 an unsent request comes back after the app is closed
     await page.fill('#pickup-name', 'Acme Supply');
     await page.waitForFunction(() => localStorage.getItem('ec_draft_u1_c1'));
@@ -116,12 +127,43 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     assert.ok(!(await page.evaluate(() => document.getElementById('view-app').inert)), 'page usable again after the sheet closes');
     assert.strictEqual(await page.evaluate(() => localStorage.getItem('ec_draft_u1_c1')), null, 'draft cleared once sent');
     assert.ok(await page.isVisible('[data-act=share-ticket]'), '2.4 share button on the ticket');
+    const sent = await page.evaluate(() => Object.entries(window.__fakeDb.get('requests')).find(([, r]) => r.ref_no === 1204));
+    assert.strictEqual(sent[1].ready_after, '14:00');
+    assert.strictEqual(sent[1].closes_at, '16:00');
+    // What happens next: Sent, then Seen by dispatch, then Dispatched to a driver, live
+    await page.waitForSelector('#sent-steps .steps');
+    assert.strictEqual(await page.locator('#sent-steps .steps li.done').count(), 1);
+    await page.evaluate((id) => window.__fakeDb.put(`requests/${id}/seen_at`, Date.now()), sent[0]);
+    await page.waitForFunction(() => document.querySelectorAll('#sent-steps .steps li.done').length === 2);
     await page.waitForTimeout(800);
     await shot(page, 'sent');
     // History: the arrow is read as "to"; a backwards custom range is swapped
     await page.click('.tab[data-nav=history]');
     await page.waitForSelector('#hist-list .row');
     assert.match(await page.textContent('#hist-list .row .sr-only'), / to /);
+    assert.ok(await page.locator('#hist-list .row-repeat').count() >= 3, 'Repeat on every row');
+    assert.match(await page.textContent('#hist-list'), /Seen/);
+    // A reply from dispatch: a chip on the row, and the thread in the request
+    await page.evaluate(() => window.__fakeDb.put('messages/m1', { rid: 'r1', company_id: 'c1', ref_no: 1201, from: 'dispatch', text: 'A driver is on the way.', at: Date.now(), by_uid: 'staff1', by_name: 'dana' }));
+    await page.waitForSelector('#hist-list .chip.msg');
+    await page.click('#hist-list .row[data-id=r1]');
+    await page.waitForSelector('#sheet-body .msgs .msg.them');
+    await page.fill('#sheet-body form[data-msg-form] input', 'Thanks! Back door please.');
+    await page.click('#sheet-body form[data-msg-form] button');
+    await page.waitForFunction(() => Object.values(window.__fakeDb.get('messages')).some((m) => m.from === 'customer' && m.by_uid === 'u1' && m.company_id === 'c1' && m.rid === 'r1'));
+    await page.waitForSelector('#sheet-body .msgs .msg.me');
+    await page.waitForTimeout(300);
+    await shot(page, 'messages');
+    // Removed by dispatch: said plainly, with call or text
+    await page.evaluate(() => { window.__fakeDb.put('requests/r1/status', 'removed'); window.__fakeDb.put('requests/r1/removed_at', Date.now()); });
+    await page.waitForFunction(() => /Removed by dispatch/.test(document.getElementById('sheet-body').textContent));
+    assert.ok(await page.isVisible('#sheet-body .call-row a[href^="tel:"]'), 'call dispatch');
+    assert.ok(await page.isVisible('#sheet-body .call-row a[href^="sms:"]'), 'text dispatch');
+    await shot(page, 'removed');
+    await page.keyboard.press('Escape');
+    await page.waitForSelector('#sheet[hidden]', { state: 'attached' });
+    assert.strictEqual(await page.locator('#hist-list .chip.msg').count(), 0, 'read once opened');
+    await page.evaluate(() => { document.getElementById('toasts').innerHTML = ''; }); // so later steps find their own toast
     await page.selectOption('#hist-period', 'custom');
     await page.fill('#hist-from', '2026-03-01');
     await page.fill('#hist-to', '2026-02-01');
@@ -156,6 +198,14 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     assert.strictEqual(await page.getAttribute('html', 'data-theme'), 'dark');
     await page.check('input[name=theme][value=system]', { force: true });
     assert.strictEqual(await page.evaluate(() => localStorage.getItem('ec_theme_pref')), null);
+    assert.match(await page.textContent('#account-body'), /\(204\) 555-0100/, 'phone shown as (204) 555-0100');
+    assert.ok(await page.isVisible('#account-body input[name=theme][value=system] + span:has-text("Auto")'));
+    // A long contact list gets A to Z down the side
+    await page.evaluate(() => { const names = ['Alder', 'Birch', 'Cedar', 'Dogwood', 'Elm', 'Fir', 'Gum', 'Hazel', 'Ivy', 'Juniper', 'Kapok', 'Larch']; names.forEach((n, i) => window.__fakeDb.put(`companies/c1/address_book/z${i}`, { name: `${n} Co`, address: `${i + 1} Tree St` })); });
+    await page.click('.tab[data-nav=contacts]');
+    await page.waitForSelector('.az-index button[data-l=L]');
+    await page.click('.az-index button[data-l=L]');
+    await shot(page, 'contacts-az');
     assert.deepStrictEqual(errors, [], 'no script errors');
     await ctx.close();
 
