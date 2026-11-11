@@ -481,6 +481,7 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 #hist-status{flex-wrap:nowrap;gap:2px;padding:2px;border:1px solid var(--line-strong);border-radius:var(--r-sm);background:var(--surface-3)}
 #hist-status .chip-btn{min-height:calc(var(--ctl-sm) - 6px);padding:0 9px;font-size:12.5px;white-space:nowrap;flex:0 1 auto;border:0;border-radius:var(--r-xs);background:transparent}
 .chip-btn[aria-pressed=true],#hist-status .chip-btn[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+@media (max-width:389px){#hist-status{width:100%}#hist-status .chip-btn{flex:1 1 auto;padding:0 4px;font-size:12px}}
 .custom-range{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
 .hist-summary{font-size:13px;font-weight:650;color:var(--ink-2);margin:4px 2px 6px}
 .month{position:sticky;top:calc(var(--safe-t) + 48px);z-index:2;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-stretch:100%;color:var(--ink-2);margin:10px 0 0;padding:6px 2px;background:var(--bg)}
@@ -712,8 +713,10 @@ html{scroll-padding-bottom:calc(var(--nav-h) + var(--safe-b) + 84px)}
 .msg.them{background:var(--surface-3);border-bottom-left-radius:4px}
 .msg.me{margin-left:auto;background:var(--yellow);color:#000;border-bottom-right-radius:4px}
 .msg-form{display:grid;grid-template-columns:minmax(0,1fr) 52px;gap:6px;margin-top:8px}
-.msg-form input{width:100%;min-height:var(--ctl);padding:7px 11px;border:1px solid var(--line-strong);border-radius:var(--r-sm);background:var(--field);color:var(--ink);font:inherit;font-size:16px;outline:none}
-.msg-form input:focus{border-color:var(--focus);box-shadow:0 0 0 3px var(--yellow-ring)}
+.msg-form{align-items:end}
+.msg-form textarea{display:block;resize:none;overflow-y:auto;line-height:1.35;max-height:112px}
+.msg-form textarea,.msg-form input{width:100%;min-height:var(--ctl);padding:7px 11px;border:1px solid var(--line-strong);border-radius:var(--r-sm);background:var(--field);color:var(--ink);font:inherit;font-size:16px;outline:none}
+.msg-form textarea:focus,.msg-form input:focus{border-color:var(--focus);box-shadow:0 0 0 3px var(--yellow-ring)}
 .msg-form .btn{min-height:var(--ctl);padding:0}
 /* ---------- Contact suggestions ---------- */
 .ac{position:relative}
@@ -738,6 +741,10 @@ html{scroll-padding-bottom:calc(var(--nav-h) + var(--safe-b) + 84px)}
 .msg-fail{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin-top:4px;font-size:12.5px;color:var(--danger)}
 .msg-fail .link-btn{font-size:12.5px}
 #msgs-body .msg-list{padding-bottom:8px}
+.contact-btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.contact-btns .call-row{display:contents}
+.msg-day{display:flex;align-items:center;gap:10px;margin:12px 0 8px;font-size:12px;font-weight:800;color:var(--ink-2)}
+.msg-day::before,.msg-day::after{content:"";flex:1;height:1px;background:var(--line)}
 #msgs-body .msg-list .empty{margin-bottom:12px}
 .msg-compose{position:sticky;bottom:calc(var(--nav-h) + var(--safe-b));z-index:5;margin:8px -12px 0;padding:8px 12px 10px;background:var(--bg);border-top:1px solid var(--line)}
 .msg-about{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:13px;font-weight:700;color:var(--ink-2)}
@@ -1031,6 +1038,7 @@ html{scroll-padding-bottom:calc(var(--nav-h) + var(--safe-b) + 84px)}
           <button class="chip-btn" type="button" data-status="new" aria-pressed="false">Waiting</button>
           <button class="chip-btn" type="button" data-status="dispatched" aria-pressed="false">Dispatched</button>
           <button class="chip-btn" type="button" data-status="cancelled" aria-pressed="false">Cancelled</button>
+          <button class="chip-btn" type="button" data-status="removed" aria-pressed="false">Removed</button>
         </div>
       </div>
       <div class="custom-range" id="hist-custom" hidden>
@@ -1113,6 +1121,9 @@ html{scroll-padding-bottom:calc(var(--nav-h) + var(--safe-b) + 84px)}
 const DISPATCH_PHONE = '2047300945';
 const PRIVACY_URL = 'https://app.eandccourier.ca/privacy';
 const APP_VERSION = '2.0.0';
+// Dispatch hours, in Manitoba time. Requests sent outside them get a heads-up before sending.
+const OPEN_AT = '06:30', CLOSE_AT = '17:00', SHOP_TZ = 'America/Winnipeg';
+const HOURS_TEXT = '6:30 am to 5:00 pm';
 
 firebase.initializeApp({
   apiKey: 'AIzaSyAKmgoXA4m3cRTmxJq4aUyva5SVvFbTNqg',
@@ -1255,6 +1266,21 @@ function hoursText(r) {
   const b = r.closes_at ? `${a ? 'closes' : 'Closes'} at ${fmtHM(r.closes_at)}` : '';
   return [a, b].filter(Boolean).join(', ');
 }
+// The time at E&C right now as "HH:MM", whatever time zone this phone is set to
+function shopNowHM() {
+  try {
+    const parts = new Intl.DateTimeFormat('en-CA', { timeZone: SHOP_TZ, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date());
+    const g = (t) => (parts.find((x) => x.type === t) || {}).value || '00';
+    return `${g('hour')}:${g('minute')}`;
+  } catch (e) { const d = new Date(); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; }
+}
+// A sentence for an "as soon as possible" request sent while dispatch is closed, or '' while it's open
+function afterHoursText() {
+  const hm = shopNowHM();
+  if (hm < OPEN_AT) return `Dispatch opens at ${fmtHM(OPEN_AT)}. They\u2019ll see this request then.`;
+  if (hm >= CLOSE_AT) return `Dispatch is closed for the day (open ${HOURS_TEXT}). They\u2019ll see this request at ${fmtHM(OPEN_AT)} tomorrow.`;
+  return '';
+}
 const dispatchCall = () => (DISPATCH_PHONE ? `<span class="call-row"><a class="btn btn-secondary sm" href="tel:${esc(phoneDigits(DISPATCH_PHONE))}">${icon('phone', 'sm')}Call</a><a class="btn btn-secondary sm" href="sms:${esc(phoneDigits(DISPATCH_PHONE))}">${icon('chat', 'sm')}Text</a></span>` : '');
 
 /* =========================================================
@@ -1319,11 +1345,21 @@ function markAllMsgsSeen() {
 S.msgOut = {};
 const outFor = (rid) => Object.entries(S.msgOut).filter(([k, o]) => (!rid || o.rid === rid) && !(S.msgs || {})[k]);
 const reqRef = (rid, m) => { const r = S.requests[rid]; return (r && r.ref_no) || (m && m.ref_no) || ''; };
+// In the Messages tab (withRef) the day is in the divider above, so a bubble shows just the time
+const fmtTime = (ts) => (ts ? new Date(ts).toLocaleTimeString('en-CA', { hour: 'numeric', minute: '2-digit' }) : '');
 function msgBubble(m, withRef) {
   const me = m.from === 'customer';
   const n = withRef ? reqRef(m.rid, m) : '';
   const ref = n ? `<button class="msg-ref" type="button" data-act="open-req" data-id="${esc(m.rid)}" aria-label="Open pickup #${esc(n)}">#${esc(n)}</button>` : '';
-  return `<div class="msg ${me ? 'me' : 'them'}"><div class="msg-head">${ref}<b>${me ? esc(m.by_name || 'You') : 'Dispatch'}</b><span>${esc(fmtShort(m.at))}</span></div><p>${esc(m.text)}</p></div>`;
+  return `<div class="msg ${me ? 'me' : 'them'}"><div class="msg-head">${ref}<b>${me ? esc(m.by_name || 'You') : 'Dispatch'}</b><span>${esc(withRef ? fmtTime(m.at) : fmtShort(m.at))}</span></div><p>${esc(m.text)}</p></div>`;
+}
+// "Today", "Yesterday", "Mon, Nov 9"
+function dayLabel(ts) {
+  const d = new Date(ts), now = new Date();
+  const ds = localDateStr(d);
+  if (ds === localDateStr(now)) return 'Today';
+  if (ds === localDateStr(addDays(now, -1))) return 'Yesterday';
+  return d.toLocaleDateString('en-CA', { weekday: 'short', month: 'short', day: 'numeric', ...(d.getFullYear() !== now.getFullYear() ? { year: 'numeric' } : {}) });
 }
 function outBubble(k, o, withRef) {
   const n = withRef ? reqRef(o.rid) : '';
@@ -1337,7 +1373,7 @@ function renderMsgViews() {
 const msgsToEnd = () => { const f = $('#msgs-body .msg-compose'); if (S.tab === 'messages') window.scrollTo(0, document.documentElement.scrollHeight); if (f) { /* composer stays in reach */ } };
 // Pickups a message can be about, newest first
 function aboutList() {
-  return Object.entries(S.requests || {}).filter(([, r]) => r && r.ref_no).sort((a, b) => (b[1].created_at || 0) - (a[1].created_at || 0)).slice(0, 40)
+  return Object.entries(S.requests || {}).filter(([, r]) => r && r.ref_no && r.status !== 'cancelled').sort((a, b) => (b[1].created_at || 0) - (a[1].created_at || 0)).slice(0, 40)
     .map(([id, r]) => ({ id, label: `#${r.ref_no} · ${clampLabel(`${(r.pickup && r.pickup.name) || '?'} to ${(r.delivery && r.delivery.name) || '?'}`)} · ${fmtShortDay(r.created_at)}` }));
 }
 const clampLabel = (t) => (t.length > 36 ? `${t.slice(0, 35)}…` : t);
@@ -1346,7 +1382,7 @@ let msgAbout = '';
 function renderMessages() {
   const box = $('#msgs-body');
   if (!box) return;
-  const input = $('#msgs-body form[data-msg-form] input');
+  const input = $('#msgs-body form[data-msg-form] textarea');
   const draft = input ? input.value : '', typing = !!input && input === document.activeElement;
   const sel = $('#msg-about'); if (sel) msgAbout = sel.value;
   const all = Object.entries(S.msgs || {}).filter(([, m]) => m && m.text).sort((a, b) => (a[1].at || 0) - (b[1].at || 0));
@@ -1356,15 +1392,17 @@ function renderMessages() {
     msgAbout = last && S.requests[last[1].rid] ? last[1].rid : (about[0] && about[0].id) || '';
   }
   const err = S.msgErr ? `<div class="notice warn">${icon('alert')}<span><b>Messages aren’t working right now.</b> Call or text dispatch instead. ${dispatchCall()}</span></div>` : '';
-  const bubbles = all.map(([, m]) => msgBubble(m, true)).join('') + outFor().map(([k, o]) => outBubble(k, o, true)).join('');
+  let day = '';
+  const divider = (ts) => { const ds = localDateStr(new Date(ts || Date.now())); if (ds === day) return ''; day = ds; return `<div class="msg-day" role="separator"><span>${esc(dayLabel(ts || Date.now()))}</span></div>`; };
+  const bubbles = all.map(([, m]) => divider(m.at) + msgBubble(m, true)).join('') + outFor().map(([k, o]) => divider(o.at) + outBubble(k, o, true)).join('');
   box.innerHTML = `${err}
     <div class="msg-list">${bubbles || `<div class="empty">${icon('chat')}<h3>No messages yet</h3><p>Need to tell dispatch something about a pickup? Pick it below and write here. Their answers show up here too.</p></div>`}</div>
     ${about.length ? `<div class="msg-compose">
       <label class="msg-about"><span>About</span><select id="msg-about" aria-label="Which pickup this is about">${about.map((a) => `<option value="${esc(a.id)}"${a.id === msgAbout ? ' selected' : ''}>${esc(a.label)}</option>`).join('')}</select></label>
-      <form class="msg-form" data-msg-form=""><input name="text" maxlength="500" placeholder="Write to dispatch" aria-label="Message to dispatch" autocomplete="off" enterkeyhint="send"><button class="btn btn-primary" type="submit" aria-label="Send message">${icon('send', 'sm')}</button></form>
+      <form class="msg-form" data-msg-form=""><textarea name="text" rows="1" maxlength="500" placeholder="Write to dispatch" aria-label="Message to dispatch" autocomplete="off" enterkeyhint="send"></textarea><button class="btn btn-primary" type="submit" aria-label="Send message">${icon('send', 'sm')}</button></form>
     </div>` : '<p class="muted small">Send a pickup first. Then you can write to dispatch about it here.</p>'}`;
-  const again = $('#msgs-body form[data-msg-form] input');
-  if (again && draft) again.value = draft;
+  const again = $('#msgs-body form[data-msg-form] textarea');
+  if (again && draft) { again.value = draft; growMsgBox(again); }
   if (again && typing) again.focus({ preventScroll: true });
 }
 document.addEventListener('change', (e) => { if (e.target.id === 'msg-about') msgAbout = e.target.value; });
@@ -1402,7 +1440,8 @@ function onMsgs(snap) {
       if (before[mid] || !m || m.from !== 'dispatch') return;
       if ((sheetIsOpen() && currentDetailId === m.rid) || S.tab === 'messages') return;
       const n = reqRef(m.rid, m);
-      toast(`Dispatch${n ? ` about #${n}` : ''}: ${m.text}`, 'info', 10000, { label: 'Open', run: () => { closeSheet(); switchTab('messages'); } });
+      clearDispatchToasts(); // newest only, so they don't stack over the screen
+      toast(`Dispatch${n ? ` about #${n}` : ''}: ${m.text}`, 'info', 10000, { label: 'Open', run: () => { closeSheet(); switchTab('messages'); } }).classList.add('from-dispatch');
     });
   }
   msgsLoaded = true;
@@ -1420,9 +1459,17 @@ function msgSection(id, r) {
   return `<section class="msgs">
       <h3>${icon('chat', 'sm')}<span class="grow">Messages about #${esc(r.ref_no)}</span><button class="link-btn" type="button" data-act="all-msgs">All messages</button></h3>
       ${bubbles || '<p class="msgs-empty">Need to tell dispatch something about this pickup? Write it here.</p>'}
-      ${can ? `<form class="msg-form" data-msg-form="${esc(id)}"><input name="text" maxlength="500" placeholder="Write to dispatch" aria-label="Message to dispatch" autocomplete="off" enterkeyhint="send"><button class="btn btn-primary" type="submit" aria-label="Send message">${icon('send', 'sm')}</button></form>` : ''}
+      ${can ? `<form class="msg-form" data-msg-form="${esc(id)}"><textarea name="text" rows="1" maxlength="500" placeholder="Write to dispatch" aria-label="Message to dispatch" autocomplete="off" enterkeyhint="send"></textarea><button class="btn btn-primary" type="submit" aria-label="Send message">${icon('send', 'sm')}</button></form>` : ''}
     </section>`;
 }
+// The message box grows with what's typed, up to about 4 lines. Enter sends; Shift+Enter starts a new line.
+function growMsgBox(t) { t.style.height = 'auto'; t.style.height = `${Math.min(t.scrollHeight + 2, 112)}px`; }
+document.addEventListener('input', (e) => { if (e.target.matches && e.target.matches('form[data-msg-form] textarea')) growMsgBox(e.target); });
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter' || e.shiftKey || e.isComposing || !e.target.matches || !e.target.matches('form[data-msg-form] textarea')) return;
+  e.preventDefault();
+  e.target.form.requestSubmit();
+});
 let msgSending = false;
 document.addEventListener('submit', async (e) => {
   const form = e.target.closest && e.target.closest('form[data-msg-form]');
@@ -1434,6 +1481,7 @@ document.addEventListener('submit', async (e) => {
   if (!S.requests[id] || !text || msgSending) return;
   msgSending = true;
   input.value = '';
+  growMsgBox(input);
   try { await sendCustomerMsg(id, text); } finally { msgSending = false; }
   if (S.tab === 'messages') msgsToEnd();
 });
@@ -1541,7 +1589,9 @@ function toast(message, type = 'info', ms = 3800, action) {
   const t = setTimeout(remove, ms);
   el.addEventListener('click', () => { clearTimeout(t); remove(); });
   if (action) $('.toast-act', el).addEventListener('click', (e) => { e.stopPropagation(); clearTimeout(t); remove(); action.run(); });
+  return el;
 }
+const clearDispatchToasts = () => $$('#toasts .toast.from-dispatch').forEach((x) => x.remove());
 
 /* =========================================================
    Sheets (bottom sheets / dialogs) with Android back-button support
@@ -2191,7 +2241,7 @@ function switchTab(tab) {
   $$('[data-nav]').forEach((b) => { if (b.dataset.nav === tab) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
   if (tab === 'history') { markHistorySeen(); renderHistory(); }
   if (tab === 'contacts') renderContacts();
-  if (tab === 'messages') { renderMessages(); markAllMsgsSeen(); setTimeout(msgsToEnd, 30); }
+  if (tab === 'messages') { clearDispatchToasts(); renderMessages(); markAllMsgsSeen(); setTimeout(msgsToEnd, 30); }
   if (tab === 'account') renderAccount();
   window.scrollTo(0, 0);
 }
@@ -2681,8 +2731,11 @@ function openReview(d) {
     .map((leg) => `<div class="notice warn">${icon('alert')}<span>The ${leg} address wasn\u2019t matched on Google Maps. Make sure it\u2019s complete enough for a driver to find.</span></div>`).join('');
   const items = [itemsText(d.items), d.item_details].filter(Boolean).map(esc).join('<br>');
   const editing = !!S.editingId;
+  const closed = !editing && d.when === 'asap' ? afterHoursText() : '';
+  const late = d.ready_after && d.ready_after >= CLOSE_AT ? `Dispatch closes at ${fmtHM(CLOSE_AT)}, before this pickup is ready. It may not be picked up until the next day.` : '';
+  const hoursNote = [closed, late].filter(Boolean).map((t) => `<div class="notice warn">${icon('clock')}<span>${esc(t)}</span></div>`).join('');
   openSheet(editing ? 'Check your changes' : 'Check your request', `
-    ${warn}
+    ${hoursNote}${warn}
     <dl class="dl">
       ${legBlock('Pickup', d.pickup)}
       ${legBlock('Delivery', d.delivery)}
@@ -2819,7 +2872,8 @@ function showSent() {
     <section class="next-card">
       <h2>What happens next</h2>
       <div id="sent-steps">${sentSteps()}</div>
-      <p class="small muted">It updates here and in History. Questions? Open it in History to message dispatch.</p>
+      <p class="small muted">It updates here and in History.</p>
+      <button class="btn btn-secondary block" type="button" data-act="msg-sent" style="margin-top:10px">${icon('chat', 'sm')}Message dispatch about #${esc(d.refNo)}</button>
     </section>
     ${homeTip()}
     <div style="display:grid;gap:10px">
@@ -3292,6 +3346,8 @@ function onRequests(snap) {
       const fresh = Object.values(data).filter((r) => r.status === 'dispatched' && (r.dispatched_at || 0) > seen);
       if (fresh.length === 1) toast(`Request #${fresh[0].ref_no} was dispatched.`, 'ok', 6000);
       else if (fresh.length > 1) toast(`${fresh.length} of your requests were dispatched since your last visit.`, 'ok', 6000);
+      const gone = Object.values(data).filter((r) => r.status === 'removed' && (r.removed_at || 0) > seen);
+      if (gone.length) toast(gone.length === 1 ? `Request #${gone[0].ref_no} was removed by dispatch since your last visit. Open it in History, or message dispatch if you have questions.` : `${gone.length} of your requests were removed by dispatch since your last visit. Choose Removed in History to see them.`, 'error', 10000);
     }
   } else {
     Object.entries(data).forEach(([id, r]) => {
@@ -3513,13 +3569,13 @@ function openDetail(id, refresh) {
   </div>`;
   if (refresh) {
     // Keep a half-typed message (and the cursor) when the request or its messages change
-    const was = $('#sheet-body form[data-msg-form] input');
+    const was = $('#sheet-body form[data-msg-form] textarea');
     const typed = was ? was.value : '';
     const focused = !!was && document.activeElement === was;
     $('#sheet-title').textContent = `Request #${r.ref_no}`;
     $('#sheet-body').innerHTML = html;
-    const now = $('#sheet-body form[data-msg-form] input');
-    if (now && typed) now.value = typed;
+    const now = $('#sheet-body form[data-msg-form] textarea');
+    if (now && typed) { now.value = typed; growMsgBox(now); }
     if (now && focused) now.focus({ preventScroll: true });
   } else openSheet(`Request #${r.ref_no}`, html);
   markMsgsSeen(id);
@@ -3630,6 +3686,13 @@ function renderAccount() {
         <span class="grow"><span class="who">${esc(m.name || m.email)}${uid === S.user.uid ? ' (you)' : ''}</span><span class="em" style="display:block">${esc(m.email)}${m.role === 'owner' ? ', admin' : ''}</span></span>
         ${owner && uid !== S.user.uid ? `<button class="btn btn-ghost sm" type="button" data-act="remove-member" data-uid="${esc(uid)}" style="color:var(--danger)">Remove</button>` : ''}</div>`).join('')}
       ${!owner ? `<button class="btn btn-ghost block" type="button" data-act="leave-company" style="margin-top:10px;color:var(--danger)">Leave this company</button>` : ''}
+    </div>
+
+    <div class="card">
+      <div class="card-head"><h2>Contact E&amp;C</h2></div>
+      ${DISPATCH_PHONE ? `<div class="kv"><span>Dispatch</span><span><a href="tel:${esc(phoneDigits(DISPATCH_PHONE))}">${esc(formatPhone(DISPATCH_PHONE))}</a></span></div>` : ''}
+      <div class="kv"><span>Hours</span><span>${HOURS_TEXT}</span></div>
+      <div class="contact-btns">${dispatchCall()}<button class="btn btn-secondary sm" type="button" data-nav="messages">${icon('chat', 'sm')}Message</button></div>
     </div>
 
     <div class="card">
@@ -3868,6 +3931,14 @@ document.addEventListener('click', async (e) => {
     case 'contact-use': useContact(id); break;
     case 'ac-use': acUse(el.dataset.leg, id); break;
     case 'all-msgs': closeSheet(); switchTab('messages'); break;
+    case 'msg-sent': {
+      const rid = S.lastSent && Object.keys(S.requests || {}).find((k) => S.requests[k].ref_no === S.lastSent.refNo);
+      if (!rid) { toast('Your request is still on its way to dispatch. Try again in a moment.', 'info'); break; }
+      msgAbout = rid;
+      switchTab('messages');
+      setTimeout(() => { const t = $('#msgs-body form[data-msg-form] textarea'); if (t) t.focus({ preventScroll: true }); }, 60);
+      break;
+    }
     case 'open-req': if (S.requests[id]) openDetail(id); break;
     case 'msg-retry': { const k = el.dataset.key, o = S.msgOut[k]; if (o) { delete S.msgOut[k]; sendCustomerMsg(o.rid, o.text); } break; }
     case 'msg-drop': delete S.msgOut[el.dataset.key]; renderMsgViews(); break;
