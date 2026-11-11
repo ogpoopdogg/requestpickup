@@ -1351,12 +1351,14 @@ function markAllMsgsSeen() {
 S.msgOut = {};
 const outFor = (rid) => Object.entries(S.msgOut).filter(([k, o]) => (!rid || o.rid === rid) && !(S.msgs || {})[k]);
 const reqRef = (rid, m) => { const r = S.requests[rid]; return (r && r.ref_no) || (m && m.ref_no) || ''; };
+const GENERAL = 'general'; // rid of a message that isn't about any pickup
+const GENERAL_CHIP = '<span class="msg-ref">General</span>';
 // In the Messages tab (withRef) the day is in the divider above, so a bubble shows just the time
 const fmtTime = (ts) => (ts ? new Date(ts).toLocaleTimeString('en-CA', { hour: 'numeric', minute: '2-digit' }) : '');
 function msgBubble(m, withRef) {
   const me = m.from === 'customer';
   const n = withRef ? reqRef(m.rid, m) : '';
-  const ref = n ? `<button class="msg-ref" type="button" data-act="open-req" data-id="${esc(m.rid)}" aria-label="Open pickup #${esc(n)}">#${esc(n)}</button>` : '';
+  const ref = n ? `<button class="msg-ref" type="button" data-act="open-req" data-id="${esc(m.rid)}" aria-label="Open pickup #${esc(n)}">#${esc(n)}</button>` : withRef && m.rid === GENERAL ? GENERAL_CHIP : '';
   return `<div class="msg ${me ? 'me' : 'them'}"><div class="msg-head">${ref}<b>${me ? esc(m.by_name || 'You') : 'Dispatch'}</b><span>${esc(withRef ? fmtTime(m.at) : fmtShort(m.at))}</span></div><p>${esc(m.text)}</p></div>`;
 }
 // "Today", "Yesterday", "Mon, Nov 9"
@@ -1369,7 +1371,7 @@ function dayLabel(ts) {
 }
 function outBubble(k, o, withRef) {
   const n = withRef ? reqRef(o.rid) : '';
-  return `<div class="msg me${o.state === 'failed' ? ' failed' : ' sending'}"><div class="msg-head">${n ? `<span class="msg-ref">#${esc(n)}</span>` : ''}<b>You</b><span>${o.state === 'failed' ? 'Not sent' : 'Sending…'}</span></div><p>${esc(o.text)}</p>${o.state === 'failed' ? `<div class="msg-fail">${esc(o.err || '')} <button class="link-btn" type="button" data-act="msg-retry" data-key="${esc(k)}">Try again</button><button class="link-btn" type="button" data-act="msg-drop" data-key="${esc(k)}">Remove</button></div>` : ''}</div>`;
+  return `<div class="msg me${o.state === 'failed' ? ' failed' : ' sending'}"><div class="msg-head">${n ? `<span class="msg-ref">#${esc(n)}</span>` : withRef && o.rid === GENERAL ? GENERAL_CHIP : ''}<b>You</b><span>${o.state === 'failed' ? 'Not sent' : 'Sending…'}</span></div><p>${esc(o.text)}</p>${o.state === 'failed' ? `<div class="msg-fail">${esc(o.err || '')} <button class="link-btn" type="button" data-act="msg-retry" data-key="${esc(k)}">Try again</button><button class="link-btn" type="button" data-act="msg-drop" data-key="${esc(k)}">Remove</button></div>` : ''}</div>`;
 }
 function renderMsgViews() {
   updateHistoryDot();
@@ -1377,10 +1379,10 @@ function renderMsgViews() {
   if (sheetIsOpen() && currentDetailId && $('#sheet-body [data-detail]')) openDetail(currentDetailId, true);
 }
 const msgsToEnd = () => { const f = $('#msgs-body .msg-compose'); if (S.tab === 'messages') window.scrollTo(0, document.documentElement.scrollHeight); if (f) { /* composer stays in reach */ } };
-// Pickups a message can be about, newest first
+// What a message can be about: General first, then pickups newest first
 function aboutList() {
-  return Object.entries(S.requests || {}).filter(([, r]) => r && r.ref_no && r.status !== 'cancelled').sort((a, b) => (b[1].created_at || 0) - (a[1].created_at || 0)).slice(0, 40)
-    .map(([id, r]) => ({ id, label: `#${r.ref_no} · ${clampLabel(`${(r.pickup && r.pickup.name) || '?'} to ${(r.delivery && r.delivery.name) || '?'}`)} · ${fmtShortDay(r.created_at)}` }));
+  return [{ id: GENERAL, label: 'General (not about a pickup)' }].concat(Object.entries(S.requests || {}).filter(([, r]) => r && r.ref_no && r.status !== 'cancelled').sort((a, b) => (b[1].created_at || 0) - (a[1].created_at || 0)).slice(0, 40)
+    .map(([id, r]) => ({ id, label: `#${r.ref_no} · ${clampLabel(`${(r.pickup && r.pickup.name) || '?'} to ${(r.delivery && r.delivery.name) || '?'}`)} · ${fmtShortDay(r.created_at)}` })));
 }
 const clampLabel = (t) => (t.length > 36 ? `${t.slice(0, 35)}…` : t);
 const fmtShortDay = (t) => (t ? new Date(t).toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }) : '');
@@ -1394,26 +1396,27 @@ function renderMessages() {
   const all = Object.entries(S.msgs || {}).filter(([, m]) => m && m.text).sort((a, b) => (a[1].at || 0) - (b[1].at || 0));
   const about = aboutList();
   if (!about.some((a) => a.id === msgAbout)) {
+    // Starts on what the conversation was last about, so a reply stays with it; General otherwise
     const last = all[all.length - 1];
-    msgAbout = last && S.requests[last[1].rid] ? last[1].rid : (about[0] && about[0].id) || '';
+    msgAbout = last && about.some((a) => a.id === last[1].rid) ? last[1].rid : GENERAL;
   }
   const err = S.msgErr ? `<div class="notice warn">${icon('alert')}<span><b>Messages aren’t working right now.</b> Call or text dispatch instead. ${dispatchCall()}</span></div>` : '';
   let day = '';
   const divider = (ts) => { const ds = localDateStr(new Date(ts || Date.now())); if (ds === day) return ''; day = ds; return `<div class="msg-day" role="separator"><span>${esc(dayLabel(ts || Date.now()))}</span></div>`; };
   const bubbles = all.map(([, m]) => divider(m.at) + msgBubble(m, true)).join('') + outFor().map(([k, o]) => divider(o.at) + outBubble(k, o, true)).join('');
   box.innerHTML = `${err}
-    <div class="msg-list">${bubbles || `<div class="empty">${icon('chat')}<h3>No messages yet</h3><p>Need to tell dispatch something about a pickup? Pick it below and write here. Their answers show up here too.</p></div>`}</div>
-    ${about.length ? `<div class="msg-compose">
-      <label class="msg-about"><span>About</span><select id="msg-about" aria-label="Which pickup this is about">${about.map((a) => `<option value="${esc(a.id)}"${a.id === msgAbout ? ' selected' : ''}>${esc(a.label)}</option>`).join('')}</select></label>
+    <div class="msg-list">${bubbles || `<div class="empty">${icon('chat')}<h3>No messages yet</h3><p>Write to dispatch here about anything. To ask about a pickup, pick it under About. Their answers show up here too.</p></div>`}</div>
+    <div class="msg-compose">
+      <label class="msg-about"><span>About</span><select id="msg-about" aria-label="What this message is about">${about.map((a) => `<option value="${esc(a.id)}"${a.id === msgAbout ? ' selected' : ''}>${esc(a.label)}</option>`).join('')}</select></label>
       <form class="msg-form" data-msg-form=""><textarea name="text" rows="1" maxlength="500" placeholder="Write to dispatch" aria-label="Message to dispatch" autocomplete="off" enterkeyhint="send"></textarea><button class="btn btn-primary" type="submit" aria-label="Send message">${icon('send', 'sm')}</button></form>
-    </div>` : '<p class="muted small">Send a pickup first. Then you can write to dispatch about it here.</p>'}`;
+    </div>`;
   const again = $('#msgs-body form[data-msg-form] textarea');
   if (again && draft) { again.value = draft; growMsgBox(again); }
   if (again && typing) again.focus({ preventScroll: true });
 }
 document.addEventListener('change', (e) => { if (e.target.id === 'msg-about') msgAbout = e.target.value; });
 async function sendCustomerMsg(rid, text, key) {
-  const r = S.requests[rid];
+  const r = rid === GENERAL ? {} : S.requests[rid];
   if (!r || !text) return;
   const ref = key ? db.ref(`messages/${key}`) : db.ref('messages').push();
   S.msgOut[ref.key] = { rid, text, at: Date.now(), state: 'sending' };
@@ -1484,7 +1487,7 @@ document.addEventListener('submit', async (e) => {
   const id = form.dataset.msgForm || (($('#msg-about') || {}).value || '');
   const input = form.elements.text;
   const text = input.value.trim().slice(0, 500);
-  if (!S.requests[id] || !text || msgSending) return;
+  if ((id !== GENERAL && !S.requests[id]) || !text || msgSending) return;
   msgSending = true;
   input.value = '';
   growMsgBox(input);
