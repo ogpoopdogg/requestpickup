@@ -210,6 +210,18 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     await page.click('#msgs-body .msg.failed [data-act=msg-retry]');
     await page.waitForFunction(() => Object.values(window.__fakeDb.get('messages')).some((m) => m.text === 'Hello?'));
     await page.waitForFunction(() => !document.querySelector('#msgs-body .msg.failed'));
+    // General: a message that isn't about any pickup
+    await page.selectOption('#msg-about', 'general');
+    await page.fill('#msgs-body .msg-form textarea', 'Are you open Saturday?');
+    await page.press('#msgs-body .msg-form textarea', 'Enter');
+    await page.waitForFunction(() => Object.values(window.__fakeDb.get('messages')).some((m) => m.text === 'Are you open Saturday?' && m.rid === 'general' && m.company_id === 'c1' && m.ref_no === null && m.from === 'customer'));
+    await page.waitForFunction(() => [...document.querySelectorAll('#msgs-body .msg.me')].some((b) => /Saturday/.test(b.textContent) && b.querySelector('.msg-ref') && b.querySelector('.msg-ref').textContent === 'General'));
+    await page.selectOption('#msg-about', 'r1');
+    await page.evaluate(() => window.__fakeDb.put('messages/m3', { rid: 'general', company_id: 'c1', ref_no: null, from: 'dispatch', text: 'No, weekdays only.', at: Date.now(), by_uid: 'staff1', by_name: 'dana' }));
+    await page.waitForFunction(() => /weekdays only/.test(document.querySelector('#msgs-body .msg-list').textContent));
+    await page.evaluate(() => { msgAbout = ''; document.getElementById('msgs-body').innerHTML = ''; renderMessages(); }); // what a fresh open picks
+    assert.strictEqual(await page.inputValue('#msg-about'), 'general', 'starts on General when dispatch last wrote a general message');
+    assert.ok(await page.isHidden('#msg-dot'), 'a general reply counts as read while the conversation is open');
     await page.waitForTimeout(300);
     await shot(page, 'messages-tab');
     await page.click('#msgs-body .msg-ref >> nth=0');
@@ -293,6 +305,8 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
       await p5.waitForSelector('#msg-about');
       const opts = await p5.$$eval('#msg-about option', (o) => o.map((x) => x.value));
       assert.ok(!opts.includes('r2') && opts.includes('r1'), 'cancelled pickups left out of About, removed ones kept');
+      assert.strictEqual(opts[0], 'general', 'General is the first choice in About');
+      assert.strictEqual(await p5.inputValue('#msg-about'), 'general', 'with no messages yet, About starts on General');
       assert.deepStrictEqual(e5, [], 'no script errors');
       await c5.close();
     }
