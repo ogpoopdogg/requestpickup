@@ -1110,6 +1110,7 @@ html{scroll-padding-bottom:calc(var(--nav-h) + var(--safe-b) + 84px)}
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
 <script>
 'use strict';
 
@@ -1124,6 +1125,11 @@ const APP_VERSION = '2.0.0';
 // Dispatch hours, in Manitoba time. Requests sent outside them get a heads-up before sending.
 const OPEN_AT = '06:30', CLOSE_AT = '17:00', SHOP_TZ = 'America/Winnipeg';
 const HOURS_TEXT = '6:30 am to 5:00 pm';
+// Phone alerts (Firebase Cloud Messaging), both public values from the Firebase console > Project settings:
+// PUSH_VAPID_KEY: Cloud Messaging > Web Push certificates. PUSH_APP_ID: General > Your apps > the Web app's App ID.
+// PUSH_APP_ID must also be set in sw.js. While either is empty, the app doesn't offer alerts.
+const PUSH_VAPID_KEY = '';
+const PUSH_APP_ID = '';
 
 firebase.initializeApp({
   apiKey: 'AIzaSyAKmgoXA4m3cRTmxJq4aUyva5SVvFbTNqg',
@@ -1954,6 +1960,11 @@ $('#sms-code').addEventListener('input', (e) => {
 
 async function signOut(ask = true) {
   if (ask && !(await confirmSheet({ title: 'Sign out?', body: 'You can sign back in any time.', ok: 'Sign out' }))) return;
+  // No more alerts for this account on this phone once signed out
+  try {
+    const key = S.user && localStorage.getItem(pushKeyName());
+    if (key) { localStorage.removeItem(pushKeyName()); await withTimeout(db.ref(`customer_push/${S.user.uid}/${key}`).remove(), 4000).catch(() => {}); }
+  } catch (e) { /* ignore */ }
   await auth.signOut();
 }
 
@@ -2163,6 +2174,7 @@ function enterApp(cid, company) {
   renderAccount();
   renderContacts();
   offerDraft();
+  refreshPushToken();
 }
 
 /* Request history feed.
@@ -2875,7 +2887,7 @@ function showSent() {
       <p class="small muted">It updates here and in History.</p>
       <button class="btn btn-secondary block" type="button" data-act="msg-sent" style="margin-top:10px">${icon('chat', 'sm')}Message dispatch about #${esc(d.refNo)}</button>
     </section>
-    ${homeTip()}
+    ${pushTip() || homeTip()}
     <div style="display:grid;gap:10px">
       <button class="btn btn-primary btn-outlined block" type="button" data-act="new-request">New request</button>
       <button class="btn btn-secondary block" type="button" data-act="send-again">${icon('repeat')}Send the same again</button>
@@ -3364,6 +3376,7 @@ function onRequests(snap) {
     const go = pendingGo;
     pendingGo = '';
     try { history.replaceState(history.state, '', location.pathname); } catch (e) { /* ignore */ }
+    if (go === 'messages' || go.startsWith('req:')) goTo(go);
     if (go === 'repeat') {
       const id = latestRequestId();
       if (id) { $('#draft-banner').hidden = true; repeatRequest(data[id]); toast(`Request #${data[id].ref_no} is filled in. Check it, then tap Review request.`, 'ok', 5000); }
@@ -3653,6 +3666,109 @@ function exportPdf() {
 window.addEventListener('afterprint', () => { $('#print-area').innerHTML = ''; });
 
 /* =========================================================
+   Phone alerts
+   This phone's push token is saved under customer_push/<uid>/<device key>. The dispatch app's
+   notifyCustomerOnRequest and notifyCustomerOnMessage functions use it to send an alert when a
+   pickup goes to a driver or is removed, and when dispatch writes. sw.js shows the alert.
+   ========================================================= */
+const pushKeyName = () => `ec_push_${S.user ? S.user.uid : ''}`;
+let pushApp = null;
+function pushMessaging() {
+  if (!pushApp) pushApp = firebase.initializeApp({ ...firebase.app().options, appId: PUSH_APP_ID }, 'push');
+  return pushApp.messaging();
+}
+// 'off' (not set up), 'ios' (iPhone, not on the home screen yet), 'no' (this browser can't), 'blocked', 'ready', 'on'
+function pushState() {
+  if (!PUSH_VAPID_KEY || !PUSH_APP_ID || typeof firebase.messaging !== 'function') return 'off';
+  if (isIOS() && !isStandalone()) return 'ios';
+  if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) return 'no';
+  if (Notification.permission === 'denied') return 'blocked';
+  let key = '';
+  try { key = localStorage.getItem(pushKeyName()) || ''; } catch (e) { key = ''; }
+  return key && Notification.permission === 'granted' ? 'on' : 'ready';
+}
+function newDeviceKey() { return `d${Date.now().toString(36)}${randomCode(6).toLowerCase()}`; }
+async function savePushToken() {
+  const reg = await navigator.serviceWorker.ready;
+  const token = await withTimeout(pushMessaging().getToken({ vapidKey: PUSH_VAPID_KEY, serviceWorkerRegistration: reg }), 20000);
+  if (!token) throw new Error('No push token');
+  let key = '';
+  try { key = localStorage.getItem(pushKeyName()) || ''; } catch (e) { key = ''; }
+  if (!key) key = newDeviceKey();
+  await db.ref(`customer_push/${S.user.uid}/${key}`).set({ token, updated_at: TS, device: navigator.userAgent.slice(0, 200) });
+  try { localStorage.setItem(pushKeyName(), key); } catch (e) { /* ignore */ }
+}
+async function enablePush(btn) {
+  if (btn) btn.disabled = true;
+  try {
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') {
+      toast(perm === 'denied' ? 'Alerts are blocked for this app. Allow notifications for it in your phone\u2019s settings, then try again.' : 'Alerts weren\u2019t turned on.', 'error', 7000);
+      return;
+    }
+    await savePushToken();
+    toast('Alerts are on for this phone.', 'ok');
+  } catch (err) {
+    console.error(err);
+    toast('Alerts couldn\u2019t be turned on. ' + friendlyError(err), 'error', 7000);
+  } finally {
+    if (btn) btn.disabled = false;
+    renderPushViews();
+  }
+}
+async function disablePush() {
+  let key = '';
+  try { key = localStorage.getItem(pushKeyName()) || ''; localStorage.removeItem(pushKeyName()); } catch (e) { key = ''; }
+  try {
+    if (key) await db.ref(`customer_push/${S.user.uid}/${key}`).remove();
+    await pushMessaging().deleteToken().catch(() => {});
+    toast('Alerts are off for this phone.', 'ok');
+  } catch (err) { toast(friendlyError(err), 'error'); }
+  renderPushViews();
+}
+// Tokens can change; refresh this phone's saved one each time the app opens with alerts on
+function refreshPushToken() { if (pushState() === 'on') savePushToken().catch((e) => console.log('Push token refresh failed', e)); }
+function pushCard() {
+  const st = pushState();
+  if (st === 'off') return '';
+  const lead = '<p class="small muted" style="margin-bottom:10px">Get an alert on this phone when a pickup goes to a driver or is removed, and when dispatch writes to you, even when the app is closed.</p>';
+  const body = {
+    on: `<div class="kv"><span>This phone</span><span>${icon('check', 'sm')} On</span></div><button class="btn btn-secondary block" type="button" data-act="push-off" style="margin-top:10px">Turn off alerts</button>`,
+    ready: '<button class="btn btn-primary block" type="button" data-act="push-on">Turn on alerts</button>',
+    blocked: '<p class="small">Notifications are blocked for this app. Allow them in your phone\u2019s settings, then come back here.</p>',
+    ios: '<p class="small">On iPhone, add the app to your Home Screen first: tap <b>Share</b>, then <b>Add to Home Screen</b>. Open it from there and turn on alerts here.</p>',
+    no: '<p class="small">This browser can\u2019t show alerts. Try Chrome, or add the app to your home screen.</p>'
+  }[st];
+  return `<div class="card" id="push-card"><div class="card-head"><h2>Phone alerts</h2></div>${lead}${body}</div>`;
+}
+// After a send: offer alerts once (until they're on, or Not now)
+const pushTipKey = () => `ec_push_tip_${S.user ? S.user.uid : ''}`;
+function pushTip() {
+  let off = false;
+  try { off = !!localStorage.getItem(pushTipKey()); } catch (e) { off = false; }
+  if (off || pushState() !== 'ready') return '';
+  return `<div class="home-tip" id="push-tip">
+      <span class="cta-ic">${icon('chat')}</span>
+      <span class="grow"><b>Get an alert when it goes to a driver</b><small>And when dispatch writes to you, even with the app closed.</small></span>
+      <span class="home-tip-btns"><button class="btn btn-primary sm" type="button" data-act="push-on">Turn on</button><button class="btn btn-ghost sm" type="button" data-act="push-tip-off">Not now</button></span>
+    </div>`;
+}
+function renderPushViews() {
+  if (S.tab === 'account') renderAccount();
+  const tip = $('#push-tip');
+  if (tip && pushState() !== 'ready') tip.remove();
+}
+// Tapping an alert: sw.js focuses an open app and says where to go
+function goTo(go) {
+  if (!go || !S.cid) return false;
+  if (go === 'messages') { closeSheet(); switchTab('messages'); return true; }
+  const m = /^req:(.+)$/.exec(go);
+  if (m && S.requests[m[1]]) { closeSheet(); switchTab('history'); setTimeout(() => openDetail(m[1]), 50); return true; }
+  return false;
+}
+if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', (e) => { if (e.data && e.data.go) goTo(String(e.data.go)); });
+
+/* =========================================================
    Account
    ========================================================= */
 function isOwner() { return !!(S.company && S.user && S.company.owner_uid === S.user.uid); }
@@ -3694,6 +3810,7 @@ function renderAccount() {
       <div class="kv"><span>Hours</span><span>${HOURS_TEXT}</span></div>
       <div class="contact-btns">${dispatchCall()}<button class="btn btn-secondary sm" type="button" data-nav="messages">${icon('chat', 'sm')}Message</button></div>
     </div>
+    ${pushCard()}
 
     <div class="card">
       <div class="card-head"><h2>Display</h2></div>
@@ -4010,6 +4127,9 @@ document.addEventListener('click', async (e) => {
       break;
     }
     case 'install-cta': installFromCta(); break;
+    case 'push-on': enablePush(el); break;
+    case 'push-off': disablePush(); break;
+    case 'push-tip-off': try { localStorage.setItem(pushTipKey(), '1'); } catch (err) { /* ignore */ } { const t = $('#push-tip'); if (t) t.remove(); } break;
     case 'tip-off': try { localStorage.setItem(tipKey(), '1'); } catch (err) { /* ignore */ } { const t = $('#install-cta-row'); if (t) t.remove(); } break;
     case 'show-opt': showOpt(el.dataset.opt); break;
     case 'az': { const h = document.getElementById(`az-${el.dataset.l}`); if (h) h.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' }); break; }

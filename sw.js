@@ -1,5 +1,48 @@
+// Phone alerts. PUSH_APP_ID is the same Web app ID as in index.html; while it's empty, alerts are off.
+const PUSH_APP_ID = '';
+if (PUSH_APP_ID) {
+  try {
+    importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js', 'https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js');
+    firebase.initializeApp({
+      apiKey: 'AIzaSyAKmgoXA4m3cRTmxJq4aUyva5SVvFbTNqg',
+      authDomain: 'eandccourier-36fcc.firebaseapp.com',
+      databaseURL: 'https://eandccourier-36fcc-default-rtdb.firebaseio.com',
+      projectId: 'eandccourier-36fcc',
+      messagingSenderId: '1067680083511',
+      appId: PUSH_APP_ID
+    });
+    // The dispatch app's functions send data-only alerts (title, body, tag, go); this shows them
+    firebase.messaging().onBackgroundMessage((payload) => {
+      const d = (payload && payload.data) || {};
+      return self.registration.showNotification(d.title || 'E&C Courier', {
+        body: d.body || '',
+        icon: 'icon-192.png',
+        badge: 'icon-192.png',
+        tag: d.tag || undefined, // a newer alert about the same pickup replaces the older one
+        renotify: !!d.tag,
+        data: { go: d.go || '' }
+      });
+    });
+  } catch (err) {
+    console.log('Phone alerts unavailable', err);
+  }
+}
+
+// Tapping an alert opens the app (or brings it to the front) on that pickup or on Messages
+self.addEventListener('notificationclick', (event) => {
+  const go = (event.notification.data && event.notification.data.go) || '';
+  if (!go && !(event.notification.data && 'go' in event.notification.data)) return; // not one of ours
+  event.notification.close();
+  const url = new URL(`./index.html${go ? `?go=${encodeURIComponent(go)}` : ''}`, self.registration.scope).href;
+  event.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+    const open = list.find((c) => new URL(c.url).origin === self.location.origin);
+    if (open) { open.postMessage({ go }); return open.focus(); }
+    return self.clients.openWindow(url);
+  }));
+});
+
 // Updated cache name to force the browser to recognize a change
-const cacheName = 'eandc-pickup-cache-v5';
+const cacheName = 'eandc-pickup-cache-v6';
 
 // Files to cache
 const assetsToCache = [
