@@ -132,6 +132,8 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     await page.click('#btn-review');
     await page.waitForSelector('#sheet:not([hidden]) #btn-send');
     assert.match(await page.textContent('#sheet-body'), /You already sent a pickup from Acme Supply 25 min ago \(#1201\)/);
+    // Outside 6:30 am to 5:00 pm, an "as soon as possible" request says when dispatch will see it
+    assert.strictEqual(await page.evaluate(() => { const real = window.shopNowHM; const out = ['06:29', '06:30', '16:59', '17:00'].map((t) => { window.shopNowHM = () => t; return afterHoursText(); }); window.shopNowHM = real; return out.map((t) => (t ? (/opens at 6:30 am/.test(t) ? 'before' : /closed for the day/.test(t) ? 'after' : t) : 'open')).join(','); }), 'before,open,open,after');
     assert.ok(await page.evaluate(() => document.getElementById('view-app').inert), '3.3 page behind the sheet is inert');
     await page.waitForTimeout(400);
     await shot(page, 'duplicate');
@@ -151,6 +153,11 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     await page.waitForFunction(() => document.querySelectorAll('#sent-steps .steps li.done').length === 2);
     await page.waitForTimeout(800);
     await shot(page, 'sent');
+    await page.click('[data-act=msg-sent]');
+    await page.waitForSelector('#msgs-body #msg-about');
+    assert.strictEqual(await page.inputValue('#msg-about'), sent[0], 'Messages opens on the pickup just sent');
+    await page.waitForFunction(() => document.activeElement && document.activeElement.matches('#msgs-body textarea'));
+    await page.evaluate(() => { msgAbout = ''; document.getElementById('msgs-body').innerHTML = ''; }); // back to the default pick for the checks below
     // History: the arrow is read as "to"; a backwards custom range is swapped
     await page.click('.tab[data-nav=history]');
     await page.waitForSelector('#hist-list .row');
@@ -162,7 +169,7 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     await page.waitForSelector('#hist-list .chip.msg');
     await page.click('#hist-list .row[data-id=r1]');
     await page.waitForSelector('#sheet-body .msgs .msg.them');
-    await page.fill('#sheet-body form[data-msg-form] input', 'Thanks! Back door please.');
+    await page.fill('#sheet-body form[data-msg-form] textarea', 'Thanks! Back door please.');
     await page.click('#sheet-body form[data-msg-form] button');
     await page.waitForFunction(() => Object.values(window.__fakeDb.get('messages')).some((m) => m.from === 'customer' && m.by_uid === 'u1' && m.company_id === 'c1' && m.rid === 'r1'));
     await page.waitForSelector('#sheet-body .msgs .msg.me');
@@ -185,14 +192,19 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     assert.ok(await page.isHidden('#msg-dot'), 'dot clears once the conversation is open');
     assert.match(await page.textContent('#msgs-body .msg-list'), /#1201[\s\S]*#1190/);
     assert.strictEqual(await page.inputValue('#msg-about'), 'r0', 'starts on the pickup dispatch last wrote about');
+    assert.strictEqual(await page.locator('#toasts .toast.from-dispatch').count(), 0, 'dispatch pop-ups clear when Messages opens');
+    assert.strictEqual((await page.textContent('#msgs-body .msg-day')).trim(), 'Today', 'day label above the messages');
+    await page.fill('#msgs-body .msg-form textarea', 'one\ntwo\nthree');
+    assert.ok(await page.evaluate(() => document.querySelector('#msgs-body .msg-form textarea').offsetHeight > 60), 'the box grows with longer messages');
+    await page.fill('#msgs-body .msg-form textarea', '');
     await page.selectOption('#msg-about', 'r1');
-    await page.fill('#msgs-body .msg-form input', 'Is the 1201 driver coming?');
-    await page.press('#msgs-body .msg-form input', 'Enter');
+    await page.fill('#msgs-body .msg-form textarea', 'Is the 1201 driver coming?');
+    await page.press('#msgs-body .msg-form textarea', 'Enter');
     await page.waitForFunction(() => Object.values(window.__fakeDb.get('messages')).some((m) => m.text === 'Is the 1201 driver coming?' && m.rid === 'r1' && m.company_id === 'c1'));
     // A message that couldn't go out stays on screen with Try again, it doesn't vanish
     await page.evaluate(() => { Object.defineProperty(S, 'online', { get: () => false, set: () => {}, configurable: true }); });
-    await page.fill('#msgs-body .msg-form input', 'Hello?');
-    await page.press('#msgs-body .msg-form input', 'Enter');
+    await page.fill('#msgs-body .msg-form textarea', 'Hello?');
+    await page.press('#msgs-body .msg-form textarea', 'Enter');
     await page.waitForSelector('#msgs-body .msg.failed');
     await page.evaluate(() => { delete S.online; S.online = true; });
     await page.click('#msgs-body .msg.failed [data-act=msg-retry]');
@@ -205,6 +217,10 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     await page.keyboard.press('Escape');
     await page.waitForSelector('#sheet[hidden]', { state: 'attached' });
     await page.click('.tab[data-nav=history]');
+    await page.click('#hist-status [data-status=removed]');
+    assert.match(await page.textContent('#hist-list'), /#1201/, 'Removed filter shows removed pickups');
+    assert.strictEqual(await page.locator('#hist-list .row').count(), 1);
+    await page.click('#hist-status [data-status=all]');
     await page.evaluate(() => { document.getElementById('toasts').innerHTML = ''; }); // so later steps find their own toast
     await page.selectOption('#hist-period', 'custom');
     await page.fill('#hist-from', '2026-03-01');
@@ -242,6 +258,9 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     assert.strictEqual(await page.evaluate(() => localStorage.getItem('ec_theme_pref')), null);
     assert.match(await page.textContent('#account-body'), /\(204\) 555-0100/, 'phone shown as (204) 555-0100');
     assert.ok(await page.isVisible('#account-body input[name=theme][value=system] + span:has-text("Auto")'));
+    assert.match(await page.textContent('#account-body'), /Contact E&C[\s\S]*\(204\) 730-0945[\s\S]*6:30 am to 5:00 pm/);
+    assert.ok(await page.isVisible('#account-body .contact-btns a[href^="tel:"]'), 'call from Account');
+    await shot(page, 'account');
     // A long contact list gets A to Z down the side
     await page.evaluate(() => { const names = ['Alder', 'Birch', 'Cedar', 'Dogwood', 'Elm', 'Fir', 'Gum', 'Hazel', 'Ivy', 'Juniper', 'Kapok', 'Larch']; names.forEach((n, i) => window.__fakeDb.put(`companies/c1/address_book/z${i}`, { name: `${n} Co`, address: `${i + 1} Tree St` })); });
     await page.click('.tab[data-nav=contacts]');
@@ -259,6 +278,23 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
       assert.ok(!(await p2.evaluate(() => location.search)), 'the ?go= is removed from the address');
       assert.deepStrictEqual(e2, [], 'no script errors from the shortcut');
       await c2.close();
+    }
+    // A pickup removed while the app was closed is mentioned on the next open; cancelled pickups aren't offered in Messages
+    {
+      const away = JSON.parse(JSON.stringify(DATA));
+      Object.assign(away.requests.r1, { status: 'removed', removed_at: now - 30000 });
+      away.requests.r2 = { ref_no: 1202, status: 'cancelled', company_id: 'c1', company_name: 'Acme Supply', customer_uid: 'u1', pickup: { name: 'Acme Supply', address: '12 Main St' }, delivery: { name: 'Gone Co' }, items_text: '1 box', payment: 'prepaid', created_at: now - 10 * 60000, cancelled_at: now - 5 * 60000 };
+      const { page: p5, errors: e5, ctx: c5 } = await open(browser, base, { user: USER, data: away });
+      await p5.waitForFunction(() => S.reqLoaded);
+      await p5.evaluate((t) => localStorage.setItem('ec_seen_u1', String(t)), now - 60000);
+      await p5.reload();
+      await p5.waitForSelector('.toast.error:has-text("#1201 was removed by dispatch since your last visit")');
+      await p5.click('.tab[data-nav=messages]');
+      await p5.waitForSelector('#msg-about');
+      const opts = await p5.$$eval('#msg-about option', (o) => o.map((x) => x.value));
+      assert.ok(!opts.includes('r2') && opts.includes('r1'), 'cancelled pickups left out of About, removed ones kept');
+      assert.deepStrictEqual(e5, [], 'no script errors');
+      await c5.close();
     }
     // 1.5 History loads one period at a time once dispatch has filled in the history keys
     const key = (cid, ms) => `${cid}~${String(ms).padStart(13, '0')}`;
