@@ -140,7 +140,7 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     assert.ok(await page.evaluate(() => !!document.querySelector('.field.nudge')), 'first problem is nudged');
     await page.fill('#pickup-address', '12 Main St');
     await page.check('input[name=payment][value=prepaid]', { force: true });
-    await page.waitForFunction(() => /Prepaid \(sender pays\)/.test(document.getElementById('side-sum').textContent));
+    await page.waitForFunction(() => /Payment\s*Prepaid/.test(document.getElementById('side-sum').textContent));
     await page.waitForTimeout(400);
     await shot(page, 'desktop-filled');
     // 2.2 the same pickup was sent 25 minutes ago and hasn't been dispatched
@@ -361,7 +361,6 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
       assert.match(await pg.textContent('#check-sum'), /You already sent a pickup from Acme Supply 25 min ago \(#1201\)/);
       assert.match(await pg.textContent('#check-sum'), /Pickup\s*Acme Supply\s*12 Main St[\s\S]*Not set \(optional\)[\s\S]*2 pallets/);
       assert.ok(await pg.isChecked('input[name=payment][value=prepaid]'), 'payment starts on the last choice');
-      assert.match(await pg.textContent('#pay-field'), /Sender pays[\s\S]*Recipient pays/);
       assert.strictEqual((await pg.textContent('#btn-review')).trim(), 'Send request');
       await pg.waitForTimeout(300);
       await shot(pg, 'guided-4');
@@ -382,8 +381,14 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
       assert.strictEqual(g.payment, 'collect');
       assert.deepStrictEqual(Object.values(g.items), [{ qty: 2, type: 'pallet', weight: 300 }]);
       assert.strictEqual(g.delivery.name, '');
+      // New in the bottom bar, from the sent screen, opens a fresh pickup
+      await pg.click('.tab[data-nav=new]');
+      await pg.waitForSelector('#sent-wrap', { state: 'hidden' });
+      assert.ok(await pg.isVisible('#pickup-name'), 'the form is back');
+      assert.strictEqual(await pg.inputValue('#pickup-name'), '', 'and empty');
+      await pg.click('.tab[data-nav=history]');
+      await pg.click('.tab[data-nav=new]');
       // A weekend date can't be picked
-      await pg.click('[data-act=new-request]');
       assert.strictEqual(await pg.evaluate(() => S.step), 1, 'a new request starts on step 1');
       await pg.fill('#pickup-name', 'Acme Supply');
       await pg.fill('#pickup-address', '12 Main St');
