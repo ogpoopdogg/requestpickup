@@ -1226,7 +1226,7 @@ body.desk main.app-main{padding-bottom:40px}
   <nav class="tabbar" aria-label="Main">
     <div class="tabbar-in">
       <button class="tab" type="button" data-nav="new" aria-current="page"><svg class="i"><use href="#i-plus"/></svg>New</button>
-      <button class="tab" type="button" data-nav="history"><svg class="i"><use href="#i-list"/></svg>History<span class="dot" id="hist-dot" hidden></span></button>
+      <button class="tab" type="button" data-nav="history"><svg class="i"><use href="#i-list"/></svg>History</button>
       <button class="tab" type="button" data-nav="messages"><svg class="i"><use href="#i-chat"/></svg>Messages<span class="dot" id="msg-dot" hidden></span></button>
       <button class="tab" type="button" data-nav="contacts"><svg class="i"><use href="#i-contacts"/></svg>Contacts</button>
       <button class="tab" type="button" data-nav="account"><svg class="i"><use href="#i-user"/></svg>Account</button>
@@ -1549,22 +1549,86 @@ function applyLastPayment() {
 
 /* =========================================================
    Messages with dispatch (messages/, read for this company only)
-   Unread replies are counted on this phone.
+   Read state: what this person has already seen is saved in the database at
+   customer_read/<uid>, so old messages don't come back as new on another phone or after
+   signing out and back in. This phone keeps a copy too, for when the database can't be reached.
+   _all is the newest dispatch message they had when they last opened Messages (it covers every
+   pickup); <rid> is the newest one they saw in that pickup's details, kept while newer than _all.
+   Both are the messages' own server times, so a phone clock that's off doesn't matter.
    ========================================================= */
-const msgSeenKey = () => `ec_msgseen_${S.user ? S.user.uid : ''}`;
+const READ_ALL = '_all';
+const msgReadKey = () => `ec_msgread_${S.user ? S.user.uid : ''}`;
+const legacySeenKey = () => `ec_msgseen_${S.user ? S.user.uid : ''}`; // before read state was saved in the database
 let msgSeen = {};
-function loadMsgSeen() { try { msgSeen = JSON.parse(localStorage.getItem(msgSeenKey()) || '{}') || {}; } catch (e) { msgSeen = {}; } }
+let msgLegacy = null; // old per-phone marks (phone clock times), turned into message times once messages load
+let msgReadRef = null;
+let msgReadReady = false; // no unread counts until the saved read state has arrived, so old messages don't flash as new
+let msgReadTimer = null;
+const readKeyOk = (k) => /^[A-Za-z0-9_-]{1,40}$/.test(k);
+function loadMsgSeen() {
+  try { msgSeen = JSON.parse(localStorage.getItem(msgReadKey()) || '{}') || {}; } catch (e) { msgSeen = {}; }
+  try { msgLegacy = JSON.parse(localStorage.getItem(legacySeenKey()) || 'null'); } catch (e) { msgLegacy = null; }
+}
+function storeMsgSeen() { try { localStorage.setItem(msgReadKey(), JSON.stringify(msgSeen)); } catch (e) { /* ignore */ } }
+function msgReadArrived() {
+  clearTimeout(msgReadTimer);
+  if (!msgReadReady) { msgReadReady = true; updateHistoryDot(); if (S.tab === 'history') renderHistory(); }
+}
+function watchMsgSeen(uid) {
+  msgReadReady = false;
+  msgReadRef = db.ref(`customer_read/${uid}`);
+  // If the database is slow or refuses (rules not updated yet), carry on with this phone's copy
+  clearTimeout(msgReadTimer);
+  msgReadTimer = setTimeout(msgReadArrived, 6000);
+  listen(msgReadRef, 'value', (snap) => {
+    const saved = snap.val() || {};
+    const behind = {};
+    Object.entries(saved).forEach(([k, v]) => { if (typeof v === 'number' && v > (msgSeen[k] || 0)) msgSeen[k] = v; });
+    Object.entries(msgSeen).forEach(([k, v]) => { if (readKeyOk(k) && v > (saved[k] || 0) && (k === READ_ALL || v > (msgSeen[READ_ALL] || 0))) behind[k] = v; });
+    storeMsgSeen();
+    if (Object.keys(behind).length) msgReadRef.update(behind).catch(() => {});
+    msgReadArrived();
+    updateHistoryDot();
+    if (S.tab === 'history') renderHistory();
+  }, () => { msgReadRef = null; msgReadArrived(); });
+}
+// changes: { key: message time, or null to drop it }
+function saveMsgSeen(changes) {
+  Object.entries(changes).forEach(([k, v]) => { if (v == null) delete msgSeen[k]; else msgSeen[k] = v; });
+  storeMsgSeen();
+  const up = {};
+  Object.entries(changes).forEach(([k, v]) => { if (readKeyOk(k)) up[k] = v; });
+  if (msgReadRef && Object.keys(up).length) msgReadRef.update(up).catch(() => {});
+}
+const seenAt = (rid) => Math.max(msgSeen[READ_ALL] || 0, msgSeen[rid] || 0);
+const isUnread = (m) => msgReadReady && !!m && m.from === 'dispatch' && (m.at || 0) > seenAt(m.rid);
+const newestFromDispatch = (rid) => Object.values(S.msgs || {}).reduce((t, m) => (m && m.from === 'dispatch' && (rid == null || m.rid === rid) && (m.at || 0) > t ? m.at : t), 0);
 const msgsFor = (rid) => Object.entries(S.msgs || {}).filter(([, m]) => m && m.rid === rid).sort((a, b) => (a[1].at || 0) - (b[1].at || 0));
-const unreadFor = (rid) => msgsFor(rid).filter(([, m]) => m.from === 'dispatch' && (m.at || 0) > (msgSeen[rid] || 0)).length;
+const unreadFor = (rid) => msgsFor(rid).filter(([, m]) => isUnread(m)).length;
 const unreadReqs = () => Object.keys(S.requests || {}).filter((rid) => unreadFor(rid) > 0).length;
-const unreadTotal = () => Object.values(S.msgs || {}).filter((m) => m && m.from === 'dispatch' && (m.at || 0) > (msgSeen[m.rid] || 0)).length;
+const unreadTotal = () => Object.values(S.msgs || {}).filter(isUnread).length;
+// Messages open: everything from dispatch so far is read, on every pickup
 function markAllMsgsSeen() {
-  let any = false;
-  Object.values(S.msgs || {}).forEach((m) => { if (m && m.from === 'dispatch' && (m.at || 0) > (msgSeen[m.rid] || 0)) { msgSeen[m.rid] = Date.now(); any = true; } });
-  if (!any) return;
-  try { localStorage.setItem(msgSeenKey(), JSON.stringify(msgSeen)); } catch (e) { /* ignore */ }
+  const t = newestFromDispatch();
+  if (!t || t <= (msgSeen[READ_ALL] || 0)) return;
+  const changes = { [READ_ALL]: t };
+  Object.keys(msgSeen).forEach((k) => { if (k !== READ_ALL && msgSeen[k] <= t) changes[k] = null; });
+  saveMsgSeen(changes);
   updateHistoryDot();
   if (S.tab === 'history') renderHistory();
+}
+// Once messages first load: what this phone had marked read the old way stays read, and is saved for every device
+function migrateLegacySeen() {
+  if (!msgLegacy) return;
+  const old = msgLegacy;
+  msgLegacy = null;
+  const changes = {};
+  Object.entries(old).forEach(([rid, ts]) => {
+    const t = Object.values(S.msgs || {}).reduce((x, m) => (m && m.from === 'dispatch' && m.rid === rid && (m.at || 0) <= ts && (m.at || 0) > x ? m.at : x), 0);
+    if (t > seenAt(rid)) changes[rid] = t;
+  });
+  if (Object.keys(changes).length) saveMsgSeen(changes);
+  try { localStorage.removeItem(legacySeenKey()); } catch (e) { /* ignore */ }
 }
 // Messages written on this phone that the database hasn't confirmed yet, or that failed
 S.msgOut = {};
@@ -1651,11 +1715,9 @@ async function sendCustomerMsg(rid, text, key) {
   renderMsgViews();
 }
 function markMsgsSeen(rid) {
-  if (!unreadFor(rid)) return;
-  msgSeen[rid] = Date.now();
-  const cutoff = Date.now() - 30 * 86400000;
-  Object.keys(msgSeen).forEach((k) => { if (msgSeen[k] < cutoff) delete msgSeen[k]; });
-  try { localStorage.setItem(msgSeenKey(), JSON.stringify(msgSeen)); } catch (e) { /* ignore */ }
+  const t = newestFromDispatch(rid);
+  if (!t || t <= seenAt(rid)) return;
+  saveMsgSeen({ [rid]: t });
   updateHistoryDot();
   if (S.tab === 'history') renderHistory();
 }
@@ -1674,6 +1736,7 @@ function onMsgs(snap) {
   }
   msgsLoaded = true;
   S.msgErr = null;
+  migrateLegacySeen();
   if (S.tab === 'messages') { renderMessages(); markAllMsgsSeen(); }
   updateHistoryDot();
   if (S.tab === 'history') renderHistory();
@@ -2377,6 +2440,7 @@ function enterApp(cid, company) {
 
   startRequests(cid, S.sessionToken);
   loadMsgSeen();
+  watchMsgSeen(uid);
   msgsLoaded = false;
   // If the database rules don't allow it, the Messages tab says so instead of staying quietly empty
   S.msgErr = null;
@@ -3807,16 +3871,12 @@ function onRequests(snap) {
     const seen = getSeen();
     if (!seen) setSeen(Date.now());
     else {
-      const fresh = Object.values(data).filter((r) => r.status === 'dispatched' && (r.dispatched_at || 0) > seen);
-      if (fresh.length === 1) toast(`Request #${fresh[0].ref_no} was dispatched.`, 'ok', 6000);
-      else if (fresh.length > 1) toast(`${fresh.length} of your requests were dispatched since your last visit.`, 'ok', 6000);
       const gone = Object.values(data).filter((r) => r.status === 'removed' && (r.removed_at || 0) > seen);
       if (gone.length) toast(gone.length === 1 ? `Request #${gone[0].ref_no} was removed by dispatch since your last visit. Open it in History, or message dispatch if you have questions.` : `${gone.length} of your requests were removed by dispatch since your last visit. Choose Removed in History to see them.`, 'error', 10000);
     }
   } else {
     Object.entries(data).forEach(([id, r]) => {
       const p = prev[id];
-      if (p && p.status === 'new' && r.status === 'dispatched') toast(`Request #${r.ref_no} was dispatched to a driver.`, 'ok', 7000);
       if (p && p.status === 'new' && r.status === 'removed') toast(`Request #${r.ref_no} was removed by dispatch. Call or text dispatch if you have questions.`, 'error', 9000);
     });
   }
@@ -3846,16 +3906,11 @@ function onRequests(snap) {
   if (sheetIsOpen() && currentDetailId && $('#sheet-body [data-detail]')) openDetail(currentDetailId, true);
 }
 function updateHistoryDot() {
-  const seen = getSeen();
-  const n = Object.values(S.requests).filter((r) => r.status === 'dispatched' && (r.dispatched_at || 0) > seen).length;
-  const dot = $('#hist-dot');
-  dot.hidden = !n || S.tab === 'history';
-  dot.textContent = n > 9 ? '9+' : String(n);
   const u = unreadTotal();
   const md = $('#msg-dot');
   if (md) { md.hidden = !u || S.tab === 'messages'; md.textContent = u > 9 ? '9+' : String(u); }
 }
-function markHistorySeen() { setSeen(Date.now()); updateHistoryDot(); }
+function markHistorySeen() { setSeen(Date.now()); }
 
 function periodRange() {
   const h = S.hist;
@@ -4121,7 +4176,7 @@ window.addEventListener('afterprint', () => { $('#print-area').innerHTML = ''; }
    Phone alerts
    This phone's push token is saved under customer_push/<uid>/<device key>. The dispatch app's
    notifyCustomerOnRequest and notifyCustomerOnMessage functions use it to send an alert when a
-   pickup goes to a driver or is removed, and when dispatch writes. sw.js shows the alert.
+   pickup is removed, and when dispatch writes. sw.js shows the alert.
    ========================================================= */
 const pushKeyName = () => `ec_push_${S.user ? S.user.uid : ''}`;
 let pushApp = null;
@@ -4183,7 +4238,7 @@ function refreshPushToken() { if (pushState() === 'on') savePushToken().catch((e
 function pushCard() {
   const st = pushState();
   if (st === 'off') return '';
-  const lead = '<p class="small muted" style="margin-bottom:10px">Get an alert on this phone when a pickup goes to a driver or is removed, and when dispatch writes to you, even when the app is closed.</p>';
+  const lead = '<p class="small muted" style="margin-bottom:10px">Get an alert on this phone when dispatch writes to you or removes a pickup, even when the app is closed.</p>';
   const body = {
     on: `<div class="kv"><span>This phone</span><span>${icon('check', 'sm')} On</span></div><button class="btn btn-secondary block" type="button" data-act="push-off" style="margin-top:10px">Turn off alerts</button>`,
     ready: '<button class="btn btn-primary block" type="button" data-act="push-on">Turn on alerts</button>',
@@ -4201,7 +4256,7 @@ function pushTip() {
   if (off || pushState() !== 'ready') return '';
   return `<div class="home-tip" id="push-tip">
       <span class="cta-ic">${icon('chat')}</span>
-      <span class="grow"><b>Get an alert when it goes to a driver</b><small>And when dispatch writes to you, even with the app closed.</small></span>
+      <span class="grow"><b>Get an alert when dispatch writes to you</b><small>Or if they remove a pickup, even with the app closed.</small></span>
       <span class="home-tip-btns"><button class="btn btn-primary sm" type="button" data-act="push-on">Turn on</button><button class="btn btn-ghost sm" type="button" data-act="push-tip-off">Not now</button></span>
     </div>`;
 }

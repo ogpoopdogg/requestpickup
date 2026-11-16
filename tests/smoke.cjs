@@ -436,6 +436,60 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
       assert.deepStrictEqual(e5, [], 'no script errors');
       await c5.close();
     }
+    // Messages already read don't show as new after signing in again, even on a fresh phone:
+    // read state is saved in the database (customer_read/<uid>) as message times
+    {
+      const unread = JSON.parse(JSON.stringify(DATA));
+      unread.messages = {
+        m1: { rid: 'r1', company_id: 'c1', ref_no: 1201, from: 'dispatch', text: 'Old one', at: now - 86400000, by_uid: 's1', by_name: 'dana' },
+        m2: { rid: 'general', company_id: 'c1', from: 'dispatch', text: 'Old general', at: now - 3600000, by_uid: 's1', by_name: 'dana' }
+      };
+      const { page: p6, errors: e6, ctx: c6 } = await open(browser, base, { user: USER, data: unread });
+      await p6.waitForSelector('#msg-dot:not([hidden])');
+      assert.strictEqual((await p6.textContent('#msg-dot')).trim(), '2', 'never-read messages count');
+      await p6.click('.tab[data-nav=messages]');
+      await p6.waitForFunction(() => (window.__fakeDb.get('customer_read/u1') || {})._all > 0);
+      const saved = await p6.evaluate(() => window.__fakeDb.get('customer_read/u1'));
+      assert.strictEqual(saved._all, now - 3600000, 'saved as the newest message time, not the phone clock');
+      assert.deepStrictEqual(e6, [], 'no script errors');
+      await c6.close();
+
+      const read = JSON.parse(JSON.stringify(unread));
+      read.customer_read = { u1: saved };
+      const { page: p7, errors: e7, ctx: c7 } = await open(browser, base, { user: USER, data: read });
+      await p7.waitForFunction(() => S.msgs && msgReadReady);
+      await p7.waitForTimeout(400);
+      assert.ok(await p7.isHidden('#msg-dot'), 'no number on Messages for messages read on another phone');
+      assert.strictEqual(await p7.locator('#hist-dot').count(), 0, 'no count on History for dispatched pickups');
+      await p7.evaluate(() => window.__fakeDb.put('messages/m3', { rid: 'r1', company_id: 'c1', ref_no: 1201, from: 'dispatch', text: 'New one', at: Date.now(), by_uid: 's1', by_name: 'dana' }));
+      await p7.waitForSelector('#msg-dot:not([hidden])');
+      assert.strictEqual((await p7.textContent('#msg-dot')).trim(), '1', 'a new reply still counts');
+      // Opening that pickup marks only it read, and it's saved for other phones
+      await p7.click('.tab[data-nav=history]');
+      await p7.click('#hist-list .row[data-id=r1]');
+      await p7.waitForFunction(() => (window.__fakeDb.get('customer_read/u1') || {}).r1 > 0);
+      await p7.keyboard.press('Escape');
+      assert.ok(await p7.isHidden('#msg-dot'), 'read once the pickup is opened');
+      // A pickup going to a driver doesn't pop up
+      await p7.evaluate(() => { window.__fakeDb.put('requests/r1/status', 'dispatched'); window.__fakeDb.put('requests/r1/dispatched_at', Date.now()); });
+      await p7.waitForTimeout(400);
+      assert.strictEqual(await p7.locator('.toast:has-text("dispatched")').count(), 0, 'no dispatched pop-up');
+      assert.deepStrictEqual(e7, [], 'no script errors');
+      await c7.close();
+
+      // Marks this phone saved the old way (phone-only) are kept and moved to the database
+      const { page: p8, errors: e8, ctx: c8 } = await open(browser, base, { user: USER, data: unread });
+      await p8.waitForFunction(() => S.reqLoaded);
+      await p8.evaluate((t) => localStorage.setItem('ec_msgseen_u1', JSON.stringify({ r1: t, general: t })), now);
+      await p8.reload();
+      await p8.waitForFunction(() => (window.__fakeDb.get('customer_read/u1') || {}).general > 0);
+      await p8.waitForTimeout(300);
+      assert.ok(await p8.isHidden('#msg-dot'), 'old read marks still count as read');
+      assert.deepStrictEqual(await p8.evaluate(() => window.__fakeDb.get('customer_read/u1')), { r1: now - 86400000, general: now - 3600000 });
+      assert.strictEqual(await p8.evaluate(() => localStorage.getItem('ec_msgseen_u1')), null, 'old marks cleared once moved');
+      assert.deepStrictEqual(e8, [], 'no script errors');
+      await c8.close();
+    }
     // 1.5 History loads one period at a time once dispatch has filled in the history keys
     const key = (cid, ms) => `${cid}~${String(ms).padStart(13, '0')}`;
     const keyed = JSON.parse(JSON.stringify(DATA));
