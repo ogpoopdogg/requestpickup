@@ -67,6 +67,11 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     {
       const { page, errors, ctx } = await open(browser, base, { user: null, data: DATA });
       await page.waitForSelector('#view-auth:not([hidden])');
+      // Landing page: the intro's Create account button opens the sign-up form, and both Google buttons are there
+      assert.strictEqual(await page.locator('#view-auth [data-act=google]').count(), 2, 'Google button in the intro and in the card');
+      await page.click('.hero-cta [data-mode=create]');
+      assert.strictEqual(await page.isVisible('#auth-confirm-wrap'), true, 'Create account shows the confirm password field');
+      await page.click('#auth-mode-btn');
       await page.click('#auth-submit');
       assert.strictEqual(await page.textContent('#auth-email-err'), 'Enter a valid email address.');
       assert.strictEqual(await page.getAttribute('#auth-email', 'aria-invalid'), 'true');
