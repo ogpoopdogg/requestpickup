@@ -67,6 +67,11 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     {
       const { page, errors, ctx } = await open(browser, base, { user: null, data: DATA });
       await page.waitForSelector('#view-auth:not([hidden])');
+      // Landing page: the intro's Create account button opens the sign-up form, and both Google buttons are there
+      assert.strictEqual(await page.locator('#view-auth [data-act=google]').count(), 2, 'Google button in the intro and in the card');
+      await page.click('.hero-cta [data-mode=create]');
+      assert.strictEqual(await page.isVisible('#auth-confirm-wrap'), true, 'Create account shows the confirm password field');
+      await page.click('#auth-mode-btn');
       await page.click('#auth-submit');
       assert.strictEqual(await page.textContent('#auth-email-err'), 'Enter a valid email address.');
       assert.strictEqual(await page.getAttribute('#auth-email', 'aria-invalid'), 'true');
@@ -261,13 +266,15 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     assert.ok(!Object.values(await page.evaluate(() => window.__fakeDb.get('companies/c1/address_book'))).some((c) => c.name === 'Westman Tire'));
     await page.click('.toast .toast-act');
     await page.waitForFunction(() => Object.values(window.__fakeDb.get('companies/c1/address_book')).some((c) => c.name === 'Westman Tire'));
-    // 3.10 theme follows the phone by default
+    // 3.10 theme is Light by default; Dark and Auto can still be picked
     await page.click('.tab[data-nav=account]');
-    assert.ok(await page.isChecked('input[name=theme][value=system]'), 'Match phone is the default');
+    assert.ok(await page.isChecked('input[name=theme][value=light]'), 'Light is the default');
+    assert.strictEqual(await page.getAttribute('html', 'data-theme'), 'light');
     await page.check('input[name=theme][value=dark]', { force: true });
     assert.strictEqual(await page.getAttribute('html', 'data-theme'), 'dark');
     await page.check('input[name=theme][value=system]', { force: true });
-    assert.strictEqual(await page.evaluate(() => localStorage.getItem('ec_theme_pref')), null);
+    assert.strictEqual(await page.evaluate(() => localStorage.getItem('ec_theme_pref')), 'system');
+    await page.check('input[name=theme][value=light]', { force: true });
     assert.match(await page.textContent('#account-body'), /\(204\) 555-0100/, 'phone shown as (204) 555-0100');
     assert.ok(await page.isVisible('#account-body input[name=theme][value=system] + span:has-text("Auto")'));
     assert.match(await page.textContent('#account-body'), /Contact E&C[\s\S]*\(204\) 730-0945[\s\S]*6:30 am to 5:00 pm/);
@@ -353,6 +360,18 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
       assert.strictEqual(await p4.locator('.toast').count(), 0, 'no error shown for the fallback');
       assert.deepStrictEqual(e4, [], 'no script errors in the fallback');
       await c4.close();
+    }
+    // A phone set to dark still opens in Light until the person picks Dark or Auto
+    {
+      const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, colorScheme: 'dark', serviceWorkers: 'block' });
+      const pd = await ctx.newPage();
+      await pd.route(/googleapis\.com|gstatic\.com|cloudfunctions\.net/, (r) => r.abort());
+      await pd.goto(base);
+      assert.strictEqual(await pd.getAttribute('html', 'data-theme'), 'light', 'Light by default on a dark phone');
+      await pd.evaluate(() => localStorage.setItem('ec_theme_pref', 'system'));
+      await pd.reload();
+      assert.strictEqual(await pd.getAttribute('html', 'data-theme'), 'dark', 'Auto follows a dark phone');
+      await ctx.close();
     }
     console.log('pickup smoke test passed');
   } finally {

@@ -11,10 +11,10 @@
 <link rel="apple-touch-icon" href="icon-512.png">
 <script>
   // Apply the saved theme before first paint to avoid a flash.
-  // Follows the phone's light or dark setting unless this person picked Light or Dark (ec_theme_pref).
+  // Light by default. ec_theme_pref holds 'dark', or 'system' when this person chose Auto (match the phone).
   try {
     var tp = localStorage.getItem('ec_theme_pref');
-    document.documentElement.dataset.theme = tp === 'dark' || tp === 'light' ? tp : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.dataset.theme = tp === 'dark' ? 'dark' : tp === 'system' && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   } catch (e) {}
   // Google Maps calls this when it finishes loading (it loads async and is optional).
   window.onMapsReady = function () { window.__mapsReady = true; document.dispatchEvent(new Event('maps-ready')); };
@@ -183,58 +183,64 @@ p{margin:0}
 .auth-links{display:flex;justify-content:space-between;gap:8px;margin-top:8px;flex-wrap:wrap}
 .fine{font-size:13px;color:var(--ink-3);margin-top:16px;line-height:1.5;text-align:center}
 
-/* Sign-in home: pitch the app over phoning, then the sign-in card.
-   One column on phones; pitch and card side by side from 900px. */
-.auth-home{max-width:1040px}
+/* Sign-in home: phone preview first, then the benefits next to the sign-in card.
+   One column on phones; side by side from 900px. */
+.auth-home{max-width:1080px}
+#view-auth{background:linear-gradient(180deg,var(--surface-2),var(--surface) 60%)}
 .home-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
 .home-top .brand{margin-bottom:0}
-.home-grid{display:grid;gap:14px}
-.home-pitch{display:grid;gap:12px;min-width:0}
-.hero{position:relative;overflow:hidden;background:#0e0e0d;color:#f3f2ec;border:1px solid rgba(255,209,0,.28);border-radius:16px;padding:20px 18px 18px;box-shadow:var(--shadow);isolation:isolate}
-.auth .hero-title{margin:0 0 10px;color:#fff;font-size:clamp(32px,9.4vw,54px);line-height:.98;letter-spacing:-.02em}
-.hero-title mark{background:none;color:var(--yellow)}
-.hero-sub{margin:0 0 16px;max-width:40ch;color:#c9c7bf;font-size:15px;line-height:1.45}
-.hero-cta{display:flex;flex-wrap:wrap;gap:8px}
-.hero-cta .btn{flex:1 1 150px;min-height:50px;padding:12px 16px}
-.btn-ondark{background:transparent;color:#fff;border-color:rgba(255,255,255,.3)}
-.btn-ondark:hover{border-color:#fff;background:rgba(255,255,255,.06)}
-.btn-ondark:focus-visible{outline:2px solid var(--yellow);outline-offset:2px}
-.why{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:4px 16px 2px;box-shadow:var(--sh-2)}
-.why h2{margin:10px 0 2px;color:var(--ink-2);font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-stretch:100%}
-.why ul{margin:0;padding:0;list-style:none}
-.why li{display:grid;grid-template-columns:38px minmax(0,1fr);gap:12px;align-items:start;padding:12px 0}
-.why li+li{border-top:1px solid var(--line)}
-.why .ic{width:38px;height:38px;border-radius:10px;background:var(--yellow);color:#000;display:grid;place-items:center}
-.why .ic .i{width:20px;height:20px;stroke-width:2.2}
-.why b{display:block;font-size:15.5px;font-weight:750;line-height:1.25}
-.why li span:not(.ic){display:block;color:var(--ink-2);font-size:13.5px;line-height:1.4;margin-top:1px}
-.why em{display:inline-flex;align-items:center;gap:5px;margin-top:5px;color:var(--ink-3);font-size:12px;font-style:normal;font-weight:600}
-.why em .i{width:12px;height:12px;color:var(--danger)}
-.hero-steps{display:grid;grid-template-columns:1fr;margin:-20px -18px 18px;border-bottom:1px solid rgba(255,255,255,.12)}
-.hero-step{display:flex;align-items:center;gap:10px;min-width:0;padding:11px 18px}
-.hero-step>div{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;min-width:0}
-.hero-step+.hero-step{border-top:1px solid rgba(255,255,255,.12);background:rgba(255,209,0,.10)}
-.hero-step-n{flex:none;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(255,255,255,.6);color:#fff;font-size:14px;font-weight:800}
-.hero-step.after .hero-step-n{background:var(--yellow);border-color:var(--yellow);color:#000}
-.hero-step b{display:block;font-size:15px;font-weight:750;color:#fff;line-height:1.2}
-.hero-step small{display:block;font-size:13px;font-weight:600;color:rgba(255,255,255,.78);line-height:1.25}
-.hero-step.after small{color:var(--yellow)}
-@media (max-width:519px){.hero-step{gap:8px}.hero-step-n{width:28px;height:28px;font-size:13px}}
-@media (max-width:389px){.hero-step{padding:10px 14px}.hero-step-n{width:26px;height:26px;font-size:12.5px}.hero-step b{font-size:14px}.hero-step small{font-size:12px}}
+#view-auth .home-signin{font-size:15px}
+.home-hero{display:grid;gap:36px;justify-items:center;text-align:center;padding:18px 0 48px}
+.home-eyebrow{display:inline-flex;align-items:center;gap:8px;margin-bottom:14px;color:var(--ink-2);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.home-eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--yellow);box-shadow:0 0 0 3px var(--yellow-soft)}
+.auth .hero-title{margin:0;font-size:clamp(36px,10.6vw,48px);line-height:1.02;letter-spacing:-.02em}
+.hero-title mark{background:linear-gradient(transparent 62%,var(--yellow) 62%);color:inherit}
+.hero-sub{margin:16px auto 24px;max-width:30ch;color:var(--ink-2);font-size:18px;line-height:1.45}
+.hero-cta{display:grid;gap:10px;max-width:340px;margin:0 auto}
+.hero-cta .btn{min-height:48px;padding:0 22px;font-size:16px;white-space:nowrap}
+.hero-info{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:18px}
+.hero-info span,.hero-info a{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface-2);color:var(--ink);font-size:13.5px;font-weight:600;text-decoration:none;white-space:nowrap}
+.hero-info .i{flex:none;width:16px;height:16px}
+.hero-info a b{font-weight:700}
+.hero-info a:hover{border-color:var(--line-strong)}
+.hero-info a:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.phone-mock{position:relative;width:250px;height:500px;flex:none;padding:12px;border-radius:38px;background:#0d0d0c;box-shadow:0 40px 80px -30px rgba(20,18,10,.5);text-align:left;pointer-events:none;user-select:none}
+[data-theme=dark] .phone-mock{outline:1px solid var(--line-strong)}
+.phone-mock::before{content:'';position:absolute;top:18px;left:50%;width:76px;height:19px;margin-left:-38px;border-radius:12px;background:#0d0d0c;z-index:1}
+.pm-screen{height:100%;padding:44px 13px 13px;border-radius:28px;background:#f4f3ef;color:#0d0d0c;overflow:hidden}
+.pm-title{margin:0 0 11px;font-size:19px;font-weight:800;font-stretch:80%}
+.pm-field{margin-bottom:6px;padding:6px 10px;border:1px solid #e4e2dc;border-radius:10px;background:#fff;font-size:13px;font-weight:600}
+.pm-field small{display:block;color:#85827a;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.pm-field em{margin-left:4px;padding:1px 5px;border-radius:6px;background:#FFF4BF;font-size:10px;font-style:normal}
+.pm-two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pm-send{margin:10px 0 12px;padding:11px;border-radius:10px;background:var(--yellow);color:#000;font-size:14px;font-weight:800;text-align:center}
+.pm-recent small{color:#85827a;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.pm-recent div{display:flex;align-items:center;gap:6px;margin-top:4px;padding:8px 10px;border:1px solid #e4e2dc;border-radius:10px;background:#fff;font-size:12px;font-weight:600}
+.pm-recent .i{width:14px;height:14px;flex:none}
+.home-second{display:grid;gap:32px;padding:40px 0 8px;border-top:1px solid var(--line)}
+.home-second .why{min-width:0}
+.why h2{margin:0 0 20px;font-size:28px;line-height:1.05;letter-spacing:-.02em}
+.why ul{display:grid;gap:20px;margin:0;padding:0;list-style:none}
+.why li{display:grid;grid-template-columns:42px minmax(0,1fr);gap:14px;align-items:start}
+.why .ic{width:42px;height:42px;border-radius:12px;background:var(--yellow);color:#000;display:grid;place-items:center}
+[data-theme=light] .why .ic{background:#FFF4BF}
+.why .ic .i{width:22px;height:22px;stroke-width:2.2}
+.why b{display:block;font-size:17px;font-weight:750;line-height:1.25;margin-bottom:3px}
+.why li span:not(.ic){display:block;color:var(--ink-2);font-size:15px;line-height:1.45}
 .home-form{min-width:0;scroll-margin-top:16px}
+@media (min-width:900px){
+  .home-hero{grid-template-columns:minmax(0,1fr) auto;justify-items:start;align-items:center;gap:80px;padding:48px 0 64px;text-align:left}
+  .auth .hero-title{font-size:64px}
+  .hero-sub{margin-left:0}
+  .hero-cta{grid-template-columns:auto auto;max-width:none;margin:0}
+  .hero-info{justify-content:flex-start}
+  .phone-mock{width:290px;height:580px}
+  .home-second{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:80px;padding-top:64px;align-items:start}
+  .why ul{grid-template-columns:1fr 1fr;gap:28px 32px}
+  .home-form{position:sticky;top:24px}
+}
 .auth-card #auth-title{font-size:26px;line-height:1.05;letter-spacing:-.02em;margin:2px 0 4px}
 .auth-card #auth-lead{margin-bottom:12px}
-/* Sign-in home: larger, higher-contrast small print so it reads easily before sign-in. */
-#view-auth .hero-sub{font-size:17px;color:#e2e0d8}
-#view-auth .home-signin{font-size:15px}
-#view-auth .why h2{margin:16px 0 6px;color:var(--ink);font-size:26px;font-weight:800;line-height:1.05;letter-spacing:-.02em;text-transform:none}
-#view-auth .why li{grid-template-columns:42px minmax(0,1fr)}
-#view-auth .why .ic{width:42px;height:42px}
-#view-auth .why .ic .i{width:22px;height:22px}
-#view-auth .why b{font-size:17px}
-#view-auth .why li span:not(.ic){font-size:15px}
-#view-auth .why em{font-size:13.5px;color:var(--ink-2)}
-#view-auth .why em .i{width:14px;height:14px}
 #view-auth .field>label{font-size:14px}
 #view-auth .auth-card #auth-lead{font-size:15.5px}
 #view-auth .divider{font-size:12px;color:var(--ink-2)}
@@ -243,27 +249,6 @@ p{margin:0}
 #view-auth .auth-links{justify-content:flex-end;margin-top:4px}
 .auth-switch{margin-top:12px;font-size:15px}
 .auth-switch::before{content:'';position:absolute;left:0;right:0;top:-13px;height:1px;background:var(--line)}
-.hero-info{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 16px;margin:18px -18px -18px;padding:12px 18px;border-top:1px solid rgba(255,255,255,.12);font-size:14px;font-weight:600;color:rgba(255,255,255,.85)}
-.hero-info span,.hero-info a{display:inline-flex;align-items:center;gap:7px}
-.hero-info .i{flex:none;width:16px;height:16px;color:var(--yellow)}
-.hero-info a{color:#fff;text-decoration:none;white-space:nowrap}
-.hero-info a b{color:var(--yellow);font-weight:750}
-.hero-info a:hover b{text-decoration:underline}
-.hero-info a:focus-visible{outline:2px solid var(--yellow);outline-offset:3px;border-radius:4px}
-@media (max-width:389px){.hero-info{font-size:13px;gap:6px 12px}.hero-info span{white-space:nowrap}}
-@media (max-width:359px){.hero-info{font-size:12.5px;padding:11px 14px;margin-left:-18px;margin-right:-18px}.hero-info .i{width:14px;height:14px}}
-@media (min-width:600px){.hero{padding:28px 28px 26px}.hero-steps{margin:-28px -28px 22px}.hero-step{padding:14px 28px}.hero-info{margin:22px -28px -26px;padding:13px 28px}}
-@media (min-width:900px){
-  .home-grid{grid-template-columns:minmax(0,1fr) 380px;gap:36px;align-items:start}
-  .home-form{position:sticky;top:24px}
-  .home-signin,.hero-cta{display:none}
-  .hero-sub{margin-bottom:0}
-}
-@media (min-width:1100px){
-  .why ul{display:grid;grid-template-columns:1fr 1fr;column-gap:28px}
-  .why li+li{border-top:0}
-  .why li:nth-child(n+3){border-top:1px solid var(--line)}
-}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px}
 #recaptcha-host:empty{display:none}
 
@@ -794,35 +779,46 @@ html{scroll-padding-bottom:calc(var(--nav-h) + var(--safe-b) + 84px)}
   <div class="auth auth-home">
     <div class="home-top">
       <div class="brand"><span class="logo-tile"><img src="icon2.png" alt="" onerror="this.remove()"></span><div class="wordmark">E&amp;C <b>Courier</b></div></div>
-      <button class="btn btn-ghost sm home-signin" type="button" data-act="jump-auth" data-mode="signin">Sign in</button>
+      <button class="btn btn-secondary sm home-signin" type="button" data-act="jump-auth" data-mode="signin">Sign in</button>
     </div>
-    <div class="home-grid">
+    <div class="home-hero">
       <div class="home-pitch">
-        <div class="hero">
-          <div class="hero-steps" role="note" aria-label="Create your account once. Every pickup after is a few taps.">
-            <div class="hero-step"><span class="hero-step-n" aria-hidden="true">1</span><div><b>Create your account</b><small>One time only</small></div></div>
-            <div class="hero-step after"><span class="hero-step-n" aria-hidden="true">2</span><div><b>Send pickups</b><small>A few taps, every time</small></div></div>
-          </div>
-          <h1 class="hero-title">Send a pickup <mark>in seconds.</mark></h1>
-          <p class="hero-sub">No busy lines. No hold. Straight to dispatch.</p>
-          <div class="hero-cta">
-            <button class="btn btn-primary" type="button" data-act="jump-auth" data-mode="create">Create your account</button>
-            <button class="btn btn-ondark" type="button" data-act="jump-auth" data-mode="signin">I have an account</button>
-          </div>
-          <div class="hero-info">
-            <span><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg>Dispatch hours: 6:30 am to 5:00 pm</span>
-            <a id="hero-call" href="#" hidden><svg class="i" aria-hidden="true"><use href="#i-phone"/></svg><b></b></a>
-          </div>
+        <div class="home-eyebrow"><i aria-hidden="true"></i>E&amp;C Courier customer app</div>
+        <h1 class="hero-title">Book a courier pickup <mark>in seconds.</mark></h1>
+        <p class="hero-sub">Skip the phone queue. Your pickup goes straight to E&amp;C dispatch.</p>
+        <div class="hero-cta">
+          <button class="btn btn-primary" type="button" data-act="jump-auth" data-mode="create">Create your account</button>
+          <button class="btn btn-google" type="button" data-act="google">
+            <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>
+            <span class="btn-label">Continue with Google</span>
+          </button>
         </div>
-        <div class="why">
-          <h2>Why use the app?</h2>
-          <ul>
-            <li><span class="ic"><svg class="i"><use href="#i-clock"/></svg></span><div><b>Never wait on hold</b><span>Send anytime.</span><em><svg class="i sm"><use href="#i-phone"/></svg>Calling: busy lines</em></div></li>
-            <li><span class="ic"><svg class="i"><use href="#i-contacts"/></svg></span><div><b>Addresses fill themselves</b><span>Save contacts once.</span><em><svg class="i sm"><use href="#i-phone"/></svg>Calling: spell it out</em></div></li>
-            <li><span class="ic"><svg class="i"><use href="#i-repeat"/></svg></span><div><b>Repeat in one tap</b><span>Resend any past pickup.</span><em><svg class="i sm"><use href="#i-phone"/></svg>Calling: start over</em></div></li>
-            <li><span class="ic"><svg class="i"><use href="#i-list"/></svg></span><div><b>Every pickup on record</b><span>Export your history anytime.</span><em><svg class="i sm"><use href="#i-phone"/></svg>Calling: no record</em></div></li>
-          </ul>
+        <div class="hero-info">
+          <span><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg>Dispatch hours: 6:30 am to 5:00 pm</span>
+          <a id="hero-call" href="#" hidden><svg class="i" aria-hidden="true"><use href="#i-phone"/></svg><b></b></a>
         </div>
+      </div>
+      <div class="phone-mock" aria-hidden="true">
+        <div class="pm-screen">
+          <p class="pm-title">New pickup</p>
+          <div class="pm-field"><small>Pickup from</small>Acme Supply <em>Saved</em></div>
+          <div class="pm-field"><small>Address</small>12 Main St</div>
+          <div class="pm-field"><small>Deliver to</small>Lake Clinic <em>Saved</em></div>
+          <div class="pm-field pm-two"><div><small>Ready after</small>10:00 am</div><div><small>Payment</small>Prepaid</div></div>
+          <div class="pm-send">Send to dispatch</div>
+          <div class="pm-recent"><small>Recent</small><div><svg class="i" aria-hidden="true"><use href="#i-repeat"/></svg>Acme Supply to Lake Clinic</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="home-second">
+      <div class="why">
+        <h2>Why use the app?</h2>
+        <ul>
+          <li><span class="ic"><svg class="i"><use href="#i-clock"/></svg></span><div><b>Never wait on hold</b><span>Send a pickup anytime, even when the lines are busy.</span></div></li>
+          <li><span class="ic"><svg class="i"><use href="#i-contacts"/></svg></span><div><b>Addresses fill themselves</b><span>Save a contact once and pick it next time.</span></div></li>
+          <li><span class="ic"><svg class="i"><use href="#i-repeat"/></svg></span><div><b>Repeat in one tap</b><span>Resend any past pickup without starting over.</span></div></li>
+          <li><span class="ic"><svg class="i"><use href="#i-list"/></svg></span><div><b>Every pickup on record</b><span>See your history and export it anytime.</span></div></li>
+        </ul>
       </div>
       <div class="home-form" id="auth-panel">
         <div class="auth-card">
@@ -1182,7 +1178,7 @@ const S = {
   sessionToken: 0,
   reqWidening: false, // History is loading requests from further back
   online: null,
-  themePref: (() => { try { const v = localStorage.getItem('ec_theme_pref'); return v === 'dark' || v === 'light' ? v : 'system'; } catch (e) { return 'system'; } })()
+  themePref: (() => { try { const v = localStorage.getItem('ec_theme_pref'); return v === 'dark' || v === 'system' ? v : 'light'; } catch (e) { return 'light'; } })()
 };
 // Which requests are being listened to: mode 'all' (every one), 'key' (created since from), '' (none yet)
 const reqFeed = { mode: '', from: Infinity, off: null };
@@ -1750,15 +1746,15 @@ function show(view) {
 /* =========================================================
    Theme
    ========================================================= */
-// pref is 'system' (match the phone), 'light' or 'dark'
+// pref is 'light' (the default), 'dark' or 'system' (Auto: match the phone)
 const darkMq = (() => { try { return matchMedia('(prefers-color-scheme: dark)'); } catch (e) { return null; } })();
 function applyTheme(pref, save) {
-  const p = pref === 'dark' || pref === 'light' ? pref : 'system';
+  const p = pref === 'dark' || pref === 'system' ? pref : 'light';
   S.themePref = p;
   document.documentElement.dataset.theme = p === 'system' ? (darkMq && darkMq.matches ? 'dark' : 'light') : p;
   const meta = document.querySelector('meta[name=theme-color]');
   if (meta) meta.setAttribute('content', '#000000');
-  if (save) { try { if (p === 'system') localStorage.removeItem('ec_theme_pref'); else localStorage.setItem('ec_theme_pref', p); } catch (e) { /* storage unavailable */ } }
+  if (save) { try { localStorage.setItem('ec_theme_pref', p); } catch (e) { /* storage unavailable */ } }
   if (save && S.user) db.ref(`users/${S.user.uid}/theme`).set(p === 'system' ? null : p).catch(() => {});
   $$('input[name=theme]').forEach((r) => { r.checked = r.value === p; });
 }
@@ -1830,11 +1826,10 @@ $('#auth-form').addEventListener('submit', async (e) => {
 });
 
 async function googleSignIn() {
-  const btn = $('[data-act=google]');
-  if (btn.classList.contains('is-loading')) return;
+  const btns = $$('[data-act=google]'); // the landing page has one in the intro and one in the sign-in card
+  if (btns.some((x) => x.classList.contains('is-loading'))) return;
   // Spin from the moment the Google window opens until sign-in finishes (the app then switches to its loading screen).
-  btn.classList.add('is-loading');
-  btn.setAttribute('aria-busy', 'true');
+  btns.forEach((x) => { x.classList.add('is-loading'); x.setAttribute('aria-busy', 'true'); });
   const provider = new firebase.auth.GoogleAuthProvider();
   provider.setCustomParameters({ prompt: 'select_account' });
   try {
@@ -1847,8 +1842,7 @@ async function googleSignIn() {
       toast(friendlyError(err), 'error');
     }
   } finally {
-    btn.classList.remove('is-loading');
-    btn.removeAttribute('aria-busy');
+    btns.forEach((x) => { x.classList.remove('is-loading'); x.removeAttribute('aria-busy'); });
   }
 }
 // Only finish a Google redirect sign-in when one was actually started, so normal page loads don't open Firebase's hidden sign-in frame.
@@ -2020,7 +2014,7 @@ async function handleUser(user) {
     S.userDoc = snap.val() || {};
     let savedTheme = null;
     try { savedTheme = localStorage.getItem('ec_theme_pref'); } catch (e) { /* ignore */ }
-    applyTheme(S.userDoc.theme || savedTheme || 'system', false);
+    applyTheme(S.userDoc.theme || savedTheme || 'light', false);
     if (S.userDoc.theme) { try { localStorage.setItem('ec_theme_pref', S.userDoc.theme); } catch (e) { /* ignore */ } }
     const cid = S.userDoc.company_id;
     if (!cid) { showOnboarding(); return; }
@@ -3782,7 +3776,7 @@ function renderAccount() {
   const me = S.members[S.user.uid] || {};
   const owner = isOwner();
   const usesPassword = S.user.providerData.some((p) => p.providerId === 'password');
-  const theme = S.themePref || 'system';
+  const theme = S.themePref || 'light';
   const members = Object.entries(S.members).sort((a, b) => (a[1].role === 'owner' ? -1 : b[1].role === 'owner' ? 1 : (a[1].name || '').localeCompare(b[1].name || '')));
   box.innerHTML = `
     <div class="card">
