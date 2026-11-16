@@ -194,7 +194,7 @@ p{margin:0}
 .home-eyebrow{display:inline-flex;align-items:center;gap:8px;margin-bottom:14px;color:var(--ink-2);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
 .home-eyebrow i{width:8px;height:8px;border-radius:50%;background:var(--yellow);box-shadow:0 0 0 3px var(--yellow-soft)}
 .auth .hero-title{margin:0;font-size:clamp(36px,10.6vw,48px);line-height:1.02;letter-spacing:-.02em}
-.hero-title mark{background:linear-gradient(transparent 62%,var(--yellow) 62%);color:inherit}
+.hero-title mark{background:none;color:inherit}
 .hero-sub{margin:16px auto 24px;max-width:30ch;color:var(--ink-2);font-size:18px;line-height:1.45}
 .hero-cta{display:grid;gap:10px;max-width:340px;margin:0 auto}
 .hero-cta .btn{min-height:48px;padding:0 22px;font-size:16px;white-space:nowrap}
@@ -1146,8 +1146,8 @@ body.desk main.app-main{padding-bottom:40px}
             <div class="field" id="pay-field">
               <span class="label">Payment <span class="req">*</span></span>
               <div class="seg" role="radiogroup" aria-label="Payment">
-                <label><input type="radio" name="payment" value="prepaid"><span>Prepaid<small>Sender pays</small></span></label>
-                <label><input type="radio" name="payment" value="collect"><span>Collect<small>Recipient pays</small></span></label>
+                <label><input type="radio" name="payment" value="prepaid"><span>Prepaid</span></label>
+                <label><input type="radio" name="payment" value="collect"><span>Collect</span></label>
               </div>
             </div>
             <div class="field"><label for="notes">Notes for the driver</label><textarea id="notes" maxlength="1000" rows="3" placeholder="Optional: door #, hours, gate code"></textarea></div>
@@ -3002,7 +3002,7 @@ function reviewNotes(d) {
   const late = d.ready_after && d.ready_after >= CLOSE_AT ? `Dispatch closes at ${fmtHM(CLOSE_AT)}, before this pickup is ready. It may not be picked up until the next day.` : '';
   return [closed, late].filter(Boolean).map((t) => `<div class="notice warn">${icon('clock')}<span>${esc(t)}</span></div>`).join('') + warn;
 }
-const payText = (p) => (p === 'collect' ? 'Collect (recipient pays)' : p === 'prepaid' ? 'Prepaid (sender pays)' : '');
+const payText = (p) => (p === 'collect' ? 'Collect' : p === 'prepaid' ? 'Prepaid' : '');
 function whenText(d) { return d.when === 'scheduled' ? (d.scheduled_for ? fmtDay(d.scheduled_for) : 'Pick a date') : 'As soon as possible'; }
 function openReview(d) {
   const items = [itemsText(d.items), d.item_details].filter(Boolean).map(esc).join('<br>');
@@ -4471,6 +4471,8 @@ document.addEventListener('click', async (e) => {
   if (nav) {
     if (sheetIsOpen()) closeSheet();
     switchTab(nav.dataset.nav);
+    // New, tapped while the "sent" screen shows, starts a fresh pickup
+    if (nav.dataset.nav === 'new' && !$('#sent-wrap').hidden) resetForm();
     return;
   }
   const el = e.target.closest('[data-act]');
