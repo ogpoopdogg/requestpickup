@@ -11,10 +11,10 @@
 <link rel="apple-touch-icon" href="icon-512.png">
 <script>
   // Apply the saved theme before first paint to avoid a flash.
-  // Follows the phone's light or dark setting unless this person picked Light or Dark (ec_theme_pref).
+  // Light by default. ec_theme_pref holds 'dark', or 'system' when this person chose Auto (match the phone).
   try {
     var tp = localStorage.getItem('ec_theme_pref');
-    document.documentElement.dataset.theme = tp === 'dark' || tp === 'light' ? tp : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.dataset.theme = tp === 'dark' ? 'dark' : tp === 'system' && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   } catch (e) {}
   // Google Maps calls this when it finishes loading (it loads async and is optional).
   window.onMapsReady = function () { window.__mapsReady = true; document.dispatchEvent(new Event('maps-ready')); };
@@ -1182,7 +1182,7 @@ const S = {
   sessionToken: 0,
   reqWidening: false, // History is loading requests from further back
   online: null,
-  themePref: (() => { try { const v = localStorage.getItem('ec_theme_pref'); return v === 'dark' || v === 'light' ? v : 'system'; } catch (e) { return 'system'; } })()
+  themePref: (() => { try { const v = localStorage.getItem('ec_theme_pref'); return v === 'dark' || v === 'system' ? v : 'light'; } catch (e) { return 'light'; } })()
 };
 // Which requests are being listened to: mode 'all' (every one), 'key' (created since from), '' (none yet)
 const reqFeed = { mode: '', from: Infinity, off: null };
@@ -1750,15 +1750,15 @@ function show(view) {
 /* =========================================================
    Theme
    ========================================================= */
-// pref is 'system' (match the phone), 'light' or 'dark'
+// pref is 'light' (the default), 'dark' or 'system' (Auto: match the phone)
 const darkMq = (() => { try { return matchMedia('(prefers-color-scheme: dark)'); } catch (e) { return null; } })();
 function applyTheme(pref, save) {
-  const p = pref === 'dark' || pref === 'light' ? pref : 'system';
+  const p = pref === 'dark' || pref === 'system' ? pref : 'light';
   S.themePref = p;
   document.documentElement.dataset.theme = p === 'system' ? (darkMq && darkMq.matches ? 'dark' : 'light') : p;
   const meta = document.querySelector('meta[name=theme-color]');
   if (meta) meta.setAttribute('content', '#000000');
-  if (save) { try { if (p === 'system') localStorage.removeItem('ec_theme_pref'); else localStorage.setItem('ec_theme_pref', p); } catch (e) { /* storage unavailable */ } }
+  if (save) { try { localStorage.setItem('ec_theme_pref', p); } catch (e) { /* storage unavailable */ } }
   if (save && S.user) db.ref(`users/${S.user.uid}/theme`).set(p === 'system' ? null : p).catch(() => {});
   $$('input[name=theme]').forEach((r) => { r.checked = r.value === p; });
 }
@@ -2020,7 +2020,7 @@ async function handleUser(user) {
     S.userDoc = snap.val() || {};
     let savedTheme = null;
     try { savedTheme = localStorage.getItem('ec_theme_pref'); } catch (e) { /* ignore */ }
-    applyTheme(S.userDoc.theme || savedTheme || 'system', false);
+    applyTheme(S.userDoc.theme || savedTheme || 'light', false);
     if (S.userDoc.theme) { try { localStorage.setItem('ec_theme_pref', S.userDoc.theme); } catch (e) { /* ignore */ } }
     const cid = S.userDoc.company_id;
     if (!cid) { showOnboarding(); return; }
@@ -3782,7 +3782,7 @@ function renderAccount() {
   const me = S.members[S.user.uid] || {};
   const owner = isOwner();
   const usesPassword = S.user.providerData.some((p) => p.providerId === 'password');
-  const theme = S.themePref || 'system';
+  const theme = S.themePref || 'light';
   const members = Object.entries(S.members).sort((a, b) => (a[1].role === 'owner' ? -1 : b[1].role === 'owner' ? 1 : (a[1].name || '').localeCompare(b[1].name || '')));
   box.innerHTML = `
     <div class="card">
