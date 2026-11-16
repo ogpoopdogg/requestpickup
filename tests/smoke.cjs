@@ -44,8 +44,10 @@ function serve() {
   });
 }
 
-async function open(browser, url, fake) {
-  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, serviceWorkers: 'block' });
+const PHONE = { width: 390, height: 844 };
+const DESK = { width: 1280, height: 900 };
+async function open(browser, url, fake, viewport = PHONE) {
+  const ctx = await browser.newContext({ viewport, deviceScaleFactor: 2, hasTouch: viewport === PHONE, serviceWorkers: 'block' });
   const page = await ctx.newPage();
   const errors = [];
   page.on('pageerror', (e) => errors.push(String(e)));
@@ -90,9 +92,15 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
       assert.deepStrictEqual(errors, [], 'no script errors on the offline screen');
       await ctx.close();
     }
-    const { page, errors, ctx } = await open(browser, base, { user: USER, data: DATA });
+    // The full form and the review sheet, on a computer (phones get the guided steps, tested further down)
+    const { page, errors, ctx } = await open(browser, base, { user: USER, data: DATA }, DESK);
     await page.waitForSelector('#view-app:not([hidden])');
     assert.strictEqual((await page.textContent('#new-repeat-latest')).trim(), 'Repeat last');
+    assert.ok(await page.isVisible('.topbar .tabbar .tab[data-nav=history]'), 'menu in the top bar on a computer');
+    assert.ok(await page.isVisible('#top-call[href^="tel:"]'), 'call dispatch from the top bar');
+    await page.waitForSelector('#side-sum .btn');
+    assert.ok(await page.isHidden('#btn-review'), 'the summary beside the form has the send button');
+    await shot(page, 'desktop-form');
     // Payment starts on this person's last choice; phone, email, description, hours and PO wait behind "+"
     await page.waitForFunction(() => S.reqLoaded);
     assert.ok(await page.isChecked('input[name=payment][value=prepaid]'), 'payment starts on the last choice');
@@ -103,7 +111,6 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     await page.click('[data-act=show-opt][data-opt=hours]');
     await page.fill('#ready-after', '14:00');
     await page.fill('#closes-at', '16:00');
-    assert.ok((await page.locator('.tabbar').evaluate((el) => getComputedStyle(el).backgroundColor)) !== 'rgba(0, 0, 0, 0)', 'solid bottom bar');
     // Typing a name suggests this account's own contacts; a tap fills in the whole stop
     await page.fill('#delivery-name', 'acm');
     await page.waitForSelector('#delivery-name-ac:not([hidden]) .ac-item');
@@ -127,18 +134,37 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     await page.click('[data-act=draft-continue]');
     assert.strictEqual(await page.inputValue('#pickup-name'), 'Acme Supply');
     // 3.2 / 3.7 Review with a missing address: the error is tied to the field and the field gets one nudge
-    await page.click('#btn-review');
+    await page.click('#side-sum .btn');
     await page.waitForSelector('#pickup-address-err');
     assert.strictEqual(await page.getAttribute('#pickup-address', 'aria-invalid'), 'true');
     assert.ok(await page.evaluate(() => !!document.querySelector('.field.nudge')), 'first problem is nudged');
     await page.fill('#pickup-address', '12 Main St');
     await page.check('input[name=payment][value=prepaid]', { force: true });
+    await page.waitForFunction(() => /Prepaid \(sender pays\)/.test(document.getElementById('side-sum').textContent));
+    await page.waitForTimeout(400);
+    await shot(page, 'desktop-filled');
     // 2.2 the same pickup was sent 25 minutes ago and hasn't been dispatched
-    await page.click('#btn-review');
+    await page.click('#side-sum .btn');
     await page.waitForSelector('#sheet:not([hidden]) #btn-send');
     assert.match(await page.textContent('#sheet-body'), /You already sent a pickup from Acme Supply 25 min ago \(#1201\)/);
     // Outside 6:30 am to 5:00 pm, an "as soon as possible" request says when dispatch will see it
-    assert.strictEqual(await page.evaluate(() => { const real = window.shopNowHM; const out = ['06:29', '06:30', '16:59', '17:00'].map((t) => { window.shopNowHM = () => t; return afterHoursText(); }); window.shopNowHM = real; return out.map((t) => (t ? (/opens at 6:30 am/.test(t) ? 'before' : /closed for the day/.test(t) ? 'after' : t) : 'open')).join(','); }), 'before,open,open,after');
+    assert.strictEqual(await page.evaluate(() => { const real = window.shopNowHM, realDay = window.shopTodayStr; window.shopTodayStr = () => '2026-11-18'; const out = ['06:29', '06:30', '16:59', '17:00'].map((t) => { window.shopNowHM = () => t; return afterHoursText(); }); window.shopNowHM = real; window.shopTodayStr = realDay; return out.map((t) => (t ? (/opens at 6:30 am/.test(t) ? 'before' : /closed for the day[\s\S]*6:30 am tomorrow/.test(t) ? 'after' : t) : 'open')).join(','); }), 'before,open,open,after');
+    // Closed on weekends and Manitoba's general holidays; Friday evening says Monday
+    assert.deepStrictEqual(await page.evaluate(() => {
+      const real = window.shopNowHM, realDay = window.shopTodayStr;
+      const at = (day, hm) => { window.shopTodayStr = () => day; window.shopNowHM = () => hm; return afterHoursText(); };
+      const out = [at('2026-11-20', '17:30'), at('2026-11-21', '10:00'), at('2026-12-25', '10:00'), at('2026-11-18', '10:00')];
+      window.shopNowHM = real; window.shopTodayStr = realDay;
+      return out;
+    }), [
+      'Dispatch is closed for the day (open 6:30 am to 5:00 pm). They\u2019ll see this request at 6:30 am on Monday.',
+      'Dispatch is closed for the weekend (open weekdays, 6:30 am to 5:00 pm). They\u2019ll see this request at 6:30 am on Monday.',
+      'Dispatch is closed for Christmas Day (open weekdays, 6:30 am to 5:00 pm). They\u2019ll see this request at 6:30 am on Monday.',
+      ''
+    ]);
+    // Holidays from the Manitoba Employment Standards list (2025 to 2027 dates from its table where it gives them)
+    assert.deepStrictEqual(await page.evaluate(() => ['2025-04-18', '2026-04-03', '2027-03-26', '2025-05-19', '2026-05-18', '2027-05-24', '2026-02-16', '2026-09-07', '2026-09-30', '2026-10-12', '2026-12-26', '2026-11-11', '2026-04-06'].map((d) => shopClosedReason(d))),
+      ['Good Friday', 'Good Friday', 'Good Friday', 'Victoria Day', 'Victoria Day', 'Victoria Day', 'Louis Riel Day', 'Labour Day', 'Truth and Reconciliation Day', 'Thanksgiving', 'the weekend', '', '']);
     assert.ok(await page.evaluate(() => document.getElementById('view-app').inert), '3.3 page behind the sheet is inert');
     await page.waitForTimeout(400);
     await shot(page, 'duplicate');
@@ -151,6 +177,7 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     const sent = await page.evaluate(() => Object.entries(window.__fakeDb.get('requests')).find(([, r]) => r.ref_no === 1204));
     assert.strictEqual(sent[1].ready_after, '14:00');
     assert.strictEqual(sent[1].closes_at, '16:00');
+    assert.strictEqual(sent[1].payment, 'prepaid');
     // What happens next: Sent, then Seen by dispatch, then Dispatched to a driver, live
     await page.waitForSelector('#sent-steps .steps');
     assert.strictEqual(await page.locator('#sent-steps .steps li.done').count(), 1);
@@ -289,6 +316,93 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     assert.deepStrictEqual(errors, [], 'no script errors');
     await ctx.close();
 
+    // Phones: one step at a time, with recent places a tap away
+    {
+      const { page: pg, errors: eg, ctx: cg } = await open(browser, base, { user: USER, data: DATA });
+      await pg.waitForSelector('#view-app:not([hidden])');
+      await pg.waitForFunction(() => S.reqLoaded);
+      assert.ok((await pg.locator('.tabbar').evaluate((el) => getComputedStyle(el).backgroundColor)) !== 'rgba(0, 0, 0, 0)', 'solid bottom bar');
+      assert.strictEqual((await pg.textContent('#guide-q')).trim(), 'Where are we picking up?');
+      assert.strictEqual((await pg.textContent('#guide-step-txt')).trim(), 'Step 1 of 4');
+      assert.ok(await pg.isHidden('#delivery-name') && await pg.isHidden('#items-block') && await pg.isHidden('#pay-block'), 'only the pickup step shows');
+      assert.ok(await pg.isHidden('#btn-back'), 'no Back on the first step');
+      assert.strictEqual((await pg.textContent('#top-call')).trim(), 'Call');
+      await shot(pg, 'guided-1');
+      // Next with nothing filled in: the pickup name is flagged, payment (step 4) is not
+      await pg.click('#btn-review');
+      await pg.waitForSelector('#pickup-name-err');
+      assert.strictEqual(await pg.locator('#pay-field.invalid').count(), 0, 'later steps stay quiet');
+      assert.strictEqual((await pg.textContent('#guide-step-txt')).trim(), 'Step 1 of 4');
+      // A recent pickup place fills in the whole stop
+      await pg.click('[data-recent=pickup] .recent-stop:has-text("Acme Supply")');
+      assert.strictEqual(await pg.inputValue('#pickup-address'), '12 Main St');
+      assert.ok(await pg.isHidden('[data-recent=pickup]'), 'the list goes once the stop is filled in');
+      await pg.click('#btn-review');
+      assert.strictEqual((await pg.textContent('#guide-q')).trim(), 'Where is it going?');
+      assert.strictEqual((await pg.textContent('#btn-review')).trim(), 'Skip', 'an empty delivery can be skipped');
+      assert.ok(await pg.isVisible('[data-recent=delivery] .recent-stop:has-text("Smith Co")'));
+      await pg.fill('#delivery-name', 'Lake Clinic');
+      assert.strictEqual((await pg.textContent('#btn-review')).trim(), 'Next');
+      await pg.fill('#delivery-name', '');
+      await pg.click('#btn-review');
+      // Items: tap the type; weight and size wait behind a button
+      assert.strictEqual((await pg.textContent('#guide-q')).trim(), 'What are we moving, and when?');
+      assert.ok(await pg.isHidden('#item-rows [data-field=weight]'), 'weight tucked away');
+      await pg.click('#item-rows .tchip:has-text("Pallets")');
+      await pg.click('#item-rows [data-act=qty-inc]');
+      await pg.click('#item-size-btn');
+      await pg.fill('#item-rows [data-field=weight]', '300');
+      assert.match(await pg.textContent('#items-preview'), /2 pallets/);
+      assert.match(await pg.textContent('#next-day-btn'), /^Next business day: /);
+      await shot(pg, 'guided-3');
+      await pg.click('#btn-review');
+      // Check and send: the summary, the warnings, payment on the last choice
+      assert.strictEqual((await pg.textContent('#guide-q')).trim(), 'Check and send');
+      assert.match(await pg.textContent('#check-sum'), /You already sent a pickup from Acme Supply 25 min ago \(#1201\)/);
+      assert.match(await pg.textContent('#check-sum'), /Pickup\s*Acme Supply\s*12 Main St[\s\S]*Not set \(optional\)[\s\S]*2 pallets/);
+      assert.ok(await pg.isChecked('input[name=payment][value=prepaid]'), 'payment starts on the last choice');
+      assert.match(await pg.textContent('#pay-field'), /Sender pays[\s\S]*Recipient pays/);
+      assert.strictEqual((await pg.textContent('#btn-review')).trim(), 'Send request');
+      await pg.waitForTimeout(300);
+      await shot(pg, 'guided-4');
+      // Back, and the phone's back button, go one step back; a summary line jumps to its step
+      await pg.click('#btn-back');
+      await pg.waitForFunction(() => S.step === 3);
+      await pg.click('#btn-review');
+      await pg.goBack();
+      await pg.waitForFunction(() => S.step === 3);
+      await pg.click('#btn-review');
+      await pg.click('#check-sum .check-row[data-go="1"]');
+      assert.strictEqual((await pg.textContent('#guide-q')).trim(), 'Where are we picking up?');
+      await pg.evaluate(() => setStep(4));
+      await pg.click('#pay-field label:has-text("Collect")');
+      await pg.click('#btn-review');
+      await pg.waitForSelector('#sent-wrap:not([hidden]) .ticket');
+      const g = await pg.evaluate(() => Object.values(window.__fakeDb.get('requests')).find((r) => r.ref_no === 1204));
+      assert.strictEqual(g.payment, 'collect');
+      assert.deepStrictEqual(Object.values(g.items), [{ qty: 2, type: 'pallet', weight: 300 }]);
+      assert.strictEqual(g.delivery.name, '');
+      // A weekend date can't be picked
+      await pg.click('[data-act=new-request]');
+      assert.strictEqual(await pg.evaluate(() => S.step), 1, 'a new request starts on step 1');
+      await pg.fill('#pickup-name', 'Acme Supply');
+      await pg.fill('#pickup-address', '12 Main St');
+      await pg.click('#btn-review');
+      await pg.click('#btn-review');
+      await pg.check('input[name=when][value=scheduled]', { force: true });
+      await pg.fill('#sched-date', '2030-01-05');
+      await pg.click('#btn-review');
+      await pg.waitForSelector('#sched-err');
+      assert.match(await pg.textContent('#sched-err'), /closed that day \(the weekend\)/);
+      // Repeat from History lands on Check and send
+      await pg.click('.tab[data-nav=history]');
+      await pg.waitForSelector('#hist-list .row-repeat');
+      await pg.click('#hist-list .row-repeat >> nth=0');
+      await pg.click('#sheet-body [data-confirm="1"]').catch(() => {});
+      await pg.waitForFunction(() => S.tab === 'new' && S.step === 4);
+      assert.deepStrictEqual(eg, [], 'no script errors in the guided steps');
+      await cg.close();
+    }
     // 2.3 home-screen shortcut "Repeat last" fills in the latest request
     {
       const { page: p2, errors: e2, ctx: c2 } = await open(browser, `${base}?go=repeat`, { user: USER, data: DATA });
@@ -326,7 +440,7 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     keyed.requests.r9 = { ref_no: 1001, status: 'dispatched', company_id: 'c1', company_name: 'Acme Supply', customer_uid: 'u1', pickup: { name: 'Acme Supply', address: '12 Main St' }, delivery: { name: 'Old Co' }, items_text: '1 box', payment: 'prepaid', created_at: oldAt, dispatched_at: oldAt + 3600000, company_created: key('c1', oldAt) };
     keyed.requests.x1 = { ref_no: 1300, status: 'new', company_id: 'c1_x', company_name: 'Other', customer_uid: 'u9', pickup: { name: 'Other', address: '1 Elm' }, delivery: { name: 'Elsewhere' }, items_text: '1 box', payment: 'prepaid', created_at: now - 86400000, company_created: key('c1_x', now - 86400000) };
     {
-      const { page: p3, errors: e3, ctx: c3 } = await open(browser, base, { user: USER, data: keyed });
+      const { page: p3, errors: e3, ctx: c3 } = await open(browser, base, { user: USER, data: keyed }, DESK);
       await p3.waitForSelector('#view-app:not([hidden])');
       await p3.waitForFunction(() => S.reqLoaded);
       assert.deepStrictEqual(await p3.evaluate(() => Object.keys(S.requests).sort()), ['r0', 'r1'], 'only recent requests of this company are loaded');
@@ -341,7 +455,7 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
       await p3.fill('#pickup-address', '12 Main St');
       await p3.fill('#delivery-name', 'Lake Clinic');
       await p3.check('input[name=payment][value=prepaid]', { force: true });
-      await p3.click('#btn-review');
+      await p3.click('#side-sum .btn');
       await p3.waitForSelector('#sheet:not([hidden]) #btn-send');
       await p3.click('#btn-send');
       await p3.waitForSelector('#sent-wrap:not([hidden]) .ticket');

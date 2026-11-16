@@ -33,8 +33,8 @@
   --yellow:#FFD100;--yellow-hi:#FFDB33;--yellow-lo:#E6BC00;--on-yellow:#000;
   --yellow-soft:rgba(255,209,0,.13);--yellow-ring:rgba(255,209,0,.34);
   --bg:#0b0b0b;--surface:#141414;--surface-2:#1b1b1b;--surface-3:#232323;--field:#0f0f0f;
-  --line:#272727;--line-strong:#383838;
-  --ink:#f3f2ec;--ink-2:#a7a59e;--ink-3:#73716b;
+  --line:#272727;--line-strong:#4f4e4a;
+  --ink:#f3f2ec;--ink-2:#b3b1aa;--ink-3:#8f8d86;
   --accent-ink:#FFD100;--rail:#FFD100;--focus:#FFD100;
   --ok:#3fcf78;--ok-bg:rgba(63,207,120,.13);--danger:#ff6461;--danger-bg:rgba(255,100,97,.13);--warn-bg:rgba(255,209,0,.08);
   --glass:rgba(18,18,18,.82);--glass-line:rgba(255,255,255,.07);
@@ -51,8 +51,8 @@
 }
 [data-theme=light]{
   --bg:#ebeae5;--surface:#fff;--surface-2:#f6f5f2;--surface-3:#eeede8;--field:#fff;
-  --line:#dddbd4;--line-strong:#c6c3ba;
-  --ink:#0d0d0c;--ink-2:#55534d;--ink-3:#85827a;
+  --line:#dddbd4;--line-strong:#8f8c84;
+  --ink:#0d0d0c;--ink-2:#45433e;--ink-3:#6b6860;
   --accent-ink:#000;--rail:#d9ae00;--focus:#000;
   --ok:#11803c;--ok-bg:rgba(17,128,60,.1);--danger:#c4241e;--danger-bg:rgba(196,36,30,.08);--warn-bg:rgba(255,209,0,.13);
   --glass:rgba(255,255,255,.86);--glass-line:rgba(0,0,0,.08);
@@ -61,7 +61,7 @@
   --shadow:0 18px 48px -14px rgba(20,18,10,.32),0 2px 6px rgba(20,18,10,.08);
   color-scheme:light;
 }
-@media (pointer:coarse){:root{--ctl:44px;--ctl-sm:38px}}
+@media (pointer:coarse){:root{--ctl:48px;--ctl-sm:44px}}
 
 /* ---------- Base ---------- */
 *,*::before,*::after{box-sizing:border-box}
@@ -351,7 +351,8 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 .weight,.dims{position:relative}
 .weight input,.dims input{width:100%;min-height:var(--ctl);padding:0 32px 0 10px;border:1px solid var(--line-strong);border-radius:var(--r-sm);background:var(--field);font-size:16px;-moz-appearance:textfield;transition:border-color var(--t-fast) ease,box-shadow var(--t-fast) ease}
 .dims input{padding-right:42px}
-.weight span,.dims span{position:absolute;right:9px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:700;color:var(--ink-3);pointer-events:none}
+.weight,.dims{display:block}
+.weight>span,.dims>span{position:absolute;right:9px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:700;color:var(--ink-3);pointer-events:none}
 .item-row input:hover,.item-row select:hover,.stepper:hover{border-color:var(--ink-3)}
 .item-row input:focus,.item-row select:focus{border-color:var(--focus);box-shadow:0 0 0 3px var(--yellow-ring);outline:none}
 .stepper input:focus{box-shadow:none}
@@ -734,6 +735,148 @@ html{scroll-padding-bottom:calc(var(--nav-h) + var(--safe-b) + 84px)}
 .msg-compose{position:sticky;bottom:calc(var(--nav-h) + var(--safe-b));z-index:5;margin:8px -12px 0;padding:8px 12px 10px;background:var(--bg);border-top:1px solid var(--line)}
 .msg-about{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:13px;font-weight:700;color:var(--ink-2)}
 .msg-about select{flex:1;min-width:0;min-height:40px;padding:0 8px;border:1px solid var(--line-strong);border-radius:var(--r-sm);background:var(--field);color:var(--ink);font:inherit;font-size:15px;font-weight:650}
+
+/* =========================================================
+   New pickup, Nov 2026: easier to read, guided steps on phones,
+   live summary on computers
+   ========================================================= */
+/* Bigger, darker labels and headings; placeholders as big as typed text */
+.field>label,.label{font-size:15px;color:var(--ink-2);margin-bottom:5px}
+.route .field>label{font-size:15px}
+::placeholder{font-size:16px}
+.hint{font-size:14px}
+.leg-head h2,.block>h2{font-size:19px;font-stretch:85%;text-transform:none;letter-spacing:-.005em;font-weight:800}
+.leg-head h2 .opt-tag{font-size:14px;font-weight:600;font-stretch:100%;letter-spacing:0;color:var(--ink-3)}
+.leg-head{min-height:var(--ctl);margin-bottom:6px}
+.block>h2{min-height:30px;margin-bottom:10px}
+.node{width:28px;height:28px}.node .i{width:15px;height:15px}
+.block>h2 .sec-ic{width:28px;height:28px;border-radius:50%}.block>h2 .sec-ic .i{width:15px;height:15px}
+.leg{padding:12px 14px 4px}
+.block:not(.btn){padding:12px 14px 4px}
+#tab-new .block .field,.route .field{margin-bottom:12px}
+/* Every button a finger can hit easily (44px) */
+.leg-head .link-btn,.leg-foot .link-btn{min-height:44px;font-size:14.5px;padding:0 10px}
+.leg-head .link-btn{background:var(--surface-3);color:var(--ink)}
+.leg-foot{margin:0 0 8px;flex-wrap:wrap}
+.leg-foot .link-btn{white-space:nowrap}
+.opt-btns{flex-wrap:nowrap}
+.opt-btn{min-height:44px;padding:0 14px;font-size:14.5px;color:var(--ink-2);border-width:1.5px}
+.swap{width:44px;height:44px;top:-22px;margin-left:-22px}
+@media (pointer:coarse){.swap{width:44px;height:44px;top:-22px;margin-left:-22px}}
+.tab{font-size:13px;color:var(--ink-2)}
+.seg span{font-size:15px}
+.seg span:has(small){flex-direction:column;gap:0}
+.seg span small{font-size:12.5px;font-weight:600;opacity:.8}
+.seg input:checked+span small{opacity:.85}
+.page-head .btn-copy[disabled]{display:none}
+/* Items: tap the type instead of opening a list; weight and size wait behind a button */
+.item-row,.item-row.single{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"q t r" "s s s" "o o o";gap:8px;align-items:center;margin-bottom:10px}
+.item-row .stepper{grid-area:q;width:132px}
+.item-row .stepper button{width:44px}
+.item-row .type-chips{grid-area:t}
+.item-row>.icon-btn{grid-area:r}
+.item-row .item-size{grid-area:s;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.item-row .other-input{grid-area:o}
+.item-row+.item-row{padding-top:10px;border-top:1px dashed var(--line-strong)}
+.type-chips{display:flex;flex-wrap:wrap;gap:6px}
+.tchip{position:relative;margin:0}
+.tchip input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.tchip span{display:flex;align-items:center;justify-content:center;min-height:var(--ctl);min-width:76px;padding:0 12px;border:1.5px solid var(--line-strong);border-radius:var(--r-sm);background:var(--field);font-weight:700;font-size:15px;color:var(--ink);transition:background-color var(--t-fast) ease,border-color var(--t-fast) ease}
+.tchip:hover input:not(:checked)+span{border-color:var(--ink-3)}
+.tchip input:checked+span{background:var(--yellow);border-color:var(--yellow-lo);color:#000;font-weight:800}
+.tchip input:focus-visible+span{outline:2px solid var(--focus);outline-offset:2px}
+.mini{display:block;margin:0}
+.mini>span{display:block;font-size:14px;font-weight:650;color:var(--ink-2);margin:0 0 4px}
+@media (max-width:759px){
+  .item-row,.item-row.single{grid-template-columns:auto 1fr auto;grid-template-areas:"q . r" "t t t" "s s s" "o o o"}
+  .type-chips{display:grid;grid-template-columns:repeat(3,1fr)}
+  .tchip span{min-width:0;padding:0 6px}
+}
+/* Open or closed right now */
+.shop-status{display:flex;align-items:center;gap:9px;margin:0 0 10px;font-size:15px;font-weight:650;color:var(--ink-2)}
+.shop-status:empty{display:none}
+.shop-status .dot{flex:none;width:10px;height:10px;border-radius:50%;background:var(--ink-3)}
+.shop-status.open .dot{background:var(--ok);box-shadow:0 0 0 4px var(--ok-bg)}
+.shop-status.closed .dot{background:var(--danger);box-shadow:0 0 0 4px var(--danger-bg)}
+.shop-status b{color:var(--ink)}
+/* Call dispatch from the top bar */
+.top-call{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:0 14px;border-radius:99px;border:1.5px solid #4a4944;color:#fff;font-weight:700;font-size:14.5px;text-decoration:none;white-space:nowrap}
+.top-call .i{color:var(--yellow)}
+.top-call:hover{border-color:var(--yellow)}
+/* Guided steps (phones) */
+.guide-prog,.guide-q,.guide-sub,.leg-recent{display:none}
+#new-form-wrap.guided .guide-prog{display:flex;align-items:center;gap:10px;margin:2px 0 12px}
+.guide-prog .bars{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.guide-prog .bars i{height:7px;border-radius:9px;background:var(--line-strong);opacity:.45;transition:background-color var(--t) ease,opacity var(--t) ease}
+.guide-prog .bars i.on{background:var(--ink);opacity:1}
+.guide-prog span:last-child{font-size:14.5px;font-weight:700;color:var(--ink-2);white-space:nowrap}
+#new-form-wrap.guided #form-title{display:none}
+#new-form-wrap.guided .guide-q{display:block;font-size:29px;line-height:1.08;letter-spacing:-.02em;outline:none}
+#new-form-wrap.guided .guide-sub{display:block;margin-top:6px;font-size:16px;color:var(--ink-2)}
+#new-form-wrap.guided .guide-sub:empty{display:none}
+#new-form-wrap.guided .page-head{align-items:flex-start;flex-wrap:wrap;margin-bottom:14px}
+#new-form-wrap.guided:not([data-step="1"]) .page-head .btn{display:none}
+#new-form-wrap.guided:not([data-step="1"]) .shop-status{display:none}
+#req-form.guided [data-step]:not(.step-on),#req-form:not(.guided) #check-sum{display:none!important}
+#req-form.guided .route-mid{display:none}
+#req-form.guided .leg[data-leg=delivery]{background:var(--surface)}
+#req-form.guided .leg-head h2 .node,#req-form.guided .block>h2 .sec-ic{display:none}
+#req-form.guided .leg-head h2,#req-form.guided .block>h2{font-size:17px}
+#req-form.guided .leg-recent:not([hidden]){display:block;margin:4px 0 10px;padding-top:12px;border-top:1px solid var(--line)}
+.leg-recent .label{margin-bottom:6px}
+.recent-stop{display:flex;align-items:center;gap:12px;width:100%;min-height:60px;margin-bottom:6px;padding:8px 10px 8px 8px;border:1.5px solid var(--line);border-radius:var(--r-md);background:var(--surface-2);color:var(--ink);font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.recent-stop:hover,.recent-stop:active{border-color:var(--yellow-lo);background:var(--yellow-soft)}
+.recent-stop .avatar{flex:none;width:38px;height:38px;border-radius:50%;background:var(--yellow-soft);font-size:13px}
+.recent-stop .grow{flex:1;min-width:0}
+.recent-stop b{display:block;font-size:16px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.recent-stop small{display:block;font-size:14px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.recent-stop>.i{color:var(--ink-3)}
+#req-form.guided .submit-bar{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:10px}
+#req-form.guided .submit-bar #btn-back[hidden]+.btn{grid-column:1/-1}
+#req-form.guided .submit-bar .btn{min-height:54px;font-size:17px;border-radius:var(--r-lg)}
+#req-form.guided .submit-bar #btn-back{box-shadow:var(--sh-2)}
+#req-form.guided .submit-bar #btn-back::after{display:none}
+#req-form.guided .submit-bar::before{top:-8px;background:var(--bg)}
+/* Check and send */
+.check-sum{padding:4px 0!important;overflow:hidden}
+.check-sum .notice{margin:8px 12px}
+.check-row{display:grid;grid-template-columns:78px minmax(0,1fr) auto;gap:10px;align-items:center;width:100%;min-height:56px;padding:10px 12px 10px 14px;border:0;border-top:1px solid var(--line);background:none;color:var(--ink);font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.check-sum>.check-row:first-child,.check-sum>.notice+.check-row{border-top:0}
+.check-row:hover,.check-row:active{background:var(--surface-2)}
+.check-row .k{font-size:12.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.check-row .v{font-size:16px;font-weight:700;line-height:1.3;overflow-wrap:anywhere}
+.check-row .v small{display:block;font-size:14.5px;font-weight:500;color:var(--ink-2)}
+.check-row .v.none{color:var(--ink-3);font-weight:600}
+.check-row>.i{color:var(--ink-3)}
+/* Computers: menu in the top bar, live summary beside the form */
+.side-sum{display:none}
+.topbar .tabbar{position:static;z-index:auto;background:none;border:0;padding:0;-webkit-backdrop-filter:none;backdrop-filter:none;margin-left:18px}
+.topbar .tabbar-in{display:flex;gap:2px;height:auto;padding:0;max-width:none;margin:0}
+.topbar .tab{flex-direction:row;gap:8px;min-height:42px;padding:0 13px;border-radius:var(--r-sm);color:#d8d6cf;font-size:15px;letter-spacing:0}
+.topbar .tab .i{width:18px;height:18px;padding:0;border-radius:0;background:none!important;color:inherit!important}
+.topbar .tab:hover{color:#fff;background:rgba(255,255,255,.08)}
+.topbar .tab[aria-current=page]{background:var(--yellow);color:#000}
+.topbar .tab .dot{top:3px;left:auto;right:2px;box-shadow:0 0 0 2px #141414}
+body.desk main.app-main{padding-bottom:40px}
+@media (min-width:1000px){
+  .topbar{padding-top:calc(10px + var(--safe-t));padding-bottom:10px}
+  main.app-main{max-width:1200px;padding:20px 24px 40px}
+  .topbar-in{max-width:1200px}
+  .new-cols{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start}
+  .side-sum:not(:empty){display:block;position:sticky;top:84px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px;box-shadow:var(--sh-2)}
+  .side-sum h2{font-size:21px;font-stretch:85%;margin-bottom:12px}
+  .side-sum .dl{margin-bottom:14px}
+  .side-sum .dl dd.none{color:var(--ink-3)}
+  .side-sum .btn{min-height:54px;font-size:17px;border-radius:var(--r-lg)}
+  .side-note{display:flex;gap:8px;align-items:flex-start;margin-top:12px;font-size:14px;color:var(--ink-2);line-height:1.4}
+  .side-note .i{margin-top:2px}
+  #tab-new .submit-bar{display:none}
+  .route{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .route .leg{display:block}
+  .route .leg[data-leg=delivery]{border-left:1px solid var(--line)}
+  .route-mid{position:absolute;left:50%;top:34px;height:0;border:0}
+  .route-mid .swap{left:0}
+}
 </style>
 </head>
 <body>
@@ -922,24 +1065,28 @@ html{scroll-padding-bottom:calc(var(--nav-h) + var(--safe-b) + 84px)}
       <div><div class="wordmark">E&amp;C <b>Courier</b></div><div class="company" id="hdr-company"></div></div>
       <div class="spacer"></div>
       <span class="offline-pill" id="offline-pill" hidden><svg class="i sm"><use href="#i-wifi-off"/></svg>Offline</span>
+      <a class="top-call" id="top-call" hidden><svg class="i sm"><use href="#i-phone"/></svg><span class="lbl">Call</span></a>
     </div>
   </header>
 
   <main class="app-main">
     <!-- New request -->
     <section id="tab-new" data-tab="new">
-      <div id="new-form-wrap">
+      <div id="new-form-wrap" data-step="1">
+        <p class="shop-status" id="shop-status" role="status"><span class="dot" aria-hidden="true"></span><span id="shop-status-text"></span></p>
+        <div class="guide-prog" id="guide-prog" aria-hidden="true"><span class="bars"><i></i><i></i><i></i><i></i></span><span id="guide-step-txt">Step 1 of 4</span></div>
         <div class="page-head">
-          <div><h1 id="form-title">New pickup</h1></div>
+          <div><h1 id="form-title">New pickup</h1><h1 id="guide-q" class="guide-q" tabindex="-1">Where are we picking up?</h1><p class="guide-sub" id="guide-sub"></p></div>
           <button class="btn btn-secondary sm btn-copy" type="button" data-act="repeat" id="new-repeat-latest" disabled title="Fills in your most recent request again"><svg class="i sm"><use href="#i-repeat"/></svg><span class="lbl">Repeat last</span></button>
           <button class="btn btn-ghost sm" type="button" data-act="clear-form">Clear</button>
         </div>
         <div class="edit-banner" id="edit-banner" hidden><span id="edit-banner-text"></span><button class="btn btn-secondary sm" type="button" data-act="stop-edit">Stop editing</button></div>
         <div class="edit-banner draft-banner" id="draft-banner" role="status" hidden><span id="draft-text"></span><span class="pair"><button class="btn btn-ghost sm" type="button" data-act="draft-discard">Discard</button><button class="btn btn-primary sm" type="button" data-act="draft-continue">Continue</button></span></div>
+        <div class="new-cols">
         <form id="req-form" novalidate autocomplete="off">
-          <section class="route" aria-label="Pickup and delivery">
-            <div class="leg" data-leg="pickup">
-              <div class="leg-head"><h2><span class="node" aria-hidden="true"><svg class="i"><use href="#i-box"/></svg></span>Pickup</h2><button class="link-btn" type="button" data-act="pick-contact" data-leg="pickup"><svg class="i sm"><use href="#i-contacts"/></svg>Contacts</button></div>
+          <section class="route" aria-label="Pickup and delivery" data-step="1 2">
+            <div class="leg" data-leg="pickup" data-step="1">
+              <div class="leg-head"><h2><span class="node" aria-hidden="true"><svg class="i"><use href="#i-box"/></svg></span>Pickup from</h2><button class="link-btn" type="button" data-act="pick-contact" data-leg="pickup"><svg class="i sm"><use href="#i-contacts"/></svg>Contacts</button></div>
               <div class="field"><label for="pickup-name">Business or contact name <span class="req">*</span></label><div class="ac"><input id="pickup-name" maxlength="120" placeholder="Who are we picking up from?" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="pickup-name-ac" data-ac="pickup"><div class="ac-list" id="pickup-name-ac" role="listbox" aria-label="Your contacts" hidden></div></div></div>
               <div class="field"><label for="pickup-address">Address <span class="req">*</span></label><div class="with-btn"><input id="pickup-address" maxlength="250" placeholder="Search address or business"><button class="icon-btn" type="button" data-act="map" data-leg="pickup" aria-label="Pick pickup location on map"><svg class="i"><use href="#i-pin"/></svg></button></div><p class="hint" id="pickup-address-hint"></p></div>
               <div class="two">
@@ -947,30 +1094,32 @@ html{scroll-padding-bottom:calc(var(--nav-h) + var(--safe-b) + 84px)}
                 <div class="field" data-opt="pickup-email" hidden><label for="pickup-email">Email</label><input id="pickup-email" type="email" inputmode="email" maxlength="120" placeholder="name@company.ca"></div>
               </div>
               <div class="leg-foot"><span class="opt-btns"><button class="opt-btn" type="button" data-act="show-opt" data-opt="pickup-phone">+ Phone</button><button class="opt-btn" type="button" data-act="show-opt" data-opt="pickup-email">+ Email</button></span><button class="link-btn" type="button" data-act="save-leg" data-leg="pickup"><svg class="i sm"><use href="#i-bookmark"/></svg>Save to contacts</button></div>
+              <div class="leg-recent" data-recent="pickup" hidden></div>
             </div>
             <div class="route-mid"><button class="swap" type="button" data-act="swap" aria-label="Swap pickup and delivery" title="Swap pickup and delivery"><svg class="i"><use href="#i-swap"/></svg></button></div>
-            <div class="leg" data-leg="delivery">
-              <div class="leg-head"><h2><span class="node" aria-hidden="true"><svg class="i"><use href="#i-pin"/></svg></span>Delivery</h2><button class="link-btn" type="button" data-act="pick-contact" data-leg="delivery"><svg class="i sm"><use href="#i-contacts"/></svg>Contacts</button></div>
-              <div class="field"><label for="delivery-name">Business or contact name <span class="muted">(optional)</span></label><div class="ac"><input id="delivery-name" maxlength="120" placeholder="Who is it going to?" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="delivery-name-ac" data-ac="delivery"><div class="ac-list" id="delivery-name-ac" role="listbox" aria-label="Your contacts" hidden></div></div></div>
-              <div class="field"><label for="delivery-address">Address <span class="muted">(optional)</span></label><div class="with-btn"><input id="delivery-address" maxlength="250" placeholder="Search address or business"><button class="icon-btn" type="button" data-act="map" data-leg="delivery" aria-label="Pick delivery location on map"><svg class="i"><use href="#i-pin"/></svg></button></div><p class="hint" id="delivery-address-hint"></p></div>
+            <div class="leg" data-leg="delivery" data-step="2">
+              <div class="leg-head"><h2><span class="node" aria-hidden="true"><svg class="i"><use href="#i-pin"/></svg></span>Deliver to <span class="opt-tag">optional</span></h2><button class="link-btn" type="button" data-act="pick-contact" data-leg="delivery"><svg class="i sm"><use href="#i-contacts"/></svg>Contacts</button></div>
+              <div class="field"><label for="delivery-name">Business or contact name</label><div class="ac"><input id="delivery-name" maxlength="120" placeholder="Who is it going to?" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="delivery-name-ac" data-ac="delivery"><div class="ac-list" id="delivery-name-ac" role="listbox" aria-label="Your contacts" hidden></div></div></div>
+              <div class="field"><label for="delivery-address">Address</label><div class="with-btn"><input id="delivery-address" maxlength="250" placeholder="Search address or business"><button class="icon-btn" type="button" data-act="map" data-leg="delivery" aria-label="Pick delivery location on map"><svg class="i"><use href="#i-pin"/></svg></button></div><p class="hint" id="delivery-address-hint"></p></div>
               <div class="two">
                 <div class="field" data-opt="delivery-phone" hidden><label for="delivery-phone">Phone</label><input id="delivery-phone" type="tel" inputmode="tel" data-phone placeholder="(204) 555-0123"></div>
                 <div class="field" data-opt="delivery-email" hidden><label for="delivery-email">Email</label><input id="delivery-email" type="email" inputmode="email" maxlength="120" placeholder="name@company.ca"></div>
               </div>
               <div class="leg-foot"><span class="opt-btns"><button class="opt-btn" type="button" data-act="show-opt" data-opt="delivery-phone">+ Phone</button><button class="opt-btn" type="button" data-act="show-opt" data-opt="delivery-email">+ Email</button></span><button class="link-btn" type="button" data-act="save-leg" data-leg="delivery"><svg class="i sm"><use href="#i-bookmark"/></svg>Save to contacts</button></div>
+              <div class="leg-recent" data-recent="delivery" hidden></div>
             </div>
           </section>
 
-          <section class="block" id="items-block">
+          <section class="block" id="items-block" data-step="3">
             <h2><span class="sec-ic" aria-hidden="true"><svg class="i"><use href="#i-box"/></svg></span>What are we moving?</h2>
             <div class="items" id="item-rows"></div>
             <p class="items-preview" id="items-preview"></p>
-            <div class="opt-line"><button class="btn btn-secondary sm" type="button" data-act="add-item"><svg class="i sm"><use href="#i-plus"/></svg>Add another line</button><button class="opt-btn" type="button" data-act="show-opt" data-opt="item-details">+ Description</button></div>
+            <div class="opt-line"><button class="opt-btn" type="button" data-act="item-size" id="item-size-btn">+ Weight or size</button><button class="opt-btn" type="button" data-act="add-item">+ Another line</button><button class="opt-btn" type="button" data-act="show-opt" data-opt="item-details">+ Description</button></div>
             <div class="field" data-opt="item-details" hidden><label for="item-details">Description</label><textarea id="item-details" maxlength="500" rows="2" placeholder="Optional, e.g. fragile, keep upright"></textarea></div>
             <p class="err" id="items-err" hidden></p>
           </section>
 
-          <section class="block">
+          <section class="block" id="when-block" data-step="3">
             <h2><span class="sec-ic" aria-hidden="true"><svg class="i"><use href="#i-clock"/></svg></span>When</h2>
             <div class="field" id="when-field">
               <div class="seg" role="radiogroup" aria-label="When">
@@ -983,20 +1132,22 @@ html{scroll-padding-bottom:calc(var(--nav-h) + var(--safe-b) + 84px)}
               <input id="sched-date" type="date">
               <p class="hint">Dispatch holds scheduled requests and sends them out on that day.</p>
             </div>
-            <div class="opt-line"><button class="opt-btn" type="button" data-act="show-opt" data-opt="hours">+ Pickup hours</button></div>
+            <div class="opt-line"><button class="opt-btn" type="button" data-act="next-day" id="next-day-btn" hidden></button><button class="opt-btn" type="button" data-act="show-opt" data-opt="hours">+ Ready after / closes at</button></div>
             <div class="two" data-opt="hours" hidden>
               <div class="field"><label for="ready-after">Ready after</label><input id="ready-after" type="time" step="900"></div>
               <div class="field"><label for="closes-at">Closes at</label><input id="closes-at" type="time" step="900"></div>
             </div>
           </section>
 
-          <section class="block">
+          <section class="block check-sum" id="check-sum" data-step="4" aria-label="Your request"></section>
+
+          <section class="block" id="pay-block" data-step="4">
             <h2><span class="sec-ic" aria-hidden="true"><svg class="i"><use href="#i-card"/></svg></span>Payment and notes</h2>
             <div class="field" id="pay-field">
               <span class="label">Payment <span class="req">*</span></span>
               <div class="seg" role="radiogroup" aria-label="Payment">
-                <label><input type="radio" name="payment" value="prepaid"><span>Prepaid</span></label>
-                <label><input type="radio" name="payment" value="collect"><span>Collect</span></label>
+                <label><input type="radio" name="payment" value="prepaid"><span>Prepaid<small>Sender pays</small></span></label>
+                <label><input type="radio" name="payment" value="collect"><span>Collect<small>Recipient pays</small></span></label>
               </div>
             </div>
             <div class="field"><label for="notes">Notes for the driver</label><textarea id="notes" maxlength="1000" rows="3" placeholder="Optional: door #, hours, gate code"></textarea></div>
@@ -1004,8 +1155,10 @@ html{scroll-padding-bottom:calc(var(--nav-h) + var(--safe-b) + 84px)}
             <div class="field" data-opt="po" hidden><label for="po">PO number or reference</label><input id="po" maxlength="100" placeholder="Optional"></div>
           </section>
 
-          <div class="submit-bar"><button class="btn btn-primary block" type="submit" id="btn-review">Review request</button></div>
+          <div class="submit-bar"><button class="btn btn-secondary" type="button" data-act="step-back" id="btn-back" hidden>Back</button><button class="btn btn-primary block" type="submit" id="btn-review">Review request</button></div>
         </form>
+        <aside class="side-sum" id="side-sum" aria-label="Your request"></aside>
+        </div>
       </div>
 
       <div id="sent-wrap" hidden></div>
@@ -1166,6 +1319,8 @@ const S = {
   reqLoaded: false,
   listeners: [],
   items: [{ qty: 1, type: 'box', weight: '' }],
+  showSize: false,
+  step: 1,
   legGeo: { pickup: null, delivery: null },
   editingId: null,
   sending: false,
@@ -1276,11 +1431,79 @@ function shopNowHM() {
     return `${g('hour')}:${g('minute')}`;
   } catch (e) { const d = new Date(); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; }
 }
+// Today's date at E&C as "YYYY-MM-DD", whatever time zone this phone is set to
+function shopTodayStr() {
+  try { return new Intl.DateTimeFormat('en-CA', { timeZone: SHOP_TZ, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date()); } catch (e) { return todayStr(); }
+}
+/* Dispatch is closed on weekends and on Manitoba's general holidays (Employment Standards fact sheet:
+   gov.mb.ca/labour/standards/doc,gen-holidays-after-april-30-07,factsheet.html). */
+function easterSunday(y) {
+  // Anonymous Gregorian algorithm
+  const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3);
+  const h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451);
+  return new Date(y, Math.floor((h + l - 7 * m + 114) / 31) - 1, ((h + l - 7 * m + 114) % 31) + 1);
+}
+function nthMonday(y, month, n) { const first = new Date(y, month, 1); return new Date(y, month, 1 + ((8 - first.getDay()) % 7) + 7 * (n - 1)); }
+const holidayCache = {};
+function shopHolidays(y) {
+  if (holidayCache[y]) return holidayCache[y];
+  const may25 = new Date(y, 4, 25);
+  const victoria = new Date(y, 4, 25 - ((may25.getDay() + 6) % 7 || 7)); // the Monday before May 25
+  return (holidayCache[y] = {
+    [`${y}-01-01`]: 'New Year\u2019s Day',
+    [localDateStr(nthMonday(y, 1, 3))]: 'Louis Riel Day',
+    [localDateStr(addDays(easterSunday(y), -2))]: 'Good Friday',
+    [localDateStr(victoria)]: 'Victoria Day',
+    [`${y}-07-01`]: 'Canada Day',
+    [localDateStr(nthMonday(y, 8, 1))]: 'Labour Day',
+    [`${y}-09-30`]: 'Truth and Reconciliation Day',
+    [localDateStr(nthMonday(y, 9, 2))]: 'Thanksgiving',
+    [`${y}-12-25`]: 'Christmas Day'
+  });
+}
+// Why dispatch is closed on that day ("the weekend", "Canada Day"), or '' if it's open
+function shopClosedReason(ds) {
+  const d = parseLocalDate(ds);
+  if (d.getDay() === 0 || d.getDay() === 6) return 'the weekend';
+  return shopHolidays(d.getFullYear())[ds] || '';
+}
+function nextOpenDay(fromDs) {
+  let d = parseLocalDate(fromDs);
+  for (let i = 0; i < 14; i++) { d = addDays(d, 1); if (!shopClosedReason(localDateStr(d))) return localDateStr(d); }
+  return localDateStr(addDays(parseLocalDate(fromDs), 1));
+}
+// "tomorrow", "on Monday", or "on Tue, Dec 29"
+function dayPhrase(ds, today) {
+  const diff = Math.round((parseLocalDate(ds) - parseLocalDate(today)) / 86400000);
+  if (diff === 1) return 'tomorrow';
+  if (diff < 7) return `on ${parseLocalDate(ds).toLocaleDateString('en-CA', { weekday: 'long' })}`;
+  return `on ${fmtDay(ds)}`;
+}
+// The line at the top of New pickup
+function shopStatus() {
+  const today = shopTodayStr(), hm = shopNowHM();
+  const why = shopClosedReason(today);
+  const next = () => `Opens ${dayPhrase(nextOpenDay(today), today)} at ${fmtHM(OPEN_AT)}.`;
+  if (why) return { open: false, html: `Dispatch is closed for ${esc(why)}. ${esc(next())}` };
+  if (hm < OPEN_AT) return { open: false, html: `Dispatch opens at <b>${fmtHM(OPEN_AT)}</b> today.` };
+  if (hm >= CLOSE_AT) return { open: false, html: `Dispatch is closed for the day. ${esc(next())}` };
+  return { open: true, html: `Dispatch is open, <b>until ${fmtHM(CLOSE_AT)}</b>` };
+}
+function renderShopStatus() {
+  const el = $('#shop-status');
+  if (!el) return;
+  const st = shopStatus();
+  el.className = `shop-status ${st.open ? 'open' : 'closed'}`;
+  $('#shop-status-text').innerHTML = st.html;
+}
 // A sentence for an "as soon as possible" request sent while dispatch is closed, or '' while it's open
 function afterHoursText() {
-  const hm = shopNowHM();
+  const today = shopTodayStr(), hm = shopNowHM();
+  const why = shopClosedReason(today);
+  const when = () => `They\u2019ll see this request at ${fmtHM(OPEN_AT)} ${dayPhrase(nextOpenDay(today), today)}.`;
+  if (why) return `Dispatch is closed for ${why} (open weekdays, ${HOURS_TEXT}). ${when()}`;
   if (hm < OPEN_AT) return `Dispatch opens at ${fmtHM(OPEN_AT)}. They\u2019ll see this request then.`;
-  if (hm >= CLOSE_AT) return `Dispatch is closed for the day (open ${HOURS_TEXT}). They\u2019ll see this request at ${fmtHM(OPEN_AT)} tomorrow.`;
+  if (hm >= CLOSE_AT) return `Dispatch is closed for the day (open ${HOURS_TEXT}). ${when()}`;
   return '';
 }
 const dispatchCall = () => (DISPATCH_PHONE ? `<span class="call-row"><a class="btn btn-secondary sm" href="tel:${esc(phoneDigits(DISPATCH_PHONE))}">${icon('phone', 'sm')}Call</a><a class="btn btn-secondary sm" href="sms:${esc(phoneDigits(DISPATCH_PHONE))}">${icon('chat', 'sm')}Text</a></span>` : '');
@@ -1996,6 +2219,7 @@ function updateCopyButtons() {
   if (!b) return;
   b.disabled = !latest;
   if (latest) b.dataset.id = latest; else delete b.dataset.id;
+  renderRecent();
 }
 
 auth.onAuthStateChanged((user) => handleUser(user));
@@ -2136,6 +2360,8 @@ function enterApp(cid, company) {
   renderHeader();
   renderItems();
   updateSchedMin();
+  placeNav();
+  renderStep();
 
   listen(db.ref(`companies/${cid}`), 'value', (snap) => {
     const c = snap.val();
@@ -2252,6 +2478,7 @@ function switchTab(tab) {
   if (tab === 'contacts') renderContacts();
   if (tab === 'messages') { clearDispatchToasts(); renderMessages(); markAllMsgsSeen(); setTimeout(msgsToEnd, 30); }
   if (tab === 'account') renderAccount();
+  if (tab === 'new') { renderShopStatus(); renderSide(); }
   window.scrollTo(0, 0);
 }
 
@@ -2260,24 +2487,32 @@ function switchTab(tab) {
    ========================================================= */
 function renderItems() {
   const single = S.items.length === 1;
+  const showSize = S.showSize || S.items.some((it) => String(it.weight || '').trim() || String(it.dims || '').trim());
   $('#item-rows').innerHTML = S.items.map((it, i) => `
     <div class="item-row${single ? ' single' : ''}" data-i="${i}">
       <div class="stepper">
-        <button type="button" data-act="qty-dec" aria-label="Fewer">\u2212</button>
-        <input type="number" inputmode="numeric" min="1" max="999" value="${esc(it.qty)}" data-field="qty" aria-label="Quantity">
+        <button type="button" data-act="qty-dec" aria-label="Fewer">−</button>
+        <input type="number" inputmode="numeric" min="1" max="999" value="${esc(it.qty)}" data-field="qty" aria-label="How many">
         <button type="button" data-act="qty-inc" aria-label="More">+</button>
       </div>
-      <select data-field="type" aria-label="Item type">${ITEM_TYPES.map((t) => `<option value="${t.id}"${t.id === it.type ? ' selected' : ''}>${t.label}</option>`).join('')}</select>
-      <div class="weight"><input type="number" inputmode="decimal" min="0" step="any" value="${esc(it.weight)}" data-field="weight" placeholder="Weight" aria-label="Total weight in pounds"><span>lbs</span></div>
+      <div class="type-chips" role="radiogroup" aria-label="Item type">${ITEM_TYPES.map((t) => `<label class="tchip"><input type="radio" name="item-type-${i}" value="${t.id}" data-field="type"${t.id === it.type ? ' checked' : ''}><span>${t.label}</span></label>`).join('')}</div>
       ${single ? '' : `<button class="icon-btn" type="button" data-act="item-remove" aria-label="Remove this line">${icon('x')}</button>`}
-      <div class="dims"><input type="text" maxlength="40" value="${esc(it.dims || '')}" data-field="dims" placeholder="feet or inches" aria-label="Dimensions, in feet or inches"><span>dims</span></div>
+      ${showSize ? `<div class="item-size">
+        <label class="mini"><span>Weight</span><span class="weight"><input type="number" inputmode="decimal" min="0" step="any" value="${esc(it.weight)}" data-field="weight" placeholder="Total" aria-label="Total weight in pounds"><span>lbs</span></span></label>
+        <label class="mini"><span>Size</span><span class="dims"><input type="text" maxlength="40" value="${esc(it.dims || '')}" data-field="dims" placeholder="48 x 40 in" aria-label="Size, in feet or inches"></span></label>
+      </div>` : ''}
       ${it.type === 'other' ? `<input class="other-input" type="text" maxlength="60" value="${esc(it.other || '')}" data-field="other" placeholder="What is it? e.g. tires, carpet" aria-label="Describe the item">` : ''}
     </div>`).join('');
+  const sb = $('#item-size-btn');
+  if (sb) sb.hidden = showSize;
   updateItemsPreview();
 }
 function updateItemsPreview() {
   const t = itemsText(S.items);
-  $('#items-preview').innerHTML = t ? `Dispatch sees: <b>${esc(t)}</b>` : '';
+  // With one plain line it only repeats what's right above it
+  const worth = S.items.length > 1 || S.items.some((it) => it.weight || it.dims || it.type === 'other');
+  $('#items-preview').innerHTML = t && worth ? `Dispatch sees: <b>${esc(t)}</b>` : '';
+  sideSoon();
 }
 $('#item-rows').addEventListener('input', (e) => {
   const row = e.target.closest('.item-row');
@@ -2579,9 +2814,11 @@ function validateForm(d) {
   if (d.when === 'scheduled') {
     if (!d.scheduled_for) add('sched', 'Choose the pickup date.');
     else if (d.scheduled_for <= todayStr()) add('sched', 'Choose a date after today, or pick As soon as possible.');
+    else if (shopClosedReason(d.scheduled_for)) add('sched', `Dispatch is closed that day (${shopClosedReason(d.scheduled_for)}). Pick a weekday that isn\u2019t a holiday.`);
   }
   if (!d.payment) add('pay', 'Choose prepaid or collect.');
   if (d.ready_after && d.closes_at && d.closes_at <= d.ready_after) add('closes-at', 'The closing time must be after the ready time.');
+  validateForm.all = errs;
   return errs[0] || null;
 }
 
@@ -2593,6 +2830,7 @@ function fillLeg(leg, src) {
   setLegGeo(leg, src.address && src.verified ? { address: src.address, city: src.city || '', lat: src.lat, lng: src.lng, verified: true } : null);
   ['name', 'address', 'phone', 'email'].forEach((f) => clearError(`${leg}-${f}`));
   syncOpts();
+  sideSoon();
 }
 function fillForm(r, { keepSchedule }) {
   fillLeg('pickup', r.pickup || {});
@@ -2612,6 +2850,7 @@ function fillForm(r, { keepSchedule }) {
   $('#closes-at').value = /^\d{2}:\d{2}$/.test(r.closes_at || '') ? r.closes_at : '';
   syncOpts();
   clearAllErrors();
+  updateNextDayBtn();
 }
 function formIsDirty() {
   const d = readForm();
@@ -2628,11 +2867,16 @@ function resetForm(silent) {
   $('#sched-field').hidden = true;
   $('#edit-banner').hidden = true;
   $('#form-title').textContent = 'New pickup';
-  $('#btn-review').textContent = 'Review request';
+  S.showSize = false;
+  S.step = 1;
+  $('#btn-review').disabled = false; // on phones it doubles as the Send button
   optOpen.clear();
   syncOpts();
   applyLastPayment();
   clearAllErrors();
+  renderItems();
+  updateNextDayBtn();
+  renderStep();
   if (!silent) { $('#sent-wrap').hidden = true; $('#new-form-wrap').hidden = false; }
 }
 /* Unsent request: saved on this phone while it's typed, offered back next time the app opens */
@@ -2668,20 +2912,42 @@ function restoreDraft() {
   fillForm({ ...v.d, items: v.items }, { keepSchedule: true });
   refreshAddressHint('pickup');
   refreshAddressHint('delivery');
+  renderStep();
   flashPastedFields();
 }
 $('#req-form').addEventListener('input', saveDraftSoon);
 $('#req-form').addEventListener('change', saveDraftSoon);
 
-function updateSchedMin() { $('#sched-date').min = localDateStr(addDays(new Date(), 1)); }
+function updateSchedMin() { $('#sched-date').min = localDateStr(addDays(new Date(), 1)); updateNextDayBtn(); }
+// "Next business day: Tue, Nov 17" fills in a scheduled date in one tap
+function updateNextDayBtn() {
+  const b = $('#next-day-btn');
+  if (!b) return;
+  const nd = nextOpenDay(shopTodayStr());
+  const on = $('input[name=when]:checked').value === 'scheduled' && $('#sched-date').value === nd;
+  b.dataset.date = nd;
+  b.textContent = `Next business day: ${fmtDay(nd)}`;
+  b.hidden = on;
+}
+function pickNextDay() {
+  const nd = $('#next-day-btn').dataset.date || nextOpenDay(shopTodayStr());
+  $$('input[name=when]').forEach((x) => { x.checked = x.value === 'scheduled'; });
+  $('#sched-field').hidden = false;
+  $('#sched-date').value = nd;
+  clearError('sched');
+  updateNextDayBtn();
+  saveDraftSoon();
+  sideSoon();
+}
 
 $$('input[name=when]').forEach((r) => r.addEventListener('change', () => {
   const sched = $('input[name=when]:checked').value === 'scheduled';
   $('#sched-field').hidden = !sched;
   clearError('sched');
-  if (sched) { updateSchedMin(); if (!$('#sched-date').value) $('#sched-date').value = localDateStr(addDays(new Date(), 1)); }
+  if (sched) { updateSchedMin(); if (!$('#sched-date').value) $('#sched-date').value = nextOpenDay(shopTodayStr()); }
+  updateNextDayBtn();
 }));
-$('#sched-date').addEventListener('change', () => clearError('sched'));
+$('#sched-date').addEventListener('change', () => { clearError('sched'); updateNextDayBtn(); });
 ['ready-after', 'closes-at'].forEach((id) => $('#' + id).addEventListener('input', () => clearError('closes-at')));
 $$('input[name=payment]').forEach((r) => r.addEventListener('change', () => clearError('pay')));
 ['pickup-phone', 'pickup-email', 'delivery-phone', 'delivery-email'].forEach((id) => $('#' + id).addEventListener('input', () => clearError(id)));
@@ -2704,18 +2970,11 @@ function swapLegs() {
    ========================================================= */
 $('#req-form').addEventListener('submit', (e) => {
   e.preventDefault();
+  if (S.sending) return;
   const d = readForm();
+  if (isGuided()) { guidedSubmit(d); return; }
   const bad = validateForm(d);
-  if (bad) {
-    bad.classList.remove('nudge');
-    void bad.offsetWidth; // restart the pulse if it's the same field again
-    bad.classList.add('nudge');
-    setTimeout(() => bad.classList.remove('nudge'), 1400);
-    bad.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
-    const f = $('input,textarea,select', bad);
-    if (f) setTimeout(() => f.focus({ preventScroll: true }), 300);
-    return;
-  }
+  if (bad) { nudgeField(bad); return; }
   openReview(d);
 });
 
@@ -2733,24 +2992,29 @@ function recentDuplicate(d) {
       && norm(r.pickup.name) === norm(d.pickup.name) && norm(r.pickup.address) === norm(d.pickup.address))
     .sort((a, b) => (b.created_at || 0) - (a.created_at || 0))[0] || null;
 }
-function openReview(d) {
+// Warnings shown before sending: closed hours, a possible duplicate, an address Google Maps didn't match
+function reviewNotes(d) {
   const dup = S.editingId ? null : recentDuplicate(d);
   const dupNote = dup ? `<div class="notice warn">${icon('alert')}<span>You already sent a pickup from <b>${esc(dup.pickup.name)}</b> ${Math.max(1, Math.round((Date.now() - dup.created_at) / 60000))} min ago (#${esc(dup.ref_no)}), and it hasn\u2019t gone to a driver yet. Only send this if it\u2019s a second pickup.</span></div>` : '';
   const warn = dupNote + ['pickup', 'delivery'].filter((leg) => d[leg].address && !d[leg].verified)
     .map((leg) => `<div class="notice warn">${icon('alert')}<span>The ${leg} address wasn\u2019t matched on Google Maps. Make sure it\u2019s complete enough for a driver to find.</span></div>`).join('');
+  const closed = !S.editingId && d.when === 'asap' ? afterHoursText() : '';
+  const late = d.ready_after && d.ready_after >= CLOSE_AT ? `Dispatch closes at ${fmtHM(CLOSE_AT)}, before this pickup is ready. It may not be picked up until the next day.` : '';
+  return [closed, late].filter(Boolean).map((t) => `<div class="notice warn">${icon('clock')}<span>${esc(t)}</span></div>`).join('') + warn;
+}
+const payText = (p) => (p === 'collect' ? 'Collect (recipient pays)' : p === 'prepaid' ? 'Prepaid (sender pays)' : '');
+function whenText(d) { return d.when === 'scheduled' ? (d.scheduled_for ? fmtDay(d.scheduled_for) : 'Pick a date') : 'As soon as possible'; }
+function openReview(d) {
   const items = [itemsText(d.items), d.item_details].filter(Boolean).map(esc).join('<br>');
   const editing = !!S.editingId;
-  const closed = !editing && d.when === 'asap' ? afterHoursText() : '';
-  const late = d.ready_after && d.ready_after >= CLOSE_AT ? `Dispatch closes at ${fmtHM(CLOSE_AT)}, before this pickup is ready. It may not be picked up until the next day.` : '';
-  const hoursNote = [closed, late].filter(Boolean).map((t) => `<div class="notice warn">${icon('clock')}<span>${esc(t)}</span></div>`).join('');
   openSheet(editing ? 'Check your changes' : 'Check your request', `
-    ${hoursNote}${warn}
+    ${reviewNotes(d)}
     <dl class="dl">
       ${legBlock('Pickup', d.pickup)}
       ${legBlock('Delivery', d.delivery)}
       <dt>Items</dt><dd>${items}</dd>
-      <dt>When</dt><dd>${d.when === 'scheduled' ? esc(fmtDay(d.scheduled_for)) : 'As soon as possible'}${hoursText(d) ? `<small>${esc(hoursText(d))}</small>` : ''}</dd>
-      <dt>Payment</dt><dd>${d.payment === 'collect' ? 'Collect' : 'Prepaid'}</dd>
+      <dt>When</dt><dd>${esc(whenText(d))}${hoursText(d) ? `<small>${esc(hoursText(d))}</small>` : ''}</dd>
+      <dt>Payment</dt><dd>${esc(payText(d.payment))}</dd>
       ${d.po ? `<dt>PO / ref</dt><dd>${esc(d.po)}</dd>` : ''}
       ${d.notes ? `<dt>Driver notes</dt><dd>${esc(d.notes)}</dd>` : ''}
     </dl>
@@ -2761,6 +3025,196 @@ function openReview(d) {
     $('#btn-send', body).addEventListener('click', (e) => sendRequest(d, e.currentTarget));
   });
 }
+
+/* =========================================================
+   Phones: the form one step at a time.
+   1 Pickup, 2 Delivery (can be skipped), 3 What and when, 4 Check and send.
+   Every field stays in the one form, so drafts, editing and Repeat work as before.
+   ========================================================= */
+const GUIDE_MQ = matchMedia('(max-width: 759px)');
+const DESK_MQ = matchMedia('(min-width: 1000px)');
+const STEPS = 4;
+const STEP_Q = ['', 'Where are we picking up?', 'Where is it going?', 'What are we moving, and when?', 'Check and send'];
+const isGuided = () => GUIDE_MQ.matches;
+const stepsOf = (el) => el.dataset.step.split(' ').map(Number);
+function stepOfField(wrap) { const s = wrap && wrap.closest('#req-form [data-step]'); return s ? Math.min(...stepsOf(s)) : STEPS; }
+function legStarted(leg) { return ['name', 'address', 'phone', 'email'].some((f) => $(`#${leg}-${f}`).value.trim()); }
+function reviewLabel() {
+  if (!isGuided()) return S.editingId ? 'Review changes' : 'Review request';
+  if (S.step < STEPS) return S.step === 2 && !legStarted('delivery') ? 'Skip' : 'Next';
+  return S.editingId ? 'Save changes' : 'Send request';
+}
+function stepSub() {
+  if (S.step === 2) return 'Optional. Skip it if you don\u2019t know yet.';
+  if (S.step === 4) return 'Tap a line to change it.';
+  return '';
+}
+function renderStep() {
+  const g = isGuided();
+  const wrap = $('#new-form-wrap');
+  wrap.classList.toggle('guided', g);
+  wrap.dataset.step = String(S.step);
+  $('#req-form').classList.toggle('guided', g);
+  $$('#req-form [data-step]').forEach((el) => el.classList.toggle('step-on', stepsOf(el).includes(S.step)));
+  $$('#guide-prog .bars i').forEach((b, i) => b.classList.toggle('on', i < S.step));
+  $('#guide-step-txt').textContent = `Step ${S.step} of ${STEPS}`;
+  $('#guide-q').textContent = S.editingId && S.step === STEPS ? 'Check your changes' : STEP_Q[S.step];
+  $('#guide-sub').textContent = stepSub();
+  $('#btn-back').hidden = !g || S.step === 1;
+  $('#btn-review').textContent = reviewLabel();
+  if (g && S.step === STEPS) renderCheck();
+  renderRecent();
+  renderShopStatus();
+  sideSoon();
+}
+function setStep(n, { push = true } = {}) {
+  n = Math.max(1, Math.min(STEPS, n || 1));
+  const forward = n > S.step;
+  S.step = n;
+  renderStep();
+  if (!isGuided()) return;
+  if (push && forward) { try { history.pushState({ gstep: n }, ''); } catch (e) { /* ignore */ } }
+  window.scrollTo(0, 0);
+  const q = $('#guide-q');
+  if (q && $('#tab-new').contains(document.activeElement)) q.focus({ preventScroll: true });
+}
+function stepBack() {
+  if (S.step <= 1) return;
+  if (history.state && history.state.gstep === S.step) history.back(); // the phone's back button does the same
+  else setStep(S.step - 1, { push: false });
+}
+// The phone's back button goes to the step before, while one of the form's steps is showing
+window.addEventListener('popstate', () => {
+  if (layers.length || !isGuided() || S.tab !== 'new' || !$('#sent-wrap').hidden) return;
+  const t = (history.state && history.state.gstep) || 1;
+  if (t < S.step) setStep(t, { push: false });
+});
+function nudgeField(bad) {
+  bad.classList.remove('nudge');
+  void bad.offsetWidth; // restart the pulse if it's the same field again
+  bad.classList.add('nudge');
+  setTimeout(() => bad.classList.remove('nudge'), 1400);
+  bad.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
+  const f = $('input,textarea,select', bad);
+  if (f) setTimeout(() => f.focus({ preventScroll: true }), 300);
+}
+// Next checks only this step and the ones before it; problems further on wait until that step
+function guidedSubmit(d) {
+  validateForm(d);
+  const errs = (validateForm.all || []).slice().sort((a, b) => stepOfField(a) - stepOfField(b));
+  $$('#req-form [data-step]').filter((el) => Math.min(...stepsOf(el)) > S.step).forEach((el) => clearErrorsIn(el));
+  if (S.step < 3) clearError('items');
+  const here = errs.filter((el) => stepOfField(el) <= S.step);
+  if (here.length) {
+    const st = stepOfField(here[0]);
+    if (st !== S.step) setStep(st, { push: false });
+    nudgeField(here[0]);
+    return;
+  }
+  if (S.step < STEPS) { setStep(S.step + 1); return; }
+  sendRequest(d, $('#btn-review'));
+}
+function checkRow(step, label, valueHtml, empty) {
+  return `<button type="button" class="check-row" data-act="go-step" data-go="${step}"><span class="k">${label}</span><span class="v${empty ? ' none' : ''}">${valueHtml}</span>${icon('chevron')}</button>`;
+}
+function legSummary(L, emptyText) {
+  if (!L.name && !L.address) return [esc(emptyText), true];
+  return [`${esc(L.name || L.address)}${L.name && L.address ? `<small>${esc(L.address)}</small>` : ''}`, false];
+}
+function renderCheck() {
+  const d = readForm();
+  const items = [itemsText(d.items), d.item_details].filter(Boolean).join(', ');
+  const [p, pe] = legSummary(d.pickup, 'Not filled in');
+  const [dl, de] = legSummary(d.delivery, 'Not set (optional)');
+  $('#check-sum').innerHTML = reviewNotes(d)
+    + checkRow(1, 'Pickup', p, pe)
+    + checkRow(2, 'Deliver', dl, de)
+    + checkRow(3, 'Items', esc(items || 'Not filled in'), !items)
+    + checkRow(3, 'When', `${esc(whenText(d))}${hoursText(d) ? `<small>${esc(hoursText(d))}</small>` : ''}`, false);
+}
+// Recent pickup places and deliveries from History, one tap to fill in (phones, while that stop is empty)
+const normStop = (v) => String(v || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+const recentList = { pickup: [], delivery: [] };
+function recentStops(leg) {
+  const seen = new Set();
+  const out = [];
+  Object.values(S.requests || {}).filter((r) => r && r.status !== 'removed').sort((a, b) => (b.created_at || 0) - (a.created_at || 0)).forEach((r) => {
+    const L = r[leg];
+    if (!L || !L.name || !L.address || out.length >= 4) return;
+    const k = `${normStop(L.name)}|${normStop(L.address)}`;
+    if (seen.has(k)) return;
+    seen.add(k);
+    out.push(L);
+  });
+  return out;
+}
+function renderRecent() {
+  ['pickup', 'delivery'].forEach((leg) => {
+    const box = $(`[data-recent="${leg}"]`);
+    if (!box) return;
+    const list = isGuided() && !S.editingId && !$(`#${leg}-name`).value.trim() && !$(`#${leg}-address`).value.trim() ? recentStops(leg) : [];
+    recentList[leg] = list;
+    box.hidden = !list.length;
+    box.innerHTML = list.length ? `<p class="label">${leg === 'pickup' ? 'Recent pickup places' : 'Recent deliveries'}</p>${list.map((L, i) => `<button type="button" class="recent-stop" data-act="use-recent" data-leg="${leg}" data-i="${i}"><span class="avatar" aria-hidden="true">${esc(initials(L.name))}</span><span class="grow"><b>${esc(L.name)}</b><small>${esc(L.address)}</small></span>${icon('chevron')}</button>`).join('')}` : '';
+  });
+}
+function useRecent(leg, i) {
+  const L = recentList[leg] && recentList[leg][i];
+  if (!L) return;
+  fillLeg(leg, L);
+  refreshAddressHint(leg);
+  renderStep();
+  flashPastedFields(`.leg[data-leg=${leg}]`);
+  saveDraftSoon();
+}
+['pickup', 'delivery'].forEach((leg) => ['name', 'address'].forEach((f) => $(`#${leg}-${f}`).addEventListener('input', () => {
+  if (!isGuided()) return;
+  const box = $(`[data-recent="${leg}"]`);
+  const empty = !$(`#${leg}-name`).value.trim() && !$(`#${leg}-address`).value.trim();
+  if (box && (box.hidden === empty)) renderRecent();
+})));
+$('#req-form').addEventListener('input', () => { if (isGuided()) $('#btn-review').textContent = reviewLabel(); sideSoon(); });
+$('#req-form').addEventListener('change', () => sideSoon());
+
+/* Computers: the menu sits in the top bar, and a live summary with the send button sits beside the form */
+function placeNav() {
+  const nav = $('.tabbar');
+  const desk = DESK_MQ.matches;
+  if (desk && nav.parentElement !== $('.topbar-in')) $('.topbar-in .spacer').before(nav);
+  if (!desk && nav.parentElement !== $('#view-app')) $('#view-app').appendChild(nav);
+  document.body.classList.toggle('desk', desk);
+  const call = $('#top-call');
+  if (call && DISPATCH_PHONE) {
+    call.href = `tel:${phoneDigits(DISPATCH_PHONE)}`;
+    call.hidden = false;
+    $('.lbl', call).textContent = desk ? formatPhone(DISPATCH_PHONE) : 'Call';
+    call.setAttribute('aria-label', `Call dispatch, ${formatPhone(DISPATCH_PHONE)}`);
+  }
+}
+function renderSide() {
+  const box = $('#side-sum');
+  if (!box) return;
+  if (!DESK_MQ.matches) { box.innerHTML = ''; return; }
+  const d = readForm();
+  const items = [itemsText(d.items), d.item_details].filter(Boolean).join(', ');
+  const row = (k, v, empty) => `<dt>${k}</dt><dd${empty ? ' class="none"' : ''}>${v}</dd>`;
+  const leg = (L, emptyText) => (L.name || L.address ? `${esc(L.name || L.address)}${L.name && L.address ? `<small>${esc(L.address)}</small>` : ''}` : esc(emptyText));
+  const st = shopStatus();
+  box.innerHTML = `<h2>Your request</h2>
+    <dl class="dl">
+      ${row('Pickup', leg(d.pickup, 'Not filled in yet'), !d.pickup.name && !d.pickup.address)}
+      ${row('Deliver', leg(d.delivery, 'Not set (optional)'), !d.delivery.name && !d.delivery.address)}
+      ${row('Items', esc(items || 'Not filled in yet'), !items)}
+      ${row('When', `${esc(whenText(d))}${hoursText(d) ? `<small>${esc(hoursText(d))}</small>` : ''}`, false)}
+      ${row('Payment', esc(payText(d.payment) || 'Not chosen yet'), !d.payment)}
+    </dl>
+    <button class="btn btn-primary block" type="submit" form="req-form">${S.editingId ? 'Review changes' : 'Review and send'}</button>
+    <p class="side-note">${icon('clock', 'sm')}<span>${st.html}${DISPATCH_PHONE ? ` Questions? Call ${esc(formatPhone(DISPATCH_PHONE))}.` : ''}</span></p>`;
+}
+const sideSoon = debounce(renderSide, 120);
+GUIDE_MQ.addEventListener('change', () => renderStep());
+DESK_MQ.addEventListener('change', () => { placeNav(); renderSide(); });
+setInterval(() => { if (!document.hidden && S.tab === 'new') { renderShopStatus(); updateNextDayBtn(); } }, 60000);
 
 function buildPayload(d) {
   const clean = (L) => {
@@ -2950,7 +3404,8 @@ function repeatRequest(r) {
   resetForm();
   fillForm(r, { keepSchedule: false });
   switchTab('new');
-  flashPastedFields();
+  // Phones go straight to Check and send: everything is filled in already
+  if (isGuided()) setStep(STEPS, { push: false }); else { renderStep(); flashPastedFields(); }
 }
 // Briefly light up every field that was just filled, top to bottom, then let the yellow fade out.
 function flashPastedFields(root = '#req-form') {
@@ -2985,8 +3440,8 @@ function startEdit(id) {
   $('#edit-banner-text').textContent = `Editing request #${r.ref_no}`;
   $('#edit-banner').hidden = false;
   $('#form-title').textContent = 'Edit request';
-  $('#btn-review').textContent = 'Review changes';
   switchTab('new');
+  setStep(isGuided() ? STEPS : 1, { push: false }); // phones open on Check, with every line a tap away
 }
 async function stopEdit() {
   if (!(await confirmSheet({ title: 'Stop editing?', body: 'Your changes to this request won\u2019t be saved.', ok: 'Stop editing', cancel: 'Keep editing' }))) return;
@@ -4060,7 +4515,12 @@ document.addEventListener('click', async (e) => {
     case 'swap': swapLegs(); break;
     case 'qty-inc': stepQty(el, 1); break;
     case 'qty-dec': stepQty(el, -1); break;
-    case 'add-item': S.items.push({ qty: 1, type: 'box', weight: '' }); renderItems(); $$('#item-rows .item-row').pop().querySelector('select').focus(); saveDraftSoon(); break;
+    case 'add-item': S.items.push({ qty: 1, type: 'box', weight: '' }); renderItems(); $$('#item-rows .item-row').pop().querySelector('input[data-field=type]:checked').focus(); saveDraftSoon(); break;
+    case 'item-size': S.showSize = true; renderItems(); { const w = $('#item-rows [data-field=weight]'); if (w) w.focus(); } break;
+    case 'next-day': pickNextDay(); break;
+    case 'step-back': stepBack(); break;
+    case 'go-step': setStep(+el.dataset.go); break;
+    case 'use-recent': useRecent(el.dataset.leg, +el.dataset.i); break;
     case 'item-remove': S.items.splice(+el.closest('.item-row').dataset.i, 1); renderItems(); saveDraftSoon(); break;
     case 'draft-continue': restoreDraft(); break;
     case 'draft-discard': clearDraft(); toast('Unsent pickup discarded.', 'info', 2500); break;
