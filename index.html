@@ -340,6 +340,7 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 .item-row{display:grid;grid-template-columns:118px minmax(0,1fr) 100px var(--ctl);gap:6px;align-items:center;margin-bottom:6px;animation:riseIn var(--t) var(--out) both}
 .item-row.single{grid-template-columns:118px minmax(0,1fr) 100px}
 .item-row .other-input{grid-column:1/-1;width:100%;min-height:var(--ctl);padding:7px 11px;border:1px solid var(--line-strong);border-radius:var(--r-sm);background:var(--field);font-size:16px;outline:none;transition:border-color var(--t-fast) ease,box-shadow var(--t-fast) ease}
+.item-row .weight input.invalid,.item-row .dims input.invalid{border-color:var(--danger);box-shadow:0 0 0 3px var(--danger-bg)}
 .item-row .other-input.invalid{border-color:var(--danger);box-shadow:0 0 0 3px var(--danger-bg)}
 .stepper{display:flex;align-items:center;height:var(--ctl);border:1px solid var(--line-strong);border-radius:var(--r-sm);background:var(--field);overflow:hidden;transition:border-color var(--t-fast) ease,box-shadow var(--t-fast) ease}
 .stepper button{width:36px;height:100%;border:0;background:none;color:var(--ink);font-size:20px;line-height:1;cursor:pointer;transition:background-color var(--t-fast) ease;-webkit-tap-highlight-color:transparent}
@@ -874,8 +875,7 @@ body.desk main.app-main{padding-bottom:40px}
   .route{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
   .route .leg{display:block}
   .route .leg[data-leg=delivery]{border-left:1px solid var(--line)}
-  .route-mid{position:absolute;left:50%;top:34px;height:0;border:0}
-  .route-mid .swap{left:0}
+  .route-mid{display:none}
 }
 </style>
 </head>
@@ -1114,7 +1114,7 @@ body.desk main.app-main{padding-bottom:40px}
             <h2><span class="sec-ic" aria-hidden="true"><svg class="i"><use href="#i-box"/></svg></span>What are we moving?</h2>
             <div class="items" id="item-rows"></div>
             <p class="items-preview" id="items-preview"></p>
-            <div class="opt-line"><button class="opt-btn" type="button" data-act="item-size" id="item-size-btn">+ Weight or size</button><button class="opt-btn" type="button" data-act="add-item">+ Another line</button><button class="opt-btn" type="button" data-act="show-opt" data-opt="item-details">+ Description</button></div>
+            <div class="opt-line"><button class="opt-btn" type="button" data-act="add-item">+ Another line</button><button class="opt-btn" type="button" data-act="show-opt" data-opt="item-details">+ Description</button></div>
             <div class="field" data-opt="item-details" hidden><label for="item-details">Description</label><textarea id="item-details" maxlength="500" rows="2" placeholder="Optional, e.g. fragile, keep upright"></textarea></div>
             <p class="err" id="items-err" hidden></p>
           </section>
@@ -1319,7 +1319,6 @@ const S = {
   reqLoaded: false,
   listeners: [],
   items: [{ qty: 1, type: 'box', weight: '' }],
-  showSize: false,
   step: 1,
   legGeo: { pickup: null, delivery: null },
   editingId: null,
@@ -2551,7 +2550,6 @@ function switchTab(tab) {
    ========================================================= */
 function renderItems() {
   const single = S.items.length === 1;
-  const showSize = S.showSize || S.items.some((it) => String(it.weight || '').trim() || String(it.dims || '').trim());
   $('#item-rows').innerHTML = S.items.map((it, i) => `
     <div class="item-row${single ? ' single' : ''}" data-i="${i}">
       <div class="stepper">
@@ -2561,14 +2559,12 @@ function renderItems() {
       </div>
       <div class="type-chips" role="radiogroup" aria-label="Item type">${ITEM_TYPES.map((t) => `<label class="tchip"><input type="radio" name="item-type-${i}" value="${t.id}" data-field="type"${t.id === it.type ? ' checked' : ''}><span>${t.label}</span></label>`).join('')}</div>
       ${single ? '' : `<button class="icon-btn" type="button" data-act="item-remove" aria-label="Remove this line">${icon('x')}</button>`}
-      ${showSize ? `<div class="item-size">
-        <label class="mini"><span>Weight</span><span class="weight"><input type="number" inputmode="decimal" min="0" step="any" value="${esc(it.weight)}" data-field="weight" placeholder="Total" aria-label="Total weight in pounds"><span>lbs</span></span></label>
-        <label class="mini"><span>Size</span><span class="dims"><input type="text" maxlength="40" value="${esc(it.dims || '')}" data-field="dims" placeholder="48 x 40 in" aria-label="Size, in feet or inches"></span></label>
-      </div>` : ''}
+      <div class="item-size">
+        <label class="mini"><span>Weight <span class="req">*</span></span><span class="weight"><input type="number" inputmode="decimal" min="0" step="any" value="${esc(it.weight)}" data-field="weight" placeholder="Total" aria-label="Total weight in pounds"><span>lbs</span></span></label>
+        <label class="mini"><span>or size <span class="req">*</span></span><span class="dims"><input type="text" maxlength="40" value="${esc(it.dims || '')}" data-field="dims" placeholder="48 x 40 in" aria-label="Size, in feet or inches"></span></label>
+      </div>
       ${it.type === 'other' ? `<input class="other-input" type="text" maxlength="60" value="${esc(it.other || '')}" data-field="other" placeholder="What is it? e.g. tires, carpet" aria-label="Describe the item">` : ''}
     </div>`).join('');
-  const sb = $('#item-size-btn');
-  if (sb) sb.hidden = showSize;
   updateItemsPreview();
 }
 function updateItemsPreview() {
@@ -2594,6 +2590,7 @@ $('#item-rows').addEventListener('input', (e) => {
   if (f === 'other') { it.other = e.target.value; e.target.classList.remove('invalid'); }
   if (f === 'weight') it.weight = e.target.value;
   if (f === 'dims') it.dims = e.target.value;
+  if (f === 'weight' || f === 'dims') $$('[data-field=weight],[data-field=dims]', row).forEach((x) => x.classList.toggle('invalid', false));
   updateItemsPreview();
   clearError('items');
 });
@@ -2874,6 +2871,13 @@ function validateForm(d) {
   else if (d.items.some((it) => it.type === 'other' && !it.other)) {
     add('items', 'Type what the \u201cOther\u201d item is.');
     $$('#item-rows .other-input').forEach((x) => { if (!x.value.trim()) x.classList.add('invalid'); });
+  } else if (d.items.some((it) => !it.weight && !it.dims)) {
+    // Every line needs a total weight or a size
+    add('items', S.items.length > 1 ? 'Enter a weight or a size for each line.' : 'Enter the total weight or the size.');
+    $$('#item-rows .item-row').forEach((row) => {
+      const it = S.items[+row.dataset.i];
+      if (it && Number(it.qty) > 0 && !(parseFloat(it.weight) > 0) && !String(it.dims || '').trim()) $$('[data-field=weight],[data-field=dims]', row).forEach((x) => x.classList.add('invalid'));
+    });
   }
   if (d.when === 'scheduled') {
     if (!d.scheduled_for) add('sched', 'Choose the pickup date.');
@@ -2931,7 +2935,6 @@ function resetForm(silent) {
   $('#sched-field').hidden = true;
   $('#edit-banner').hidden = true;
   $('#form-title').textContent = 'New pickup';
-  S.showSize = false;
   S.step = 1;
   $('#btn-review').disabled = false; // on phones it doubles as the Send button
   optOpen.clear();
@@ -4573,7 +4576,6 @@ document.addEventListener('click', async (e) => {
     case 'qty-inc': stepQty(el, 1); break;
     case 'qty-dec': stepQty(el, -1); break;
     case 'add-item': S.items.push({ qty: 1, type: 'box', weight: '' }); renderItems(); $$('#item-rows .item-row').pop().querySelector('input[data-field=type]:checked').focus(); saveDraftSoon(); break;
-    case 'item-size': S.showSize = true; renderItems(); { const w = $('#item-rows [data-field=weight]'); if (w) w.focus(); } break;
     case 'next-day': pickNextDay(); break;
     case 'step-back': stepBack(); break;
     case 'go-step': setStep(+el.dataset.go); break;
