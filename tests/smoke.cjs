@@ -140,6 +140,14 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     assert.ok(await page.evaluate(() => !!document.querySelector('.field.nudge')), 'first problem is nudged');
     await page.fill('#pickup-address', '12 Main St');
     await page.check('input[name=payment][value=prepaid]', { force: true });
+    // Weight or size is required on every line
+    await page.click('#side-sum .btn');
+    await page.waitForSelector('#items-err:not([hidden])');
+    assert.match(await page.textContent('#items-err'), /total weight or the size/);
+    assert.ok(await page.evaluate(() => document.querySelector('#item-rows [data-field=weight]').classList.contains('invalid')), 'weight box flagged');
+    await page.fill('#item-rows [data-field=dims]', '12 x 12 x 12 in');
+    assert.ok(await page.evaluate(() => !document.querySelector('#item-rows [data-field=weight]').classList.contains('invalid')), 'typing a size clears it');
+    assert.ok(await page.isHidden('.route-mid .swap'), 'no swap button on a computer');
     await page.waitForFunction(() => /Payment\s*Prepaid/.test(document.getElementById('side-sum').textContent));
     await page.waitForTimeout(400);
     await shot(page, 'desktop-filled');
@@ -345,12 +353,13 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
       assert.strictEqual((await pg.textContent('#btn-review')).trim(), 'Next');
       await pg.fill('#delivery-name', '');
       await pg.click('#btn-review');
-      // Items: tap the type; weight and size wait behind a button
+      // Items: tap the type; a weight or a size is required
       assert.strictEqual((await pg.textContent('#guide-q')).trim(), 'What are we moving, and when?');
-      assert.ok(await pg.isHidden('#item-rows [data-field=weight]'), 'weight tucked away');
       await pg.click('#item-rows .tchip:has-text("Pallets")');
       await pg.click('#item-rows [data-act=qty-inc]');
-      await pg.click('#item-size-btn');
+      await pg.click('#btn-review');
+      await pg.waitForSelector('#items-err:not([hidden])');
+      assert.strictEqual(await pg.evaluate(() => S.step), 3, 'stays on the items step without a weight or size');
       await pg.fill('#item-rows [data-field=weight]', '300');
       assert.match(await pg.textContent('#items-preview'), /2 pallets/);
       assert.match(await pg.textContent('#next-day-btn'), /^Next business day: /);
@@ -394,6 +403,7 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
       await pg.fill('#pickup-address', '12 Main St');
       await pg.click('#btn-review');
       await pg.click('#btn-review');
+      await pg.fill('#item-rows [data-field=weight]', '5');
       await pg.check('input[name=when][value=scheduled]', { force: true });
       await pg.fill('#sched-date', '2030-01-05');
       await pg.click('#btn-review');
@@ -513,6 +523,7 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
       await p3.fill('#pickup-name', 'Acme Supply');
       await p3.fill('#pickup-address', '12 Main St');
       await p3.fill('#delivery-name', 'Lake Clinic');
+      await p3.fill('#item-rows [data-field=weight]', '8');
       await p3.check('input[name=payment][value=prepaid]', { force: true });
       await p3.click('#side-sum .btn');
       await p3.waitForSelector('#sheet:not([hidden]) #btn-send');
