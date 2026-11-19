@@ -579,6 +579,16 @@ body.kb-open .sheet{max-height:var(--vv-h,90vh);border-radius:0 0 16px 16px}
 body.kb-open .map-sheet{height:var(--vv-h,88vh)}
 body.kb-open .map-wrap{min-height:0}
 body.kb-open .grab{display:none}
+/* Writing a message with the keyboard up: the typing box sits right on top of the keyboard and the
+   messages fill the space above it, like a texting app (never moved up to the top of the screen) */
+body.kb-chat .sheet{height:var(--vv-h,90vh)}
+body.kb-chat .sheet-body{flex:1 1 auto;min-height:0;padding-bottom:0}
+body.kb-chat .sheet-body .msg-form{position:sticky;bottom:0;z-index:2;margin:8px -16px 0;padding:8px 16px;background:var(--surface);border-top:1px solid var(--line)}
+body.kb-open.kb-chat-page{padding-bottom:0}
+body.kb-chat-page main.app-main{padding-bottom:calc(var(--compose-h,110px) + var(--kb-h,0px))}
+body.kb-chat-page #view-app>.tabbar{display:none}
+body.kb-chat-page main.app-main>section{animation:none}
+body.kb-chat-page #msgs-body .msg-compose{position:fixed;left:0;right:0;bottom:auto;top:calc(var(--vv-top,0px) + var(--vv-h,100vh));transform:translateY(-100%);z-index:40;margin:0;padding:8px max(12px,calc((100% - 1080px) / 2 + 12px)) 8px}
 #map-overlay{z-index:70}
 .map-sheet{height:88vh;overflow:hidden}
 .map-search{display:flex;gap:6px;padding:8px 16px}
@@ -1694,7 +1704,7 @@ function renderMessages() {
     </div>`;
   const again = $('#msgs-body form[data-msg-form] textarea');
   if (again && draft) { again.value = draft; growMsgBox(again); }
-  if (again && typing) again.focus({ preventScroll: true });
+  if (again && typing) { again.focus({ preventScroll: true }); if (window.pinChat) window.pinChat(); }
 }
 document.addEventListener('change', (e) => { if (e.target.id === 'msg-about') msgAbout = e.target.value; });
 async function sendCustomerMsg(rid, text, key) {
@@ -1754,7 +1764,7 @@ function msgSection(id, r) {
 }
 // The message box grows with what's typed, up to about 4 lines. Enter sends; Shift+Enter starts a new line.
 function growMsgBox(t) { t.style.height = 'auto'; t.style.height = `${Math.min(t.scrollHeight + 2, 112)}px`; }
-document.addEventListener('input', (e) => { if (e.target.matches && e.target.matches('form[data-msg-form] textarea')) growMsgBox(e.target); });
+document.addEventListener('input', (e) => { if (e.target.matches && e.target.matches('form[data-msg-form] textarea')) { growMsgBox(e.target); if (document.body.classList.contains('kb-chat') && window.pinChat) window.pinChat(); } });
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Enter' || e.shiftKey || e.isComposing || !e.target.matches || !e.target.matches('form[data-msg-form] textarea')) return;
   e.preventDefault();
@@ -1955,7 +1965,9 @@ $('#map-overlay').addEventListener('click', (e) => { if (e.target.id === 'map-ov
 
 /* =========================================================
    On-screen keyboard: move whatever is being typed in to the top
-   of the visible screen, above the keyboard, until it closes
+   of the visible screen, above the keyboard, until it closes.
+   A message box is the exception: it sits at the bottom, right on
+   top of the keyboard, with the newest messages just above it.
    ========================================================= */
 (function keyboardAware() {
   const vv = window.visualViewport;
@@ -1967,9 +1979,26 @@ $('#map-overlay').addEventListener('click', (e) => { if (e.target.id === 'map-ov
   let open = false;
   let lifted = null;
   let raf = 0;
+  let lastH = 0;
+  const isChat = (el) => !!el && !!el.matches && el.matches('form[data-msg-form] textarea');
+
+  // The newest message just above the typing box: the pickup's sheet or the page scrolled to the end
+  function pinChat() {
+    const el = document.activeElement;
+    if (!open || !isChat(el)) return;
+    const body = el.closest('.sheet-body');
+    if (body) { body.scrollTop = body.scrollHeight; return; }
+    const c = el.closest('.msg-compose');
+    if (!c) return;
+    root.style.setProperty('--compose-h', `${Math.ceil(c.getBoundingClientRect().height)}px`);
+    const list = c.parentElement && c.parentElement.querySelector('.msg-list');
+    if (list) window.scrollBy(0, list.getBoundingClientRect().bottom - c.getBoundingClientRect().top);
+  }
+  window.pinChat = () => { if (raf) { cancelAnimationFrame(raf); update(); } pinChat(); };
 
   function lift(el) {
     if (!el || !document.contains(el)) return;
+    if (isChat(el)) { pinChat(); return; }
     const box = el.closest('.field') || el;
     const overlay = el.closest('.overlay');
     if (overlay) {
@@ -1995,8 +2024,14 @@ $('#map-overlay').addEventListener('click', (e) => { if (e.target.id === 'map-ov
     const active = document.activeElement;
     const nowOpen = isTyping(active) && baseH - h > 120;
     if (nowOpen !== open) { open = nowOpen; document.body.classList.toggle('kb-open', open); }
-    if (!open) { lifted = null; return; }
-    if (active !== lifted) { lifted = active; setTimeout(() => { if (open && document.activeElement === active) lift(active); }, 60); }
+    const chat = open && isChat(active);
+    const inSheet = chat && !!active.closest('.overlay');
+    root.style.setProperty('--kb-h', `${chat ? Math.max(0, Math.round(window.innerHeight - h)) : 0}px`); // keyboard drawn over the page
+    document.body.classList.toggle('kb-chat', chat);
+    document.body.classList.toggle('kb-chat-page', chat && !inSheet);
+    if (!open) { lifted = null; lastH = 0; return; }
+    if (active !== lifted) { lifted = active; lastH = h; setTimeout(() => { if (open && document.activeElement === active) lift(active); }, 60); }
+    else if (chat && Math.abs(h - lastH) > 1) { lastH = h; pinChat(); } // keyboard still sliding up, or its size changed
   }
   const schedule = () => { if (!raf) raf = requestAnimationFrame(update); };
 
@@ -4099,7 +4134,7 @@ function openDetail(id, refresh) {
     $('#sheet-body').innerHTML = html;
     const now = $('#sheet-body form[data-msg-form] textarea');
     if (now && typed) { now.value = typed; growMsgBox(now); }
-    if (now && focused) now.focus({ preventScroll: true });
+    if (now && focused) { now.focus({ preventScroll: true }); if (window.pinChat) window.pinChat(); }
   } else openSheet(`Request #${r.ref_no}`, html);
   markMsgsSeen(id);
 }

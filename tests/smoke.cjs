@@ -241,6 +241,24 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     await page.fill('#msgs-body .msg-form textarea', 'Is the 1201 driver coming?');
     await page.press('#msgs-body .msg-form textarea', 'Enter');
     await page.waitForFunction(() => Object.values(window.__fakeDb.get('messages')).some((m) => m.text === 'Is the 1201 driver coming?' && m.rid === 'r1' && m.company_id === 'c1'));
+    // Keyboard up on a phone (the screen gets shorter): the typing box sits at the bottom, right on top of
+    // the keyboard, with the newest message just above it. It is never moved up to the top of the screen.
+    const was = page.viewportSize();
+    await page.setViewportSize(PHONE);
+    await page.waitForTimeout(300);
+    await page.focus('#msgs-body .msg-form textarea');
+    await page.setViewportSize({ width: PHONE.width, height: 500 });
+    await page.waitForTimeout(500);
+    const kbChat = await page.evaluate(() => {
+      const f = document.querySelector('#msgs-body .msg-form').getBoundingClientRect(), c = document.querySelector('#msgs-body .msg-compose').getBoundingClientRect();
+      const ms = document.querySelectorAll('#msgs-body .msg-list .msg'), last = ms[ms.length - 1].getBoundingClientRect();
+      return { below: Math.round(innerHeight - f.bottom), gap: Math.round(c.top - last.bottom) };
+    });
+    assert.ok(kbChat.below >= 0 && kbChat.below < 30, `typing box right on top of the keyboard (${kbChat.below}px above it)`);
+    assert.ok(kbChat.gap >= 0 && kbChat.gap < 40, `newest message just above the typing box (gap ${kbChat.gap})`);
+    await page.evaluate(() => document.activeElement.blur());
+    await page.setViewportSize(was);
+    await page.waitForTimeout(300);
     // A message that couldn't go out stays on screen with Try again, it doesn't vanish
     await page.evaluate(() => { Object.defineProperty(S, 'online', { get: () => false, set: () => {}, configurable: true }); });
     await page.fill('#msgs-body .msg-form textarea', 'Hello?');
