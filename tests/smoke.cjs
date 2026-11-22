@@ -401,11 +401,18 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
       await pg.click('#check-sum .check-row[data-go="1"]');
       assert.strictEqual((await pg.textContent('#guide-q')).trim(), 'Where are we picking up?');
       await pg.evaluate(() => setStep(4));
+      // Collect (the recipient pays) sends them back to the delivery step to fill it in
       await pg.click('#pay-field label:has-text("Collect")');
+      await pg.click('#btn-review');
+      await pg.waitForFunction(() => S.step === 2);
+      await pg.waitForSelector('#delivery-name-err');
+      assert.match(await pg.textContent('#guide-sub'), /unless the recipient pays/);
+      await pg.evaluate(() => setStep(4));
+      await pg.click('#pay-field label:has-text("Prepaid")');
       await pg.click('#btn-review');
       await pg.waitForSelector('#sent-wrap:not([hidden]) .ticket');
       const g = await pg.evaluate(() => Object.values(window.__fakeDb.get('requests')).find((r) => r.ref_no === 1204));
-      assert.strictEqual(g.payment, 'collect');
+      assert.strictEqual(g.payment, 'prepaid');
       assert.deepStrictEqual(Object.values(g.items), [{ qty: 2, type: 'pallet', weight: 300 }]);
       assert.strictEqual(g.delivery.name, '');
       // New in the bottom bar, from the sent screen, opens a fresh pickup
@@ -562,6 +569,71 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
       assert.strictEqual(await p4.locator('.toast').count(), 0, 'no error shown for the fallback');
       assert.deepStrictEqual(e4, [], 'no script errors in the fallback');
       await c4.close();
+    }
+    // Audit fixes (22 Nov 2026)
+    {
+      const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Winnipeg', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+      const data = JSON.parse(JSON.stringify(DATA));
+      data.companies.c1.address_book.a2 = { name: 'Smith & Sons', address: '5 Lake Rd', verified: false, notes: 'Dock door 3' };
+      data.requests.r7 = { ref_no: 1207, status: 'new', company_id: 'c1', customer_uid: 'u1', pickup: { name: 'Acme Supply', address: '12 Main St' }, delivery: { name: '', address: '' }, items: [{ qty: 1, type: 'box', weight: 5 }], items_text: '1 box 5 lbs', payment: 'prepaid', when: 'scheduled', scheduled_for: today, created_at: now - 2 * 86400000 };
+      data.shop_calendar = { '2099-12-24': { closed: true, note: 'Staff training' }, '2099-12-25': { closed: false } };
+      const { page: p5, errors: e5, ctx: c5 } = await open(browser, base, { user: USER, data }, DESK);
+      await p5.waitForSelector('#view-app:not([hidden])');
+      await p5.waitForFunction(() => S.reqLoaded);
+      // Q3: days set in the dispatch app close (or open) dispatch
+      await p5.waitForFunction(() => shopClosedReason('2099-12-24') === 'Staff training');
+      assert.strictEqual(await p5.evaluate(() => shopClosedReason('2099-12-25')), '', 'a holiday opened in Settings counts as open');
+      // 12 / Q5: Collect needs the recipient's name, address and phone
+      await p5.fill('#pickup-name', 'Acme Supply');
+      await p5.fill('#pickup-address', '12 Main St');
+      await p5.fill('#item-rows [data-field=weight]', '4');
+      await p5.check('input[name=payment][value=collect]', { force: true });
+      await p5.click('#side-sum .btn');
+      await p5.waitForSelector('#delivery-name-err');
+      assert.ok(await p5.isVisible('#delivery-address-err') && await p5.isVisible('#delivery-phone-err'), 'address and phone asked for too');
+      assert.ok(await p5.evaluate(() => !!document.querySelector('.leg[data-leg=delivery] .field.nudge')), 'the delivery stop is the first problem shown');
+      // 18: the pickup place has already closed today
+      assert.match(await p5.evaluate(() => { const real = window.shopNowHM; window.shopNowHM = () => '15:00'; const t = reviewNotes({ ...readForm(), when: 'asap', closes_at: '14:00' }); window.shopNowHM = real; return t; }), /closes at 2:00 pm, and that time has already passed/);
+      await p5.click('[data-act=clear-form]');
+      await p5.click('#sheet [data-confirm="1"]');
+      // 26: a contact's driver notes come along when it's used; 8: "&" shows as "&"
+      await p5.click('.tab[data-nav=contacts]');
+      await p5.click('#contacts-list [data-id=a2]');
+      await p5.waitForSelector('#ct-notes');
+      assert.strictEqual(await p5.inputValue('#ct-notes'), 'Dock door 3');
+      await p5.click('#ct-delete');
+      await p5.waitForFunction(() => document.getElementById('sheet-title').textContent === 'Delete Smith & Sons?');
+      await p5.click('#sheet [data-confirm="0"]');
+      await p5.waitForSelector('#sheet[hidden]', { state: 'attached' });
+      await p5.click('#contacts-list [data-id=a2]');
+      await p5.click('[data-use-as=pickup]');
+      await p5.waitForFunction(() => document.getElementById('pickup-name').value === 'Smith & Sons');
+      assert.strictEqual(await p5.inputValue('#notes'), 'Pickup: Dock door 3');
+      await p5.click('[data-act=clear-form]');
+      await p5.click('#sheet [data-confirm="1"]');
+      await p5.waitForSelector('#sheet[hidden]', { state: 'attached' });
+      // 6: a pickup scheduled for today can still be edited and saved with its date
+      await p5.evaluate(() => startEdit('r7'));
+      await p5.waitForFunction(() => S.editingId === 'r7');
+      await p5.fill('#notes', 'Side door');
+      await p5.click('#side-sum .btn');
+      await p5.waitForSelector('#sheet:not([hidden]) #btn-send');
+      assert.strictEqual(await p5.locator('#sched-err').count(), 0, 'no date error when the date is unchanged');
+      await p5.click('#btn-send');
+      await p5.waitForFunction(() => window.__fakeDb.get('requests/r7/notes') === 'Side door');
+      // Q8: ask for the account to be deleted, then take it back
+      await p5.click('.tab[data-nav=account]');
+      await p5.click('[data-act=delete-ask]');
+      await p5.click('#sheet [data-confirm="1"]');
+      await p5.waitForFunction(() => { const d = window.__fakeDb.get('deletion_requests/u1'); return d && d.email === 'pat@acme.ca' && d.company_id === 'c1'; });
+      await p5.waitForSelector('[data-act=delete-cancel]');
+      await p5.click('[data-act=delete-cancel]');
+      await p5.waitForFunction(() => window.__fakeDb.get('deletion_requests/u1') === null);
+      await p5.waitForSelector('[data-act=delete-ask]');
+      // 19: Messages says when dispatch is closed
+      assert.strictEqual(await p5.evaluate(() => { const real = window.shopNowHM; window.shopNowHM = () => '20:00'; switchTab('messages'); const on = !!document.querySelector('#msgs-body .msg-closed'); window.shopNowHM = real; return on; }), true);
+      assert.deepStrictEqual(e5, [], 'no script errors in the audit fixes');
+      await c5.close();
     }
     // A phone set to dark still opens in Light until the person picks Dark or Auto
     {

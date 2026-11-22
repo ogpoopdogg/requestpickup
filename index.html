@@ -947,7 +947,7 @@ body.desk main.app-main{padding-bottom:40px}
           </button>
         </div>
         <div class="hero-info">
-          <span><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg>Dispatch hours: 6:30 am to 5:00 pm</span>
+          <span><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg>Dispatch hours: weekdays, 6:30 am to 5:00 pm</span>
           <a id="hero-call" href="#" hidden><svg class="i" aria-hidden="true"><use href="#i-phone"/></svg><b></b></a>
         </div>
       </div>
@@ -1470,8 +1470,23 @@ function shopHolidays(y) {
     [`${y}-12-25`]: 'Christmas Day'
   });
 }
+/* Days set in the dispatch app's Settings (shop_calendar/<YYYY-MM-DD> = { closed, note }) win over the
+   built-in weekends and holidays: closed:true closes a day (Boxing Day, a storm), closed:false opens one. */
+let shopCal = {};
+function watchShopCalendar() {
+  listen(db.ref('shop_calendar').orderByKey().startAt(shopTodayStr()), 'value', (snap) => {
+    shopCal = snap.val() || {};
+    renderShopStatus();
+    updateNextDayBtn();
+    sideSoon();
+    if (S.tab === 'messages') renderMessages();
+  }, () => { shopCal = {}; }); // rules not updated yet: the built-in days still apply
+}
 // Why dispatch is closed on that day ("the weekend", "Canada Day"), or '' if it's open
 function shopClosedReason(ds) {
+  const set = shopCal[ds];
+  if (set && set.closed === false) return '';
+  if (set && set.closed) return String(set.note || '').trim() || 'the day';
   const d = parseLocalDate(ds);
   if (d.getDay() === 0 || d.getDay() === 6) return 'the weekend';
   return shopHolidays(d.getFullYear())[ds] || '';
@@ -1692,11 +1707,13 @@ function renderMessages() {
     const last = all[all.length - 1];
     msgAbout = last && about.some((a) => a.id === last[1].rid) ? last[1].rid : GENERAL;
   }
+  const st = shopStatus();
+  const closedNote = st.open ? '' : `<div class="notice msg-closed">${icon('clock')}<span>${st.html} Write anyway: dispatch reads it when they open.</span></div>`;
   const err = S.msgErr ? `<div class="notice warn">${icon('alert')}<span><b>Messages aren’t working right now.</b> Call or text dispatch instead. ${dispatchCall()}</span></div>` : '';
   let day = '';
   const divider = (ts) => { const ds = localDateStr(new Date(ts || Date.now())); if (ds === day) return ''; day = ds; return `<div class="msg-day" role="separator"><span>${esc(dayLabel(ts || Date.now()))}</span></div>`; };
   const bubbles = all.map(([, m]) => divider(m.at) + msgBubble(m, true)).join('') + outFor().map(([k, o]) => divider(o.at) + outBubble(k, o, true)).join('');
-  box.innerHTML = `${err}
+  box.innerHTML = `${err}${closedNote}
     <div class="msg-list">${bubbles || `<div class="empty">${icon('chat')}<h3>No messages yet</h3><p>Write to dispatch here about anything. To ask about a pickup, pick it under About. Their answers show up here too.</p></div>`}</div>
     <div class="msg-compose">
       <label class="msg-about"><span>About</span><select id="msg-about" aria-label="What this message is about">${about.map((a) => `<option value="${esc(a.id)}"${a.id === msgAbout ? ' selected' : ''}>${esc(a.label)}</option>`).join('')}</select></label>
@@ -1731,6 +1748,7 @@ function markMsgsSeen(rid) {
   if (S.tab === 'history') renderHistory();
 }
 let msgsLoaded = false;
+const MSG_LIMIT = 300; // the newest messages only, so opening the app stays quick as the conversation grows
 function onMsgs(snap) {
   const before = S.msgs || {};
   S.msgs = snap.val() || {};
@@ -2280,7 +2298,13 @@ async function signOut(ask = true) {
   // No more alerts for this account on this phone once signed out
   try {
     const key = S.user && localStorage.getItem(pushKeyName());
-    if (key) { localStorage.removeItem(pushKeyName()); await withTimeout(db.ref(`customer_push/${S.user.uid}/${key}`).remove(), 4000).catch(() => {}); }
+    if (key) {
+      localStorage.removeItem(pushKeyName());
+      await withTimeout(db.ref(`customer_push/${S.user.uid}/${key}`).remove(), 4000).catch(() => {});
+      // Retire this phone's alert token too, so it stops working even if the line above couldn't reach the database
+      await withTimeout(pushMessaging().deleteToken(), 4000).catch(() => {});
+      localStorage.removeItem(PUSH_OWNER);
+    }
   } catch (e) { /* ignore */ }
   await auth.signOut();
 }
@@ -2298,7 +2322,8 @@ function detachAll() { S.listeners.forEach((off) => { try { off(); } catch (e) {
 
 function resetSession() {
   detachAll();
-  Object.assign(S, { userDoc: {}, cid: null, company: null, members: {}, contacts: {}, requests: {}, reqLoaded: false, editingId: null, lastSent: null });
+  Object.assign(S, { userDoc: {}, cid: null, company: null, members: {}, contacts: {}, requests: {}, reqLoaded: false, editingId: null, lastSent: null, delReq: null });
+  shopCal = {};
   S.sessionToken++;
   Object.assign(reqFeed, { mode: '', from: Infinity, off: null });
   S.reqWidening = false;
@@ -2473,12 +2498,14 @@ function enterApp(cid, company) {
   }, () => removedFromCompany());
 
   startRequests(cid, S.sessionToken);
+  watchShopCalendar();
+  watchDeletionRequest(uid);
   loadMsgSeen();
   watchMsgSeen(uid);
   msgsLoaded = false;
   // If the database rules don't allow it, the Messages tab says so instead of staying quietly empty
   S.msgErr = null;
-  listen(db.ref('messages').orderByChild('company_id').equalTo(cid), 'value', onMsgs, (err) => { S.msgErr = err || true; renderMsgViews(); });
+  listen(db.ref('messages').orderByChild('company_id').equalTo(cid).limitToLast(MSG_LIMIT), 'value', onMsgs, (err) => { S.msgErr = err || true; renderMsgViews(); });
 
   let offlineTimer = null;
   listen(db.ref('.info/connected'), 'value', (snap) => {
@@ -2495,7 +2522,7 @@ function enterApp(cid, company) {
   renderAccount();
   renderContacts();
   offerDraft();
-  refreshPushToken();
+  retireOtherPush().then(refreshPushToken);
 }
 
 /* Request history feed.
@@ -2914,13 +2941,23 @@ function validateForm(d) {
       if (it && Number(it.qty) > 0 && !(parseFloat(it.weight) > 0) && !String(it.dims || '').trim()) $$('[data-field=weight],[data-field=dims]', row).forEach((x) => x.classList.add('invalid'));
     });
   }
+  // Payment Collect means the recipient pays, so dispatch needs to know who and where they are
+  if (d.payment === 'collect') {
+    const D = d.delivery;
+    if (!D.name) add('delivery-name', 'Collect means the recipient pays. Enter who it’s going to.');
+    if (!D.address) add('delivery-address', 'Collect means the recipient pays. Enter the delivery address.');
+    if (!D.phone) { optOpen.add('delivery-phone'); syncOpts(); add('delivery-phone', 'Collect means the recipient pays. Enter their phone number.'); }
+  }
+  // Editing a scheduled pickup on (or after) its day: its date can stay as it is
+  const keptDate = S.editingId && S.requests[S.editingId] && S.requests[S.editingId].scheduled_for === d.scheduled_for;
   if (d.when === 'scheduled') {
     if (!d.scheduled_for) add('sched', 'Choose the pickup date.');
-    else if (d.scheduled_for <= todayStr()) add('sched', 'Choose a date after today, or pick As soon as possible.');
-    else if (shopClosedReason(d.scheduled_for)) add('sched', `Dispatch is closed that day (${shopClosedReason(d.scheduled_for)}). Pick a weekday that isn\u2019t a holiday.`);
+    else if (d.scheduled_for <= shopTodayStr() && !keptDate) add('sched', 'Choose a date after today, or pick As soon as possible.');
+    else if (shopClosedReason(d.scheduled_for) && !keptDate) add('sched', `Dispatch is closed that day (${shopClosedReason(d.scheduled_for)}). Pick a weekday that isn\u2019t a holiday.`);
   }
   if (!d.payment) add('pay', 'Choose prepaid or collect.');
   if (d.ready_after && d.closes_at && d.closes_at <= d.ready_after) add('closes-at', 'The closing time must be after the ready time.');
+  errs.sort((a, b) => (a === b ? 0 : a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1)); // top of the form first
   validateForm.all = errs;
   return errs[0] || null;
 }
@@ -3020,7 +3057,7 @@ function restoreDraft() {
 $('#req-form').addEventListener('input', saveDraftSoon);
 $('#req-form').addEventListener('change', saveDraftSoon);
 
-function updateSchedMin() { $('#sched-date').min = localDateStr(addDays(new Date(), 1)); updateNextDayBtn(); }
+function updateSchedMin() { $('#sched-date').min = localDateStr(addDays(parseLocalDate(shopTodayStr()), 1)); updateNextDayBtn(); }
 // "Next business day: Tue, Nov 17" fills in a scheduled date in one tap
 function updateNextDayBtn() {
   const b = $('#next-day-btn');
@@ -3102,7 +3139,8 @@ function reviewNotes(d) {
     .map((leg) => `<div class="notice warn">${icon('alert')}<span>The ${leg} address wasn\u2019t matched on Google Maps. Make sure it\u2019s complete enough for a driver to find.</span></div>`).join('');
   const closed = !S.editingId && d.when === 'asap' ? afterHoursText() : '';
   const late = d.ready_after && d.ready_after >= CLOSE_AT ? `Dispatch closes at ${fmtHM(CLOSE_AT)}, before this pickup is ready. It may not be picked up until the next day.` : '';
-  return [closed, late].filter(Boolean).map((t) => `<div class="notice warn">${icon('clock')}<span>${esc(t)}</span></div>`).join('') + warn;
+  const shut = d.when === 'asap' && d.closes_at && d.closes_at <= shopNowHM() ? `The pickup place closes at ${fmtHM(d.closes_at)}, and that time has already passed today. Check the closing time, or it may not be picked up until the next business day.` : '';
+  return [closed, late, shut].filter(Boolean).map((t) => `<div class="notice warn">${icon('clock')}<span>${esc(t)}</span></div>`).join('') + warn;
 }
 const payText = (p) => (p === 'collect' ? 'Collect' : p === 'prepaid' ? 'Prepaid' : '');
 function whenText(d) { return d.when === 'scheduled' ? (d.scheduled_for ? fmtDay(d.scheduled_for) : 'Pick a date') : 'As soon as possible'; }
@@ -3147,7 +3185,7 @@ function reviewLabel() {
   return S.editingId ? 'Save changes' : 'Send request';
 }
 function stepSub() {
-  if (S.step === 2) return 'Optional. Skip it if you don\u2019t know yet.';
+  if (S.step === 2) return 'Optional, unless the recipient pays (Collect). Skip it if you don\u2019t know yet.';
   if (S.step === 4) return 'Tap a line to change it.';
   return '';
 }
@@ -3357,44 +3395,21 @@ async function sendRequest(d, btn) {
   }
   S.sending = true;
   const editing = S.editingId;
+  const idle = editing ? 'Save changes' : 'Send request';
   btn.disabled = true;
   btn.textContent = editing ? 'Saving\u2026' : 'Sending\u2026';
   const slow = setTimeout(() => { btn.textContent = 'Still sending. Check your signal\u2026'; }, 8000);
-  try {
-    const payload = buildPayload(d);
-    let refNo;
-    if (editing) {
-      const current = S.requests[editing];
-      if (!current || current.status !== 'new') throw Object.assign(new Error('locked'), { code: 'locked' });
-      refNo = current.ref_no;
-      await db.ref(`requests/${editing}`).update({ ...payload, updated_at: TS, updated_by: S.user.uid });
-    } else {
-      // Nothing is sent until the number is reserved, so giving up here is safe
-      try { refNo = await withTimeout(nextRefNo(), SEND_TIMEOUT_MS); } catch (e) {
-        if (e.code === 'app/timeout') throw Object.assign(new Error('Dispatch didn\u2019t answer. Check your signal and try again. Nothing was sent.'), { code: 'app/timeout' });
-        throw e;
-      }
-      const me = S.members[S.user.uid] || {};
-      const prof = S.userDoc.profile || {};
-      await db.ref('requests').push().set({
-        ...payload,
-        ref_no: refNo,
-        company_id: S.cid,
-        company_name: (S.company && S.company.name) || '',
-        customer_uid: S.user.uid,
-        company_created: historyKey(S.cid, Date.now()), // set to the server's time by dispatch's stampHistoryKey
-        requested_by: { name: prof.name || me.name || '', email: S.user.email || '', phone: prof.phone || me.phone || null },
-        status: 'new',
-        created_at: TS
-      });
-    }
+  let waiting = false;
+  let refNo;
+  const done = () => {
     S.lastSent = { ...d, refNo, edited: !!editing, sentAt: Date.now() };
     try { localStorage.setItem(payKey(), d.payment); } catch (e) { /* ignore */ }
     if (!editing) clearDraft();
     closeSheet();
     resetForm(true);
     showSent();
-  } catch (err) {
+  };
+  const failed = (err) => {
     console.error(err);
     if (err.code === 'locked' || (editing && isPermissionError(err))) {
       closeSheet();
@@ -3403,13 +3418,71 @@ async function sendRequest(d, btn) {
     } else {
       toast(err.code === 'app/timeout' ? err.message : 'Your request wasn\u2019t sent. ' + friendlyError(err), 'error', 7000);
       btn.disabled = false;
-      btn.textContent = editing ? 'Save changes' : 'Send request';
+      btn.textContent = idle;
     }
+  };
+  /* The save is still queued when the signal drops: the database sends it by itself once the phone is back
+     online, as long as the app stays open. Say so, block a second send, and finish when it lands. */
+  const wait = (saving) => {
+    waiting = true;
+    S.sendWaiting = true;
+    btn.textContent = 'Waiting for signal\u2026';
+    toast('No signal right now. Keep the app open: it finishes sending by itself when the signal is back. Don\u2019t send it again.', 'error', 12000);
+    saving.then(() => {
+      S.sendWaiting = false; S.sending = false;
+      done();
+      toast(editing ? `Changes to #${refNo} reached dispatch.` : `Request #${refNo} reached dispatch.`, 'ok', 6000);
+    }, (err) => { S.sendWaiting = false; S.sending = false; failed(err); });
+  };
+  try {
+    const payload = buildPayload(d);
+    if (editing) {
+      const current = S.requests[editing];
+      if (!current || current.status !== 'new') throw Object.assign(new Error('locked'), { code: 'locked' });
+      refNo = current.ref_no;
+      const saving = db.ref(`requests/${editing}`).update({ ...payload, updated_at: TS, updated_by: S.user.uid });
+      try { await withTimeout(saving, SEND_TIMEOUT_MS); } catch (e) { if (e.code === 'app/timeout') { wait(saving); return; } throw e; }
+    } else {
+      // Nothing is sent until the number is reserved, so giving up here is safe
+      const reserve = async () => {
+        try { return await withTimeout(nextRefNo(), SEND_TIMEOUT_MS); } catch (e) {
+          if (e.code === 'app/timeout') throw Object.assign(new Error('Dispatch didn\u2019t answer. Check your signal and try again. Nothing was sent.'), { code: 'app/timeout' });
+          throw e;
+        }
+      };
+      refNo = await reserve();
+      const me = S.members[S.user.uid] || {};
+      const prof = S.userDoc.profile || {};
+      const rec = {
+        ...payload,
+        company_id: S.cid,
+        company_name: (S.company && S.company.name) || '',
+        customer_uid: S.user.uid,
+        company_created: historyKey(S.cid, Date.now()), // set to the server's time by dispatch's stampHistoryKey
+        requested_by: { name: prof.name || me.name || '', email: S.user.email || '', phone: prof.phone || me.phone || null },
+        status: 'new',
+        created_at: TS
+      };
+      // The database takes only the number just reserved. If another request took the next number in between, reserve again.
+      for (let attempt = 0; ; attempt++) {
+        const saving = db.ref('requests').push().set({ ...rec, ref_no: refNo });
+        try { await withTimeout(saving, SEND_TIMEOUT_MS); break; } catch (e) {
+          if (e.code === 'app/timeout') { wait(saving); return; }
+          if (isPermissionError(e) && attempt < 3) { refNo = await reserve(); continue; }
+          throw e;
+        }
+      }
+    }
+    done();
+  } catch (err) {
+    failed(err);
   } finally {
     clearTimeout(slow);
-    S.sending = false;
+    if (!waiting) S.sending = false;
   }
 }
+// Closing the app while a send waits for signal would lose it
+window.addEventListener('beforeunload', (e) => { if (S.sendWaiting) { e.preventDefault(); e.returnValue = ''; } });
 
 function showSent() {
   const d = S.lastSent;
@@ -3655,6 +3728,7 @@ function acUse(leg, id) {
   const c = S.contacts[id];
   if (!c) return;
   fillLeg(leg, c);
+  addContactNotes(leg, c);
   acHide(leg);
   const inp = $(`#${leg}-name`);
   if (inp) inp.blur(); // keyboard away: the whole stop is filled in
@@ -3678,10 +3752,20 @@ document.addEventListener('focusout', (e) => { const leg = e.target.dataset && e
 // A tap on a suggestion must not blur the name box first (that would hide the list before the tap lands)
 document.addEventListener('pointerdown', (e) => { if (e.target.closest && e.target.closest('.ac-list')) e.preventDefault(); });
 
+// A contact's standing notes (dock door, gate code) go into the driver notes, once
+function addContactNotes(leg, c) {
+  const n = String((c && c.notes) || '').trim();
+  const box = $('#notes');
+  if (!n || !box || box.value.includes(n)) return;
+  box.value = `${box.value.trim() ? `${box.value.trim()}\n` : ''}${leg === 'pickup' ? 'Pickup' : 'Delivery'}: ${n}`.slice(0, 1000);
+  saveDraftSoon();
+  sideSoon();
+}
 function useContact(id) {
   const c = S.contacts[id];
   if (!c || !pickerLeg) return;
   fillLeg(pickerLeg, c);
+  addContactNotes(pickerLeg, c);
   closeSheet();
   const leg = pickerLeg;
   setTimeout(() => flashPastedFields(`.leg[data-leg="${leg}"]`), 220); // after the sheet has mostly slid away
@@ -3693,6 +3777,7 @@ async function saveContactData(c, id) {
   if (c.city) data.city = c.city;
   if (c.phone) data.phone = c.phone;
   if (c.email) data.email = c.email;
+  if (c.notes) data.notes = String(c.notes).slice(0, 300);
   if (c.lat != null) { data.lat = c.lat; data.lng = c.lng; }
   await ref.set(data);
 }
@@ -3700,6 +3785,7 @@ async function saveLegToContacts(leg) {
   const L = readLeg(leg);
   if (!L.name || !L.address) { toast('Fill in the name and address first.', 'error'); return; }
   const existing = Object.entries(S.contacts || {}).find(([, c]) => contactKey(c) === contactKey(L));
+  if (existing && existing[1].notes) L.notes = existing[1].notes; // keep the contact's driver notes
   try {
     await saveContactData(L, existing ? existing[0] : null);
     toast(existing ? `${L.name} updated in contacts.` : `${L.name} saved to contacts.`, 'ok');
@@ -3730,7 +3816,7 @@ function parseCsv(text) {
 }
 // Which column holds what, from the header row. Without a recognisable header: name, address, phone, email.
 function csvColumns(head) {
-  const tests = [['email', /e-?mail/], ['phone', /phone|tel|mobile|cell/], ['city', /city|town/], ['province', /prov|state/], ['postal', /postal|zip/],
+  const tests = [['notes', /note|instruction|comment/], ['email', /e-?mail/], ['phone', /phone|tel|mobile|cell/], ['city', /city|town/], ['province', /prov|state/], ['postal', /postal|zip/],
     ['address', /address|street|addr/], ['name', /name|business|company|customer|contact|shipper|consignee/]];
   const cols = {};
   head.forEach((h, i) => {
@@ -3762,6 +3848,8 @@ function contactsFromCsv(text) {
     if (d.length === 10 || (d.length === 11 && d[0] === '1')) c.phone = formatPhone(d.slice(-10));
     const em = get('email');
     if (em && validEmail(em)) c.email = em.slice(0, 120);
+    const nt = get('notes');
+    if (nt) c.notes = nt.slice(0, 300);
     const k = contactKey(c);
     if (seen.has(k)) { out.dupes++; return; }
     seen.add(k);
@@ -3827,6 +3915,7 @@ function openContactEditor(id) {
         <div class="field"><label for="ct-phone">Phone</label><input id="ct-phone" type="tel" inputmode="tel" data-phone value="${esc(c.phone ? formatPhone(c.phone) : '')}"></div>
         <div class="field"><label for="ct-email">Email</label><input id="ct-email" type="email" inputmode="email" maxlength="120" value="${esc(c.email)}"></div>
       </div>
+      <div class="field"><label for="ct-notes">Notes for the driver <span class="muted">(optional)</span></label><textarea id="ct-notes" maxlength="300" rows="2" placeholder="e.g. dock door 3, buzz 104, closes at 4">${esc(c.notes || '')}</textarea><p class="hint">Added to the driver notes each time you use this contact.</p></div>
       <button class="btn btn-primary block" type="submit">${id ? 'Save contact' : 'Add contact'}</button>
       ${id ? `<div class="btn-row" style="margin-top:10px">
         <button class="btn btn-secondary" type="button" data-use-as="pickup">Use as pickup</button>
@@ -3854,7 +3943,7 @@ function openContactEditor(id) {
     const read = () => {
       const address = addr.value.trim();
       const g = contactDraftGeo && contactDraftGeo.address === address ? contactDraftGeo : null;
-      const o = { name: $('#ct-name', body).value.trim(), address, phone: $('#ct-phone', body).value.trim(), email: $('#ct-email', body).value.trim(), verified: !!g };
+      const o = { name: $('#ct-name', body).value.trim(), address, phone: $('#ct-phone', body).value.trim(), email: $('#ct-email', body).value.trim(), notes: $('#ct-notes', body).value.trim().slice(0, 300), verified: !!g };
       if (g) { o.city = g.city; o.lat = g.lat; o.lng = g.lng; }
       return o;
     };
@@ -3875,13 +3964,15 @@ function openContactEditor(id) {
       const leg = b.dataset.useAs;
       closeSheet();
       if (S.editingId === null && !$('#sent-wrap').hidden) resetForm();
-      fillLeg(leg, read());
+      const picked = read();
+      fillLeg(leg, picked);
+      addContactNotes(leg, picked);
       switchTab('new');
     }));
     const del = $('#ct-delete', body);
     if (del) del.addEventListener('click', async () => {
       const name = c.name;
-      if (!(await confirmSheet({ title: `Delete ${esc(name)}?`, body: 'It will be removed for everyone in your company.', ok: 'Delete', danger: true }))) return;
+      if (!(await confirmSheet({ title: `Delete ${name}?`, body: 'It will be removed for everyone in your company.', ok: 'Delete', danger: true }))) return;
       const saved = { ...c };
       try {
         await db.ref(`companies/${S.cid}/address_book/${id}`).remove();
@@ -4192,8 +4283,8 @@ function exportCsv() {
 function exportPdf() {
   const list = filteredRequests();
   const { label } = periodRange();
-  const counts = { prepaid: 0, collect: 0, cancelled: 0 };
-  list.forEach((r) => { if (r.status === 'cancelled') counts.cancelled++; else counts[r.payment === 'collect' ? 'collect' : 'prepaid']++; });
+  const counts = { prepaid: 0, collect: 0, cancelled: 0, removed: 0 };
+  list.forEach((r) => { if (r.status === 'cancelled' || r.status === 'removed') counts[r.status]++; else counts[r.payment === 'collect' ? 'collect' : 'prepaid']++; });
   const leg = (L) => (L && (L.name || L.address) ? `<b>${esc(L.name)}</b><br>${esc(L.address)}` : 'Not specified');
   $('#print-area').innerHTML = `
     <h1>E&amp;C Courier \u2013 Request statement</h1>
@@ -4204,7 +4295,7 @@ function exportPdf() {
       <td>${leg(r.pickup)}</td><td>${leg(r.delivery)}</td><td>${esc([r.items_text, r.item_details].filter(Boolean).join(', '))}</td>
       <td>${r.payment === 'collect' ? 'Collect' : 'Prepaid'}</td><td>${esc(r.po || '')}</td><td>${statusWord(r)}</td></tr>`).join('')}
     </tbody></table>
-    <p class="ptotals">${list.length} requests: ${counts.prepaid} prepaid, ${counts.collect} collect, ${counts.cancelled} cancelled.</p>`;
+    <p class="ptotals">${list.length} requests: ${counts.prepaid} prepaid, ${counts.collect} collect, ${counts.cancelled} cancelled${counts.removed ? `, ${counts.removed} removed by dispatch` : ''}.</p>`;
   closeSheet();
   setTimeout(() => window.print(), 250);
 }
@@ -4217,6 +4308,15 @@ window.addEventListener('afterprint', () => { $('#print-area').innerHTML = ''; }
    pickup is removed, and when dispatch writes. sw.js shows the alert.
    ========================================================= */
 const pushKeyName = () => `ec_push_${S.user ? S.user.uid : ''}`;
+// Whose alerts this phone's token belongs to. Someone else signing in here retires it, so the last person's alerts stop.
+const PUSH_OWNER = 'ec_push_owner';
+function retireOtherPush() {
+  let owner = '';
+  try { owner = localStorage.getItem(PUSH_OWNER) || ''; } catch (e) { return Promise.resolve(); }
+  if (!owner || !S.user || owner === S.user.uid || pushState() === 'off') return Promise.resolve();
+  try { localStorage.removeItem(`ec_push_${owner}`); localStorage.removeItem(PUSH_OWNER); } catch (e) { /* ignore */ }
+  return withTimeout(pushMessaging().deleteToken(), 8000).catch(() => {});
+}
 let pushApp = null;
 function pushMessaging() {
   if (!pushApp) pushApp = firebase.initializeApp({ ...firebase.app().options, appId: PUSH_APP_ID }, 'push');
@@ -4241,7 +4341,7 @@ async function savePushToken() {
   try { key = localStorage.getItem(pushKeyName()) || ''; } catch (e) { key = ''; }
   if (!key) key = newDeviceKey();
   await db.ref(`customer_push/${S.user.uid}/${key}`).set({ token, updated_at: TS, device: navigator.userAgent.slice(0, 200) });
-  try { localStorage.setItem(pushKeyName(), key); } catch (e) { /* ignore */ }
+  try { localStorage.setItem(pushKeyName(), key); localStorage.setItem(PUSH_OWNER, S.user.uid); } catch (e) { /* ignore */ }
 }
 async function enablePush(btn) {
   if (btn) btn.disabled = true;
@@ -4263,7 +4363,7 @@ async function enablePush(btn) {
 }
 async function disablePush() {
   let key = '';
-  try { key = localStorage.getItem(pushKeyName()) || ''; localStorage.removeItem(pushKeyName()); } catch (e) { key = ''; }
+  try { key = localStorage.getItem(pushKeyName()) || ''; localStorage.removeItem(pushKeyName()); localStorage.removeItem(PUSH_OWNER); } catch (e) { key = ''; }
   try {
     if (key) await db.ref(`customer_push/${S.user.uid}/${key}`).remove();
     await pushMessaging().deleteToken().catch(() => {});
@@ -4352,7 +4452,7 @@ function renderAccount() {
     <div class="card">
       <div class="card-head"><h2>Contact E&amp;C</h2></div>
       ${DISPATCH_PHONE ? `<div class="kv"><span>Dispatch</span><span><a href="tel:${esc(phoneDigits(DISPATCH_PHONE))}">${esc(formatPhone(DISPATCH_PHONE))}</a></span></div>` : ''}
-      <div class="kv"><span>Hours</span><span>${HOURS_TEXT}</span></div>
+      <div class="kv"><span>Hours</span><span>Weekdays, ${HOURS_TEXT}</span></div>
       <div class="contact-btns">${dispatchCall()}<button class="btn btn-secondary sm" type="button" data-nav="messages">${icon('chat', 'sm')}Message</button></div>
     </div>
     ${pushCard()}
@@ -4374,11 +4474,39 @@ function renderAccount() {
         <button class="btn btn-secondary block" type="button" data-act="reset-password">Send a password reset link</button>` : '<p class="small muted">You sign in with Google.</p>'}
         <button class="btn btn-danger block" type="button" data-act="signout-ask">Sign out</button>
       </div>
+      ${deletionHtml()}
     </div>
     <p class="footer-links"><a href="${PRIVACY_URL}" target="_blank" rel="noopener">Privacy policy and terms</a><br>Version ${APP_VERSION}</p>`;
   $$('input[name=theme]', box).forEach((r) => r.addEventListener('change', () => applyTheme(r.value, true)));
 }
 
+/* Account deletion: the customer asks with a button (deletion_requests/<uid>), and E&C staff delete it
+   from the dispatch app's list. Until then they can take the request back. */
+S.delReq = null;
+function watchDeletionRequest(uid) {
+  listen(db.ref(`deletion_requests/${uid}`), 'value', (snap) => { S.delReq = snap.val(); if (S.tab === 'account') renderAccount(); }, () => { S.delReq = null; });
+}
+function deletionHtml() {
+  if (S.delReq) {
+    return `<div class="notice warn" style="margin-top:12px">${icon('alert')}<span>You asked us to delete your account on ${esc(fmtDateTime(S.delReq.at))}. E&amp;C will delete it and email you at ${esc(S.delReq.email || '')}. <button class="link-btn" type="button" data-act="delete-cancel">Cancel the request</button></span></div>`;
+  }
+  return '<button class="link-btn" type="button" data-act="delete-ask" style="margin-top:12px">Ask to delete my account</button>';
+}
+async function askDeletion() {
+  if (!(await confirmSheet({ title: 'Ask to delete your account?', body: 'E&amp;C staff will delete your login and your personal details, then email you. Pickups you already sent stay in your company\u2019s history and E&amp;C\u2019s records. You can cancel the request until it\u2019s done.', ok: 'Ask to delete', danger: true }))) return;
+  const prof = S.userDoc.profile || {};
+  try {
+    await withTimeout(db.ref(`deletion_requests/${S.user.uid}`).set({
+      at: TS, email: S.user.email || '', name: myName().slice(0, 80), phone: prof.phone || null,
+      company_id: S.cid || null, company_name: ((S.company && S.company.name) || '').slice(0, 100) || null
+    }), SEND_TIMEOUT_MS);
+    toast('Request sent. E&C will email you when your account is deleted.', 'ok', 6000);
+  } catch (err) { toast(err.code === 'app/timeout' ? 'No signal. Try again when you\u2019re back online.' : friendlyError(err), 'error', 6000); }
+}
+async function cancelDeletion() {
+  try { await db.ref(`deletion_requests/${S.user.uid}`).remove(); toast('Deletion request cancelled.', 'ok'); }
+  catch (err) { toast(friendlyError(err), 'error'); }
+}
 function openProfileEditor() {
   const prof = S.userDoc.profile || {};
   const me = S.members[S.user.uid] || {};
@@ -4482,7 +4610,7 @@ async function copyText(text, msg) {
 }
 async function removeMember(uid) {
   const m = S.members[uid] || {};
-  if (!(await confirmSheet({ title: `Remove ${esc(m.name || m.email)}?`, body: 'They lose access to your company\u2019s requests and contacts. Your join code changes too, so the old one can\u2019t be used to rejoin. Give the new code to anyone still joining.', ok: 'Remove', danger: true }))) return;
+  if (!(await confirmSheet({ title: `Remove ${m.name || m.email}?`, body: 'They lose access to your company\u2019s requests and contacts. Your join code changes too, so the old one can\u2019t be used to rejoin. Give the new code to anyone still joining.', ok: 'Remove', danger: true }))) return;
   try { await db.ref(`companies/${S.cid}/members/${uid}`).remove(); }
   catch (err) { toast(friendlyError(err), 'error'); return; }
   try { const code = await rotateJoinCode(); toast(`Removed. New join code: ${prettyCode(code)}`, 'ok', 6000); }
@@ -4666,6 +4794,8 @@ document.addEventListener('click', async (e) => {
     case 'leave-company': leaveCompany(); break;
     case 'change-email': openChangeEmail(); break;
     case 'reset-password': resetPassword(); break;
+    case 'delete-ask': askDeletion(); break;
+    case 'delete-cancel': cancelDeletion(); break;
     case 'install': installApp(); break;
     case 'toggle-pw': {
       const input = document.getElementById(el.dataset.for);
@@ -4744,7 +4874,7 @@ renderItems();
       navigator.serviceWorker.addEventListener('controllerchange', () => {
         if (!hadController || reloaded) return;
         let busy = false;
-        try { busy = (typeof formIsDirty === 'function' && formIsDirty()) || (typeof layers !== 'undefined' && layers.length > 0); } catch (e) { busy = false; }
+        try { busy = (typeof formIsDirty === 'function' && formIsDirty()) || (typeof layers !== 'undefined' && layers.length > 0) || S.sending; } catch (e) { busy = false; }
         if (busy) return;
         reloaded = true;
         window.location.reload();
@@ -4754,6 +4884,29 @@ renderItems();
       }).catch((err) => console.log('Service worker registration failed', err));
     });
   }
+  /* An app left open in the background (phones keep it for days) checks whether a newer version was published
+     each time it comes back to the front, and reloads into it, but never while something is half done:
+     a filled-in form, an open sheet, or a send in progress. Then it waits for the next time. */
+  (function updateCheck() {
+    let base = null, pending = false, last = 0;
+    const stamp = () => fetch('index.html', { method: 'HEAD', cache: 'no-store' })
+      .then((r) => (r.ok ? r.headers.get('etag') || r.headers.get('last-modified') || '' : '')).catch(() => '');
+    const busy = () => { try { return formIsDirty() || layers.length > 0 || S.sending; } catch (e) { return true; } };
+    const check = async () => {
+      if (Date.now() - last < 5 * 60000) return;
+      last = Date.now();
+      const v = await stamp();
+      if (!v) return;
+      if (base === null) { base = v; return; }
+      if (v !== base) pending = true;
+      if (pending && !busy()) location.reload();
+    };
+    setTimeout(check, 4000);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) return;
+      if (pending && !busy()) location.reload(); else check();
+    });
+  })();
 </script>
 </body>
 </html>
