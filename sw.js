@@ -42,12 +42,12 @@ self.addEventListener('notificationclick', (event) => {
 });
 
 // Updated cache name to force the browser to recognize a change
-const cacheName = 'eandc-pickup-cache-v6';
+const cacheName = 'eandc-pickup-cache-v7';
 
 // Files to cache
 const assetsToCache = [
   './',
-  './customer.html',   // Ensures your form is cached
+  './index.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',

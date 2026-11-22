@@ -27,6 +27,7 @@
     constructor(path, q) { this.path = parts(path).join('/'); this.q = q || {}; this.key = parts(path).slice(-1)[0] || null; }
     child(p) { return new Ref(`${this.path}/${p}`); }
     orderByChild(c) { return new Ref(this.path, Object.assign({}, this.q, { by: c })); }
+    orderByKey() { return new Ref(this.path, Object.assign({}, this.q, { by: '$key' })); }
     equalTo(v) { return new Ref(this.path, Object.assign({}, this.q, { eq: v })); }
     startAt(v) { return new Ref(this.path, Object.assign({}, this.q, { start: v })); }
     endAt(v) { return new Ref(this.path, Object.assign({}, this.q, { end: v })); }
@@ -35,14 +36,15 @@
       let v = get(this.path);
       const q = this.q;
       if (!q.by || v == null || typeof v !== 'object') return v;
-      let rows = Object.entries(v).filter(([, r]) => {
-        const x = r && r[q.by];
+      let rows = Object.entries(v).filter(([k, r]) => {
+        const x = q.by === '$key' ? k : r && r[q.by];
         if ('eq' in q && x !== q.eq) return false;
         if ('start' in q && !(x != null && x >= q.start)) return false;
         if ('end' in q && !(x != null && x <= q.end)) return false;
         return x != null || !('start' in q || 'end' in q);
       });
-      rows.sort((a, b) => (a[1][q.by] > b[1][q.by] ? 1 : -1));
+      const sortKey = (e) => (q.by === '$key' ? e[0] : e[1][q.by]);
+      rows.sort((a, b) => (sortKey(a) > sortKey(b) ? 1 : sortKey(a) < sortKey(b) ? -1 : (a[0] > b[0] ? 1 : -1)));
       if (q.last) rows = rows.slice(-q.last);
       return rows.length ? Object.fromEntries(rows) : null;
     }
