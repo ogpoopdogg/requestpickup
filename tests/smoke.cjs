@@ -370,6 +370,12 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
       await pg.fill('#delivery-name', 'Lake Clinic');
       assert.strictEqual((await pg.textContent('#btn-review')).trim(), 'Next');
       await pg.fill('#delivery-name', '');
+      assert.strictEqual((await pg.textContent('#btn-review')).trim(), 'Skip', 'back to Skip once cleared');
+      // Picking a saved contact fills the stop without typing: still Next
+      await pg.evaluate(() => { pickerLeg = 'delivery'; useContact('a1'); });
+      assert.strictEqual((await pg.textContent('#btn-review')).trim(), 'Next', 'a picked contact counts as filled in');
+      for (const f of ['name', 'address']) await pg.fill(`#delivery-${f}`, '');
+      assert.strictEqual((await pg.textContent('#btn-review')).trim(), 'Skip');
       await pg.click('#btn-review');
       // Items: tap the type; a weight or a size is required
       assert.strictEqual((await pg.textContent('#guide-q')).trim(), 'What are we moving, and when?');
