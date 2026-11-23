@@ -2675,6 +2675,7 @@ function stepQty(btn, delta) {
 function setLegGeo(leg, geo) {
   S.legGeo[leg] = geo;
   refreshAddressHint(leg);
+  refreshStepBtn(); // a contact, recent stop, map pin or address suggestion fills the stop without an input event
   saveDraftSoon();
 }
 function legGeo(leg) {
@@ -3179,6 +3180,8 @@ const isGuided = () => GUIDE_MQ.matches;
 const stepsOf = (el) => el.dataset.step.split(' ').map(Number);
 function stepOfField(wrap) { const s = wrap && wrap.closest('#req-form [data-step]'); return s ? Math.min(...stepsOf(s)) : STEPS; }
 function legStarted(leg) { return ['name', 'address', 'phone', 'email'].some((f) => $(`#${leg}-${f}`).value.trim()); }
+// Phones: the delivery step's button reads Skip until anything is entered there, then Next
+function refreshStepBtn() { if (isGuided()) $('#btn-review').textContent = reviewLabel(); }
 function reviewLabel() {
   if (!isGuided()) return S.editingId ? 'Review changes' : 'Review request';
   if (S.step < STEPS) return S.step === 2 && !legStarted('delivery') ? 'Skip' : 'Next';
@@ -3313,7 +3316,7 @@ function useRecent(leg, i) {
   const empty = !$(`#${leg}-name`).value.trim() && !$(`#${leg}-address`).value.trim();
   if (box && (box.hidden === empty)) renderRecent();
 })));
-$('#req-form').addEventListener('input', () => { if (isGuided()) $('#btn-review').textContent = reviewLabel(); sideSoon(); });
+$('#req-form').addEventListener('input', () => { refreshStepBtn(); sideSoon(); });
 $('#req-form').addEventListener('change', () => sideSoon());
 
 /* Computers: the menu sits in the top bar, and a live summary with the send button sits beside the form */
