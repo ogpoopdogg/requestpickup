@@ -1044,7 +1044,7 @@ body.desk main.app-main{padding-bottom:40px}
   <div class="auth">
     <div class="brand"><span class="logo-tile"><img src="icon2.png" alt="" onerror="this.remove()"></span><div class="wordmark">E&amp;C <b>Courier</b></div></div>
     <h1>Set up your individual or company profile.</h1>
-    <p class="lead">Everyone that is logged into the same profile shares the same request history and contacts, create an individual or company profile.</p>
+    <p class="lead">Everyone signed in to the same profile shares its request history and contacts. Make one for yourself or your company, or join one with a code.</p>
     <div class="notice warn" id="onboard-notice" hidden></div>
     <div class="auth-card">
     <div class="seg" role="radiogroup" aria-label="Company setup" style="margin-bottom:18px">
@@ -1788,6 +1788,8 @@ document.addEventListener('keydown', (e) => {
   e.preventDefault();
   e.target.form.requestSubmit();
 });
+// A message half typed in Messages: an update waits, so the words aren't lost
+function msgDraftOpen() { return $$('form[data-msg-form] textarea').some((t) => t.value.trim()); }
 let msgSending = false;
 document.addEventListener('submit', async (e) => {
   const form = e.target.closest && e.target.closest('form[data-msg-form]');
@@ -1968,11 +1970,13 @@ function closeSheet() {
 }
 const sheetIsOpen = () => layers.includes('sheet');
 
+let popForLayer = false; // this back step was a sheet or the map closing, not a step of the guided form
 window.addEventListener('popstate', () => {
-  if (ignorePops > 0) { ignorePops--; return; }
+  popForLayer = false;
+  if (ignorePops > 0) { ignorePops--; popForLayer = true; return; }
   const top = layers[layers.length - 1];
-  if (top === 'map') _closeMapNow();
-  else if (top === 'sheet') _closeSheetNow();
+  if (top === 'map') { _closeMapNow(); popForLayer = true; }
+  else if (top === 'sheet') { _closeSheetNow(); popForLayer = true; }
 });
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape' || !layers.length) return;
@@ -3228,7 +3232,7 @@ function stepBack() {
 }
 // The phone's back button goes to the step before, while one of the form's steps is showing
 window.addEventListener('popstate', () => {
-  if (layers.length || !isGuided() || S.tab !== 'new' || !$('#sent-wrap').hidden) return;
+  if (popForLayer || layers.length || !isGuided() || S.tab !== 'new' || !$('#sent-wrap').hidden) return;
   const t = (history.state && history.state.gstep) || 1;
   if (t < S.step) setStep(t, { push: false });
 });
@@ -4763,12 +4767,15 @@ document.addEventListener('click', async (e) => {
     case 'repeat': {
       const r = S.requests[id];
       if (!r) break;
-      if (el.id === 'new-repeat-latest' && formIsDirty() && !(await confirmSheet({ title: 'Replace what you\u2019ve entered?', body: 'Your most recent request will be filled in, replacing what\u2019s there now.', ok: 'Fill it in' }))) break;
+      if (!S.editingId && $('#sent-wrap').hidden && formIsDirty() && !(await confirmSheet({ title: 'Replace what you\u2019ve entered?', body: `Request #${esc(r.ref_no)} will be filled in, replacing the pickup you started.`, ok: 'Fill it in' }))) break;
       closeSheet();
       repeatRequest(r);
       break;
     }
-    case 'edit': startEdit(id); break;
+    case 'edit':
+      if (!S.editingId && $('#sent-wrap').hidden && formIsDirty() && !(await confirmSheet({ title: 'Replace what you\u2019ve entered?', body: 'The pickup you started on New will be replaced by this request so you can edit it.', ok: 'Edit this one', cancel: 'Keep mine' }))) break;
+      startEdit(id);
+      break;
     case 'cancel-req': cancelRequest(id); break;
     case 'hist-more': S.hist.limit += 50; renderHistory(); break;
     case 'hist-reset':
@@ -4877,7 +4884,7 @@ renderItems();
       navigator.serviceWorker.addEventListener('controllerchange', () => {
         if (!hadController || reloaded) return;
         let busy = false;
-        try { busy = (typeof formIsDirty === 'function' && formIsDirty()) || (typeof layers !== 'undefined' && layers.length > 0) || S.sending; } catch (e) { busy = false; }
+        try { busy = (typeof formIsDirty === 'function' && formIsDirty()) || (typeof layers !== 'undefined' && layers.length > 0) || S.sending || msgDraftOpen(); } catch (e) { busy = false; }
         if (busy) return;
         reloaded = true;
         window.location.reload();
@@ -4894,7 +4901,7 @@ renderItems();
     let base = null, pending = false, last = 0;
     const stamp = () => fetch('index.html', { method: 'HEAD', cache: 'no-store' })
       .then((r) => (r.ok ? r.headers.get('etag') || r.headers.get('last-modified') || '' : '')).catch(() => '');
-    const busy = () => { try { return formIsDirty() || layers.length > 0 || S.sending; } catch (e) { return true; } };
+    const busy = () => { try { return formIsDirty() || layers.length > 0 || S.sending || msgDraftOpen(); } catch (e) { return true; } };
     const check = async () => {
       if (Date.now() - last < 5 * 60000) return;
       last = Date.now();
