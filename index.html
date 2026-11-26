@@ -679,6 +679,7 @@ html{scroll-padding-bottom:calc(var(--nav-h) + var(--safe-b) + 84px)}
 .chip.msg{background:#e8f1ff;border-color:#9cc0ff;color:#0b4fb3;text-transform:none;letter-spacing:0;font-size:12px}
 [data-theme=dark] .chip.msg{background:rgba(80,140,255,.16);border-color:rgba(120,170,255,.4);color:#9cc0ff}
 /* ---------- Home-screen tip after a send ---------- */
+.notice .notice-btn{display:flex;margin-top:8px}
 .home-tip{display:flex;align-items:center;flex-wrap:wrap;gap:10px;background:var(--yellow-soft);border:1px solid var(--yellow-lo);border-radius:var(--r-lg);padding:10px 12px;margin-bottom:12px}
 .home-tip .cta-ic{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--yellow);color:#000}
 .home-tip .grow{flex:1 1 180px;min-width:0;line-height:1.3}
@@ -834,7 +835,7 @@ html{scroll-padding-bottom:calc(var(--nav-h) + var(--safe-b) + 84px)}
 #req-form.guided .leg[data-leg=delivery]{background:var(--surface)}
 #req-form.guided .leg-head h2 .node,#req-form.guided .block>h2 .sec-ic{display:none}
 #req-form.guided .leg-head h2,#req-form.guided .block>h2{font-size:17px}
-#req-form.guided .leg-recent:not([hidden]){display:block;margin:4px 0 10px;padding-top:12px;border-top:1px solid var(--line)}
+#req-form.guided .leg-recent:not([hidden]){display:block;margin:2px 0 14px;padding-bottom:12px;border-bottom:1px solid var(--line)}
 .leg-recent .label{margin-bottom:6px}
 .recent-stop{display:flex;align-items:center;gap:12px;width:100%;min-height:60px;margin-bottom:6px;padding:8px 10px 8px 8px;border:1.5px solid var(--line);border-radius:var(--r-md);background:var(--surface-2);color:var(--ink);font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .recent-stop:hover,.recent-stop:active{border-color:var(--yellow-lo);background:var(--yellow-soft)}
@@ -1098,6 +1099,7 @@ body.desk main.app-main{padding-bottom:40px}
           <section class="route" aria-label="Pickup and delivery" data-step="1 2">
             <div class="leg" data-leg="pickup" data-step="1">
               <div class="leg-head"><h2><span class="node" aria-hidden="true"><svg class="i"><use href="#i-box"/></svg></span>Pickup from</h2><button class="link-btn" type="button" data-act="pick-contact" data-leg="pickup"><svg class="i sm"><use href="#i-contacts"/></svg>Contacts</button></div>
+              <div class="leg-recent" data-recent="pickup" hidden></div>
               <div class="field"><label for="pickup-name">Business or contact name <span class="req">*</span></label><div class="ac"><input id="pickup-name" maxlength="120" placeholder="Who are we picking up from?" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="pickup-name-ac" data-ac="pickup"><div class="ac-list" id="pickup-name-ac" role="listbox" aria-label="Your contacts" hidden></div></div></div>
               <div class="field"><label for="pickup-address">Address <span class="req">*</span></label><div class="with-btn"><input id="pickup-address" maxlength="250" placeholder="Search address or business"><button class="icon-btn" type="button" data-act="map" data-leg="pickup" aria-label="Pick pickup location on map"><svg class="i"><use href="#i-pin"/></svg></button></div><p class="hint" id="pickup-address-hint"></p></div>
               <div class="two">
@@ -1105,11 +1107,11 @@ body.desk main.app-main{padding-bottom:40px}
                 <div class="field" data-opt="pickup-email" hidden><label for="pickup-email">Email</label><input id="pickup-email" type="email" inputmode="email" maxlength="120" placeholder="name@company.ca"></div>
               </div>
               <div class="leg-foot"><span class="opt-btns"><button class="opt-btn" type="button" data-act="show-opt" data-opt="pickup-phone">+ Phone</button><button class="opt-btn" type="button" data-act="show-opt" data-opt="pickup-email">+ Email</button></span><button class="link-btn" type="button" data-act="save-leg" data-leg="pickup"><svg class="i sm"><use href="#i-bookmark"/></svg>Save to contacts</button></div>
-              <div class="leg-recent" data-recent="pickup" hidden></div>
             </div>
             <div class="route-mid"><button class="swap" type="button" data-act="swap" aria-label="Swap pickup and delivery" title="Swap pickup and delivery"><svg class="i"><use href="#i-swap"/></svg></button></div>
             <div class="leg" data-leg="delivery" data-step="2">
               <div class="leg-head"><h2><span class="node" aria-hidden="true"><svg class="i"><use href="#i-pin"/></svg></span>Deliver to <span class="opt-tag">optional</span></h2><button class="link-btn" type="button" data-act="pick-contact" data-leg="delivery"><svg class="i sm"><use href="#i-contacts"/></svg>Contacts</button></div>
+              <div class="leg-recent" data-recent="delivery" hidden></div>
               <div class="field"><label for="delivery-name">Business or contact name</label><div class="ac"><input id="delivery-name" maxlength="120" placeholder="Who is it going to?" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="delivery-name-ac" data-ac="delivery"><div class="ac-list" id="delivery-name-ac" role="listbox" aria-label="Your contacts" hidden></div></div></div>
               <div class="field"><label for="delivery-address">Address</label><div class="with-btn"><input id="delivery-address" maxlength="250" placeholder="Search address or business"><button class="icon-btn" type="button" data-act="map" data-leg="delivery" aria-label="Pick delivery location on map"><svg class="i"><use href="#i-pin"/></svg></button></div><p class="hint" id="delivery-address-hint"></p></div>
               <div class="two">
@@ -1117,7 +1119,6 @@ body.desk main.app-main{padding-bottom:40px}
                 <div class="field" data-opt="delivery-email" hidden><label for="delivery-email">Email</label><input id="delivery-email" type="email" inputmode="email" maxlength="120" placeholder="name@company.ca"></div>
               </div>
               <div class="leg-foot"><span class="opt-btns"><button class="opt-btn" type="button" data-act="show-opt" data-opt="delivery-phone">+ Phone</button><button class="opt-btn" type="button" data-act="show-opt" data-opt="delivery-email">+ Email</button></span><button class="link-btn" type="button" data-act="save-leg" data-leg="delivery"><svg class="i sm"><use href="#i-bookmark"/></svg>Save to contacts</button></div>
-              <div class="leg-recent" data-recent="delivery" hidden></div>
             </div>
           </section>
 
@@ -1531,6 +1532,8 @@ function afterHoursText() {
   if (hm >= CLOSE_AT) return `Dispatch is closed for the day (open ${HOURS_TEXT}). ${when()}`;
   return '';
 }
+// Dispatch won't open again today (a closed day, or after closing time), as opposed to not open yet this morning
+function closedRestOfToday() { return !!shopClosedReason(shopTodayStr()) || shopNowHM() >= CLOSE_AT; }
 const dispatchCall = () => (DISPATCH_PHONE ? `<span class="call-row"><a class="btn btn-secondary sm" href="tel:${esc(phoneDigits(DISPATCH_PHONE))}">${icon('phone', 'sm')}Call</a><a class="btn btn-secondary sm" href="sms:${esc(phoneDigits(DISPATCH_PHONE))}">${icon('chat', 'sm')}Text</a></span>` : '');
 
 /* =========================================================
@@ -2915,6 +2918,8 @@ function clearErrorsIn(root) {
     const p = $('.err', f);
     if (p) { $$('[aria-invalid]', f).forEach((el) => markInvalid(el, p.id, false)); p.remove(); }
   });
+  // The item lines mark their weight, size and Other boxes directly, not a .field around them
+  $$('#item-rows .invalid', root).forEach((x) => x.classList.remove('invalid'));
 }
 function clearAllErrors() {
   clearErrorsIn($('#req-form'));
@@ -3149,9 +3154,12 @@ function reviewNotes(d) {
   const warn = dupNote + ['pickup', 'delivery'].filter((leg) => d[leg].address && !d[leg].verified)
     .map((leg) => `<div class="notice warn">${icon('alert')}<span>The ${leg} address wasn\u2019t matched on Google Maps. Make sure it\u2019s complete enough for a driver to find.</span></div>`).join('');
   const closed = !S.editingId && d.when === 'asap' ? afterHoursText() : '';
+  // Closed for the rest of today: one tap books it for the next business day instead of as soon as possible
+  const nd = closed && closedRestOfToday() ? nextOpenDay(shopTodayStr()) : '';
+  const ndBtn = nd ? `<button class="btn btn-secondary sm notice-btn" type="button" data-act="next-day-check">${icon('calendar', 'sm')}Book for ${esc(fmtDay(nd))} instead</button>` : '';
   const late = d.ready_after && d.ready_after >= CLOSE_AT ? `Dispatch closes at ${fmtHM(CLOSE_AT)}, before this pickup is ready. It may not be picked up until the next day.` : '';
   const shut = d.when === 'asap' && d.closes_at && d.closes_at <= shopNowHM() ? `The pickup place closes at ${fmtHM(d.closes_at)}, and that time has already passed today. Check the closing time, or it may not be picked up until the next business day.` : '';
-  return [closed, late, shut].filter(Boolean).map((t) => `<div class="notice warn">${icon('clock')}<span>${esc(t)}</span></div>`).join('') + warn;
+  return [closed, late, shut].filter(Boolean).map((t) => `<div class="notice warn">${icon('clock')}<span>${esc(t)}${t === closed ? ndBtn : ''}</span></div>`).join('') + warn;
 }
 const payText = (p) => (p === 'collect' ? 'Collect' : p === 'prepaid' ? 'Prepaid' : '');
 function whenText(d) { return d.when === 'scheduled' ? (d.scheduled_for ? fmtDay(d.scheduled_for) : 'Pick a date') : 'As soon as possible'; }
@@ -3285,7 +3293,8 @@ function renderCheck() {
     + checkRow(3, 'Items', esc(items || 'Not filled in'), !items)
     + checkRow(3, 'When', `${esc(whenText(d))}${hoursText(d) ? `<small>${esc(hoursText(d))}</small>` : ''}`, false);
 }
-// Recent pickup places and deliveries from History, one tap to fill in (phones, while that stop is empty)
+// The 3 most recent pickup places and deliveries from History, at the top of their step, one tap to fill in
+// (phones, while that stop is empty when the step opens; typing doesn't move them, so the boxes stay put)
 const normStop = (v) => String(v || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 const recentList = { pickup: [], delivery: [] };
 function recentStops(leg) {
@@ -3293,7 +3302,7 @@ function recentStops(leg) {
   const out = [];
   Object.values(S.requests || {}).filter((r) => r && r.status !== 'removed').sort((a, b) => (b.created_at || 0) - (a.created_at || 0)).forEach((r) => {
     const L = r[leg];
-    if (!L || !L.name || !L.address || out.length >= 4) return;
+    if (!L || !L.name || !L.address || out.length >= 3) return;
     const k = `${normStop(L.name)}|${normStop(L.address)}`;
     if (seen.has(k)) return;
     seen.add(k);
@@ -3320,12 +3329,6 @@ function useRecent(leg, i) {
   flashPastedFields(`.leg[data-leg=${leg}]`);
   saveDraftSoon();
 }
-['pickup', 'delivery'].forEach((leg) => ['name', 'address'].forEach((f) => $(`#${leg}-${f}`).addEventListener('input', () => {
-  if (!isGuided()) return;
-  const box = $(`[data-recent="${leg}"]`);
-  const empty = !$(`#${leg}-name`).value.trim() && !$(`#${leg}-address`).value.trim();
-  if (box && (box.hidden === empty)) renderRecent();
-})));
 $('#req-form').addEventListener('input', () => { refreshStepBtn(); sideSoon(); });
 $('#req-form').addEventListener('change', () => sideSoon());
 
@@ -3526,6 +3529,7 @@ function showSent() {
       <p class="small muted">It updates here and in History.</p>
       <button class="btn btn-secondary block" type="button" data-act="msg-sent" style="margin-top:10px">${icon('chat', 'sm')}Message dispatch about #${esc(d.refNo)}</button>
     </section>
+    ${saveNewPlacesHtml(d)}
     ${pushTip() || homeTip()}
     <div style="display:grid;gap:10px">
       <button class="btn btn-primary btn-outlined block" type="button" data-act="new-request">New request</button>
@@ -3537,6 +3541,37 @@ function showSent() {
   // Start the confirmation at the very top, and again once the review sheet has finished closing.
   window.scrollTo(0, 0);
   setTimeout(() => { if (!$('#sent-wrap').hidden) window.scrollTo(0, 0); }, 360);
+}
+
+// Places in the request that aren't in Contacts yet, offered as one-tap saves on the sent screen
+function newPlaces(d) {
+  const have = new Set(Object.values(S.contacts || {}).map(contactKey));
+  const out = [];
+  ['pickup', 'delivery'].forEach((leg) => {
+    const L = d[leg];
+    if (L && L.name && L.address && !have.has(contactKey(L)) && !out.some(([, o]) => contactKey(o) === contactKey(L))) out.push([leg, L]);
+  });
+  return out;
+}
+function saveNewPlacesHtml(d) {
+  const list = newPlaces(d);
+  if (!list.length) return '';
+  return `<section class="next-card" id="save-places"><h2>Save for next time?</h2>
+    <p class="small muted" style="margin-bottom:10px">Saved places fill in with one tap from Contacts.</p>
+    <div style="display:grid;gap:8px">${list.map(([leg, L]) => `<button class="btn btn-secondary block" type="button" data-act="save-sent-place" data-leg="${leg}">${icon('bookmark', 'sm')}Save ${esc(L.name)} to contacts</button>`).join('')}</div></section>`;
+}
+async function saveSentPlace(btn) {
+  const L = S.lastSent && S.lastSent[btn.dataset.leg];
+  if (!L) return;
+  const existing = Object.entries(S.contacts || {}).find(([, c]) => contactKey(c) === contactKey(L));
+  btn.disabled = true;
+  try {
+    if (!existing) await saveContactData(L, null);
+    btn.innerHTML = `${icon('check', 'sm')}${esc(L.name)} saved`;
+  } catch (err) {
+    btn.disabled = false;
+    toast(friendlyError(err), 'error');
+  }
 }
 
 // The request just sent, as it is now (live from History once it's there)
@@ -4767,11 +4802,18 @@ document.addEventListener('click', async (e) => {
     case 'msg-retry': { const k = el.dataset.key, o = S.msgOut[k]; if (o) { delete S.msgOut[k]; sendCustomerMsg(o.rid, o.text); } break; }
     case 'msg-drop': delete S.msgOut[el.dataset.key]; renderMsgViews(); break;
     case 'save-leg': saveLegToContacts(el.dataset.leg); break;
+    case 'save-sent-place': saveSentPlace(el); break;
     case 'swap': swapLegs(); break;
     case 'qty-inc': stepQty(el, 1); break;
     case 'qty-dec': stepQty(el, -1); break;
     case 'add-item': S.items.push({ qty: 1, type: 'box', weight: '' }); renderItems(); $$('#item-rows .item-row').pop().querySelector('input[data-field=type]:checked').focus(); saveDraftSoon(); break;
     case 'next-day': pickNextDay(); break;
+    case 'next-day-check':
+      pickNextDay();
+      toast(`Booked for ${fmtDay($('#sched-date').value)}.`, 'ok', 2500);
+      if (isGuided()) renderCheck();
+      else if (layers.length) openReview(readForm()); // the open review sheet shows the new date
+      break;
     case 'step-back': stepBack(); break;
     case 'go-step': setStep(+el.dataset.go); break;
     case 'use-recent': useRecent(el.dataset.leg, +el.dataset.i); break;
