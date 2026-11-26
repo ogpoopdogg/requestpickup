@@ -796,6 +796,10 @@ html{scroll-padding-bottom:calc(var(--nav-h) + var(--safe-b) + 84px)}
 .wchip[aria-pressed=true],.wnum[aria-pressed=true]{background:var(--yellow);border-color:var(--yellow-lo);color:#000;font-weight:800}
 .wnums{margin-top:6px;padding:6px;border-radius:var(--r-sm);background:var(--surface-2)}
 .wnum{font-size:16px}
+.dchips{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-bottom:6px}
+.dchips .wchip{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-height:52px}
+.dchips .wchip small{font-size:12.5px;font-weight:650;opacity:.85}
+#sched-date{margin-bottom:4px}
 .wpick .weight{margin-top:6px}
 .wchips.invalid .wchip{border-color:var(--danger);box-shadow:0 0 0 2px var(--danger-bg)}
 .item-row .other-input{grid-area:o}
@@ -1150,7 +1154,8 @@ body.desk main.app-main{padding-bottom:40px}
             </div>
             <div class="field" id="sched-field" hidden>
               <label for="sched-date">Pickup date <span class="req">*</span></label>
-              <input id="sched-date" type="date">
+              <div class="dchips" id="day-chips" role="group" aria-label="Pickup date"></div>
+              <input id="sched-date" type="date" hidden>
               <p class="hint">Dispatch holds scheduled requests and sends them out on that day.</p>
             </div>
             <div class="opt-line"><button class="opt-btn" type="button" data-act="next-day" id="next-day-btn" hidden></button><button class="opt-btn" type="button" data-act="show-opt" data-opt="hours">+ Ready after / closes at</button></div>
@@ -2364,6 +2369,7 @@ function updateCopyButtons() {
   b.disabled = !latest;
   if (latest) b.dataset.id = latest; else delete b.dataset.id;
   renderRecent();
+  applyUsualType();
 }
 
 auth.onAuthStateChanged((user) => handleUser(user));
@@ -2712,6 +2718,7 @@ $('#item-rows').addEventListener('input', (e) => {
   if (f === 'qty') it.qty = Math.max(0, Math.min(999, parseInt(e.target.value, 10) || 0));
   if (f === 'type') {
     it.type = e.target.value;
+    it.typeSet = true; // picked by hand: don't switch it back to the usual type
     renderItems();
     clearError('items');
     if (it.type === 'other') { const o = $(`.item-row[data-i="${row.dataset.i}"] .other-input`); if (o) o.focus(); }
@@ -3048,7 +3055,8 @@ function fillForm(r, { keepSchedule }) {
   fillLeg('pickup', r.pickup || {});
   fillLeg('delivery', r.delivery || {});
   const items = r.items ? (Array.isArray(r.items) ? r.items : Object.values(r.items)) : [];
-  S.items = items.length ? items.map((it) => ({ qty: it.qty || 1, type: it.type || 'box', weight: it.weight != null ? String(it.weight) : '', dims: it.dims || '', other: it.other || '' })) : [{ qty: 1, type: 'box', weight: '' }];
+  S.dateOther = false;
+  S.items = items.length ? items.map((it) => ({ typeSet: true, qty: it.qty || 1, type: it.type || 'box', weight: it.weight != null ? String(it.weight) : '', dims: it.dims || '', other: it.other || '' })) : [{ qty: 1, type: usualType(), weight: '' }];
   renderItems();
   $('#item-details').value = r.item_details || '';
   $$('input[name=payment]').forEach((x) => { x.checked = x.value === r.payment; });
@@ -3068,9 +3076,29 @@ function formIsDirty() {
   const d = readForm();
   return !!(d.pickup.name || d.pickup.address || d.delivery.name || d.delivery.address || d.item_details || d.po || d.notes || d.ready_after || d.closes_at);
 }
+// The item type most of this company's recent pickups used (more than half of the last 10), else Boxes
+function usualType() {
+  const recent = Object.values(S.requests || {}).filter((r) => r && r.status !== 'removed' && r.items)
+    .sort((a, b) => (b.created_at || 0) - (a.created_at || 0)).slice(0, 10);
+  const counts = {};
+  recent.forEach((r) => {
+    const types = new Set((Array.isArray(r.items) ? r.items : Object.values(r.items)).map((it) => it && it.type).filter((t) => ITEM_TYPES.some((x) => x.id === t)));
+    types.forEach((t) => { counts[t] = (counts[t] || 0) + 1; });
+  });
+  const best = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+  return best && recent.length >= 2 && best[1] > recent.length / 2 ? best[0] : 'box';
+}
+// History loads after the form first shows: switch a still-untouched first line to the usual type
+function applyUsualType() {
+  const it = S.items[0];
+  if (S.editingId || S.items.length !== 1 || !$('#sent-wrap').hidden || !it || it.weight || it.dims || it.other || it.band || Number(it.qty) !== 1 || it.typeSet) return;
+  const t = usualType();
+  if (t !== it.type) { it.type = t; renderItems(); }
+}
 function resetForm(silent) {
   $('#req-form').reset();
-  S.items = [{ qty: 1, type: 'box', weight: '' }];
+  S.dateOther = false;
+  S.items = [{ qty: 1, type: usualType(), weight: '' }];
   S.legGeo = { pickup: null, delivery: null };
   S.editingId = null;
   renderItems();
@@ -3135,13 +3163,43 @@ function updateNextDayBtn() {
   const b = $('#next-day-btn');
   if (!b) return;
   const nd = nextOpenDay(shopTodayStr());
-  const on = $('input[name=when]:checked').value === 'scheduled' && $('#sched-date').value === nd;
   b.dataset.date = nd;
   b.textContent = `Next business day: ${fmtDay(nd)}`;
-  b.hidden = on;
+  b.hidden = $('input[name=when]:checked').value === 'scheduled'; // the day buttons cover it then
+  renderDayChips();
+}
+// The next 3 days dispatch is open, one tap each; "Other date" shows the calendar for anything later
+function nextOpenDays(n) {
+  const out = [];
+  let d = shopTodayStr();
+  while (out.length < n) { d = nextOpenDay(d); out.push(d); }
+  return out;
+}
+function renderDayChips() {
+  const box = $('#day-chips');
+  if (!box) return;
+  const days = nextOpenDays(3);
+  const v = $('#sched-date').value;
+  const other = !!S.dateOther || (!!v && !days.includes(v));
+  box.innerHTML = days.map((ds) => {
+    const dt = parseLocalDate(ds);
+    return `<button type="button" class="wchip" data-act="pick-day" data-date="${ds}" aria-pressed="${!other && v === ds}" aria-label="${esc(fmtDay(ds))}">${esc(dt.toLocaleDateString('en-CA', { weekday: 'short' }))}<small>${esc(dt.toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }))}</small></button>`;
+  }).join('') + `<button type="button" class="wchip" data-act="pick-day" data-date="" aria-pressed="${other}">Other<small>date</small></button>`;
+  $('#sched-date').hidden = !other;
+}
+function pickDay(ds) {
+  const inp = $('#sched-date');
+  S.dateOther = !ds;
+  if (ds) inp.value = ds;
+  clearError('sched');
+  updateNextDayBtn();
+  saveDraftSoon();
+  sideSoon();
+  if (!ds) { inp.focus(); try { inp.showPicker(); } catch (e) { /* not every browser has it */ } }
 }
 function pickNextDay() {
   const nd = $('#next-day-btn').dataset.date || nextOpenDay(shopTodayStr());
+  S.dateOther = false;
   $$('input[name=when]').forEach((x) => { x.checked = x.value === 'scheduled'; });
   $('#sched-field').hidden = false;
   $('#sched-date').value = nd;
@@ -3158,7 +3216,7 @@ $$('input[name=when]').forEach((r) => r.addEventListener('change', () => {
   if (sched) { updateSchedMin(); if (!$('#sched-date').value) $('#sched-date').value = nextOpenDay(shopTodayStr()); }
   updateNextDayBtn();
 }));
-$('#sched-date').addEventListener('change', () => { clearError('sched'); updateNextDayBtn(); });
+$('#sched-date').addEventListener('change', () => { clearError('sched'); S.dateOther = !nextOpenDays(3).includes($('#sched-date').value); updateNextDayBtn(); });
 ['ready-after', 'closes-at'].forEach((id) => $('#' + id).addEventListener('input', () => clearError('closes-at')));
 $$('input[name=payment]').forEach((r) => r.addEventListener('change', () => clearError('pay')));
 ['pickup-phone', 'pickup-email', 'delivery-phone', 'delivery-email'].forEach((id) => $('#' + id).addEventListener('input', () => clearError(id)));
@@ -3376,10 +3434,39 @@ function renderRecent() {
     box.innerHTML = list.length ? `<p class="label">${leg === 'pickup' ? 'Recent pickup places' : 'Recent deliveries'}</p>${list.map((L, i) => `<button type="button" class="recent-stop" data-act="use-recent" data-leg="${leg}" data-i="${i}"><span class="avatar" aria-hidden="true">${esc(initials(L.name))}</span><span class="grow"><b>${esc(L.name)}</b><small>${esc(L.address)}</small></span>${icon('chevron')}</button>`).join('')}` : '';
   });
 }
+// From the last request with this same place: the pickup's closing time (19), the delivery's phone (20).
+// Only fills a box that is still empty, never when editing.
+function lastAtPlace(leg, pick) {
+  const k = `${normStop($(`#${leg}-name`).value)}|${normStop($(`#${leg}-address`).value)}`;
+  if (k === '|' || k.startsWith('|') || k.endsWith('|')) return '';
+  const hit = Object.values(S.requests || {}).filter((r) => r && r.status !== 'removed' && r[leg] && `${normStop(r[leg].name)}|${normStop(r[leg].address)}` === k && pick(r))
+    .sort((a, b) => (b.created_at || 0) - (a.created_at || 0))[0];
+  return hit ? pick(hit) : '';
+}
+function fillFromLastTime(leg) {
+  if (S.editingId) return;
+  let filled = '';
+  if (leg === 'pickup' && !$('#closes-at').value) {
+    const t = lastAtPlace('pickup', (r) => (/^\d{2}:\d{2}$/.test(r.closes_at || '') ? r.closes_at : ''));
+    if (t) { $('#closes-at').value = t; filled = '#closes-at'; }
+  }
+  if (leg === 'delivery' && !$('#delivery-phone').value.trim()) {
+    const ph = lastAtPlace('delivery', (r) => (r.delivery && phoneDigits(r.delivery.phone || '').length >= 10 ? r.delivery.phone : ''));
+    if (ph) { $('#delivery-phone').value = formatPhone(ph); filled = '#delivery-phone'; }
+  }
+  if (!filled) return;
+  syncOpts();
+  const el = $(filled);
+  if (el) { el.classList.remove('paste-flash'); void el.offsetWidth; el.classList.add('paste-flash'); }
+  saveDraftSoon();
+  sideSoon();
+}
+['pickup', 'delivery'].forEach((leg) => ['name', 'address'].forEach((f) => $(`#${leg}-${f}`).addEventListener('change', () => fillFromLastTime(leg))));
 function useRecent(leg, i) {
   const L = recentList[leg] && recentList[leg][i];
   if (!L) return;
   fillLeg(leg, L);
+  fillFromLastTime(leg);
   refreshAddressHint(leg);
   renderStep();
   flashPastedFields(`.leg[data-leg=${leg}]`);
@@ -3833,6 +3920,7 @@ function acUse(leg, id) {
   if (!c) return;
   fillLeg(leg, c);
   addContactNotes(leg, c);
+  fillFromLastTime(leg);
   acHide(leg);
   const inp = $(`#${leg}-name`);
   if (inp) inp.blur(); // keyboard away: the whole stop is filled in
@@ -3870,6 +3958,7 @@ function useContact(id) {
   if (!c || !pickerLeg) return;
   fillLeg(pickerLeg, c);
   addContactNotes(pickerLeg, c);
+  fillFromLastTime(pickerLeg);
   closeSheet();
   const leg = pickerLeg;
   setTimeout(() => flashPastedFields(`.leg[data-leg="${leg}"]`), 220); // after the sheet has mostly slid away
@@ -4863,8 +4952,9 @@ document.addEventListener('click', async (e) => {
     case 'qty-inc': stepQty(el, 1); break;
     case 'wband': case 'wpick': setWeight(el, act); break;
     case 'qty-dec': stepQty(el, -1); break;
-    case 'add-item': S.items.push({ qty: 1, type: 'box', weight: '' }); renderItems(); $$('#item-rows .item-row').pop().querySelector('input[data-field=type]:checked').focus(); saveDraftSoon(); break;
+    case 'add-item': S.items.push({ qty: 1, type: usualType(), weight: '' }); renderItems(); $$('#item-rows .item-row').pop().querySelector('input[data-field=type]:checked').focus(); saveDraftSoon(); break;
     case 'next-day': pickNextDay(); break;
+    case 'pick-day': pickDay(el.dataset.date); break;
     case 'next-day-check':
       pickNextDay();
       toast(`Booked for ${fmtDay($('#sched-date').value)}.`, 'ok', 2500);

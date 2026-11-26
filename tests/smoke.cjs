@@ -469,6 +469,17 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
       await pg.click('#item-rows .wchip[data-band="1"]');
       await pg.click('#item-rows .wnum:text-is("5")');
       await pg.check('input[name=when][value=scheduled]', { force: true });
+      // The next 3 business days are buttons (the first one picked), and Other date opens the calendar
+      assert.strictEqual(await pg.locator('#day-chips .wchip').count(), 4, '3 days and Other');
+      assert.ok(await pg.isHidden('#sched-date'), 'no calendar until Other date');
+      assert.strictEqual(await pg.inputValue('#sched-date'), await pg.evaluate(() => nextOpenDay(shopTodayStr())));
+      assert.strictEqual(await pg.getAttribute('#day-chips .wchip:first-child', 'aria-pressed'), 'true');
+      const third = await pg.getAttribute('#day-chips .wchip:nth-child(3)', 'data-date');
+      await pg.click('#day-chips .wchip:nth-child(3)');
+      assert.strictEqual(await pg.inputValue('#sched-date'), third);
+      assert.ok(!(await pg.evaluate((d) => !!shopClosedReason(d), third)), 'only open days are offered');
+      await pg.click('#day-chips [data-date=""]');
+      assert.ok(await pg.isVisible('#sched-date'), 'Other date shows the calendar');
       await pg.fill('#sched-date', '2030-01-05');
       await pg.click('#btn-review');
       await pg.waitForSelector('#sched-err');
