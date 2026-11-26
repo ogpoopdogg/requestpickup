@@ -2,7 +2,7 @@
 const PUSH_APP_ID = '1:1067680083511:web:a8fa46c0621e74aabd19b2';
 if (PUSH_APP_ID) {
   try {
-    importScripts('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js', 'https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js');
+    importScripts('https://www.gstatic.com/firebasejs/12.19.0/firebase-app-compat.js', 'https://www.gstatic.com/firebasejs/12.19.0/firebase-messaging-compat.js');
     firebase.initializeApp({
       apiKey: 'AIzaSyAKmgoXA4m3cRTmxJq4aUyva5SVvFbTNqg',
       authDomain: 'eandccourier-36fcc.firebaseapp.com',

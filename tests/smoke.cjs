@@ -179,6 +179,7 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     await page.click('#btn-send');
     await page.waitForSelector('#sent-wrap:not([hidden]) .ticket');
     assert.strictEqual((await page.textContent('.ticket-no')).trim(), '#1204');
+    assert.strictEqual(await page.getAttribute('.ticket-no', 'data-act'), 'open-ref', 'the ticket number can be tapped');
     assert.ok(!(await page.evaluate(() => document.getElementById('view-app').inert)), 'page usable again after the sheet closes');
     assert.strictEqual(await page.evaluate(() => localStorage.getItem('ec_draft_u1_c1')), null, 'draft cleared once sent');
     assert.ok(await page.isVisible('[data-act=share-ticket]'), '2.4 share button on the ticket');
@@ -284,9 +285,15 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     await shot(page, 'messages-tab');
     await page.click('#msgs-body .msg-ref >> nth=0');
     await page.waitForSelector('#sheet:not([hidden]) [data-detail]');
+    assert.strictEqual(await page.evaluate(() => S.tab), 'history', 'a pickup number opens its details in History');
+    await page.waitForTimeout(450);
+    assert.ok(await page.isVisible('#sheet [data-detail]'), 'and the details stay open');
+    // After a day, a new message starts on General instead of the old pickup
+    assert.strictEqual(await page.evaluate(() => { const keep = S.msgs; S.msgs = { a: { rid: 'r0', company_id: 'c1', from: 'dispatch', text: 'old', at: Date.now() - 2 * 86400000 } }; msgAbout = ''; renderMessages(); const v = document.getElementById('msg-about').value; S.msgs = keep; msgAbout = ''; renderMessages(); return v; }), 'general');
     await page.keyboard.press('Escape');
     await page.waitForSelector('#sheet[hidden]', { state: 'attached' });
     await page.click('.tab[data-nav=history]');
+    assert.strictEqual((await page.textContent('#hist-status [data-status=new]')).trim(), 'Not dispatched yet');
     await page.click('#hist-status [data-status=removed]');
     assert.match(await page.textContent('#hist-list'), /#1201/, 'Removed filter shows removed pickups');
     assert.strictEqual(await page.locator('#hist-list .row').count(), 1);
@@ -444,8 +451,20 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
       await pg.click('.tab[data-nav=history]');
       await pg.waitForSelector('#hist-list .row-repeat');
       await pg.click('#hist-list .row-repeat >> nth=0');
-      await pg.click('#sheet-body [data-confirm="1"]').catch(() => {});
+      // The half-filled pickup on New isn't replaced without asking
+      await pg.waitForSelector('#sheet-body [data-confirm="1"]');
+      assert.match(await pg.textContent('#sheet-title'), /Replace what/);
+      await pg.click('#sheet-body [data-confirm="1"]');
       await pg.waitForFunction(() => S.tab === 'new' && S.step === 4);
+      // Send again from a pickup's details also stays on Check and send once its sheet has closed
+      await pg.click('.tab[data-nav=history]');
+      await pg.click('#hist-list .row >> nth=0');
+      await pg.waitForSelector('#sheet-body [data-detail] [data-act=repeat]');
+      await pg.click('#sheet-body [data-detail] [data-act=repeat]');
+      if (await pg.waitForSelector('#sheet-body [data-confirm="1"]', { timeout: 1500 }).catch(() => null)) await pg.click('#sheet-body [data-confirm="1"]');
+      await pg.waitForFunction(() => S.tab === 'new' && S.step === 4 && !layers.length);
+      await pg.waitForTimeout(500);
+      assert.strictEqual(await pg.evaluate(() => S.step), 4, 'the closing sheet does not send the form back to step 1');
       assert.deepStrictEqual(eg, [], 'no script errors in the guided steps');
       await cg.close();
     }

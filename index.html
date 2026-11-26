@@ -402,6 +402,7 @@ main.app-main>section{animation:tabIn var(--t) var(--out) both}
 .kicker-text{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:8px;row-gap:0;line-height:1.2;animation:kickIn .26s var(--out) .2s both}
 .kicker-title{font-size:15px;font-weight:800}
 .kicker-time{font-size:12.5px;font-weight:600;opacity:.7}
+button.ticket-no{display:block;padding:0;border:0;background:none;color:inherit;font-family:inherit;text-align:left;cursor:pointer}
 .ticket-no{font-stretch:75%;font-weight:800;font-size:56px;line-height:.92;letter-spacing:-.03em;margin-top:8px;animation:numIn .3s var(--out) .28s both}
 @keyframes ticketIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 @keyframes ticketSheen{from{left:-60%}to{left:130%}}
@@ -1044,7 +1045,7 @@ body.desk main.app-main{padding-bottom:40px}
   <div class="auth">
     <div class="brand"><span class="logo-tile"><img src="icon2.png" alt="" onerror="this.remove()"></span><div class="wordmark">E&amp;C <b>Courier</b></div></div>
     <h1>Set up your individual or company profile.</h1>
-    <p class="lead">Everyone that is logged into the same profile shares the same request history and contacts, create an individual or company profile.</p>
+    <p class="lead">Everyone signed in to the same profile shares its request history and contacts. Make one for yourself or your company, or join one with a code.</p>
     <div class="notice warn" id="onboard-notice" hidden></div>
     <div class="auth-card">
     <div class="seg" role="radiogroup" aria-label="Company setup" style="margin-bottom:18px">
@@ -1194,7 +1195,7 @@ body.desk main.app-main{padding-bottom:40px}
         <select id="hist-user" aria-label="Submitted by" hidden><option value="all">All users</option></select>
         <div class="chips" id="hist-status" role="group" aria-label="Status">
           <button class="chip-btn" type="button" data-status="all" aria-pressed="true">All</button>
-          <button class="chip-btn" type="button" data-status="new" aria-pressed="false">Waiting</button>
+          <button class="chip-btn" type="button" data-status="new" aria-pressed="false">Not dispatched yet</button>
           <button class="chip-btn" type="button" data-status="dispatched" aria-pressed="false">Dispatched</button>
           <button class="chip-btn" type="button" data-status="cancelled" aria-pressed="false">Cancelled</button>
           <button class="chip-btn" type="button" data-status="removed" aria-pressed="false">Removed</button>
@@ -1266,10 +1267,10 @@ body.desk main.app-main{padding-bottom:40px}
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div id="print-area"></div>
 <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA6umETP8wBUEV41ugAtiNiChUeLmmwmZI&libraries=places&loading=async&callback=onMapsReady"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-messaging-compat.js"></script>
 <script>
 'use strict';
 
@@ -1658,6 +1659,9 @@ function migrateLegacySeen() {
 S.msgOut = {};
 const outFor = (rid) => Object.entries(S.msgOut).filter(([k, o]) => (!rid || o.rid === rid) && !(S.msgs || {})[k]);
 const reqRef = (rid, m) => { const r = S.requests[rid]; return (r && r.ref_no) || (m && m.ref_no) || ''; };
+// A tappable pickup number: opens that pickup's details in History
+const refBtn = (rid, n, cls = 'msg-ref') => `<button class="${cls}" type="button" data-act="open-req" data-id="${esc(rid)}" aria-label="Open pickup #${esc(n)}">#${esc(n)}</button>`;
+const ridOfRef = (n) => Object.keys(S.requests || {}).find((k) => S.requests[k] && String(S.requests[k].ref_no) === String(n)) || '';
 const GENERAL = 'general'; // rid of a message that isn't about any pickup
 const GENERAL_CHIP = '<span class="msg-ref">General</span>';
 // In the Messages tab (withRef) the day is in the divider above, so a bubble shows just the time
@@ -1665,7 +1669,7 @@ const fmtTime = (ts) => (ts ? new Date(ts).toLocaleTimeString('en-CA', { hour: '
 function msgBubble(m, withRef) {
   const me = m.from === 'customer';
   const n = withRef ? reqRef(m.rid, m) : '';
-  const ref = n ? `<button class="msg-ref" type="button" data-act="open-req" data-id="${esc(m.rid)}" aria-label="Open pickup #${esc(n)}">#${esc(n)}</button>` : withRef && m.rid === GENERAL ? GENERAL_CHIP : '';
+  const ref = n ? refBtn(m.rid, n) : withRef && m.rid === GENERAL ? GENERAL_CHIP : '';
   return `<div class="msg ${me ? 'me' : 'them'}"><div class="msg-head">${ref}<b>${me ? esc(m.by_name || 'You') : 'Dispatch'}</b><span>${esc(withRef ? fmtTime(m.at) : fmtShort(m.at))}</span></div><p>${esc(m.text)}</p></div>`;
 }
 // "Today", "Yesterday", "Mon, Nov 9"
@@ -1678,7 +1682,7 @@ function dayLabel(ts) {
 }
 function outBubble(k, o, withRef) {
   const n = withRef ? reqRef(o.rid) : '';
-  return `<div class="msg me${o.state === 'failed' ? ' failed' : ' sending'}"><div class="msg-head">${n ? `<span class="msg-ref">#${esc(n)}</span>` : withRef && o.rid === GENERAL ? GENERAL_CHIP : ''}<b>You</b><span>${o.state === 'failed' ? 'Not sent' : 'Sending…'}</span></div><p>${esc(o.text)}</p>${o.state === 'failed' ? `<div class="msg-fail">${esc(o.err || '')} <button class="link-btn" type="button" data-act="msg-retry" data-key="${esc(k)}">Try again</button><button class="link-btn" type="button" data-act="msg-drop" data-key="${esc(k)}">Remove</button></div>` : ''}</div>`;
+  return `<div class="msg me${o.state === 'failed' ? ' failed' : ' sending'}"><div class="msg-head">${n ? refBtn(o.rid, n) : withRef && o.rid === GENERAL ? GENERAL_CHIP : ''}<b>You</b><span>${o.state === 'failed' ? 'Not sent' : 'Sending…'}</span></div><p>${esc(o.text)}</p>${o.state === 'failed' ? `<div class="msg-fail">${esc(o.err || '')} <button class="link-btn" type="button" data-act="msg-retry" data-key="${esc(k)}">Try again</button><button class="link-btn" type="button" data-act="msg-drop" data-key="${esc(k)}">Remove</button></div>` : ''}</div>`;
 }
 function renderMsgViews() {
   updateHistoryDot();
@@ -1703,9 +1707,11 @@ function renderMessages() {
   const all = Object.entries(S.msgs || {}).filter(([, m]) => m && m.text).sort((a, b) => (a[1].at || 0) - (b[1].at || 0));
   const about = aboutList();
   if (!about.some((a) => a.id === msgAbout)) {
-    // Starts on what the conversation was last about, so a reply stays with it; General otherwise
+    // Starts on what the conversation was last about, so a reply stays with it. After a day a new
+    // message is more likely about something else, so it starts on General.
     const last = all[all.length - 1];
-    msgAbout = last && about.some((a) => a.id === last[1].rid) ? last[1].rid : GENERAL;
+    const recent = last && Date.now() - (last[1].at || 0) < 86400000;
+    msgAbout = recent && about.some((a) => a.id === last[1].rid) ? last[1].rid : GENERAL;
   }
   const st = shopStatus();
   const closedNote = st.open ? '' : `<div class="notice msg-closed">${icon('clock')}<span>${st.html} Write anyway: dispatch reads it when they open.</span></div>`;
@@ -1788,6 +1794,8 @@ document.addEventListener('keydown', (e) => {
   e.preventDefault();
   e.target.form.requestSubmit();
 });
+// A message half typed in Messages: an update waits, so the words aren't lost
+function msgDraftOpen() { return $$('form[data-msg-form] textarea').some((t) => t.value.trim()); }
 let msgSending = false;
 document.addEventListener('submit', async (e) => {
   const form = e.target.closest && e.target.closest('form[data-msg-form]');
@@ -1968,11 +1976,13 @@ function closeSheet() {
 }
 const sheetIsOpen = () => layers.includes('sheet');
 
+let popForLayer = false; // this back step was a sheet or the map closing, not a step of the guided form
 window.addEventListener('popstate', () => {
-  if (ignorePops > 0) { ignorePops--; return; }
+  popForLayer = false;
+  if (ignorePops > 0) { ignorePops--; popForLayer = true; return; }
   const top = layers[layers.length - 1];
-  if (top === 'map') _closeMapNow();
-  else if (top === 'sheet') _closeSheetNow();
+  if (top === 'map') { _closeMapNow(); popForLayer = true; }
+  else if (top === 'sheet') { _closeSheetNow(); popForLayer = true; }
 });
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape' || !layers.length) return;
@@ -3135,7 +3145,7 @@ function recentDuplicate(d) {
 // Warnings shown before sending: closed hours, a possible duplicate, an address Google Maps didn't match
 function reviewNotes(d) {
   const dup = S.editingId ? null : recentDuplicate(d);
-  const dupNote = dup ? `<div class="notice warn">${icon('alert')}<span>You already sent a pickup from <b>${esc(dup.pickup.name)}</b> ${Math.max(1, Math.round((Date.now() - dup.created_at) / 60000))} min ago (#${esc(dup.ref_no)}), and it hasn\u2019t gone to a driver yet. Only send this if it\u2019s a second pickup.</span></div>` : '';
+  const dupNote = dup ? `<div class="notice warn">${icon('alert')}<span>You already sent a pickup from <b>${esc(dup.pickup.name)}</b> ${Math.max(1, Math.round((Date.now() - dup.created_at) / 60000))} min ago (${ridOfRef(dup.ref_no) ? refBtn(ridOfRef(dup.ref_no), dup.ref_no, 'link-btn') : `#${esc(dup.ref_no)}`}), and it hasn\u2019t gone to a driver yet. Only send this if it\u2019s a second pickup.</span></div>` : '';
   const warn = dupNote + ['pickup', 'delivery'].filter((leg) => d[leg].address && !d[leg].verified)
     .map((leg) => `<div class="notice warn">${icon('alert')}<span>The ${leg} address wasn\u2019t matched on Google Maps. Make sure it\u2019s complete enough for a driver to find.</span></div>`).join('');
   const closed = !S.editingId && d.when === 'asap' ? afterHoursText() : '';
@@ -3228,7 +3238,7 @@ function stepBack() {
 }
 // The phone's back button goes to the step before, while one of the form's steps is showing
 window.addEventListener('popstate', () => {
-  if (layers.length || !isGuided() || S.tab !== 'new' || !$('#sent-wrap').hidden) return;
+  if (popForLayer || layers.length || !isGuided() || S.tab !== 'new' || !$('#sent-wrap').hidden) return;
   const t = (history.state && history.state.gstep) || 1;
   if (t < S.step) setStep(t, { push: false });
 });
@@ -3497,7 +3507,7 @@ function showSent() {
           <svg class="tick" viewBox="0 0 28 28" aria-hidden="true"><rect class="tick-box" x="1" y="1" width="26" height="26" rx="7"/><path class="tick-path" d="M8 14.5l4 4 8-9"/></svg>
           <span class="kicker-text"><span class="kicker-title">${d.edited ? 'Changes saved' : 'Request sent to dispatch'}</span><span class="kicker-time">${esc(fmtDateTime(d.sentAt || Date.now()))}</span></span>
         </div>
-        <div class="ticket-no">#${esc(d.refNo)}</div>
+        <button class="ticket-no" type="button" data-act="open-ref" data-ref="${esc(d.refNo)}" aria-label="Open pickup #${esc(d.refNo)}">#${esc(d.refNo)}</button>
       </div>
       <div class="perf" aria-hidden="true"></div>
       <div class="ticket-body">
@@ -4004,12 +4014,13 @@ function onRequests(snap) {
     if (!seen) setSeen(Date.now());
     else {
       const gone = Object.values(data).filter((r) => r.status === 'removed' && (r.removed_at || 0) > seen);
-      if (gone.length) toast(gone.length === 1 ? `Request #${gone[0].ref_no} was removed by dispatch since your last visit. Open it in History, or message dispatch if you have questions.` : `${gone.length} of your requests were removed by dispatch since your last visit. Choose Removed in History to see them.`, 'error', 10000);
+      const goneId = gone.length === 1 ? Object.keys(data).find((k) => data[k] === gone[0]) : '';
+      if (gone.length) toast(gone.length === 1 ? `Request #${gone[0].ref_no} was removed by dispatch since your last visit. Open it in History, or message dispatch if you have questions.` : `${gone.length} of your requests were removed by dispatch since your last visit. Choose Removed in History to see them.`, 'error', 10000, goneId ? { label: 'Open', run: () => openInHistory(goneId) } : undefined);
     }
   } else {
     Object.entries(data).forEach(([id, r]) => {
       const p = prev[id];
-      if (p && p.status === 'new' && r.status === 'removed') toast(`Request #${r.ref_no} was removed by dispatch. Call or text dispatch if you have questions.`, 'error', 9000);
+      if (p && p.status === 'new' && r.status === 'removed') toast(`Request #${r.ref_no} was removed by dispatch. Call or text dispatch if you have questions.`, 'error', 9000, { label: 'Open', run: () => openInHistory(id) });
     });
   }
   S.requests = data;
@@ -4406,12 +4417,21 @@ function renderPushViews() {
   const tip = $('#push-tip');
   if (tip && pushState() !== 'ready') tip.remove();
 }
+// A pickup's details, over the History tab
+function openInHistory(rid) {
+  if (!S.requests[rid]) return false;
+  const wasOpen = sheetIsOpen();
+  if (wasOpen) closeSheet();
+  if (S.tab !== 'history') switchTab('history');
+  setTimeout(() => openDetail(rid), wasOpen ? 340 : 50); // after the closing sheet has finished hiding
+  return true;
+}
 // Tapping an alert: sw.js focuses an open app and says where to go
 function goTo(go) {
   if (!go || !S.cid) return false;
   if (go === 'messages') { closeSheet(); switchTab('messages'); return true; }
   const m = /^req:(.+)$/.exec(go);
-  if (m && S.requests[m[1]]) { closeSheet(); switchTab('history'); setTimeout(() => openDetail(m[1]), 50); return true; }
+  if (m && S.requests[m[1]]) { openInHistory(m[1]); return true; }
   return false;
 }
 if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', (e) => { if (e.data && e.data.go) goTo(String(e.data.go)); });
@@ -4734,7 +4754,16 @@ document.addEventListener('click', async (e) => {
       setTimeout(() => { const t = $('#msgs-body form[data-msg-form] textarea'); if (t) t.focus({ preventScroll: true }); }, 60);
       break;
     }
-    case 'open-req': if (S.requests[id]) openDetail(id); break;
+    case 'open-req':
+      if (currentDetailId === id && sheetIsOpen() && $('#sheet-body [data-detail]')) break; // already showing it
+      if (!openInHistory(id)) toast('That pickup is older than what\u2019s loaded. Choose All time in History to find it.', 'info');
+      break;
+    case 'open-ref': {
+      const rid = ridOfRef(el.dataset.ref);
+      if (!rid) { toast('Your request is still on its way to dispatch. Try again in a moment.', 'info'); break; }
+      openInHistory(rid);
+      break;
+    }
     case 'msg-retry': { const k = el.dataset.key, o = S.msgOut[k]; if (o) { delete S.msgOut[k]; sendCustomerMsg(o.rid, o.text); } break; }
     case 'msg-drop': delete S.msgOut[el.dataset.key]; renderMsgViews(); break;
     case 'save-leg': saveLegToContacts(el.dataset.leg); break;
@@ -4763,12 +4792,15 @@ document.addEventListener('click', async (e) => {
     case 'repeat': {
       const r = S.requests[id];
       if (!r) break;
-      if (el.id === 'new-repeat-latest' && formIsDirty() && !(await confirmSheet({ title: 'Replace what you\u2019ve entered?', body: 'Your most recent request will be filled in, replacing what\u2019s there now.', ok: 'Fill it in' }))) break;
+      if (!S.editingId && $('#sent-wrap').hidden && formIsDirty() && !(await confirmSheet({ title: 'Replace what you\u2019ve entered?', body: `Request #${esc(r.ref_no)} will be filled in, replacing the pickup you started.`, ok: 'Fill it in' }))) break;
       closeSheet();
       repeatRequest(r);
       break;
     }
-    case 'edit': startEdit(id); break;
+    case 'edit':
+      if (!S.editingId && $('#sent-wrap').hidden && formIsDirty() && !(await confirmSheet({ title: 'Replace what you\u2019ve entered?', body: 'The pickup you started on New will be replaced by this request so you can edit it.', ok: 'Edit this one', cancel: 'Keep mine' }))) break;
+      startEdit(id);
+      break;
     case 'cancel-req': cancelRequest(id); break;
     case 'hist-more': S.hist.limit += 50; renderHistory(); break;
     case 'hist-reset':
@@ -4877,7 +4909,7 @@ renderItems();
       navigator.serviceWorker.addEventListener('controllerchange', () => {
         if (!hadController || reloaded) return;
         let busy = false;
-        try { busy = (typeof formIsDirty === 'function' && formIsDirty()) || (typeof layers !== 'undefined' && layers.length > 0) || S.sending; } catch (e) { busy = false; }
+        try { busy = (typeof formIsDirty === 'function' && formIsDirty()) || (typeof layers !== 'undefined' && layers.length > 0) || S.sending || msgDraftOpen(); } catch (e) { busy = false; }
         if (busy) return;
         reloaded = true;
         window.location.reload();
@@ -4894,7 +4926,7 @@ renderItems();
     let base = null, pending = false, last = 0;
     const stamp = () => fetch('index.html', { method: 'HEAD', cache: 'no-store' })
       .then((r) => (r.ok ? r.headers.get('etag') || r.headers.get('last-modified') || '' : '')).catch(() => '');
-    const busy = () => { try { return formIsDirty() || layers.length > 0 || S.sending; } catch (e) { return true; } };
+    const busy = () => { try { return formIsDirty() || layers.length > 0 || S.sending || msgDraftOpen(); } catch (e) { return true; } };
     const check = async () => {
       if (Date.now() - last < 5 * 60000) return;
       last = Date.now();
