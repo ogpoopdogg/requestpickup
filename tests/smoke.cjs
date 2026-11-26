@@ -343,15 +343,20 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     assert.ok(!Object.values(await page.evaluate(() => window.__fakeDb.get('companies/c1/address_book'))).some((c) => c.name === 'Westman Tire'));
     await page.click('.toast .toast-act');
     await page.waitForFunction(() => Object.values(window.__fakeDb.get('companies/c1/address_book')).some((c) => c.name === 'Westman Tire'));
+    // The app re-renders Account when the company changes: let the restored contact reach the app first,
+    // or the theme buttons can be replaced while the test taps them
+    await page.waitForFunction(() => Object.values(S.contacts || {}).some((c) => c.name === 'Westman Tire'));
     // 3.10 theme is Light by default; Dark and Auto can still be picked
     await page.click('.tab[data-nav=account]');
     assert.ok(await page.isChecked('input[name=theme][value=light]'), 'Light is the default');
     assert.strictEqual(await page.getAttribute('html', 'data-theme'), 'light');
-    await page.check('input[name=theme][value=dark]', { force: true });
+    // Each theme pick saves to the database, and the fake database then re-renders Account on the next tick
+    const pickTheme = async (v) => { await page.check(`input[name=theme][value=${v}]`, { force: true }); await page.evaluate(() => new Promise((r) => setTimeout(r, 30))); };
+    await pickTheme('dark');
     assert.strictEqual(await page.getAttribute('html', 'data-theme'), 'dark');
-    await page.check('input[name=theme][value=system]', { force: true });
+    await pickTheme('system');
     assert.strictEqual(await page.evaluate(() => localStorage.getItem('ec_theme_pref')), 'system');
-    await page.check('input[name=theme][value=light]', { force: true });
+    await pickTheme('light');
     assert.match(await page.textContent('#account-body'), /\(204\) 555-0100/, 'phone shown as (204) 555-0100');
     assert.ok(await page.isVisible('#account-body input[name=theme][value=system] + span:has-text("Auto")'));
     assert.match(await page.textContent('#account-body'), /Contact E&C[\s\S]*\(204\) 730-0945[\s\S]*6:30 am to 5:00 pm/);
