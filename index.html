@@ -1632,7 +1632,7 @@ function watchMsgSeen(uid) {
     msgReadArrived();
     updateHistoryDot();
     if (S.tab === 'history') renderHistory();
-  }, () => { msgReadRef = null; msgReadArrived(); });
+  }, () => msgReadArrived()); // still try to save marks: the rules may allow it by the time they read something
 }
 // changes: { key: message time, or null to drop it }
 function saveMsgSeen(changes) {
