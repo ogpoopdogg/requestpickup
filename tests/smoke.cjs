@@ -361,11 +361,12 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
       assert.ok(await pg.isHidden('#btn-back'), 'no Back on the first step');
       assert.strictEqual((await pg.textContent('#top-call')).trim(), 'Call');
       await shot(pg, 'guided-1');
-      // Recent trips: one tap fills in a past pickup again; they go away once anything is typed
-      assert.ok(await pg.isVisible('#recent-trips .recent-stop:has-text("Smith Co")'), 'recent trips on an empty New');
-      assert.ok(await pg.isHidden('#new-repeat-latest'), 'Repeat last hides while the trips show');
+      // Recent pickup places sit at the top of the step, above the boxes, and typing doesn't move them
+      const above = await pg.evaluate(() => document.querySelector('[data-recent=pickup]').getBoundingClientRect().bottom <= document.querySelector('#pickup-name').getBoundingClientRect().top);
+      assert.ok(above, 'recent pickup places above the name box');
+      assert.ok((await pg.locator('[data-recent=pickup] .recent-stop').count()) <= 3, 'at most 3 recent places');
       await pg.fill('#pickup-name', 'x');
-      assert.ok(await pg.isHidden('#recent-trips') && await pg.isVisible('#new-repeat-latest'), 'typing hides the trips');
+      assert.ok(await pg.isVisible('[data-recent=pickup]'), 'typing leaves the list where it is');
       await pg.fill('#pickup-name', '');
       // Next with nothing filled in: the pickup name is flagged, payment (step 4) is not
       await pg.click('#btn-review');

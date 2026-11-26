@@ -835,13 +835,8 @@ html{scroll-padding-bottom:calc(var(--nav-h) + var(--safe-b) + 84px)}
 #req-form.guided .leg[data-leg=delivery]{background:var(--surface)}
 #req-form.guided .leg-head h2 .node,#req-form.guided .block>h2 .sec-ic{display:none}
 #req-form.guided .leg-head h2,#req-form.guided .block>h2{font-size:17px}
-#req-form.guided .leg-recent:not([hidden]){display:block;margin:4px 0 10px;padding-top:12px;border-top:1px solid var(--line)}
+#req-form.guided .leg-recent:not([hidden]){display:block;margin:2px 0 14px;padding-bottom:12px;border-bottom:1px solid var(--line)}
 .leg-recent .label{margin-bottom:6px}
-.recent-trips{margin:0 0 14px}
-.recent-trips .label{margin:0 0 6px}
-.recent-trips .recent-stop .avatar{display:grid;place-items:center;color:var(--ink)}
-.recent-trips .recent-stop small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-@media (min-width:1000px){.recent-trips .list-3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.recent-trips .recent-stop{margin:0}}
 .recent-stop{display:flex;align-items:center;gap:12px;width:100%;min-height:60px;margin-bottom:6px;padding:8px 10px 8px 8px;border:1.5px solid var(--line);border-radius:var(--r-md);background:var(--surface-2);color:var(--ink);font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .recent-stop:hover,.recent-stop:active{border-color:var(--yellow-lo);background:var(--yellow-soft)}
 .recent-stop .avatar{flex:none;width:38px;height:38px;border-radius:50%;background:var(--yellow-soft);font-size:13px}
@@ -1099,12 +1094,12 @@ body.desk main.app-main{padding-bottom:40px}
         </div>
         <div class="edit-banner" id="edit-banner" hidden><span id="edit-banner-text"></span><button class="btn btn-secondary sm" type="button" data-act="stop-edit">Stop editing</button></div>
         <div class="edit-banner draft-banner" id="draft-banner" role="status" hidden><span id="draft-text"></span><span class="pair"><button class="btn btn-ghost sm" type="button" data-act="draft-discard">Discard</button><button class="btn btn-primary sm" type="button" data-act="draft-continue">Continue</button></span></div>
-        <div class="recent-trips" id="recent-trips" hidden></div>
         <div class="new-cols">
         <form id="req-form" novalidate autocomplete="off">
           <section class="route" aria-label="Pickup and delivery" data-step="1 2">
             <div class="leg" data-leg="pickup" data-step="1">
               <div class="leg-head"><h2><span class="node" aria-hidden="true"><svg class="i"><use href="#i-box"/></svg></span>Pickup from</h2><button class="link-btn" type="button" data-act="pick-contact" data-leg="pickup"><svg class="i sm"><use href="#i-contacts"/></svg>Contacts</button></div>
+              <div class="leg-recent" data-recent="pickup" hidden></div>
               <div class="field"><label for="pickup-name">Business or contact name <span class="req">*</span></label><div class="ac"><input id="pickup-name" maxlength="120" placeholder="Who are we picking up from?" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="pickup-name-ac" data-ac="pickup"><div class="ac-list" id="pickup-name-ac" role="listbox" aria-label="Your contacts" hidden></div></div></div>
               <div class="field"><label for="pickup-address">Address <span class="req">*</span></label><div class="with-btn"><input id="pickup-address" maxlength="250" placeholder="Search address or business"><button class="icon-btn" type="button" data-act="map" data-leg="pickup" aria-label="Pick pickup location on map"><svg class="i"><use href="#i-pin"/></svg></button></div><p class="hint" id="pickup-address-hint"></p></div>
               <div class="two">
@@ -1112,11 +1107,11 @@ body.desk main.app-main{padding-bottom:40px}
                 <div class="field" data-opt="pickup-email" hidden><label for="pickup-email">Email</label><input id="pickup-email" type="email" inputmode="email" maxlength="120" placeholder="name@company.ca"></div>
               </div>
               <div class="leg-foot"><span class="opt-btns"><button class="opt-btn" type="button" data-act="show-opt" data-opt="pickup-phone">+ Phone</button><button class="opt-btn" type="button" data-act="show-opt" data-opt="pickup-email">+ Email</button></span><button class="link-btn" type="button" data-act="save-leg" data-leg="pickup"><svg class="i sm"><use href="#i-bookmark"/></svg>Save to contacts</button></div>
-              <div class="leg-recent" data-recent="pickup" hidden></div>
             </div>
             <div class="route-mid"><button class="swap" type="button" data-act="swap" aria-label="Swap pickup and delivery" title="Swap pickup and delivery"><svg class="i"><use href="#i-swap"/></svg></button></div>
             <div class="leg" data-leg="delivery" data-step="2">
               <div class="leg-head"><h2><span class="node" aria-hidden="true"><svg class="i"><use href="#i-pin"/></svg></span>Deliver to <span class="opt-tag">optional</span></h2><button class="link-btn" type="button" data-act="pick-contact" data-leg="delivery"><svg class="i sm"><use href="#i-contacts"/></svg>Contacts</button></div>
+              <div class="leg-recent" data-recent="delivery" hidden></div>
               <div class="field"><label for="delivery-name">Business or contact name</label><div class="ac"><input id="delivery-name" maxlength="120" placeholder="Who is it going to?" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="delivery-name-ac" data-ac="delivery"><div class="ac-list" id="delivery-name-ac" role="listbox" aria-label="Your contacts" hidden></div></div></div>
               <div class="field"><label for="delivery-address">Address</label><div class="with-btn"><input id="delivery-address" maxlength="250" placeholder="Search address or business"><button class="icon-btn" type="button" data-act="map" data-leg="delivery" aria-label="Pick delivery location on map"><svg class="i"><use href="#i-pin"/></svg></button></div><p class="hint" id="delivery-address-hint"></p></div>
               <div class="two">
@@ -1124,7 +1119,6 @@ body.desk main.app-main{padding-bottom:40px}
                 <div class="field" data-opt="delivery-email" hidden><label for="delivery-email">Email</label><input id="delivery-email" type="email" inputmode="email" maxlength="120" placeholder="name@company.ca"></div>
               </div>
               <div class="leg-foot"><span class="opt-btns"><button class="opt-btn" type="button" data-act="show-opt" data-opt="delivery-phone">+ Phone</button><button class="opt-btn" type="button" data-act="show-opt" data-opt="delivery-email">+ Email</button></span><button class="link-btn" type="button" data-act="save-leg" data-leg="delivery"><svg class="i sm"><use href="#i-bookmark"/></svg>Save to contacts</button></div>
-              <div class="leg-recent" data-recent="delivery" hidden></div>
             </div>
           </section>
 
@@ -3299,7 +3293,8 @@ function renderCheck() {
     + checkRow(3, 'Items', esc(items || 'Not filled in'), !items)
     + checkRow(3, 'When', `${esc(whenText(d))}${hoursText(d) ? `<small>${esc(hoursText(d))}</small>` : ''}`, false);
 }
-// Recent pickup places and deliveries from History, one tap to fill in (phones, while that stop is empty)
+// The 3 most recent pickup places and deliveries from History, at the top of their step, one tap to fill in
+// (phones, while that stop is empty when the step opens; typing doesn't move them, so the boxes stay put)
 const normStop = (v) => String(v || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 const recentList = { pickup: [], delivery: [] };
 function recentStops(leg) {
@@ -3307,7 +3302,7 @@ function recentStops(leg) {
   const out = [];
   Object.values(S.requests || {}).filter((r) => r && r.status !== 'removed').sort((a, b) => (b.created_at || 0) - (a.created_at || 0)).forEach((r) => {
     const L = r[leg];
-    if (!L || !L.name || !L.address || out.length >= 4) return;
+    if (!L || !L.name || !L.address || out.length >= 3) return;
     const k = `${normStop(L.name)}|${normStop(L.address)}`;
     if (seen.has(k)) return;
     seen.add(k);
@@ -3316,7 +3311,6 @@ function recentStops(leg) {
   return out;
 }
 function renderRecent() {
-  renderTrips();
   ['pickup', 'delivery'].forEach((leg) => {
     const box = $(`[data-recent="${leg}"]`);
     if (!box) return;
@@ -3325,38 +3319,6 @@ function renderRecent() {
     box.hidden = !list.length;
     box.innerHTML = list.length ? `<p class="label">${leg === 'pickup' ? 'Recent pickup places' : 'Recent deliveries'}</p>${list.map((L, i) => `<button type="button" class="recent-stop" data-act="use-recent" data-leg="${leg}" data-i="${i}"><span class="avatar" aria-hidden="true">${esc(initials(L.name))}</span><span class="grow"><b>${esc(L.name)}</b><small>${esc(L.address)}</small></span>${icon('chevron')}</button>`).join('')}` : '';
   });
-}
-// The last 3 different trips (pickup and delivery), each one tap to fill in again, while New is still empty
-function recentTrips() {
-  const seen = new Set();
-  const out = [];
-  Object.entries(S.requests || {}).filter(([, r]) => r && r.status !== 'removed' && r.pickup && (r.pickup.name || r.pickup.address))
-    .sort(([, a], [, b]) => (b.created_at || 0) - (a.created_at || 0)).forEach(([id, r]) => {
-      if (out.length >= 3) return;
-      const D = r.delivery || {};
-      const k = [r.pickup.name, r.pickup.address, D.name, D.address].map(normStop).join('|');
-      if (seen.has(k)) return;
-      seen.add(k);
-      out.push([id, r]);
-    });
-  return out;
-}
-function tripsWanted() {
-  return !S.editingId && !!S.reqLoaded && $('#sent-wrap').hidden && !formIsDirty() && (!isGuided() || S.step === 1);
-}
-function renderTrips() {
-  const box = $('#recent-trips');
-  if (!box) return;
-  const list = tripsWanted() ? recentTrips() : [];
-  box.hidden = !list.length;
-  $('#new-repeat-latest').hidden = !!list.length; // the first trip in the list does the same thing
-  box.innerHTML = list.length ? `<p class="label">Send a recent trip again</p><div class="list-3">${list.map(([id, r]) => {
-    const D = r.delivery || {};
-    const to = D.name || D.address;
-    const items = r.items ? itemsText(Array.isArray(r.items) ? r.items : Object.values(r.items)) : (r.items_text || '');
-    const sub = [to ? '' : 'No delivery set', items, `#${r.ref_no}`].filter(Boolean).join(' \u00b7 ');
-    return `<button type="button" class="recent-stop" data-act="repeat" data-id="${esc(id)}" aria-label="Send #${esc(r.ref_no)} again"><span class="avatar" aria-hidden="true">${icon('repeat', 'sm')}</span><span class="grow"><b>${esc(r.pickup.name || r.pickup.address)}${to ? ` \u2192 ${esc(to)}` : ''}</b><small>${esc(sub)}</small></span>${icon('chevron')}</button>`;
-  }).join('')}</div>` : '';
 }
 function useRecent(leg, i) {
   const L = recentList[leg] && recentList[leg][i];
@@ -3367,17 +3329,7 @@ function useRecent(leg, i) {
   flashPastedFields(`.leg[data-leg=${leg}]`);
   saveDraftSoon();
 }
-['pickup', 'delivery'].forEach((leg) => ['name', 'address'].forEach((f) => $(`#${leg}-${f}`).addEventListener('input', () => {
-  if (!isGuided()) return;
-  const box = $(`[data-recent="${leg}"]`);
-  const empty = !$(`#${leg}-name`).value.trim() && !$(`#${leg}-address`).value.trim();
-  if (box && (box.hidden === empty)) renderRecent();
-})));
-$('#req-form').addEventListener('input', () => {
-  refreshStepBtn();
-  sideSoon();
-  if ($('#recent-trips').hidden === tripsWanted()) renderTrips(); // the trips go away once anything is typed
-});
+$('#req-form').addEventListener('input', () => { refreshStepBtn(); sideSoon(); });
 $('#req-form').addEventListener('change', () => sideSoon());
 
 /* Computers: the menu sits in the top bar, and a live summary with the send button sits beside the form */
