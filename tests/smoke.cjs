@@ -143,10 +143,27 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     // Weight or size is required on every line
     await page.click('#side-sum .btn');
     await page.waitForSelector('#items-err:not([hidden])');
-    assert.match(await page.textContent('#items-err'), /total weight or the size/);
-    assert.ok(await page.evaluate(() => document.querySelector('#item-rows [data-field=weight]').classList.contains('invalid')), 'weight box flagged');
+    assert.match(await page.textContent('#items-err'), /total weight or enter the size/);
+    assert.ok(await page.evaluate(() => document.querySelector('#item-rows .wchips').classList.contains('invalid')), 'weight buttons flagged');
+    assert.strictEqual(await page.locator('#item-rows [data-field=weight]').count(), 0, 'boxes have no number box until Over 50');
+    // Weight buttons: a range opens the exact pounds (Under 20 opens 1 to 19), 50 + opens the number box
+    await page.click('#item-rows .wchip[data-band="1"]');
+    assert.strictEqual(await page.locator('#item-rows .wnum').count(), 19, 'Under 20 shows 1 to 19');
+    await page.click('#item-rows .wchip[data-band="30"]');
+    assert.deepStrictEqual(await page.locator('#item-rows .wnum').allTextContents(), ['30', '31', '32', '33', '34', '35', '36', '37', '38', '39']);
+    await page.click('#item-rows .wnum:has-text("34")');
+    assert.ok(await page.isHidden('#item-rows .wnums'), 'the pounds close once one is picked');
+    assert.strictEqual((await page.textContent('#item-rows .wchip[aria-pressed=true]')).trim(), '34 lb');
+    assert.match(await page.textContent('#items-preview'), /1 box 34 lbs/);
+    await page.click('#item-rows .wchip[data-band="over"]');
+    await page.fill('#item-rows [data-field=weight]', '72');
+    assert.match(await page.textContent('#items-preview'), /1 box 72 lbs/);
+    await page.click('#item-rows .wchip[data-band="20"]');
+    await page.click('#side-sum .btn');
+    assert.match(await page.textContent('#items-err'), /Tap the exact weight/, 'a range with no pounds picked asks for them');
+    await page.click('#item-rows .wchip[data-band="over"]');
     await page.fill('#item-rows [data-field=dims]', '12 x 12 x 12 in');
-    assert.ok(await page.evaluate(() => !document.querySelector('#item-rows [data-field=weight]').classList.contains('invalid')), 'typing a size clears it');
+    assert.ok(await page.evaluate(() => !document.querySelector('#item-rows .wchips').classList.contains('invalid')), 'typing a size clears it');
     assert.ok(await page.isHidden('.route-mid .swap'), 'no swap button on a computer');
     await page.waitForFunction(() => /Payment\s*Prepaid/.test(document.getElementById('side-sum').textContent));
     await page.waitForTimeout(400);
@@ -449,7 +466,8 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
       await pg.fill('#pickup-address', '12 Main St');
       await pg.click('#btn-review');
       await pg.click('#btn-review');
-      await pg.fill('#item-rows [data-field=weight]', '5');
+      await pg.click('#item-rows .wchip[data-band="1"]');
+      await pg.click('#item-rows .wnum:text-is("5")');
       await pg.check('input[name=when][value=scheduled]', { force: true });
       await pg.fill('#sched-date', '2030-01-05');
       await pg.click('#btn-review');
@@ -581,7 +599,8 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
       await p3.fill('#pickup-name', 'Acme Supply');
       await p3.fill('#pickup-address', '12 Main St');
       await p3.fill('#delivery-name', 'Lake Clinic');
-      await p3.fill('#item-rows [data-field=weight]', '8');
+      await p3.click('#item-rows .wchip[data-band="1"]');
+      await p3.click('#item-rows .wnum:text-is("8")');
       await p3.check('input[name=payment][value=prepaid]', { force: true });
       await p3.click('#side-sum .btn');
       await p3.waitForSelector('#sheet:not([hidden]) #btn-send');
@@ -619,7 +638,8 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
       // 12 / Q5: Collect needs the recipient's name, address and phone
       await p5.fill('#pickup-name', 'Acme Supply');
       await p5.fill('#pickup-address', '12 Main St');
-      await p5.fill('#item-rows [data-field=weight]', '4');
+      await p5.click('#item-rows .wchip[data-band="1"]');
+      await p5.click('#item-rows .wnum:text-is("4")');
       await p5.check('input[name=payment][value=collect]', { force: true });
       await p5.click('#side-sum .btn');
       await p5.waitForSelector('#delivery-name-err');

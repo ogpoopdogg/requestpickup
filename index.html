@@ -788,7 +788,16 @@ html{scroll-padding-bottom:calc(var(--nav-h) + var(--safe-b) + 84px)}
 .item-row .stepper button{width:44px}
 .item-row .type-chips{grid-area:t}
 .item-row>.icon-btn{grid-area:r}
-.item-row .item-size{grid-area:s;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.item-row .item-size{grid-area:s;display:grid;grid-template-columns:1fr;gap:8px}
+/* Weight: tap a range, then the exact pound, so the number pad only opens over 50 lb (and for pallets) */
+.wchips,.wnums{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.wchip,.wnum{min-height:var(--ctl);padding:2px 4px;border:1.5px solid var(--line-strong);border-radius:var(--r-sm);background:var(--field);font:inherit;font-weight:700;font-size:14.5px;line-height:1.1;color:var(--ink);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color var(--t-fast) ease,border-color var(--t-fast) ease}
+.wchip:hover,.wnum:hover{border-color:var(--ink-3)}
+.wchip[aria-pressed=true],.wnum[aria-pressed=true]{background:var(--yellow);border-color:var(--yellow-lo);color:#000;font-weight:800}
+.wnums{margin-top:6px;padding:6px;border-radius:var(--r-sm);background:var(--surface-2)}
+.wnum{font-size:16px}
+.wpick .weight{margin-top:6px}
+.wchips.invalid .wchip{border-color:var(--danger);box-shadow:0 0 0 2px var(--danger-bg)}
 .item-row .other-input{grid-area:o}
 .item-row+.item-row{padding-top:10px;border-top:1px dashed var(--line-strong)}
 .type-chips{display:flex;flex-wrap:wrap;gap:6px}
@@ -2623,6 +2632,52 @@ function switchTab(tab) {
 /* =========================================================
    Request form: items
    ========================================================= */
+/* Weight buttons: tap a range, then the exact pounds (Under 20 opens 1-19, then 20-29, 30-39, 40-49).
+   50 and over (and pallets) type the exact weight. it.band and it.wopen only live on this screen. */
+const WBANDS = [['1', 'Under 20'], ['20', '20\u201329'], ['30', '30\u201339'], ['40', '40\u201349'], ['over', '50 +']];
+function bandOf(weight) {
+  const w = parseFloat(weight);
+  if (!(w > 0)) return '';
+  if (w >= 50 || w % 1) return 'over';
+  return w < 20 ? '1' : String(Math.floor(w / 10) * 10);
+}
+function weightHtml(it) {
+  const box = (ph) => `<span class="weight"><input type="number" inputmode="decimal" min="0" step="any" value="${esc(it.weight)}" data-field="weight" placeholder="${ph}" aria-label="Total weight in pounds"><span>lbs</span></span>`;
+  if (it.type === 'pallet') return `<label class="mini"><span>Total weight <span class="req">*</span></span>${box('Total')}</label>`;
+  const band = it.band || bandOf(it.weight);
+  const w = parseFloat(it.weight);
+  const chips = WBANDS.map(([id, label]) => {
+    const on = band === id;
+    const exact = on && id !== 'over' && w > 0;
+    return `<button type="button" class="wchip" data-act="wband" data-band="${id}" aria-pressed="${on}">${exact ? `${w} lb` : label}</button>`;
+  }).join('');
+  let more = '';
+  if (band && band !== 'over' && (it.wopen || !(w > 0))) {
+    const from = Number(band);
+    more = `<div class="wnums" role="group" aria-label="Exact weight in pounds">${Array.from({ length: from === 1 ? 19 : 10 }, (_, k) => from + k).map((n) => `<button type="button" class="wnum" data-act="wpick" data-n="${n}" aria-pressed="${n === w}">${n}</button>`).join('')}</div>`;
+  }
+  if (band === 'over') more = box('Exact weight');
+  return `<div class="mini wpick"><span>Total weight, lbs <span class="req">*</span></span><div class="wchips" role="group" aria-label="Total weight">${chips}</div>${more}</div>`;
+}
+function setWeight(btn, act) {
+  const row = btn.closest('.item-row');
+  const i = +row.dataset.i;
+  const it = S.items[i];
+  if (act === 'wpick') Object.assign(it, { weight: btn.dataset.n, wopen: false });
+  else {
+    const b = btn.dataset.band;
+    const w = parseFloat(it.weight);
+    if (b === 'over') Object.assign(it, { band: b, weight: w >= 50 ? it.weight : '', wopen: false });
+    else if ((it.band || bandOf(it.weight)) === b && w > 0) it.wopen = !it.wopen; // tap again to change the pounds
+    else Object.assign(it, { band: b, weight: '', wopen: true });
+  }
+  renderItems();
+  clearError('items');
+  saveDraftSoon();
+  const again = $(`.item-row[data-i="${i}"]`);
+  if (act === 'wband' && btn.dataset.band === 'over') { const f = again && $('[data-field=weight]', again); if (f) f.focus(); }
+  else { const f = again && $(act === 'wpick' || !S.items[i].wopen ? `.wchip[data-band="${S.items[i].band || bandOf(S.items[i].weight)}"]` : '.wnum', again); if (f) f.focus({ preventScroll: true }); }
+}
 function renderItems() {
   const single = S.items.length === 1;
   $('#item-rows').innerHTML = S.items.map((it, i) => `
@@ -2635,7 +2690,7 @@ function renderItems() {
       <div class="type-chips" role="radiogroup" aria-label="Item type">${ITEM_TYPES.map((t) => `<label class="tchip"><input type="radio" name="item-type-${i}" value="${t.id}" data-field="type"${t.id === it.type ? ' checked' : ''}><span>${t.label}</span></label>`).join('')}</div>
       ${single ? '' : `<button class="icon-btn" type="button" data-act="item-remove" aria-label="Remove this line">${icon('x')}</button>`}
       <div class="item-size">
-        <label class="mini"><span>Weight <span class="req">*</span></span><span class="weight"><input type="number" inputmode="decimal" min="0" step="any" value="${esc(it.weight)}" data-field="weight" placeholder="Total" aria-label="Total weight in pounds"><span>lbs</span></span></label>
+        ${weightHtml(it)}
         <label class="mini"><span>or size <span class="req">*</span></span><span class="dims"><input type="text" maxlength="40" value="${esc(it.dims || '')}" data-field="dims" placeholder="48 x 40 in" aria-label="Size, in feet or inches"></span></label>
       </div>
       ${it.type === 'other' ? `<input class="other-input" type="text" maxlength="60" value="${esc(it.other || '')}" data-field="other" placeholder="What is it? e.g. tires, carpet" aria-label="Describe the item">` : ''}
@@ -2951,10 +3006,11 @@ function validateForm(d) {
     $$('#item-rows .other-input').forEach((x) => { if (!x.value.trim()) x.classList.add('invalid'); });
   } else if (d.items.some((it) => !it.weight && !it.dims)) {
     // Every line needs a total weight or a size
-    add('items', S.items.length > 1 ? 'Enter a weight or a size for each line.' : 'Enter the total weight or the size.');
+    const open = S.items.some((it) => !(parseFloat(it.weight) > 0) && !String(it.dims || '').trim() && it.band && it.band !== 'over');
+    add('items', open ? 'Tap the exact weight in pounds.' : S.items.length > 1 ? 'Tap a weight or enter a size for each line.' : 'Tap the total weight or enter the size.');
     $$('#item-rows .item-row').forEach((row) => {
       const it = S.items[+row.dataset.i];
-      if (it && Number(it.qty) > 0 && !(parseFloat(it.weight) > 0) && !String(it.dims || '').trim()) $$('[data-field=weight],[data-field=dims]', row).forEach((x) => x.classList.add('invalid'));
+      if (it && Number(it.qty) > 0 && !(parseFloat(it.weight) > 0) && !String(it.dims || '').trim()) $$('[data-field=weight],[data-field=dims],.wchips', row).forEach((x) => x.classList.add('invalid'));
     });
   }
   // Payment Collect means the recipient pays, so dispatch needs to know who and where they are
@@ -4805,6 +4861,7 @@ document.addEventListener('click', async (e) => {
     case 'save-sent-place': saveSentPlace(el); break;
     case 'swap': swapLegs(); break;
     case 'qty-inc': stepQty(el, 1); break;
+    case 'wband': case 'wpick': setWeight(el, act); break;
     case 'qty-dec': stepQty(el, -1); break;
     case 'add-item': S.items.push({ qty: 1, type: 'box', weight: '' }); renderItems(); $$('#item-rows .item-row').pop().querySelector('input[data-field=type]:checked').focus(); saveDraftSoon(); break;
     case 'next-day': pickNextDay(); break;
