@@ -747,7 +747,17 @@ html{scroll-padding-bottom:calc(var(--nav-h) + var(--safe-b) + 84px)}
 #msgs-body .msg-list .empty{margin-bottom:12px}
 .msg-compose{position:sticky;bottom:calc(var(--nav-h) + var(--safe-b));z-index:5;margin:8px -12px 0;padding:8px 12px 10px;background:var(--bg);border-top:1px solid var(--line)}
 .msg-about{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:13px;font-weight:700;color:var(--ink-2)}
-.msg-about select{flex:1;min-width:0;min-height:40px;padding:0 8px;border:1px solid var(--line-strong);border-radius:var(--r-sm);background:var(--field);color:var(--ink);font:inherit;font-size:15px;font-weight:650}
+.about-btn{flex:1;min-width:0;display:flex;align-items:center;gap:6px;min-height:40px;padding:0 10px;border:1px solid var(--line-strong);border-radius:var(--r-sm);background:var(--field);color:var(--ink);font:inherit;font-size:15px;font-weight:650;text-align:left;cursor:pointer}
+.about-btn span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.about-btn .i{flex:none;transform:rotate(90deg);color:var(--ink-3)}
+.about-row{align-items:flex-start!important;padding-top:10px!important;padding-bottom:10px!important}
+.about-row .ref{flex:none;display:grid;place-items:center;min-width:54px;height:30px;padding:0 6px;border-radius:10px;background:var(--yellow-soft);font-size:12.5px;font-weight:800;color:var(--ink)}
+.about-row b{white-space:normal!important}
+.about-row small{display:flex!important;align-items:center;gap:6px;margin-top:3px;white-space:nowrap}
+.about-row[aria-pressed=true]{border-color:var(--yellow-lo);background:var(--yellow-soft)}
+.about-row .tick{flex:none;align-self:center;color:var(--ink)}
+.about-head{margin:14px 0 6px}
+.about-foot{margin:14px 0 4px;text-align:center}
 
 /* =========================================================
    New pickup, Nov 2026: easier to read, guided steps on phones,
@@ -1709,9 +1719,78 @@ function renderMsgViews() {
 const msgsToEnd = () => { const f = $('#msgs-body .msg-compose'); if (S.tab === 'messages') window.scrollTo(0, document.documentElement.scrollHeight); if (f) { /* composer stays in reach */ } };
 // What a message can be about: General first, then pickups newest first
 function aboutList() {
-  return [{ id: GENERAL, label: 'General (not about a pickup)' }].concat(Object.entries(S.requests || {}).filter(([, r]) => r && r.ref_no && r.status !== 'cancelled').sort((a, b) => (b[1].created_at || 0) - (a[1].created_at || 0)).slice(0, 40)
+  return [{ id: GENERAL, label: 'General (not about a pickup)' }].concat(aboutPickups()
     .map(([id, r]) => ({ id, label: `#${r.ref_no} · ${clampLabel(`${(r.pickup && r.pickup.name) || '?'} to ${(r.delivery && r.delivery.name) || '?'}`)} · ${fmtShortDay(r.created_at)}` })));
 }
+const aboutPickups = () => Object.entries(S.requests || {}).filter(([, r]) => r && r.ref_no && r.status !== 'cancelled').sort((a, b) => (b[1].created_at || 0) - (a[1].created_at || 0));
+
+/* "What's this about?" picker: search at the top, General, then today's and not-yet-picked-up pickups,
+   then the last 7 days by day. Older ones come up in search, or from History. */
+const ABOUT_TAG = { new: ['Not dispatched yet', ''], seen: ['Seen by dispatch', 'seen'], dispatched: ['Dispatched', 'dispatched'], removed: ['Removed', 'cancelled'] };
+function aboutRow(id, r) {
+  const [tag, cls] = ABOUT_TAG[statusKey(r)] || ABOUT_TAG.new;
+  const to = r.delivery && (r.delivery.name || r.delivery.address);
+  const items = r.items_text || r.item_details || '';
+  const on = id === msgAbout;
+  return `<button type="button" class="recent-stop about-row" data-act="about-pick" data-id="${esc(id)}" aria-pressed="${on}"><span class="ref">#${esc(r.ref_no)}</span><span class="grow"><b>${esc((r.pickup && (r.pickup.name || r.pickup.address)) || '?')}${to ? ` \u2192 ${esc(to)}` : ''}</b><small><span class="chip ${cls}">${tag}</span>${esc(items)}</small></span>${on ? `<span class="tick">${icon('check')}</span>` : ''}</button>`;
+}
+function aboutMatches(q) {
+  const t = q.toLowerCase().replace(/^#/, '');
+  return aboutPickups().filter(([, r]) => [String(r.ref_no), r.pickup && r.pickup.name, r.pickup && r.pickup.address, r.delivery && r.delivery.name, r.delivery && r.delivery.address, r.po, r.items_text]
+    .some((v) => String(v || '').toLowerCase().includes(t)));
+}
+function renderAboutList() {
+  const box = $('#about-list');
+  if (!box) return;
+  const q = (($('#about-q') || {}).value || '').trim();
+  const head = (t) => `<p class="label about-head">${esc(t)}</p>`;
+  if (q) {
+    const hits = aboutMatches(q);
+    box.innerHTML = hits.length ? head(`${hits.length} ${hits.length === 1 ? 'match' : 'matches'}`) + hits.slice(0, 30).map(([id, r]) => aboutRow(id, r)).join('')
+      + (hits.length > 30 ? `<p class="small muted about-foot">Showing the newest 30. Type more to narrow it down.</p>` : '')
+      : `<div class="empty"><h3>No matches</h3><p>No pickup matches \u201c${esc(q)}\u201d here. Older pickups are in History, each with its own messages.</p><button class="btn btn-secondary" type="button" data-act="about-history">Open History</button></div>`;
+    return;
+  }
+  const all = aboutPickups();
+  const today = localDateStr(new Date());
+  const weekAgo = Date.now() - 7 * 86400000;
+  const shown = new Set();
+  const active = all.filter(([, r]) => ['new', 'seen'].includes(statusKey(r)) || localDateStr(new Date(r.created_at || 0)) === today);
+  active.forEach(([id]) => shown.add(id));
+  let html = `<button type="button" class="recent-stop about-row" data-act="about-pick" data-id="${GENERAL}" aria-pressed="${msgAbout === GENERAL}"><span class="ref">${icon('chat', 'sm')}</span><span class="grow"><b>General</b><small>Not about a pickup</small></span>${msgAbout === GENERAL ? `<span class="tick">${icon('check')}</span>` : ''}</button>`;
+  // The pickup this conversation is about stays easy to find, even when it's older
+  const cur = msgAbout !== GENERAL && S.requests[msgAbout];
+  const curOld = cur && !shown.has(msgAbout) && !((cur.created_at || 0) >= weekAgo);
+  if (curOld) { html += head('Selected') + aboutRow(msgAbout, cur); shown.add(msgAbout); }
+  if (active.length) html += head('Today and not picked up yet') + active.map(([id, r]) => aboutRow(id, r)).join('');
+  let day = '';
+  all.filter(([id, r]) => !shown.has(id) && (r.created_at || 0) >= weekAgo).forEach(([id, r]) => {
+    const label = dayLabel(r.created_at);
+    if (label !== day) { day = label; html += head(label); }
+    html += aboutRow(id, r);
+  });
+  if (all.length > shown.size && all.some(([id, r]) => !shown.has(id) && (r.created_at || 0) < weekAgo)) html += `<p class="small muted about-foot">Older pickup? Search above, or <button type="button" class="link-btn" data-act="about-history">find it in History</button>.</p>`;
+  box.innerHTML = html;
+}
+function openAboutPicker() {
+  openSheet('What\u2019s this about?', `<div class="searchbox field" style="margin-bottom:10px">${icon('search')}<input id="about-q" type="search" placeholder="Search a pickup # or name" aria-label="Search pickups" autocomplete="off"></div><div id="about-list"></div>`, () => renderAboutList());
+}
+function aboutLabel(id) {
+  if (id === GENERAL || !S.requests[id]) return 'General (not about a pickup)';
+  const r = S.requests[id];
+  const to = r.delivery && (r.delivery.name || r.delivery.address);
+  return `#${r.ref_no} \u00b7 ${(r.pickup && (r.pickup.name || r.pickup.address)) || '?'}${to ? ` \u2192 ${to}` : ''}`;
+}
+function pickAbout(id) {
+  msgAbout = id;
+  const inp = $('#msg-about');
+  if (inp) inp.value = id;
+  const lbl = $('#msgs-body .about-btn span');
+  if (lbl) lbl.textContent = aboutLabel(id);
+  closeSheet();
+  setTimeout(() => { const t = $('#msgs-body form[data-msg-form] textarea'); if (t) t.focus({ preventScroll: true }); }, 250);
+}
+document.addEventListener('input', (e) => { if (e.target.id === 'about-q') renderAboutList(); });
 const clampLabel = (t) => (t.length > 36 ? `${t.slice(0, 35)}…` : t);
 const fmtShortDay = (t) => (t ? new Date(t).toLocaleDateString('en-CA', { month: 'short', day: 'numeric' }) : '');
 let msgAbout = '';
@@ -1739,14 +1818,13 @@ function renderMessages() {
   box.innerHTML = `${err}${closedNote}
     <div class="msg-list">${bubbles || `<div class="empty">${icon('chat')}<h3>No messages yet</h3><p>Write to dispatch here about anything. To ask about a pickup, pick it under About. Their answers show up here too.</p></div>`}</div>
     <div class="msg-compose">
-      <label class="msg-about"><span>About</span><select id="msg-about" aria-label="What this message is about">${about.map((a) => `<option value="${esc(a.id)}"${a.id === msgAbout ? ' selected' : ''}>${esc(a.label)}</option>`).join('')}</select></label>
+      <div class="msg-about"><span>About</span><button type="button" class="about-btn" data-act="about-open" aria-label="What this message is about: ${esc(aboutLabel(msgAbout))}. Tap to change."><span>${esc(aboutLabel(msgAbout))}</span>${icon('chevron', 'sm')}</button><input type="hidden" id="msg-about" value="${esc(msgAbout)}"></div>
       <form class="msg-form" data-msg-form=""><textarea name="text" rows="1" maxlength="500" placeholder="Write to dispatch" aria-label="Message to dispatch" autocomplete="off" enterkeyhint="send"></textarea><button class="btn btn-primary" type="submit" aria-label="Send message">${icon('send', 'sm')}</button></form>
     </div>`;
   const again = $('#msgs-body form[data-msg-form] textarea');
   if (again && draft) { again.value = draft; growMsgBox(again); }
   if (again && typing) { again.focus({ preventScroll: true }); if (window.pinChat) window.pinChat(); }
 }
-document.addEventListener('change', (e) => { if (e.target.id === 'msg-about') msgAbout = e.target.value; });
 async function sendCustomerMsg(rid, text, key) {
   const r = rid === GENERAL ? {} : S.requests[rid];
   if (!r || !text) return;
@@ -4926,6 +5004,9 @@ document.addEventListener('click', async (e) => {
     case 'contact-use': useContact(id); break;
     case 'ac-use': acUse(el.dataset.leg, id); break;
     case 'all-msgs': closeSheet(); switchTab('messages'); break;
+    case 'about-open': openAboutPicker(); break;
+    case 'about-pick': pickAbout(id); break;
+    case 'about-history': closeSheet(); switchTab('history'); break;
     case 'msg-sent': {
       const rid = S.lastSent && Object.keys(S.requests || {}).find((k) => S.requests[k].ref_no === S.lastSent.refNo);
       if (!rid) { toast('Your request is still on its way to dispatch. Try again in a moment.', 'info'); break; }

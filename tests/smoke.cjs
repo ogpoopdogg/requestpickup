@@ -212,7 +212,7 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     await page.waitForTimeout(800);
     await shot(page, 'sent');
     await page.click('[data-act=msg-sent]');
-    await page.waitForSelector('#msgs-body #msg-about');
+    await page.waitForSelector('#msgs-body #msg-about', { state: 'attached' });
     assert.strictEqual(await page.inputValue('#msg-about'), sent[0], 'Messages opens on the pickup just sent');
     await page.waitForFunction(() => document.activeElement && document.activeElement.matches('#msgs-body textarea'));
     await page.evaluate(() => { msgAbout = ''; document.getElementById('msgs-body').innerHTML = ''; }); // back to the default pick for the checks below
@@ -255,7 +255,24 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     await page.fill('#msgs-body .msg-form textarea', 'one\ntwo\nthree');
     assert.ok(await page.evaluate(() => document.querySelector('#msgs-body .msg-form textarea').offsetHeight > 60), 'the box grows with longer messages');
     await page.fill('#msgs-body .msg-form textarea', '');
-    await page.selectOption('#msg-about', 'r1');
+    // About opens a picker: search, General, today's and not-picked-up pickups, then the last 7 days by day
+    const pickAboutUi = async (rid) => { await page.click('#msgs-body .about-btn'); await page.click(`#about-list [data-act=about-pick][data-id="${rid}"]`); await page.waitForSelector('#sheet[hidden]', { state: 'attached' }); };
+    await page.click('#msgs-body .about-btn');
+    await page.waitForSelector('#about-list');
+    assert.match(await page.textContent('#about-list'), /General[\s\S]*Today and not picked up yet[\s\S]*#1204[\s\S]*Seen by dispatch[\s\S]*#1201[\s\S]*Removed/);
+    assert.match(await page.textContent('#about-list .about-row[data-id=r0]'), /Dispatched/, 'status on each row');
+    assert.strictEqual(await page.getAttribute('#about-list .about-row[data-id=r0]', 'aria-pressed'), 'true', 'the current pick is marked');
+    await page.fill('#about-q', 'smith');
+    assert.deepStrictEqual(await page.$$eval('#about-list .about-row', (b) => b.map((x) => x.dataset.id)), ['r1'], 'search by name');
+    await page.fill('#about-q', '#1190');
+    assert.deepStrictEqual(await page.$$eval('#about-list .about-row', (b) => b.map((x) => x.dataset.id)), ['r0'], 'search by pickup number');
+    await page.fill('#about-q', 'zzz');
+    assert.ok(await page.isVisible('#about-list [data-act=about-history]'), 'no match points to History');
+    await page.fill('#about-q', '');
+    await page.click('#about-list [data-act=about-pick][data-id=r1]');
+    await page.waitForSelector('#sheet[hidden]', { state: 'attached' });
+    assert.strictEqual(await page.inputValue('#msg-about'), 'r1');
+    assert.match(await page.textContent('#msgs-body .about-btn'), /#1201 · Acme Supply → Smith Co/);
     await page.fill('#msgs-body .msg-form textarea', 'Is the 1201 driver coming?');
     await page.press('#msgs-body .msg-form textarea', 'Enter');
     await page.waitForFunction(() => Object.values(window.__fakeDb.get('messages')).some((m) => m.text === 'Is the 1201 driver coming?' && m.rid === 'r1' && m.company_id === 'c1'));
@@ -287,12 +304,12 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     await page.waitForFunction(() => Object.values(window.__fakeDb.get('messages')).some((m) => m.text === 'Hello?'));
     await page.waitForFunction(() => !document.querySelector('#msgs-body .msg.failed'));
     // General: a message that isn't about any pickup
-    await page.selectOption('#msg-about', 'general');
+    await pickAboutUi('general');
     await page.fill('#msgs-body .msg-form textarea', 'Are you open Saturday?');
     await page.press('#msgs-body .msg-form textarea', 'Enter');
     await page.waitForFunction(() => Object.values(window.__fakeDb.get('messages')).some((m) => m.text === 'Are you open Saturday?' && m.rid === 'general' && m.company_id === 'c1' && m.ref_no === null && m.from === 'customer'));
     await page.waitForFunction(() => [...document.querySelectorAll('#msgs-body .msg.me')].some((b) => /Saturday/.test(b.textContent) && b.querySelector('.msg-ref') && b.querySelector('.msg-ref').textContent === 'General'));
-    await page.selectOption('#msg-about', 'r1');
+    await pickAboutUi('r1');
     await page.evaluate(() => window.__fakeDb.put('messages/m3', { rid: 'general', company_id: 'c1', ref_no: null, from: 'dispatch', text: 'No, weekdays only.', at: Date.now(), by_uid: 'staff1', by_name: 'dana' }));
     await page.waitForFunction(() => /weekdays only/.test(document.querySelector('#msgs-body .msg-list').textContent));
     await page.evaluate(() => { msgAbout = ''; document.getElementById('msgs-body').innerHTML = ''; renderMessages(); }); // what a fresh open picks
@@ -530,8 +547,8 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
       await p5.reload();
       await p5.waitForSelector('.toast.error:has-text("#1201 was removed by dispatch since your last visit")');
       await p5.click('.tab[data-nav=messages]');
-      await p5.waitForSelector('#msg-about');
-      const opts = await p5.$$eval('#msg-about option', (o) => o.map((x) => x.value));
+      await p5.waitForSelector('#msg-about', { state: 'attached' });
+      const opts = await p5.evaluate(() => aboutList().map((a) => a.id));
       assert.ok(!opts.includes('r2') && opts.includes('r1'), 'cancelled pickups left out of About, removed ones kept');
       assert.strictEqual(opts[0], 'general', 'General is the first choice in About');
       assert.strictEqual(await p5.inputValue('#msg-about'), 'general', 'with no messages yet, About starts on General');
