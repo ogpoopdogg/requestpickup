@@ -343,15 +343,20 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     assert.ok(!Object.values(await page.evaluate(() => window.__fakeDb.get('companies/c1/address_book'))).some((c) => c.name === 'Westman Tire'));
     await page.click('.toast .toast-act');
     await page.waitForFunction(() => Object.values(window.__fakeDb.get('companies/c1/address_book')).some((c) => c.name === 'Westman Tire'));
+    // The app re-renders Account when the company changes: let the restored contact reach the app first,
+    // or the theme buttons can be replaced while the test taps them
+    await page.waitForFunction(() => Object.values(S.contacts || {}).some((c) => c.name === 'Westman Tire'));
     // 3.10 theme is Light by default; Dark and Auto can still be picked
     await page.click('.tab[data-nav=account]');
     assert.ok(await page.isChecked('input[name=theme][value=light]'), 'Light is the default');
     assert.strictEqual(await page.getAttribute('html', 'data-theme'), 'light');
-    await page.check('input[name=theme][value=dark]', { force: true });
+    // Each theme pick saves to the database, and the fake database then re-renders Account on the next tick
+    const pickTheme = async (v) => { await page.check(`input[name=theme][value=${v}]`, { force: true }); await page.evaluate(() => new Promise((r) => setTimeout(r, 30))); };
+    await pickTheme('dark');
     assert.strictEqual(await page.getAttribute('html', 'data-theme'), 'dark');
-    await page.check('input[name=theme][value=system]', { force: true });
+    await pickTheme('system');
     assert.strictEqual(await page.evaluate(() => localStorage.getItem('ec_theme_pref')), 'system');
-    await page.check('input[name=theme][value=light]', { force: true });
+    await pickTheme('light');
     assert.match(await page.textContent('#account-body'), /\(204\) 555-0100/, 'phone shown as (204) 555-0100');
     assert.ok(await page.isVisible('#account-body input[name=theme][value=system] + span:has-text("Auto")'));
     assert.match(await page.textContent('#account-body'), /Contact E&C[\s\S]*\(204\) 730-0945[\s\S]*6:30 am to 5:00 pm/);
@@ -469,6 +474,17 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
       await pg.click('#item-rows .wchip[data-band="1"]');
       await pg.click('#item-rows .wnum:text-is("5")');
       await pg.check('input[name=when][value=scheduled]', { force: true });
+      // The next 3 business days are buttons (the first one picked), and Other date opens the calendar
+      assert.strictEqual(await pg.locator('#day-chips .wchip').count(), 4, '3 days and Other');
+      assert.ok(await pg.isHidden('#sched-date'), 'no calendar until Other date');
+      assert.strictEqual(await pg.inputValue('#sched-date'), await pg.evaluate(() => nextOpenDay(shopTodayStr())));
+      assert.strictEqual(await pg.getAttribute('#day-chips .wchip:first-child', 'aria-pressed'), 'true');
+      const third = await pg.getAttribute('#day-chips .wchip:nth-child(3)', 'data-date');
+      await pg.click('#day-chips .wchip:nth-child(3)');
+      assert.strictEqual(await pg.inputValue('#sched-date'), third);
+      assert.ok(!(await pg.evaluate((d) => !!shopClosedReason(d), third)), 'only open days are offered');
+      await pg.click('#day-chips [data-date=""]');
+      assert.ok(await pg.isVisible('#sched-date'), 'Other date shows the calendar');
       await pg.fill('#sched-date', '2030-01-05');
       await pg.click('#btn-review');
       await pg.waitForSelector('#sched-err');
