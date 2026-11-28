@@ -251,6 +251,10 @@ p{margin:0}
 .auth-switch::before{content:'';position:absolute;left:0;right:0;top:-13px;height:1px;background:var(--line)}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px}
 #recaptcha-host:empty{display:none}
+.shop-status .send-anyway{display:block;margin-top:2px;font-weight:500}
+/* The reCAPTCHA badge sits under the form, centred, instead of pinned half off the right edge */
+#recaptcha-host{display:flex;justify-content:center;margin-top:16px;max-width:100%;overflow:hidden}
+#recaptcha-host .grecaptcha-badge{margin:0 auto;box-shadow:none!important}
 
 /* ---------- App shell ---------- */
 .topbar{position:sticky;top:0;z-index:30;background:rgba(8,8,8,.92);-webkit-backdrop-filter:saturate(160%) blur(14px);backdrop-filter:saturate(160%) blur(14px);padding:calc(6px + var(--safe-t)) 16px 8px;color:#f4f4f1}
@@ -1109,6 +1113,7 @@ body.desk main.app-main{padding-bottom:40px}
     <section id="tab-new" data-tab="new">
       <div id="new-form-wrap" data-step="1">
         <p class="shop-status" id="shop-status" role="status"><span class="dot" aria-hidden="true"></span><span id="shop-status-text"></span></p>
+        <div class="notice warn" id="hold-notice" role="alert" hidden></div>
         <div class="guide-prog" id="guide-prog" aria-hidden="true"><span class="bars"><i></i><i></i><i></i><i></i></span><span id="guide-step-txt">Step 1 of 4</span></div>
         <div class="page-head">
           <div><h1 id="form-title">New pickup</h1><h1 id="guide-q" class="guide-q" tabindex="-1">Where are we picking up?</h1><p class="guide-sub" id="guide-sub"></p></div>
@@ -1296,6 +1301,7 @@ body.desk main.app-main{padding-bottom:40px}
 <script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-messaging-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-app-check-compat.js"></script>
 <script>
 'use strict';
 
@@ -1324,6 +1330,15 @@ firebase.initializeApp({
   messagingSenderId: '1067680083511',
   appId: '1:1067680083511:android:22d1eb3757302492bd19b2'
 });
+/* App Check (abuse protection): proves requests to the database come from this app, not a script.
+   APPCHECK_SITE_KEY = the reCAPTCHA v3 site key registered for this site in Firebase console > App Check.
+   While it's empty, App Check stays off. Turning on enforcement for the database is a separate console
+   switch: leave it on "monitor" until every app that uses the database (dispatch, Route Planner,
+   Route Watcher, Timeclock) sends App Check tokens too, or they'll be locked out. */
+const APPCHECK_SITE_KEY = '';
+if (APPCHECK_SITE_KEY && typeof firebase.appCheck === 'function') {
+  try { firebase.appCheck().activate(new firebase.appCheck.ReCaptchaV3Provider(APPCHECK_SITE_KEY), true); } catch (e) { console.log('App Check unavailable', e); }
+}
 const auth = firebase.auth();
 const db = firebase.database();
 const TS = firebase.database.ServerValue.TIMESTAMP;
@@ -1539,12 +1554,19 @@ function shopStatus() {
   if (hm >= CLOSE_AT) return { open: false, html: `Dispatch is closed for the day. ${esc(next())}` };
   return { open: true, html: `Dispatch is open, <b>until ${fmtHM(CLOSE_AT)}</b>` };
 }
+// While dispatch is closed: a pickup can still be sent now, and when dispatch will see it
+function sendAnywayText() {
+  const today = shopTodayStr(), hm = shopNowHM();
+  const opensToday = !shopClosedReason(today) && hm < OPEN_AT;
+  const when = opensToday ? `at ${fmtHM(OPEN_AT)} today` : `when they open at ${fmtHM(OPEN_AT)} ${dayPhrase(nextOpenDay(today), today)}`;
+  return `<span class="send-anyway"><b>You can still send a pickup now.</b> Dispatch will see it ${esc(when)}.</span>`;
+}
 function renderShopStatus() {
   const el = $('#shop-status');
   if (!el) return;
   const st = shopStatus();
   el.className = `shop-status ${st.open ? 'open' : 'closed'}`;
-  $('#shop-status-text').innerHTML = st.html;
+  $('#shop-status-text').innerHTML = st.open ? st.html : `${st.html} ${sendAnywayText()}`;
 }
 // A sentence for an "as soon as possible" request sent while dispatch is closed, or '' while it's open
 function afterHoursText() {
@@ -2321,7 +2343,7 @@ function freshVerifier() {
   host.innerHTML = '';
   const box = document.createElement('div');
   host.appendChild(box);
-  sms.verifier = new firebase.auth.RecaptchaVerifier(box, { size: 'invisible' });
+  sms.verifier = new firebase.auth.RecaptchaVerifier(box, { size: 'invisible', badge: 'inline' }); // inline: in the page, centred, not fixed to the right edge
   return sms.verifier;
 }
 function smsTick() {
@@ -2696,7 +2718,16 @@ async function removedFromCompany() {
   showOnboarding('You\u2019re no longer a member of that company. Create a new one or join with a code.');
 }
 
-function renderHeader() { $('#hdr-company').textContent = (S.company && S.company.name) || ''; }
+function renderHeader() { $('#hdr-company').textContent = (S.company && S.company.name) || ''; renderHold(); }
+/* E&C can put a company on hold from the dispatch app (companies/<id>/blocked). New pickups are refused
+   by the database then; messages to dispatch still work. */
+const onHold = () => !!(S.company && S.company.blocked === true);
+function renderHold() {
+  const el = $('#hold-notice');
+  if (!el) return;
+  el.hidden = !onHold();
+  el.innerHTML = onHold() ? `${icon('alert')}<span><b>Pickups are on hold for ${esc(S.company.name || 'your company')}.</b> New requests can’t be sent right now. Call or message dispatch to sort it out. ${dispatchCall()}</span>` : '';
+}
 
 /* =========================================================
    Tabs
@@ -2999,7 +3030,7 @@ function readForm() {
     delivery: readLeg('delivery'),
     items: S.items.filter((it) => Number(it.qty) > 0).map((it) => {
       const o = { qty: Number(it.qty), type: it.type };
-      if (it.type === 'other') o.other = String(it.other || '').trim();
+      if (it.type === 'other') o.other = String(it.other || '').trim().slice(0, 60); // the database takes 60 characters
       const w = parseFloat(it.weight);
       if (w > 0) o.weight = +w.toFixed(1);
       const dims = String(it.dims || '').trim();
@@ -3624,10 +3655,18 @@ async function nextRefNo() {
   return res.snapshot.val();
 }
 
+// Whether the request counter has moved past this number (someone else's request took the next one)
+async function numberMoved(refNo) {
+  try { return (await withTimeout(db.ref('counters/request_no').once('value'), 4000)).val() !== refNo; } catch (e) { return false; }
+}
 async function sendRequest(d, btn) {
   if (S.sending) return;
   if (S.online === false) {
     toast('You\u2019re offline, so it wasn\u2019t sent. Your request is still here: send it when you have signal.', 'error', 7000);
+    return;
+  }
+  if (onHold()) {
+    toast('Pickups are on hold for your company, so this wasn’t sent. Call or message dispatch.', 'error', 8000);
     return;
   }
   S.sending = true;
@@ -3702,10 +3741,16 @@ async function sendRequest(d, btn) {
       };
       // The database takes only the number just reserved. If another request took the next number in between, reserve again.
       for (let attempt = 0; ; attempt++) {
-        const saving = db.ref('requests').push().set({ ...rec, ref_no: refNo });
+        // ref_index/<number> = the request, in the same write: the database refuses a number that's already taken
+        const key = db.ref('requests').push().key;
+        const full = { ...rec, ref_no: refNo };
+        // Before the 28 Nov 2026 rules are published the database has no ref_index: then it's saved the old way
+        const saving = db.ref().update({ [`requests/${key}`]: full, [`ref_index/${refNo}`]: key })
+          .catch((e) => (isPermissionError(e) ? db.ref(`requests/${key}`).set(full) : Promise.reject(e)));
         try { await withTimeout(saving, SEND_TIMEOUT_MS); break; } catch (e) {
           if (e.code === 'app/timeout') { wait(saving); return; }
-          if (isPermissionError(e) && attempt < 3) { refNo = await reserve(); continue; }
+          // Only a number taken in between is worth another try: anything else the database refuses would just burn numbers
+          if (isPermissionError(e) && attempt < 3 && await numberMoved(refNo)) { refNo = await reserve(); continue; }
           throw e;
         }
       }
@@ -4726,8 +4771,8 @@ function renderAccount() {
       <h3 style="margin:18px 0 4px">People</h3>
       ${members.map(([uid, m]) => `<div class="member"><span class="avatar" aria-hidden="true">${esc(initials(m.name || m.email))}</span>
         <span class="grow"><span class="who">${esc(m.name || m.email)}${uid === S.user.uid ? ' (you)' : ''}</span><span class="em" style="display:block">${esc(m.email)}${m.role === 'owner' ? ', admin' : ''}</span></span>
-        ${owner && uid !== S.user.uid ? `<button class="btn btn-ghost sm" type="button" data-act="remove-member" data-uid="${esc(uid)}" style="color:var(--danger)">Remove</button>` : ''}</div>`).join('')}
-      ${!owner ? `<button class="btn btn-ghost block" type="button" data-act="leave-company" style="margin-top:10px;color:var(--danger)">Leave this company</button>` : ''}
+        ${owner && uid !== S.user.uid ? `<span style="display:flex;gap:2px"><button class="btn btn-ghost sm" type="button" data-act="make-admin" data-uid="${esc(uid)}">Make admin</button><button class="btn btn-ghost sm" type="button" data-act="remove-member" data-uid="${esc(uid)}" style="color:var(--danger)">Remove</button></span>` : ''}</div>`).join('')}
+      <button class="btn btn-ghost block" type="button" data-act="leave-company" style="margin-top:10px;color:var(--danger)">Leave this company</button>
     </div>
 
     <div class="card">
@@ -4897,12 +4942,52 @@ async function removeMember(uid) {
   try { const code = await rotateJoinCode(); toast(`Removed. New join code: ${prettyCode(code)}`, 'ok', 6000); }
   catch (err) { toast('Removed, but the join code couldn\u2019t be changed. Tap \u201cMake a new code\u201d to do it now.', 'error', 8000); }
 }
+/* The admin (owner) hands the company to a coworker: one write, so it can't end up with two admins or none */
+async function makeAdmin(uid) {
+  const m = S.members[uid] || {};
+  const who = m.name || m.email || 'them';
+  if (!(await confirmSheet({ title: `Make ${esc(who)} the admin?`, body: `${esc(who)} will manage the company: its name, join code and people. You stay in the company as a member.`, ok: 'Make admin' }))) return false;
+  try {
+    await db.ref(`companies/${S.cid}`).update({ owner_uid: uid, [`members/${uid}/role`]: 'owner', [`members/${S.user.uid}/role`]: 'member' });
+    toast(`${who} is now the admin.`, 'ok');
+    return true;
+  } catch (err) { toast(friendlyError(err), 'error'); return false; }
+}
 async function leaveCompany() {
+  if (isOwner()) { ownerLeave(); return; }
   if (!(await confirmSheet({ title: `Leave ${S.company.name}?`, body: 'You\u2019ll lose access to its requests and contacts. You can rejoin later with a join code.', ok: 'Leave', danger: true }))) return;
   const uid = S.user.uid;
   const cid = S.cid;
   try {
     detachAll();
+    await db.ref(`companies/${cid}/members/${uid}`).remove();
+    await db.ref(`users/${uid}/company_id`).remove();
+    S.cid = null;
+    S.userDoc.company_id = null;
+    showOnboarding();
+  } catch (err) { toast(friendlyError(err), 'error'); handleUser(auth.currentUser); }
+}
+// The admin leaving: with coworkers, someone else becomes admin first; alone, the join code stops working too
+async function ownerLeave() {
+  const others = Object.entries(S.members || {}).filter(([uid]) => uid !== S.user.uid);
+  if (others.length) {
+    openSheet('Choose the new admin', `<p class="muted" style="margin-bottom:12px">Before you leave, pick who manages ${esc(S.company.name)} after you.</p>
+      <div style="display:grid;gap:8px">${others.map(([uid, m]) => `<button class="btn btn-secondary block" type="button" data-act="leave-hand" data-uid="${esc(uid)}">${esc(m.name || m.email || 'Coworker')}</button>`).join('')}</div>`);
+    return;
+  }
+  if (!(await confirmSheet({ title: `Leave ${esc(S.company.name)}?`, body: 'You’re the only person in it. Its join code stops working, and its pickups stay in E&amp;C’s records. You can create a new profile or join another company after.', ok: 'Leave', danger: true }))) return;
+  await finishLeave(true);
+}
+async function leaveAfterHandOver(uid) {
+  closeSheet();
+  await new Promise((r) => setTimeout(r, 340));
+  if (await makeAdmin(uid)) await finishLeave(false);
+}
+async function finishLeave(alone) {
+  const uid = S.user.uid, cid = S.cid, code = S.company && S.company.join_code;
+  try {
+    detachAll();
+    if (alone && code) await db.ref(`join_codes/${code}`).remove().catch(() => {});
     await db.ref(`companies/${cid}/members/${uid}`).remove();
     await db.ref(`users/${uid}/company_id`).remove();
     S.cid = null;
@@ -5097,6 +5182,8 @@ document.addEventListener('click', async (e) => {
     case 'new-code': newJoinCode(); break;
     case 'remove-member': removeMember(el.dataset.uid); break;
     case 'leave-company': leaveCompany(); break;
+    case 'make-admin': makeAdmin(el.dataset.uid); break;
+    case 'leave-hand': leaveAfterHandOver(el.dataset.uid); break;
     case 'change-email': openChangeEmail(); break;
     case 'reset-password': resetPassword(); break;
     case 'delete-ask': askDeletion(); break;
