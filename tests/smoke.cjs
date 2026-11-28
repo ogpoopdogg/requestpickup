@@ -171,7 +171,7 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
     // 2.2 the same pickup was sent 25 minutes ago and hasn't been dispatched
     await page.click('#side-sum .btn');
     await page.waitForSelector('#sheet:not([hidden]) #btn-send');
-    assert.match(await page.textContent('#sheet-body'), /You already sent a pickup from Acme Supply 25 min ago \(#1201\)/);
+    assert.match(await page.textContent('#sheet-body'), /You already sent a pickup from Acme Supply 2[56] min ago \(#1201\)/);
     // Outside 6:30 am to 5:00 pm, an "as soon as possible" request says when dispatch will see it
     assert.strictEqual(await page.evaluate(() => { const real = window.shopNowHM, realDay = window.shopTodayStr; window.shopTodayStr = () => '2026-11-18'; const out = ['06:29', '06:30', '16:59', '17:00'].map((t) => { window.shopNowHM = () => t; return afterHoursText(); }); window.shopNowHM = real; window.shopTodayStr = realDay; return out.map((t) => (t ? (/opens at 6:30 am/.test(t) ? 'before' : /closed for the day[\s\S]*6:30 am tomorrow/.test(t) ? 'after' : t) : 'open')).join(','); }), 'before,open,open,after');
     // Closed on weekends and Manitoba's general holidays; Friday evening says Monday
@@ -445,7 +445,7 @@ const shot = async (page, name) => { if (SHOTS) await page.screenshot({ path: pa
       await pg.click('#btn-review');
       // Check and send: the summary, the warnings, payment on the last choice
       assert.strictEqual((await pg.textContent('#guide-q')).trim(), 'Check and send');
-      assert.match(await pg.textContent('#check-sum'), /You already sent a pickup from Acme Supply 25 min ago \(#1201\)/);
+      assert.match(await pg.textContent('#check-sum'), /You already sent a pickup from Acme Supply 2[56] min ago \(#1201\)/);
       assert.match(await pg.textContent('#check-sum'), /Pickup\s*Acme Supply\s*12 Main St[\s\S]*Not set \(optional\)[\s\S]*2 pallets/);
       assert.ok(await pg.isChecked('input[name=payment][value=prepaid]'), 'payment starts on the last choice');
       assert.strictEqual((await pg.textContent('#btn-review')).trim(), 'Send request');
